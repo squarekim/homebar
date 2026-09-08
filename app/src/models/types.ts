@@ -58,6 +58,16 @@ export interface Cocktail {
   flavor: FlavorVector; // 파생 향미 벡터
 }
 
+/** 제조사/공식 테이스팅 노트 (파생 레이어, 출처 포함) */
+export interface MakerNote {
+  nose?: string;
+  palate?: string;
+  finish?: string;
+  text?: string;      // nose/palate/finish 로 나누지 않은 통짜 노트
+  source: string;     // 출처 URL
+  sourceName?: string; // 출처 표기명
+}
+
 /** 실물 보유병 (기존 bottles). id 원본 그대로 재사용 */
 export interface Bottle {
   id: string;
@@ -72,6 +82,7 @@ export interface Bottle {
   isSpirit: boolean;
   isWhisky: boolean;
   flavor: FlavorVector;
+  makerNote?: MakerNote;
 }
 
 /** Spirit / Whisky 는 Bottle 위의 뷰 타입 */
@@ -206,4 +217,5 @@ export interface BackupSnapshot {
   drinkLogs: DrinkLog[];
   tasteProfiles: TasteProfile[];
   substitutions: IngredientSubstitution[];
+  bottleNotes?: { bottleId: string; text: string; updatedAt: number }[];
 }

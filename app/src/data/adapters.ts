@@ -4,6 +4,7 @@
  */
 import { SEED } from './seed';
 import { slugId } from './ids';
+import { MAKER_NOTES } from './makerNotes';
 import { flavorForIngredient, flavorForBottle, combineCocktailFlavor } from './flavorLexicon';
 import {
   Ingredient, Cocktail, CocktailIngredient, Bottle, Mixer, MixerPairing,
@@ -121,6 +122,7 @@ export const bottles: Bottle[] = SEED.bottles.map((b) => {
     isSpirit: isSpiritBottle(b),
     isWhisky: whisky,
     flavor: flavorForBottle(b.ko, b.g, b.node, whisky),
+    makerNote: MAKER_NOTES[b.id],
   };
 });
 export const whiskies: Bottle[] = bottles.filter((b) => b.isWhisky);

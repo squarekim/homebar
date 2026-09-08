@@ -1,5 +1,21 @@
-import { AvailabilityStatus, FlavorVector, FLAVOR_AXES, FLAVOR_LABELS_KO, RecommendationResult } from '../../models/types';
+import { AvailabilityStatus, FlavorVector, FLAVOR_AXES, FLAVOR_LABELS_KO, RecommendationResult, MakerNote } from '../../models/types';
 import { STATUS_LABEL_KO } from '../../services/availabilityService';
+
+/** 제조사/공식 테이스팅 노트 표시 (출처 링크 포함) */
+export function MakerNoteView({ note }: { note?: MakerNote }) {
+  if (!note) {
+    return <div className="hint" style={{ margin: '6px 0 0' }}>공식 노트 미확보 — 아래에 직접 기록할 수 있습니다.</div>;
+  }
+  return (
+    <div className="makernote">
+      {note.text && <p className="mn-line">{note.text}</p>}
+      {note.nose && <p className="mn-line"><b>향(Nose)</b> {note.nose}</p>}
+      {note.palate && <p className="mn-line"><b>맛(Palate)</b> {note.palate}</p>}
+      {note.finish && <p className="mn-line"><b>피니시(Finish)</b> {note.finish}</p>}
+      <a className="mn-src" href={note.source} target="_blank" rel="noopener">출처: {note.sourceName ?? note.source} ↗</a>
+    </div>
+  );
+}
 
 export function StatusBadge({ status }: { status: AvailabilityStatus }) {
   return <span className={`badge b-${status}`}>{STATUS_LABEL_KO[status]}</span>;

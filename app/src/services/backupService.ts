@@ -10,13 +10,14 @@ const VERSION = 1;
 
 export const backupService = {
   async exportSnapshot(): Promise<BackupSnapshot> {
-    const [inventory, drinkLogs, tasteProfiles, substitutions] = await Promise.all([
+    const [inventory, drinkLogs, tasteProfiles, substitutions, bottleNotes] = await Promise.all([
       db.inventory.toArray(),
       db.drinkLogs.toArray(),
       db.tasteProfiles.toArray(),
       db.substitutions.toArray(),
+      db.bottleNotes.toArray(),
     ]);
-    return { schema: SCHEMA, version: VERSION, exportedAt: new Date().toISOString(), inventory, drinkLogs, tasteProfiles, substitutions };
+    return { schema: SCHEMA, version: VERSION, exportedAt: new Date().toISOString(), inventory, drinkLogs, tasteProfiles, substitutions, bottleNotes };
   },
 
   async exportJson(): Promise<string> {
@@ -32,14 +33,15 @@ export const backupService = {
 
   /** mode: replace(전체 교체) | merge(병합) */
   async importSnapshot(snapshot: BackupSnapshot, mode: 'replace' | 'merge' = 'replace'): Promise<void> {
-    await db.transaction('rw', db.inventory, db.drinkLogs, db.tasteProfiles, db.substitutions, async () => {
+    await db.transaction('rw', db.inventory, db.drinkLogs, db.tasteProfiles, db.substitutions, db.bottleNotes, async () => {
       if (mode === 'replace') {
-        await Promise.all([db.inventory.clear(), db.drinkLogs.clear(), db.tasteProfiles.clear(), db.substitutions.clear()]);
+        await Promise.all([db.inventory.clear(), db.drinkLogs.clear(), db.tasteProfiles.clear(), db.substitutions.clear(), db.bottleNotes.clear()]);
       }
       await db.inventory.bulkPut(snapshot.inventory);
       await db.drinkLogs.bulkPut(snapshot.drinkLogs);
       await db.tasteProfiles.bulkPut(snapshot.tasteProfiles);
       await db.substitutions.bulkPut(snapshot.substitutions);
+      if (snapshot.bottleNotes?.length) await db.bottleNotes.bulkPut(snapshot.bottleNotes);
     });
   },
 

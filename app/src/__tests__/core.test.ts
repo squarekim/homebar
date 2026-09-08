@@ -32,6 +32,14 @@ describe('seed adapters', () => {
     const bourbon = old.ingredients.find((i) => i.ingredientName.includes('버번'));
     expect(bourbon?.amountMl).toBe(45);
   });
+  it('제조사 공식 노트가 병에 부착되고 출처 URL 을 가진다', () => {
+    const withNote = bottles.filter((b) => b.makerNote);
+    expect(withNote.length).toBeGreaterThanOrEqual(30);
+    const macallan = bottles.find((b) => b.id === 'macallan')!;
+    expect(macallan.makerNote?.source).toMatch(/^https?:\/\//);
+    // 모든 노트는 출처를 반드시 가진다(무출처 금지)
+    expect(withNote.every((b) => /^https?:\/\//.test(b.makerNote!.source))).toBe(true);
+  });
 });
 
 describe('availability', () => {

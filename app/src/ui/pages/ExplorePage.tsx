@@ -1,10 +1,25 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useUI } from '../UIContext';
-import { useHeldIds, useSubMap } from '../../hooks/useData';
+import { useHeldIds, useSubMap, useBottleNotes } from '../../hooks/useData';
 import { referenceRepo } from '../../repositories/referenceRepo';
+import { bottleNoteRepo } from '../../repositories/bottleNoteRepo';
 import { evaluateCocktail } from '../../services/availabilityService';
-import { StatusBadge, FlavorBars } from '../components/common';
+import { StatusBadge, FlavorBars, MakerNoteView } from '../components/common';
 import { AvailabilityStatus } from '../../models/types';
+
+function PersonalNote({ bottleId, initial, onSaved }: { bottleId: string; initial: string; onSaved: () => void }) {
+  const [text, setText] = useState(initial);
+  useEffect(() => { setText(initial); }, [initial, bottleId]);
+  const dirty = text !== initial;
+  return (
+    <div>
+      <textarea rows={2} value={text} placeholder="시음 소감·구매처·가격 등 자유 기록" onChange={(e) => setText(e.target.value)} />
+      <div className="btnrow">
+        <button className="btn" disabled={!dirty} onClick={async () => { await bottleNoteRepo.set(bottleId, text); onSaved(); }}>메모 저장</button>
+      </div>
+    </div>
+  );
+}
 
 type Sub = 'cocktail' | 'whisky' | 'ingredient';
 
@@ -85,28 +100,43 @@ function CocktailExplore() {
 function rank(s: AvailabilityStatus) { return { READY: 3, SUBSTITUTE: 2, MISSING: 1, UNAVAILABLE: 0 }[s]; }
 
 function WhiskyExplore() {
-  const { openLog } = useUI();
+  const { openLog, toast } = useUI();
   const [q, setQ] = useState('');
+  const [scope, setScope] = useState<'whisky' | 'notes'>('whisky');
   const [detail, setDetail] = useState<string | null>(null);
+  const bottleNotes = useBottleNotes();
+
   const rows = useMemo(() => {
     const t = q.trim().toLowerCase();
-    return referenceRepo.whiskies().filter((w) => !t || w.name.toLowerCase().includes(t) || w.node.toLowerCase().includes(t));
-  }, [q]);
+    const base = scope === 'whisky'
+      ? referenceRepo.whiskies()
+      : referenceRepo.bottles().filter((b) => b.makerNote);
+    return base.filter((w) => !t || w.name.toLowerCase().includes(t) || w.node.toLowerCase().includes(t));
+  }, [q, scope]);
+
   return (
     <>
-      <div className="controls"><input type="search" placeholder="위스키 검색" value={q} onChange={(e) => setQ(e.target.value)} /></div>
-      <div className="hint">{rows.length}종 (보유 컬렉션)</div>
+      <div className="controls"><input type="search" placeholder="위스키·주류 검색" value={q} onChange={(e) => setQ(e.target.value)} /></div>
+      <div className="controls strip">
+        <button className="chip" aria-pressed={scope === 'whisky'} onClick={() => setScope('whisky')}>위스키</button>
+        <button className="chip" aria-pressed={scope === 'notes'} onClick={() => setScope('notes')}>공식 노트 있는 전체</button>
+      </div>
+      <div className="hint">{rows.length}종 · 제조사 공식 노트는 공식 사이트에서 수집해 출처를 함께 표기합니다.</div>
       <div className="list">
         {rows.map((w) => (
           <div className="card" key={w.id}>
             <button style={{ width: '100%', textAlign: 'left' }} onClick={() => setDetail(detail === w.id ? null : w.id)}>
-              <h3>{w.name}<em>{w.abv}{w.qty > 1 ? ` · ${w.qty}병` : ''}</em></h3>
+              <h3>{w.name}<em>{w.abv || w.group}{w.qty > 1 ? ` · ${w.qty}병` : ''}{w.makerNote ? ' · 📝' : ''}</em></h3>
               <div className="meta"><span className="mi">{w.node}</span><span className="mi">{w.use}</span></div>
             </button>
             {detail === w.id && (
               <>
                 <FlavorBars vector={w.flavor} compact />
                 {w.note && <div className="hint">{w.note}</div>}
+                <div className="sechead" style={{ margin: '12px 0 4px' }}>제조사 공식 노트</div>
+                <MakerNoteView note={w.makerNote} />
+                <div className="sechead" style={{ margin: '12px 0 4px' }}>내 메모</div>
+                <PersonalNote bottleId={w.id} initial={bottleNotes.get(w.id) ?? ''} onSaved={() => toast('메모 저장')} />
                 <div className="btnrow"><button className="btn primary" onClick={() => openLog({ drinkId: w.id, drinkType: 'whisky', drinkName: w.name, servingStyle: 'neat' })}>기록하기</button></div>
               </>
             )}

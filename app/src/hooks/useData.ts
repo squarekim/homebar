@@ -37,6 +37,11 @@ export function useMe(): TasteProfile | undefined {
   return useLiveQuery(() => db.tasteProfiles.get('me'), []);
 }
 
+export function useBottleNotes(): Map<string, string> {
+  const rows = useLiveQuery(() => db.bottleNotes.toArray(), []);
+  return useMemo(() => new Map((rows ?? []).map((r) => [r.bottleId, r.text])), [rows]);
+}
+
 export function neutralVector(): FlavorVector {
   return FLAVOR_AXES.reduce((v, a) => { v[a] = 5; return v; }, {} as FlavorVector);
 }
