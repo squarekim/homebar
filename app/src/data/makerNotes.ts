@@ -7,12 +7,12 @@
 import { MakerNote } from '../models/types';
 
 export const MAKER_NOTES: Record<string, MakerNote> = {
-  "clynelish12": {
-    "nose": "크리미한 탑노트 뒤로 가볍고 복합적인 과일·허브 향 — 과일 민스미트, 통조림 배, 헤더 꿀, 그리고 스파이시한 오크",
-    "palate": "매우 매끄럽고 입안을 채우는 질감에 리치하고 와인 같은 단맛, 후추·오크 스파이스가 균형을 잡음. 물을 더하면 단맛이 살아나고 특유의 왁시함이 도드라짐",
-    "finish": "길고 칠리처럼 스파이시하며 식욕을 돋우듯 드라이하게, 후추 여운",
-    "source": "https://www.malts.com/en-us/products/clynelish-12-year-old-special-releases-2022-single-malt-scotch-whisky-750ml",
-    "sourceName": "Clynelish/Diageo 공식(Malts.com, Special Releases 2022 58.5%)"
+  "clynelish14": {
+    "nose": "크리미한 꿀, 레몬 퍼티, 가구 광택(왁스) — 특유의 왁시함이 즉시 드러나고, 풋사과·살구·천도복숭아, 옅은 요오드·여름 초원·갓 벤 풀",
+    "palate": "46%다운 두툼하고 오일리한 질감 — 후추 시트러스로 시작해 포레스트 허니·오렌지 마멀레이드·잘 익은 복숭아, 짭짤한 바닷바람과 램프오일 뉘앙스, 중반에 흑후추·생강 스파이스",
+    "finish": "미디엄~롱, 드라이하고 해양성 — 홍차·젖은 화강암·오크 타닌에 정향·후추의 상쾌한 여운",
+    "source": "https://www.malts.com/en-us/products/clynelish-14-year-old-single-malt-scotch-whisky-750ml",
+    "sourceName": "Clynelish/Diageo 공식(Malts.com, 14년 46%)"
   },
   "macallan": {
     "nose": "퍼지, 설탕에 절인 오렌지와 레몬, 바닐라, 부드러운 스파이스",
