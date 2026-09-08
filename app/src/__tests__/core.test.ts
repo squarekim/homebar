@@ -33,6 +33,24 @@ describe('seed adapters', () => {
     const bourbon = old.ingredients.find((i) => i.ingredientName.includes('버번'));
     expect(bourbon?.amountMl).toBe(45);
   });
+  it('모든 위스키가 분류(whiskyClass)를 가진다', () => {
+    for (const w of whiskies) {
+      expect(w.whiskyClass, `${w.name} 분류 누락`).toBeTruthy();
+      expect(w.whiskyClass!.origin.length).toBeGreaterThan(0);
+      expect(w.whiskyClass!.type.length).toBeGreaterThan(0);
+    }
+  });
+  it('분류 필터가 사실과 일치', async () => {
+    const { classMatchesTerm } = await import('../data/whiskyClass');
+    const by = (id: string) => whiskies.find((w) => w.id === id)!.whiskyClass;
+    expect(classMatchesTerm(by('talisker10'), '피티드')).toBe(true);
+    expect(classMatchesTerm(by('macallan'), '피티드')).toBe(false);
+    expect(classMatchesTerm(by('macallan'), '셰리')).toBe(true);
+    expect(classMatchesTerm(by('jw_black'), '블렌디드')).toBe(true);
+    expect(classMatchesTerm(by('jw_green'), '블렌디드')).toBe(true); // 블렌디드 몰트도 포함
+    expect(classMatchesTerm(by('buffalo'), '버번')).toBe(true);
+    expect(classMatchesTerm(by('glenfiddich'), '싱글몰트')).toBe(true);
+  });
   it('제조사 공식 노트가 병에 부착되고 출처 URL 을 가진다', () => {
     const withNote = bottles.filter((b) => b.makerNote);
     expect(withNote.length).toBeGreaterThanOrEqual(30);

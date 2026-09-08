@@ -1,5 +1,19 @@
-import { AvailabilityStatus, FlavorVector, FLAVOR_AXES, FLAVOR_LABELS_KO, RecommendationResult, MakerNote } from '../../models/types';
+import { AvailabilityStatus, FlavorVector, FLAVOR_AXES, FLAVOR_LABELS_KO, RecommendationResult, MakerNote, WhiskyClass } from '../../models/types';
 import { STATUS_LABEL_KO } from '../../services/availabilityService';
+import { classTags } from '../../data/whiskyClass';
+
+/** 위스키 분류 배지 (원산지·타입·지역·캐스크·캐릭터) */
+export function WhiskyClassTags({ cls }: { cls?: WhiskyClass }) {
+  if (!cls) return null;
+  const tags = classTags(cls);
+  return (
+    <div className="clstags">
+      {tags.map((t, i) => (
+        <span key={t + i} className={`cltag${cls.character.includes(t) ? ' ch' : ''}${t === cls.origin ? ' or' : ''}`}>{t}</span>
+      ))}
+    </div>
+  );
+}
 
 /** 제조사/공식 테이스팅 노트 표시 (출처 링크 포함) */
 export function MakerNoteView({ note }: { note?: MakerNote }) {

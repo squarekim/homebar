@@ -68,6 +68,15 @@ export interface MakerNote {
   sourceName?: string; // 출처 표기명
 }
 
+/** 위스키 분류 체계 (원본 매트릭스/캐스크 축을 구조화한 파생 레이어) */
+export interface WhiskyClass {
+  origin: string;       // 스카치 / 버번 / 테네시 / 아이리시 / 재패니즈 / 코리안 / 기타
+  type: string;         // 싱글몰트 / 블렌디드 / 블렌디드 몰트 / 스트레이트 버번 / 휘티드 버번 / 테네시 / 플레이버드
+  region?: string;      // 스페이사이드 / 하이랜드 / 아일라 / 아일랜드 / 캠벨타운 / 로우랜드 / 켄터키
+  cask: string[];       // 셰리 / 버번 / 프렌치오크 / 버진오크 / 와인 / PX / 올로로소 / 뉴 차드 오크
+  character: string[];  // 피티드 / 논피트 / 스모키 / 왁시 / 캐스크 스트렝스 / 휘티드 / 차콜 멜로잉 등
+}
+
 /** 실물 보유병 (기존 bottles). id 원본 그대로 재사용 */
 export interface Bottle {
   id: string;
@@ -83,6 +92,7 @@ export interface Bottle {
   isWhisky: boolean;
   flavor: FlavorVector;
   makerNote?: MakerNote;
+  whiskyClass?: WhiskyClass;
 }
 
 /** Spirit / Whisky 는 Bottle 위의 뷰 타입 */

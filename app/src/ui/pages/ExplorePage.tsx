@@ -4,7 +4,8 @@ import { useHeldIds, useSubMap, useBottleNotes } from '../../hooks/useData';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { bottleNoteRepo } from '../../repositories/bottleNoteRepo';
 import { evaluateCocktail } from '../../services/availabilityService';
-import { StatusBadge, FlavorBars, MakerNoteView } from '../components/common';
+import { StatusBadge, FlavorBars, MakerNoteView, WhiskyClassTags } from '../components/common';
+import { CLASS_FILTERS, classMatchesTerm, classTags } from '../../data/whiskyClass';
 import { AvailabilityStatus } from '../../models/types';
 
 function PersonalNote({ bottleId, initial, onSaved }: { bottleId: string; initial: string; onSaved: () => void }) {
@@ -103,6 +104,7 @@ function WhiskyExplore() {
   const { openLog, toast } = useUI();
   const [q, setQ] = useState('');
   const [scope, setScope] = useState<'whisky' | 'notes'>('whisky');
+  const [cls, setCls] = useState<string>('all');
   const [detail, setDetail] = useState<string | null>(null);
   const bottleNotes = useBottleNotes();
 
@@ -111,26 +113,38 @@ function WhiskyExplore() {
     const base = scope === 'whisky'
       ? referenceRepo.whiskies()
       : referenceRepo.bottles().filter((b) => b.makerNote);
-    return base.filter((w) => !t || w.name.toLowerCase().includes(t) || w.node.toLowerCase().includes(t));
-  }, [q, scope]);
+    return base.filter((w) => {
+      if (cls !== 'all' && !classMatchesTerm(w.whiskyClass, cls)) return false;
+      if (!t) return true;
+      const hay = (w.name + ' ' + w.node + ' ' + (w.whiskyClass ? classTags(w.whiskyClass).join(' ') : '')).toLowerCase();
+      return hay.includes(t);
+    });
+  }, [q, scope, cls]);
 
   return (
     <>
-      <div className="controls"><input type="search" placeholder="위스키·주류 검색" value={q} onChange={(e) => setQ(e.target.value)} /></div>
+      <div className="controls"><input type="search" placeholder="이름·분류(셰리/피트/싱글몰트…) 검색" value={q} onChange={(e) => setQ(e.target.value)} /></div>
       <div className="controls strip">
         <button className="chip" aria-pressed={scope === 'whisky'} onClick={() => setScope('whisky')}>위스키</button>
         <button className="chip" aria-pressed={scope === 'notes'} onClick={() => setScope('notes')}>공식 노트 있는 전체</button>
       </div>
-      <div className="hint">{rows.length}종 · 제조사 공식 노트는 공식 사이트에서 수집해 출처를 함께 표기합니다.</div>
+      {scope === 'whisky' && (
+        <div className="controls strip">
+          <button className="chip" aria-pressed={cls === 'all'} onClick={() => setCls('all')}>분류 전체</button>
+          {CLASS_FILTERS.map((c) => <button key={c} className="chip" aria-pressed={cls === c} onClick={() => setCls(c)}>{c}</button>)}
+        </div>
+      )}
+      <div className="hint">{rows.length}종 · 위스키는 원산지·타입·지역·캐스크·캐릭터로 분류됩니다. 제조사 공식 노트는 출처와 함께 표기.</div>
       <div className="list">
         {rows.map((w) => (
           <div className="card" key={w.id}>
             <button style={{ width: '100%', textAlign: 'left' }} onClick={() => setDetail(detail === w.id ? null : w.id)}>
               <h3>{w.name}<em>{w.abv || w.group}{w.qty > 1 ? ` · ${w.qty}병` : ''}{w.makerNote ? ' · 📝' : ''}</em></h3>
-              <div className="meta"><span className="mi">{w.node}</span><span className="mi">{w.use}</span></div>
+              {w.whiskyClass ? <WhiskyClassTags cls={w.whiskyClass} /> : <div className="meta"><span className="mi">{w.node}</span><span className="mi">{w.use}</span></div>}
             </button>
             {detail === w.id && (
               <>
+                {w.whiskyClass && <div className="meta"><span className="mi">{w.node}</span><span className="mi">{w.use}</span></div>}
                 <FlavorBars vector={w.flavor} compact />
                 {w.note && <div className="hint">{w.note}</div>}
                 <div className="sechead" style={{ margin: '12px 0 4px' }}>제조사 공식 노트</div>
