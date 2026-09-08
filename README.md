@@ -2,6 +2,10 @@
 
 `홈바_마스터_가이드_V54.xlsx`에서 생성한 단일 파일 웹앱. 빌드 도구·서버·계정 없이 파일 하나로 동작한다.
 
+> **확장판 안내.** 루트의 `index.html`(레거시 단일 파일 앱)은 그대로 유지됩니다.
+> 같은 데이터를 재사용해 취향·추천·기록까지 다루는 웹 플랫폼을 `app/` 에 추가했습니다.
+> 아래 [홈바 플랫폼 (`app/`)](#홈바-플랫폼-app) 참고.
+
 ## 올리는 법
 
 1. github.com에서 New repository → 이름 입력 → **Public** → Create
@@ -40,3 +44,58 @@
 2. **플랜터즈 펀치** — `사탕수수 주스/시럽`의 슬래시가 재료 구분자로 파싱되어 한 재료가 둘로 쪼개졌다. V52 데이터 규약(괄호 안 슬래시만 예외)을 벗어난 표기다. `사탕수수 주스 또는 시럽` 단일 재료로 통합했다.
 
 두 건 모두 엑셀 원본에도 남아 있으므로 다음 버전에서 반영하는 편이 낫다.
+
+---
+
+## 홈바 플랫폼 (`app/`)
+
+레거시 `index.html`의 데이터(`ings`·`recipes`·`bottles`·`mixers`·`archive`)를 **그대로 재사용**해
+취향·추천·음용 기록까지 확장한 모바일 우선 웹앱. React + TypeScript + Vite + IndexedDB(Dexie) + PWA.
+MVP는 **서버 없음**(전부 브라우저 저장), 추후 Capacitor로 Android APK 전환 가능한 구조.
+
+### 실행
+
+```bash
+cd app
+npm install
+npm run dev      # 개발 서버
+npm run build    # 타입체크 + 프로덕션 빌드(dist/)
+npm run preview  # 빌드 결과 미리보기
+npm test         # 핵심 로직 단위 테스트(vitest)
+```
+
+GitHub Pages 배포 시 `app/`을 빌드해 `dist/`를 게시한다(`base: './'`로 상대경로 산출).
+
+### 데이터 재사용
+
+원본 `const DATA`를 무손실 추출해 `app/src/data/seed.ts`에 읽기 전용 시드로 보관한다.
+이름·ID를 바꾸지 않고, 파생 필드(ID·ml 환산·향미 벡터)만 어댑터(`app/src/data/adapters.ts`)로 덧붙인다.
+레시피 재료 732건은 재료 마스터(128종)로 100% 매핑됨을 확인했다. 레거시 `localStorage['homebar.v54.held']`
+재고는 최초 실행 시 자동 이관된다.
+
+### 구조 (계층 분리)
+
+| 계층 | 위치 | 역할 |
+|---|---|---|
+| 시드/어댑터 | `src/data` | 원본 데이터 + 파생(향미 렉시콘, ID, ml 파싱) |
+| 모델 | `src/models/types.ts` | Spirit·Whisky·Cocktail·Ingredient·Mixer·Bottle·Inventory·DrinkLog·TasteProfile·IngredientSubstitution·MixerPairing·PurchaseCandidate |
+| 저장소 | `src/db` (Dexie) | 사용자 상태(재고·기록·취향·대체재)만 저장. 참조 데이터는 시드 파생 |
+| 리포지토리 | `src/repositories` | UI/서비스가 DB를 직접 호출하지 않도록 격리 (Supabase 등 교체 대비) |
+| 서비스 | `src/services` | 판정·추천·그룹·구매·취향·백업 (UI와 분리된 순수 로직) |
+| UI | `src/ui` | 모바일 하단 5탭 (홈·탐색·홈바·추천·프로필) |
+
+### 기능
+
+- **재고 관리** — 재료 128종 보유/잔량, 즉시 판정 재계산
+- **제조 가능 판정** — READY(정규)·SUBSTITUTE(근사)·MISSING(일부부족)·UNAVAILABLE(불가). 대체재 DB 반영. 원본 기본 재고에서 정규 105종(레거시와 일치)
+- **검색/필터** — 위스키·칵테일·재료, 기주·IBA·상태별
+- **음용 기록** — 서빙 스타일·평점·재음용·향미 평가·메모
+- **취향 프로필** — 14축(단맛·스모크·피트·과일·바닐라·카라멜·오크·스파이스·플로럴·허브·시트러스·견과·초콜릿·바디) 0~10. 기록으로 자동 갱신
+- **추천 엔진** — 외부 AI 없이 동작. `totalScore = taste·inventory·availability·novelty` 결합, cosine similarity 기반, 점수와 이유 반환
+- **그룹 추천** — 다인 취향 결합. 평균이 아니라, 한 명이라도 매우 싫어하는 향미가 강한 술에 패널티
+- **구매 추천** — 재료 하나 구매 시 추가 제조 가능 레시피 수(구매 전/후/증가)와 취향·활용도로 순위화
+- **JSON 백업/복원**, **PWA**(오프라인·설치)
+
+### 추후 APK
+
+브라우저 전용 의존성을 저장소 계층 뒤로 격리했으므로, `app/`에 Capacitor를 붙여 Android APK로 래핑할 수 있다.
