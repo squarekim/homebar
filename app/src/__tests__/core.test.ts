@@ -19,8 +19,9 @@ describe('seed adapters', () => {
   it('원본 건수 유지', () => {
     expect(ingredients.length).toBe(128);
     expect(cocktails.length).toBe(202);
-    expect(bottles.length).toBe(81);
+    expect(bottles.length).toBe(82); // 원본 81 + 클라이넬리쉬 12년 추가
     expect(whiskies.length).toBeGreaterThan(0);
+    expect(bottles.some((b) => b.id === 'clynelish12')).toBe(true);
   });
   it('모든 칵테일 재료가 재료 마스터로 매핑', () => {
     const ids = new Set(ingredients.map((i) => i.id));

@@ -37,6 +37,7 @@ const NAME_RULES: Array<[RegExp, Partial14]> = [
   [/라이 위스키|rye/i, { spice: 5, oak: 3 }],
   [/테네시/i, { vanilla: 2, sweet: 2 }],
   [/셰리|sherry|px|올로로소|피엑스/i, { fruit: 5, sweet: 3, caramel: 3, spice: 2 }],
+  [/클라이넬리쉬|클라이넬리시|clynelish/i, { fruit: 4, floral: 3, citrus: 3, spice: 3, oak: 2, smoke: 1 }],
   // 오렌지·시트러스 리큐르
   [/트리플\s*섹|코앵트로|큐라소|cointreau|오렌지 리큐르|그랑 마니에|그랑마니에/i, { citrus: 8, sweet: 6, fruit: 2 }],
   [/블루 큐라소/i, { citrus: 7, sweet: 6 }],
