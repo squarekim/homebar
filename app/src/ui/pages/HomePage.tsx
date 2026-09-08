@@ -16,7 +16,7 @@ const MODES: { v: RecommendMode; label: string }[] = [
   { v: 'whisky', label: '위스키' },
 ];
 
-export function HomePage({ go }: { go: (t: 'home' | 'explore' | 'homebar' | 'recommend' | 'profile') => void }) {
+export function HomePage({ go }: { go: (t: 'home' | 'homebar' | 'whisky' | 'recommend' | 'profile') => void }) {
   const ctx = useRecommendContext();
   const { openCocktail, openLog } = useUI();
   const logs = useLogs();

@@ -1,10 +1,14 @@
+/**
+ * browsers.tsx — 재사용 브라우저 컴포넌트.
+ * 칵테일(제조가능/검색), 위스키(분류/노트), 재료 목록. 홈바·위스키 탭에서 공유한다.
+ */
 import { useEffect, useMemo, useState } from 'react';
 import { useUI } from '../UIContext';
 import { useHeldIds, useSubMap, useBottleNotes } from '../../hooks/useData';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { bottleNoteRepo } from '../../repositories/bottleNoteRepo';
 import { evaluateCocktail } from '../../services/availabilityService';
-import { StatusBadge, FlavorBars, MakerNoteView, WhiskyClassTags } from '../components/common';
+import { StatusBadge, FlavorBars, MakerNoteView, WhiskyClassTags } from './common';
 import { CLASS_FILTERS, classMatchesTerm, classTags } from '../../data/whiskyClass';
 import { AvailabilityStatus } from '../../models/types';
 
@@ -22,25 +26,9 @@ function PersonalNote({ bottleId, initial, onSaved }: { bottleId: string; initia
   );
 }
 
-type Sub = 'cocktail' | 'whisky' | 'ingredient';
+function rank(s: AvailabilityStatus) { return { READY: 3, SUBSTITUTE: 2, MISSING: 1, UNAVAILABLE: 0 }[s]; }
 
-export function ExplorePage() {
-  const [sub, setSub] = useState<Sub>('cocktail');
-  return (
-    <>
-      <div className="controls strip">
-        <button className="chip" aria-pressed={sub === 'cocktail'} onClick={() => setSub('cocktail')}>칵테일</button>
-        <button className="chip" aria-pressed={sub === 'whisky'} onClick={() => setSub('whisky')}>위스키</button>
-        <button className="chip" aria-pressed={sub === 'ingredient'} onClick={() => setSub('ingredient')}>재료</button>
-      </div>
-      {sub === 'cocktail' && <CocktailExplore />}
-      {sub === 'whisky' && <WhiskyExplore />}
-      {sub === 'ingredient' && <IngredientExplore />}
-    </>
-  );
-}
-
-function CocktailExplore() {
+export function CocktailBrowser() {
   const heldIds = useHeldIds();
   const subMap = useSubMap();
   const { openCocktail } = useUI();
@@ -98,9 +86,8 @@ function CocktailExplore() {
     </>
   );
 }
-function rank(s: AvailabilityStatus) { return { READY: 3, SUBSTITUTE: 2, MISSING: 1, UNAVAILABLE: 0 }[s]; }
 
-function WhiskyExplore() {
+export function WhiskyBrowser() {
   const { openLog, toast } = useUI();
   const [q, setQ] = useState('');
   const [scope, setScope] = useState<'whisky' | 'notes'>('whisky');
@@ -161,7 +148,7 @@ function WhiskyExplore() {
   );
 }
 
-function IngredientExplore() {
+export function IngredientBrowser() {
   const heldIds = useHeldIds();
   const [q, setQ] = useState('');
   const [cat, setCat] = useState('all');

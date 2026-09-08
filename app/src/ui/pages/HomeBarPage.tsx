@@ -1,15 +1,38 @@
+/**
+ * HomeBarPage — 칵테일 중심 홈바 허브.
+ * [칵테일] 제조 가능/검색  ·  [재고] 보유·잔량 관리  ·  [재료] 재료 목록.
+ */
 import { useMemo, useState } from 'react';
 import { useUI } from '../UIContext';
 import { useInventory, inventoryRepo } from '../../hooks/useData';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { resetInventoryToSeed } from '../../db/migrate';
+import { CocktailBrowser, IngredientBrowser } from '../components/browsers';
+
+type Sub = 'cocktail' | 'stock' | 'ingredient';
+
+export function HomeBarPage() {
+  const [sub, setSub] = useState<Sub>('cocktail');
+  return (
+    <>
+      <div className="controls strip">
+        <button className="chip" aria-pressed={sub === 'cocktail'} onClick={() => setSub('cocktail')}>칵테일</button>
+        <button className="chip" aria-pressed={sub === 'stock'} onClick={() => setSub('stock')}>재고</button>
+        <button className="chip" aria-pressed={sub === 'ingredient'} onClick={() => setSub('ingredient')}>재료</button>
+      </div>
+      {sub === 'cocktail' && <CocktailBrowser />}
+      {sub === 'stock' && <StockManager />}
+      {sub === 'ingredient' && <IngredientBrowser />}
+    </>
+  );
+}
 
 const SPIRIT_CATS = ['위스키', '진', '보드카', '럼', '데킬라·아가베', '브랜디', '리큐르', '비터·아페리티프', '베르무트·와인'];
 const MIXER_CATS = ['주스·과즙', '탄산·음료', '시럽·감미', '신선·허브', '유제품·기타'];
 
 type View = 'all' | 'spirit' | 'mixer';
 
-export function HomeBarPage() {
+function StockManager() {
   const inv = useInventory();
   const { toast } = useUI();
   const [view, setView] = useState<View>('all');
@@ -20,7 +43,6 @@ export function HomeBarPage() {
 
   const cats = referenceRepo.categories().filter((c) =>
     view === 'all' ? true : view === 'spirit' ? SPIRIT_CATS.includes(c) : MIXER_CATS.includes(c));
-
   const allIngredients = referenceRepo.ingredients();
 
   return (

@@ -40,7 +40,8 @@ nav.tabbar .wrap{display:flex}
 nav.tabbar button{flex:1;padding:9px 4px 10px;font-size:11px;color:var(--mute);
   border-top:2px solid transparent;min-height:52px;display:flex;flex-direction:column;align-items:center;gap:3px}
 nav.tabbar button[aria-selected=true]{color:var(--ink);border-top-color:var(--amber);font-weight:600}
-nav.tabbar .ic{font-size:18px;line-height:1}
+nav.tabbar .ic{font-size:18px;line-height:1;height:18px;display:flex;align-items:center;justify-content:center}
+nav.tabbar .svgic{display:block}
 
 /* section */
 .sechead{font-size:13px;color:var(--amber);font-weight:600;margin:18px 0 8px;letter-spacing:.01em}
