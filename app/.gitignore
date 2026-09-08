@@ -6,3 +6,5 @@ dev-dist
 .vite
 _smoke.mjs
 *.tsbuildinfo
+dist-demo
+*-artifact.html

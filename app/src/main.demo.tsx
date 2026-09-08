@@ -1,14 +1,12 @@
+/** 데모(단일 파일) 진입점 — 서비스워커 없이 부팅. 라이브 링크/아티팩트용. */
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { registerSW } from 'virtual:pwa-register';
 import { ensureSeeded } from './db/migrate';
 import { App } from './ui/App';
 import './styles.css';
 
-try { registerSW({ immediate: true }); } catch { /* SW 미지원 환경(데모 등)에서는 무시 */ }
-
 async function boot() {
-  await ensureSeeded();
+  try { await ensureSeeded(); } catch (e) { console.warn('seed skipped', e); }
   const root = createRoot(document.getElementById('root')!);
   root.render(<React.StrictMode><App /></React.StrictMode>);
 }
