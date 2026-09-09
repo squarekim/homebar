@@ -66,6 +66,16 @@ describe('seed adapters', () => {
     expect(sim.overlaps.some((h) => h.value === '싱글몰트' || h.value === '셰리')).toBe(true);
     expect(sim.gain).toBeGreaterThan(0);
   });
+  it('용어 사전: 태그 라벨을 정규화해 해설을 찾는다', async () => {
+    const { lookupTerm } = await import('../data/glossary');
+    expect(lookupTerm('셰리 캐스크')).toContain('셰리');
+    expect(lookupTerm('아일라 · 3')).toBeTruthy();
+    expect(lookupTerm('아일라 · 결손')).toBeTruthy();
+    expect(lookupTerm('하이랜드(해안)')).toBeTruthy();
+    expect(lookupTerm('+ 캠벨타운')).toBeTruthy();
+    expect(lookupTerm('피티드')).toBeTruthy();
+    expect(lookupTerm('존재하지않는용어')).toBeUndefined();
+  });
   it('제조사 공식 노트가 병에 부착되고 출처 URL 을 가진다', () => {
     const withNote = bottles.filter((b) => b.makerNote);
     expect(withNote.length).toBeGreaterThanOrEqual(30);

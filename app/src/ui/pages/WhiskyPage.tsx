@@ -5,6 +5,7 @@
 import { useMemo, useState } from 'react';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { WhiskyBrowser } from '../components/browsers';
+import { Term } from '../components/common';
 import { computeCoverage, simulateAdd } from '../../services/whiskyDiversityService';
 import { CANDIDATE_WHISKIES } from '../../data/candidateWhiskies';
 import { CASK_SHERRY_VS_WINE } from '../../data/whiskyEducation';
@@ -53,9 +54,7 @@ function MatrixView() {
           <h4>{fam.label} <small style={{ color: 'var(--dim)' }}>· 결손 {fam.gapCount}</small></h4>
           <div className="clstags">
             {fam.cells.map((c) => (
-              <span key={c.value} className={`cltag ${c.gap ? 'gap' : 'have'}`} title={c.bottles.join(', ')}>
-                {c.value}{c.gap ? ' · 결손' : ` · ${c.count}`}
-              </span>
+              <Term key={c.value} term={c.value} label={`${c.value}${c.gap ? ' · 결손' : ` · ${c.count}`}`} className={c.gap ? 'gap' : 'have'} />
             ))}
           </div>
         </div>
@@ -70,12 +69,12 @@ function MatrixView() {
             <div style={{ fontSize: 12, color: 'var(--mute)', margin: '2px 0 6px' }}>{c.note}</div>
             {sim.newlyFilled.length > 0 && (
               <div className="clstags" style={{ marginBottom: 4 }}>
-                {sim.newlyFilled.map((h, i) => <span key={i} className="cltag new">+ {h.value} <small>({h.family})</small></span>)}
+                {sim.newlyFilled.map((h, i) => <Term key={i} term={h.value} label={`+ ${h.value}`} className="new" />)}
               </div>
             )}
             {sim.overlaps.length > 0 && (
               <div className="clstags">
-                {sim.overlaps.map((h, i) => <span key={i} className="cltag ov">{h.value} 겹침 <small>({h.count})</small></span>)}
+                {sim.overlaps.map((h, i) => <Term key={i} term={h.value} label={`${h.value} 겹침 ${h.count}`} className="ov" />)}
               </div>
             )}
           </div>
@@ -93,8 +92,8 @@ function MatrixView() {
 function CaskExplainerCard() {
   const e = CASK_SHERRY_VS_WINE;
   return (
-    <>
-      <div className="sechead">{e.title}</div>
+    <details className="disc">
+      <summary>{e.title}</summary>
       <div className="makernote">
         {e.rows.map((r) => (
           <p className="mn-line" key={r.label}><b>{r.label}</b><br />{r.text}</p>
@@ -102,7 +101,7 @@ function CaskExplainerCard() {
         <p className="mn-line" style={{ color: 'var(--amber)' }}><b>핵심</b> {e.key}</p>
         <div>{e.sources.map((s) => <a key={s.url} className="mn-src" style={{ display: 'block' }} href={s.url} target="_blank" rel="noopener">출처: {s.name} ↗</a>)}</div>
       </div>
-    </>
+    </details>
   );
 }
 

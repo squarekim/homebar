@@ -166,6 +166,24 @@ th{color:var(--mute);font-size:11px;font-weight:600}
 .cltag.new{color:var(--bg);background:var(--ok);border-color:var(--ok);font-weight:600}
 .cltag.ov{color:var(--mute)}
 .cltag small{opacity:.75;font-size:9.5px}
+/* term tooltip (hover on desktop, tap-toggle on mobile) */
+.cltag.term{cursor:help;position:relative}
+.cltag.term::after{content:'ⓘ';font-size:8px;opacity:.5;margin-left:3px;vertical-align:top}
+.cltag .tip{display:none;position:absolute;left:0;bottom:calc(100% + 6px);z-index:70;
+  width:min(240px,72vw);white-space:normal;text-align:left;
+  background:var(--panel);border:1px solid var(--line);border-radius:9px;
+  padding:8px 10px;font-size:11.5px;line-height:1.55;color:var(--ink);font-weight:400;
+  box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.cltag.term:hover .tip,.cltag.term[aria-expanded=true] .tip{display:block}
+.cltag .tip::after{content:'';position:absolute;top:100%;left:14px;border:6px solid transparent;border-top-color:var(--line)}
+
+/* collapsible disclosure */
+details.disc{border:1px solid var(--line);border-radius:var(--r);background:var(--panel);margin:8px 0;padding:0 12px}
+details.disc>summary{cursor:pointer;padding:11px 0;font-size:13px;font-weight:600;color:var(--amber);list-style:none}
+details.disc>summary::-webkit-details-marker{display:none}
+details.disc>summary::before{content:'▸ ';color:var(--mute)}
+details.disc[open]>summary::before{content:'▾ '}
+details.disc>summary+*{padding-bottom:12px}
 
 /* maker note */
 .makernote{background:var(--raise);border:1px solid var(--line);border-radius:9px;padding:10px 12px}

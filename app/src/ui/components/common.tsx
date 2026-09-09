@@ -1,16 +1,41 @@
+import { useState } from 'react';
 import { AvailabilityStatus, FlavorVector, FLAVOR_AXES, FLAVOR_LABELS_KO, RecommendationResult, MakerNote, WhiskyClass } from '../../models/types';
 import { STATUS_LABEL_KO } from '../../services/availabilityService';
-import { classTags } from '../../data/whiskyClass';
+import { lookupTerm } from '../../data/glossary';
 
-/** 위스키 분류 배지 (원산지·타입·지역·캐스크·캐릭터) */
+/** 해설이 붙는 분류 태그. 데스크톱은 hover(title+CSS 툴팁), 모바일은 탭으로 해설 표시. */
+export function Term({ label, term, className }: { label: string; term?: string; className?: string }) {
+  const [open, setOpen] = useState(false);
+  const def = lookupTerm(term ?? label);
+  const base = `cltag ${className ?? ''}`;
+  if (!def) return <span className={base.trim()}>{label}</span>;
+  return (
+    <span
+      className={`${base} term`.trim()}
+      role="button"
+      tabIndex={0}
+      aria-expanded={open}
+      title={def}
+      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpen((o) => !o); }}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); setOpen((o) => !o); } }}
+    >
+      {label}
+      <span className="tip" role="tooltip">{def}</span>
+    </span>
+  );
+}
+
+/** 위스키 분류 배지 (원산지·타입·지역·캐스크·캐릭터). 각 태그에 용어 해설 툴팁. */
 export function WhiskyClassTags({ cls }: { cls?: WhiskyClass }) {
   if (!cls) return null;
-  const tags = classTags(cls);
+  const stripParen = (s: string) => s.replace(/\s*\(.*?\)\s*$/, '');
   return (
     <div className="clstags">
-      {tags.map((t, i) => (
-        <span key={t + i} className={`cltag${cls.character.includes(t) ? ' ch' : ''}${t === cls.origin ? ' or' : ''}`}>{t}</span>
-      ))}
+      <Term label={cls.origin} className="or" />
+      <Term label={cls.type} />
+      {cls.region && <Term label={cls.region} term={stripParen(cls.region)} />}
+      {cls.cask.map((c, i) => <Term key={'k' + i} label={`${c} 캐스크`} term={c} />)}
+      {cls.character.map((c, i) => <Term key={'c' + i} label={c} className="ch" />)}
     </div>
   );
 }
