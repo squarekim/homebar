@@ -35,7 +35,7 @@ export const WHISKY_CLASS: Record<string, WhiskyClass> = {
   weller:       { origin: '버번', type: '휘티드 버번', region: '켄터키', cask: ['뉴 차드 오크'], character: ['휘티드'] },
   makers:       { origin: '버번', type: '휘티드 버번', region: '켄터키', cask: ['뉴 차드 오크'], character: ['휘티드'] },
   jack:         { origin: '테네시', type: '테네시 위스키', cask: ['뉴 차드 오크'], character: ['차콜 멜로잉'] },
-  olesmoky:     { origin: '플레이버드', type: '플레이버드 위스키', cask: [], character: ['피넛버터'] },
+  // 올레 스모키 피넛버터: 리큐르로 재분류(제조사 인지 기준) → 위스키 분류에서 제외
 };
 
 /** 분류 필터에 노출할 대표 축(사용자가 말한 스카치/버번/싱글몰트/블렌디드/셰리/피트 등) */

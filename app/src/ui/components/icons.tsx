@@ -6,7 +6,7 @@ import { ReactNode } from 'react';
 
 const P = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
 function svg(children: ReactNode) {
-  return <svg className="svgic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" {...P}>{children}</svg>;
+  return <svg className="svgic" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" {...P}>{children}</svg>;
 }
 
 /** 홈 — 집 */

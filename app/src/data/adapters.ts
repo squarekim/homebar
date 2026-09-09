@@ -98,8 +98,9 @@ export const cocktails: Cocktail[] = SEED.recipes.map((r) => {
 export const cocktailById = new Map<string, Cocktail>(cocktails.map((c) => [c.id, c]));
 
 /* ── 보유병 (id 원본 유지) ── */
-function isWhiskyBottle(b: { g: string; node: string; ko: string }): boolean {
-  return b.g === '위스키' || /whisk|위스키|scotch|스카치|버번|bourbon/i.test(b.node + b.ko);
+function isWhiskyBottle(b: { g: string }): boolean {
+  // 그룹 기준으로만 판정한다. (이름에 '위스키'가 들어가도 리큐르로 분류된 가향주는 제외)
+  return b.g === '위스키';
 }
 function isSpiritBottle(b: { g: string }): boolean {
   return ['위스키', '진', '보드카', '럼·데킬라·브랜디'].includes(b.g);
