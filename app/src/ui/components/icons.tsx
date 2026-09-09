@@ -14,14 +14,18 @@ export function IconHome() {
   return svg(<><path d="M4 11.5 12 5l8 6.5" /><path d="M6 10.5V19a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-8.5" /><path d="M10 20v-5h4v5" /></>);
 }
 
-/** 홈바 — 칵테일 쉐이커 */
-export function IconShaker() {
-  return svg(<><path d="M9 3h6l-.6 2.2H9.6z" /><path d="M8.6 5.2h6.8l.9 1.9H7.7z" /><path d="M7.9 7.1h8.2l-.9 11.2a2 2 0 0 1-2 1.8h-2.4a2 2 0 0 1-2-1.8z" /><path d="M8.4 12h7.2" /></>);
+/** 홈바 — 마티니 글라스 */
+export function IconMartini() {
+  return svg(<><path d="M4.5 5h15l-7.5 8.5z" /><path d="M12 13.5V20" /><path d="M8 20h8" /></>);
 }
 
-/** 위스키 — 온더락 텀블러 (술 레벨 + 얼음) */
+/** 위스키 — 온더락 (락글라스 + 얼음 두 조각) */
 export function IconWhisky() {
-  return svg(<><path d="M7 5h10l-.7 12.6a2 2 0 0 1-2 1.9H9.7a2 2 0 0 1-2-1.9z" /><path d="M7.35 11.5h9.3" /><path d="M10.2 12.6h3.1v3.1h-3.1z" /></>);
+  return svg(<>
+    <path d="M6.8 5h10.4l-.7 12.4a1.6 1.6 0 0 1-1.6 1.5H9.1a1.6 1.6 0 0 1-1.6-1.5z" />
+    <rect x="8.6" y="8.7" width="3.5" height="3.5" rx="0.4" />
+    <rect x="12" y="11" width="3" height="3" rx="0.4" />
+  </>);
 }
 
 /** 추천 — 스파클(반짝임) */

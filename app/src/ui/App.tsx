@@ -9,13 +9,13 @@ import { HomeBarPage } from './pages/HomeBarPage';
 import { WhiskyPage } from './pages/WhiskyPage';
 import { RecommendPage } from './pages/RecommendPage';
 import { ProfilePage } from './pages/ProfilePage';
-import { IconHome, IconShaker, IconWhisky, IconSparkle, IconProfile } from './components/icons';
+import { IconHome, IconMartini, IconWhisky, IconSparkle, IconProfile } from './components/icons';
 
 export type Tab = 'home' | 'homebar' | 'whisky' | 'recommend' | 'profile';
 
 const TABS: { id: Tab; label: string; ic: ReactNode }[] = [
   { id: 'home', label: '홈', ic: <IconHome /> },
-  { id: 'homebar', label: '홈바', ic: <IconShaker /> },
+  { id: 'homebar', label: '홈바', ic: <IconMartini /> },
   { id: 'whisky', label: '위스키', ic: <IconWhisky /> },
   { id: 'recommend', label: '추천', ic: <IconSparkle /> },
   { id: 'profile', label: '프로필', ic: <IconProfile /> },
