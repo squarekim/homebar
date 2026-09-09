@@ -9,27 +9,16 @@ import { HomeBarPage } from './pages/HomeBarPage';
 import { WhiskyPage } from './pages/WhiskyPage';
 import { RecommendPage } from './pages/RecommendPage';
 import { ProfilePage } from './pages/ProfilePage';
+import { IconHome, IconShaker, IconWhisky, IconSparkle, IconProfile } from './components/icons';
 
 export type Tab = 'home' | 'homebar' | 'whisky' | 'recommend' | 'profile';
 
-/** 칵테일 쉐이커 아이콘 (홈바 탭). 표준 이모지에 쉐이커가 없어 인라인 SVG 로 그린다. */
-function ShakerIcon() {
-  return (
-    <svg className="svgic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" strokeLinecap="round" aria-hidden="true">
-      <path d="M8.5 2.5h7l-.7 2.2h-5.6z" />
-      <path d="M8.2 4.7h7.6l1 2h-9.6z" />
-      <path d="M7.4 6.7h9.2l-1 12.6a2 2 0 0 1-2 1.9h-3.2a2 2 0 0 1-2-1.9z" />
-      <path d="M8 12h8" />
-    </svg>
-  );
-}
-
 const TABS: { id: Tab; label: string; ic: ReactNode }[] = [
-  { id: 'home', label: '홈', ic: '🏠' },
-  { id: 'homebar', label: '홈바', ic: <ShakerIcon /> },
-  { id: 'whisky', label: '위스키', ic: '🥃' },
-  { id: 'recommend', label: '추천', ic: '✨' },
-  { id: 'profile', label: '프로필', ic: '👤' },
+  { id: 'home', label: '홈', ic: <IconHome /> },
+  { id: 'homebar', label: '홈바', ic: <IconShaker /> },
+  { id: 'whisky', label: '위스키', ic: <IconWhisky /> },
+  { id: 'recommend', label: '추천', ic: <IconSparkle /> },
+  { id: 'profile', label: '프로필', ic: <IconProfile /> },
 ];
 
 function Shell() {
