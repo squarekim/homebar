@@ -8,15 +8,20 @@ export interface LogPrefill {
   servingStyle?: ServingStyle;
 }
 
+export interface TermInfo { title: string; body: string; }
+
 interface UIState {
   openCocktail: (id: string) => void;
   openLog: (prefill: LogPrefill) => void;
   toast: (msg: string) => void;
+  showTerm: (title: string, body: string) => void;
   cocktailId: string | null;
   logPrefill: LogPrefill | null;
   toastMsg: string | null;
+  termInfo: TermInfo | null;
   closeCocktail: () => void;
   closeLog: () => void;
+  closeTerm: () => void;
 }
 
 const Ctx = createContext<UIState | null>(null);
@@ -25,20 +30,24 @@ export function UIProvider({ children }: { children: ReactNode }) {
   const [cocktailId, setCocktailId] = useState<string | null>(null);
   const [logPrefill, setLogPrefill] = useState<LogPrefill | null>(null);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
+  const [termInfo, setTermInfo] = useState<TermInfo | null>(null);
 
   const toast = useCallback((msg: string) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(null), 1800);
   }, []);
+  const showTerm = useCallback((title: string, body: string) => setTermInfo({ title, body }), []);
 
   return (
     <Ctx.Provider value={{
-      cocktailId, logPrefill, toastMsg,
+      cocktailId, logPrefill, toastMsg, termInfo,
       openCocktail: setCocktailId,
       openLog: setLogPrefill,
       toast,
+      showTerm,
       closeCocktail: () => setCocktailId(null),
       closeLog: () => setLogPrefill(null),
+      closeTerm: () => setTermInfo(null),
     }}>
       {children}
     </Ctx.Provider>

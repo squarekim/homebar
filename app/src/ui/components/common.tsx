@@ -1,26 +1,27 @@
-import { useState } from 'react';
+import { SyntheticEvent } from 'react';
 import { AvailabilityStatus, FlavorVector, FLAVOR_AXES, FLAVOR_LABELS_KO, RecommendationResult, MakerNote, WhiskyClass } from '../../models/types';
 import { STATUS_LABEL_KO } from '../../services/availabilityService';
-import { lookupTerm } from '../../data/glossary';
+import { lookupTerm, normalizeTerm } from '../../data/glossary';
+import { useUI } from '../UIContext';
 
-/** 해설이 붙는 분류 태그. 데스크톱은 hover(title+CSS 툴팁), 모바일은 탭으로 해설 표시. */
+/** 해설이 붙는 분류 태그. 데스크톱은 hover(native title), 모바일/클릭은 고정 팝오버(어떤 컨테이너에도 안 잘림). */
 export function Term({ label, term, className }: { label: string; term?: string; className?: string }) {
-  const [open, setOpen] = useState(false);
+  const { showTerm } = useUI();
   const def = lookupTerm(term ?? label);
-  const base = `cltag ${className ?? ''}`;
-  if (!def) return <span className={base.trim()}>{label}</span>;
+  const base = `cltag ${className ?? ''}`.trim();
+  if (!def) return <span className={base}>{label}</span>;
+  const title = term ?? normalizeTerm(label);
+  const open = (e: SyntheticEvent) => { e.preventDefault(); e.stopPropagation(); showTerm(title, def); };
   return (
     <span
-      className={`${base} term`.trim()}
+      className={`${base} term`}
       role="button"
       tabIndex={0}
-      aria-expanded={open}
       title={def}
-      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpen((o) => !o); }}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); setOpen((o) => !o); } }}
+      onClick={open}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') open(e); }}
     >
       {label}
-      <span className="tip" role="tooltip">{def}</span>
     </span>
   );
 }

@@ -1,4 +1,4 @@
-import { ReactNode, useMemo, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { UIProvider, useUI } from './UIContext';
 import { useHeldIds, useSubMap } from '../hooks/useData';
 import { evaluateAll, tallyStatus } from '../services/availabilityService';
@@ -36,9 +36,21 @@ function Shell() {
   const [tab, setTab] = useState<Tab>('home');
   const heldIds = useHeldIds();
   const subMap = useSubMap();
-  const { toastMsg } = useUI();
+  const { toastMsg, termInfo, closeTerm } = useUI();
 
   const tally = useMemo(() => tallyStatus(evaluateAll(heldIds, subMap)), [heldIds, subMap]);
+
+  // 데스크톱: 가로 칩 스트립을 마우스 휠로 스크롤(넘치는 경우) — 뒤쪽 칩에 닿게 한다.
+  useEffect(() => {
+    const onWheel = (e: WheelEvent) => {
+      const strip = (e.target as HTMLElement)?.closest?.('.controls.strip') as HTMLElement | null;
+      if (!strip || strip.scrollWidth <= strip.clientWidth || e.deltaY === 0) return;
+      strip.scrollLeft += e.deltaY;
+      e.preventDefault();
+    };
+    document.addEventListener('wheel', onWheel, { passive: false });
+    return () => document.removeEventListener('wheel', onWheel);
+  }, []);
 
   return (
     <>
@@ -74,6 +86,16 @@ function Shell() {
 
       <CocktailModal />
       <LogDialog />
+      {termInfo && (
+        <>
+          <div className="scrim on" onClick={closeTerm} />
+          <div className="terminfo" role="dialog" aria-modal="true">
+            <button className="close" onClick={closeTerm} aria-label="닫기">×</button>
+            <b>{termInfo.title}</b>
+            <p>{termInfo.body}</p>
+          </div>
+        </>
+      )}
       {toastMsg && <div className="toast">{toastMsg}</div>}
     </>
   );

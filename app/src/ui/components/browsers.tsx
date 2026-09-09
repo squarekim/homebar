@@ -116,7 +116,7 @@ export function WhiskyBrowser() {
         <button className="chip" aria-pressed={scope === 'notes'} onClick={() => setScope('notes')}>공식 노트 있는 전체</button>
       </div>
       {scope === 'whisky' && (
-        <div className="controls strip">
+        <div className="controls" style={{ paddingTop: 0 }}>
           <button className="chip" aria-pressed={cls === 'all'} onClick={() => setCls('all')}>분류 전체</button>
           {CLASS_FILTERS.map((c) => <button key={c} className="chip" aria-pressed={cls === c} onClick={() => setCls(c)}>{c}</button>)}
         </div>
