@@ -9,7 +9,7 @@ import { HomeBarPage } from './pages/HomeBarPage';
 import { WhiskyPage } from './pages/WhiskyPage';
 import { RecommendPage } from './pages/RecommendPage';
 import { ProfilePage } from './pages/ProfilePage';
-import { IconHome, IconMartini, IconWhisky, IconSparkle, IconProfile } from './components/icons';
+import { IconHome, IconMartini, IconWhisky, IconSparkle, IconProfile, IconLogo } from './components/icons';
 
 export type Tab = 'home' | 'homebar' | 'whisky' | 'recommend' | 'profile';
 
@@ -45,7 +45,10 @@ function Shell() {
     <>
       <header>
         <div className="wrap">
-          <div className="brand"><h1>홈바 플랫폼</h1><span>내 취향·재고 기반</span></div>
+          <div className="brand">
+            <span className="logomark"><IconLogo /></span>
+            <div className="brandtext"><h1>홈바 플랫폼</h1><span>내 취향·재고 기반</span></div>
+          </div>
           <div className="tally">
             <div className="t-ok"><b>{tally.READY}</b><small>정규</small></div>
             <div className="t-ap"><b>{tally.SUBSTITUTE}</b><small>근사</small></div>

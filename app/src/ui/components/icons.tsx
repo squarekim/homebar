@@ -19,6 +19,20 @@ export function IconMartini() {
   return svg(<><path d="M4.5 5h15l-7.5 8.5z" /><path d="M12 13.5V20" /><path d="M8 20h8" /></>);
 }
 
+/** 상단 브랜드 로고 마크 — 마티니 글라스(가니시 포함), 더 크게 */
+export function IconLogo() {
+  return (
+    <svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"
+      fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 5h16l-8 9z" />
+      <path d="M12 14v6" />
+      <path d="M7.5 20.5h9" />
+      <path d="M16.5 4.2l2-1.6" />
+      <circle cx="19" cy="2.2" r="1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 /** 위스키 — 온더락 (락글라스 + 얼음 두 조각) */
 export function IconWhisky() {
   return svg(<>

@@ -22,9 +22,11 @@ a{color:var(--amber);text-decoration:none}
 /* header */
 header{position:sticky;top:0;z-index:20;background:rgba(15,22,19,.94);
   backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.brand{display:flex;align-items:baseline;gap:10px;padding:12px 0 8px}
-.brand h1{font-size:16px;font-weight:700;letter-spacing:-.02em}
-.brand span{font-size:12px;color:var(--dim)}
+.brand{display:flex;align-items:center;gap:11px;padding:16px 0 12px}
+.brand .logomark{color:var(--amber);display:flex;flex:none}
+.brand .brandtext{display:flex;flex-direction:column;gap:1px}
+.brand h1{font-size:23px;font-weight:800;letter-spacing:-.03em;line-height:1.05}
+.brand .brandtext span{font-size:12px;color:var(--dim)}
 .tally{display:flex;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-bottom:12px}
 .tally div{flex:1;padding:8px 6px;text-align:center;border-right:1px solid var(--line)}
 .tally div:last-child{border-right:none}
