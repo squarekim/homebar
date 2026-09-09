@@ -53,6 +53,7 @@ const NAME_RULES: Array<[RegExp, Partial14]> = [
   [/포도|grape/i, { fruit: 6, sweet: 3 }],
   [/토마토/i, { body: 3, herbal: 2 }],
   // 견과·초콜릿·커피·크림
+  [/피넛버터|땅콩|peanut|플레이버드 위스키/i, { nutty: 8, sweet: 6, caramel: 3, chocolate: 1 }],
   [/아마레토|amaretto|아몬드/i, { nutty: 8, sweet: 5, caramel: 2 }],
   [/카카오|카오|초코|chocolate/i, { chocolate: 9, sweet: 6 }],
   [/깔루아|커피|coffee|에스프레소/i, { chocolate: 5, sweet: 5, body: 2 }],

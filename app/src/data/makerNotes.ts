@@ -12,7 +12,7 @@ export const MAKER_NOTES: Record<string, MakerNote> = {
     "palate": "크리미한 피넛버터가 앞서고 캐러멜·토피·바닐라의 단맛에 견과 풍미, 가벼운 위스키 바디가 균형",
     "finish": "부드럽고 너티하며 살짝 단 마무리(60프루프, 30%)",
     "source": "https://olesmoky.com/products/peanut-butter-whiskey",
-    "sourceName": "Ole Smoky 공식(Peanut Butter, 라벨상 flavored whiskey·30%)"
+    "sourceName": "Ole Smoky 공식 — 피넛버터 가향 리큐르(라벨 flavored whiskey·30%)"
   },
   "clynelish14": {
     "nose": "크리미한 꿀, 레몬 퍼티, 가구 광택(왁스) — 특유의 왁시함이 즉시 드러나고, 풋사과·살구·천도복숭아, 옅은 요오드·여름 초원·갓 벤 풀",
