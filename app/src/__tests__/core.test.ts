@@ -51,6 +51,21 @@ describe('seed adapters', () => {
     expect(classMatchesTerm(by('buffalo'), '버번')).toBe(true);
     expect(classMatchesTerm(by('glenfiddich'), '싱글몰트')).toBe(true);
   });
+  it('다양성 자동계산: 아일라는 결손, 라가불린 추가 시 아일라를 새로 채운다', async () => {
+    const { computeCoverage, simulateAdd } = await import('../services/whiskyDiversityService');
+    const cov = computeCoverage(whiskies);
+    const region = cov.find((f) => f.key === 'region')!;
+    const islay = region.cells.find((c) => c.value === '아일라')!;
+    expect(islay.gap).toBe(true); // 현재 아일라 몰트 미보유
+    const speyside = region.cells.find((c) => c.value === '스페이사이드')!;
+    expect(speyside.count).toBeGreaterThan(1); // 맥캘란·글렌피딕 등
+    // 라가불린(아일라 피티드) 추가 시뮬
+    const lag = { origin: '스카치', type: '싱글몰트', region: '아일라', cask: ['셰리'], character: ['피티드', '스모키'] };
+    const sim = simulateAdd(lag, whiskies);
+    expect(sim.newlyFilled.some((h) => h.value === '아일라')).toBe(true);
+    expect(sim.overlaps.some((h) => h.value === '싱글몰트' || h.value === '셰리')).toBe(true);
+    expect(sim.gain).toBeGreaterThan(0);
+  });
   it('제조사 공식 노트가 병에 부착되고 출처 URL 을 가진다', () => {
     const withNote = bottles.filter((b) => b.makerNote);
     expect(withNote.length).toBeGreaterThanOrEqual(30);
