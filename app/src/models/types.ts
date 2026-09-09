@@ -228,4 +228,18 @@ export interface BackupSnapshot {
   tasteProfiles: TasteProfile[];
   substitutions: IngredientSubstitution[];
   bottleNotes?: { bottleId: string; text: string; updatedAt: number }[];
+  userBottles?: UserBottle[];
+}
+
+/** 사용자가 직접 추가한 보유 술 (시드 bottles 와 병합되어 컬렉션·분류·결손 계산에 반영) */
+export interface UserBottle {
+  id: string;            // 'ub_...'
+  name: string;
+  group: string;         // 위스키 / 진 / 보드카 / 럼·데킬라·브랜디 / 리큐르 / 기타
+  abv?: string;          // '46%'
+  qty: number;
+  use: string;           // 시음-축 / 겸용 / 조주 / 미활용
+  note?: string;
+  whiskyClass?: WhiskyClass; // group 이 위스키일 때 분류
+  createdAt: number;
 }

@@ -87,6 +87,24 @@ describe('seed adapters', () => {
     expect(lookupTerm('피티드')).toBeTruthy();
     expect(lookupTerm('존재하지않는용어')).toBeUndefined();
   });
+  it('사용자 추가 술이 도메인 병으로 변환되고 결손을 채운다', async () => {
+    const { userBottleToDomain, isUserBottle } = await import('../data/userBottles');
+    const { computeCoverage } = await import('../services/whiskyDiversityService');
+    const ub = userBottleToDomain({
+      id: 'ub_test1', name: '라가불린 16년', group: '위스키', abv: '43%', qty: 1, use: '시음-축',
+      whiskyClass: { origin: '스카치', type: '싱글몰트', region: '아일라', cask: ['셰리'], character: ['피티드'] },
+      createdAt: Date.now(),
+    });
+    expect(ub.isWhisky).toBe(true);
+    expect(ub.abvNum).toBe(43);
+    expect(isUserBottle(ub.id)).toBe(true);
+    // 추가 전엔 아일라 결손, 추가 후엔 해소
+    const before = computeCoverage(whiskies).find((f) => f.key === 'region')!.cells.find((c) => c.value === '아일라')!;
+    expect(before.gap).toBe(true);
+    const after = computeCoverage([...whiskies, ub]).find((f) => f.key === 'region')!.cells.find((c) => c.value === '아일라')!;
+    expect(after.gap).toBe(false);
+    expect(after.bottles).toContain('라가불린 16년');
+  });
   it('제조사 공식 노트가 병에 부착되고 출처 URL 을 가진다', () => {
     const withNote = bottles.filter((b) => b.makerNote);
     expect(withNote.length).toBeGreaterThanOrEqual(30);

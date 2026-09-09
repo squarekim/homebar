@@ -4,13 +4,16 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import { useUI } from '../UIContext';
-import { useHeldIds, useSubMap, useBottleNotes } from '../../hooks/useData';
+import { useHeldIds, useSubMap, useBottleNotes, useWhiskies, useBottles } from '../../hooks/useData';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { bottleNoteRepo } from '../../repositories/bottleNoteRepo';
 import { evaluateCocktail } from '../../services/availabilityService';
 import { StatusBadge, FlavorBars, MakerNoteView, WhiskyClassTags } from './common';
 import { CLASS_FILTERS, classMatchesTerm, classTags } from '../../data/whiskyClass';
 import { AvailabilityStatus } from '../../models/types';
+import { AddBottleDialog } from './AddBottleDialog';
+import { isUserBottle } from '../../data/userBottles';
+import { userBottleRepo } from '../../repositories/userBottleRepo';
 
 function PersonalNote({ bottleId, initial, onSaved }: { bottleId: string; initial: string; onSaved: () => void }) {
   const [text, setText] = useState(initial);
@@ -93,23 +96,29 @@ export function WhiskyBrowser() {
   const [scope, setScope] = useState<'whisky' | 'notes'>('whisky');
   const [cls, setCls] = useState<string>('all');
   const [detail, setDetail] = useState<string | null>(null);
+  const [adding, setAdding] = useState(false);
   const bottleNotes = useBottleNotes();
+  const whiskies = useWhiskies();
+  const allBottles = useBottles();
 
   const rows = useMemo(() => {
     const t = q.trim().toLowerCase();
     const base = scope === 'whisky'
-      ? referenceRepo.whiskies()
-      : referenceRepo.bottles().filter((b) => b.makerNote);
+      ? whiskies
+      : allBottles.filter((b) => b.makerNote);
     return base.filter((w) => {
       if (cls !== 'all' && !classMatchesTerm(w.whiskyClass, cls)) return false;
       if (!t) return true;
       const hay = (w.name + ' ' + w.node + ' ' + (w.whiskyClass ? classTags(w.whiskyClass).join(' ') : '')).toLowerCase();
       return hay.includes(t);
     });
-  }, [q, scope, cls]);
+  }, [q, scope, cls, whiskies, allBottles]);
 
   return (
     <>
+      <div className="btnrow" style={{ margin: '12px 0 2px' }}>
+        <button className="btn primary" onClick={() => setAdding(true)}>+ 술 추가</button>
+      </div>
       <div className="controls"><input type="search" placeholder="이름·분류(셰리/피트/싱글몰트…) 검색" value={q} onChange={(e) => setQ(e.target.value)} /></div>
       <div className="controls strip">
         <button className="chip" aria-pressed={scope === 'whisky'} onClick={() => setScope('whisky')}>위스키</button>
@@ -138,12 +147,18 @@ export function WhiskyBrowser() {
                 <MakerNoteView note={w.makerNote} />
                 <div className="sechead" style={{ margin: '12px 0 4px' }}>내 메모</div>
                 <PersonalNote bottleId={w.id} initial={bottleNotes.get(w.id) ?? ''} onSaved={() => toast('메모 저장')} />
-                <div className="btnrow"><button className="btn primary" onClick={() => openLog({ drinkId: w.id, drinkType: 'whisky', drinkName: w.name, servingStyle: 'neat' })}>기록하기</button></div>
+                <div className="btnrow">
+                  <button className="btn primary" onClick={() => openLog({ drinkId: w.id, drinkType: 'whisky', drinkName: w.name, servingStyle: 'neat' })}>기록하기</button>
+                  {isUserBottle(w.id) && (
+                    <button className="btn ghost" onClick={async () => { await userBottleRepo.remove(w.id); toast('삭제됨'); }}>삭제</button>
+                  )}
+                </div>
               </>
             )}
           </div>
         ))}
       </div>
+      <AddBottleDialog open={adding} onClose={() => setAdding(false)} />
     </>
   );
 }

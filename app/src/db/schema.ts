@@ -5,7 +5,7 @@
  * 저장소 교체(Supabase 등) 시 이 파일과 repository 만 갈아끼우면 되도록 격리.
  */
 import Dexie, { Table } from 'dexie';
-import { InventoryItem, DrinkLog, TasteProfile, IngredientSubstitution } from '../models/types';
+import { InventoryItem, DrinkLog, TasteProfile, IngredientSubstitution, UserBottle } from '../models/types';
 
 interface MetaRow { key: string; value: unknown; }
 /** 사용자가 직접 적는 병별 개인 노트 (공식 makerNote 와 별개) */
@@ -17,6 +17,7 @@ export class HomeBarDB extends Dexie {
   tasteProfiles!: Table<TasteProfile, string>;
   substitutions!: Table<IngredientSubstitution, string>;
   bottleNotes!: Table<BottleNote, string>;
+  userBottles!: Table<UserBottle, string>;
   meta!: Table<MetaRow, string>;
 
   constructor() {
@@ -31,6 +32,10 @@ export class HomeBarDB extends Dexie {
     // v2: 사용자 병별 개인 노트 추가 (기존 스토어는 그대로 보존)
     this.version(2).stores({
       bottleNotes: 'bottleId',
+    });
+    // v3: 사용자가 직접 추가한 보유 술
+    this.version(3).stores({
+      userBottles: 'id, group, createdAt',
     });
   }
 }

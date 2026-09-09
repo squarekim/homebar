@@ -3,7 +3,7 @@
  * [컬렉션] 분류·공식 노트·개인 메모  /  [축별 결손] 자동 커버리지 + 지역×숙성 매트릭스(실시간) + 구매 시뮬레이터.
  */
 import { useMemo, useState } from 'react';
-import { referenceRepo } from '../../repositories/referenceRepo';
+import { useWhiskies } from '../../hooks/useData';
 import { WhiskyBrowser } from '../components/browsers';
 import { Term } from '../components/common';
 import {
@@ -28,7 +28,7 @@ export function WhiskyPage() {
 }
 
 function MatrixView() {
-  const whiskies = referenceRepo.whiskies();
+  const whiskies = useWhiskies();
   const coverage = useMemo(() => computeCoverage(whiskies), [whiskies]);
   const matrix = useMemo(() => computeRegionMaturityMatrix(whiskies), [whiskies]);
   const sims = useMemo(() =>

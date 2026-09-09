@@ -4,7 +4,9 @@ import { useMemo } from 'react';
 import { db } from '../db/schema';
 import { inventoryRepo } from '../repositories/inventoryRepo';
 import { substitutionRepo } from '../repositories/substitutionRepo';
-import { InventoryItem, DrinkLog, TasteProfile, FLAVOR_AXES, FlavorVector } from '../models/types';
+import { InventoryItem, DrinkLog, TasteProfile, FLAVOR_AXES, FlavorVector, Bottle, UserBottle } from '../models/types';
+import { referenceRepo } from '../repositories/referenceRepo';
+import { userBottleToDomain } from '../data/userBottles';
 
 export function useInventory(): InventoryItem[] | undefined {
   return useLiveQuery(() => db.inventory.toArray(), []);
@@ -40,6 +42,23 @@ export function useMe(): TasteProfile | undefined {
 export function useBottleNotes(): Map<string, string> {
   const rows = useLiveQuery(() => db.bottleNotes.toArray(), []);
   return useMemo(() => new Map((rows ?? []).map((r) => [r.bottleId, r.text])), [rows]);
+}
+
+/** 사용자가 추가한 병 (원본) */
+export function useUserBottles(): UserBottle[] {
+  return useLiveQuery(() => db.userBottles.orderBy('createdAt').reverse().toArray(), []) ?? [];
+}
+
+/** 시드 병 + 사용자 추가 병 (컬렉션 전체) */
+export function useBottles(): Bottle[] {
+  const ubs = useUserBottles();
+  return useMemo(() => [...referenceRepo.bottles(), ...ubs.map(userBottleToDomain)], [ubs]);
+}
+
+/** 위스키만 (시드 + 사용자 추가). 분류·매트릭스·시뮬레이터가 이걸 쓴다. */
+export function useWhiskies(): Bottle[] {
+  const all = useBottles();
+  return useMemo(() => all.filter((b) => b.isWhisky), [all]);
 }
 
 export function neutralVector(): FlavorVector {
