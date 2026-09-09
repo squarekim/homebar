@@ -5,7 +5,7 @@
 import {
   ingredients, ingredientById, ingredientIdOf, ingredientFlavor,
   cocktails, cocktailById, bottles, whiskies, spirits,
-  mixers, mixerPairings, purchaseSeeds, categories, matrixAxes, caskAxes,
+  mixers, mixerPairings, purchaseSeeds, categories,
 } from '../data/adapters';
 import { Ingredient, Cocktail, Bottle } from '../models/types';
 
@@ -26,6 +26,4 @@ export const referenceRepo = {
   mixers: () => mixers,
   mixerPairings: () => mixerPairings,
   purchaseSeeds: () => purchaseSeeds,
-  matrix: () => matrixAxes,
-  cask: () => caskAxes,
 };

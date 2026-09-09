@@ -1,14 +1,15 @@
 /**
  * WhiskyPage — 니트 위주 위스키 전용 탭.
- * [컬렉션] 분류·공식 노트·개인 메모  /  [축별 결손] 자동 커버리지 + 구매 시뮬레이터 + 캐스크 해설 + 원본 매트릭스.
+ * [컬렉션] 분류·공식 노트·개인 메모  /  [축별 결손] 자동 커버리지 + 지역×숙성 매트릭스(실시간) + 구매 시뮬레이터.
  */
 import { useMemo, useState } from 'react';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { WhiskyBrowser } from '../components/browsers';
 import { Term } from '../components/common';
-import { computeCoverage, simulateAdd } from '../../services/whiskyDiversityService';
+import {
+  computeCoverage, simulateAdd, computeRegionMaturityMatrix, MATRIX_TIERS,
+} from '../../services/whiskyDiversityService';
 import { CANDIDATE_WHISKIES } from '../../data/candidateWhiskies';
-import { CASK_SHERRY_VS_WINE } from '../../data/whiskyEducation';
 
 type Sub = 'collection' | 'matrix';
 
@@ -26,16 +27,10 @@ export function WhiskyPage() {
   );
 }
 
-function cell(v: string) {
-  if (!v || v === '—') return <span style={{ color: 'var(--dim)' }}>—</span>;
-  if (v === '결손') return <span className="tag-na">결손</span>;
-  return <span className="tag-ok">{v}</span>;
-}
-
 function MatrixView() {
   const whiskies = referenceRepo.whiskies();
   const coverage = useMemo(() => computeCoverage(whiskies), [whiskies]);
-
+  const matrix = useMemo(() => computeRegionMaturityMatrix(whiskies), [whiskies]);
   const sims = useMemo(() =>
     CANDIDATE_WHISKIES
       .map((c) => ({ c, sim: simulateAdd(c.cls, whiskies) }))
@@ -46,7 +41,33 @@ function MatrixView() {
 
   return (
     <>
-      <div className="hint">보유 위스키 분류에서 <b>자동 계산</b>한 다양성 지도입니다. 컬렉션에 위스키가 추가되면 즉시 갱신됩니다. <b className="tag-na">결손</b> 축이 다음 구매 우선 후보입니다.</div>
+      <div className="hint">보유 위스키에서 <b>실시간 계산</b>한 다양성 지도입니다. 위스키를 추가하면 즉시 갱신됩니다. <b className="tag-na">결손</b> 칸이 다음 구매 우선 후보입니다.</div>
+
+      {/* 지역 × 숙성 매트릭스 — 원본 시음 매트릭스를 현재 컬렉션으로 연결 */}
+      <div className="sechead">스카치 싱글몰트 · 지역 × 숙성 (실시간)</div>
+      <div style={{ overflowX: 'auto' }}>
+        <table>
+          <thead><tr><th>지역</th>{MATRIX_TIERS.map((t) => <th key={t}>{t}</th>)}</tr></thead>
+          <tbody>
+            {matrix.map((row) => (
+              <tr key={row.region}>
+                <td style={{ whiteSpace: 'nowrap' }}><Term label={row.region} /></td>
+                {MATRIX_TIERS.map((t) => {
+                  const list = row.cells[t];
+                  return (
+                    <td key={t}>
+                      {list.length === 0
+                        ? <span className="tag-na">결손</span>
+                        : list.map((n, i) => <div key={i} className="tag-ok" style={{ fontSize: 12 }}>{n}</div>)}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p style={{ fontSize: 12, color: 'var(--dim)', margin: '8px 0 4px' }}>숙성: 엔트리 ≤11년 · 스탠다드 12–17년 · 고숙성 18년+ (병 이름의 연수로 판정, NAS 제외). 지역·연수가 다른 원산지(버번·재패니즈·코리안 등)는 아래 축별 커버리지로 본다.</p>
 
       <div className="sechead">축별 커버리지 (자동) · 결손 {totalGaps}</div>
       {coverage.map((fam) => (
@@ -80,74 +101,6 @@ function MatrixView() {
           </div>
         ))}
       </div>
-
-      <CaskExplainerCard />
-
-      <div className="sechead">원본 시음 매트릭스 (참고)</div>
-      <LegacyMatrix />
-    </>
-  );
-}
-
-function CaskExplainerCard() {
-  const e = CASK_SHERRY_VS_WINE;
-  return (
-    <details className="disc">
-      <summary>{e.title}</summary>
-      <div className="makernote">
-        {e.rows.map((r) => (
-          <p className="mn-line" key={r.label}><b>{r.label}</b><br />{r.text}</p>
-        ))}
-        <p className="mn-line" style={{ color: 'var(--amber)' }}><b>핵심</b> {e.key}</p>
-        <div>{e.sources.map((s) => <a key={s.url} className="mn-src" style={{ display: 'block' }} href={s.url} target="_blank" rel="noopener">출처: {s.name} ↗</a>)}</div>
-      </div>
-    </details>
-  );
-}
-
-function LegacyMatrix() {
-  const matrix = referenceRepo.matrix();
-  const cask = referenceRepo.cask();
-  const groups: { g: string; rows: typeof matrix }[] = [];
-  for (const r of matrix) {
-    const last = groups[groups.length - 1];
-    if (last && last.g === r.g) last.rows.push(r);
-    else groups.push({ g: r.g, rows: [r] });
-  }
-  return (
-    <>
-      <div style={{ overflowX: 'auto' }}>
-        <table>
-          <thead><tr><th>축</th><th>엔트리</th><th>스탠다드</th><th>고숙성 18+</th></tr></thead>
-          <tbody>
-            {groups.flatMap((grp) => [
-              <tr key={grp.g}><td colSpan={4} style={{ color: 'var(--amber)', fontSize: 12, paddingTop: 12 }}>{grp.g}</td></tr>,
-              ...grp.rows.map((m, i) => (
-                <tr key={grp.g + i}>
-                  <td>{m.axis}{m.note ? <div className="meta">{m.note}</div> : null}</td>
-                  <td>{cell(m.entry)}</td><td>{cell(m.std)}</td><td>{cell(m.aged)}</td>
-                </tr>
-              )),
-            ])}
-          </tbody>
-        </table>
-      </div>
-      <div className="sechead">캐스크 축</div>
-      <div style={{ overflowX: 'auto' }}>
-        <table>
-          <thead><tr><th>캐스크</th><th>보유</th><th>상태</th></tr></thead>
-          <tbody>
-            {cask.map((c, i) => (
-              <tr key={i}>
-                <td>{c.axis}{c.note ? <div className="meta">{c.note}</div> : null}</td>
-                <td>{c.have}</td>
-                <td>{c.state === '결손' ? <span className="tag-na">결손</span> : <span className="tag-ok">{c.state}</span>}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <p style={{ fontSize: 12, color: 'var(--dim)', marginTop: 10 }}>원본 스냅샷 표입니다. 위 “자동 커버리지”가 현재 컬렉션(추가된 병 포함)을 실시간 반영합니다.</p>
     </>
   );
 }

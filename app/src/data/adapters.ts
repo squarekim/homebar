@@ -177,7 +177,3 @@ export const substitutions: IngredientSubstitution[] = SUBSTITUTION_PAIRS
   }));
 
 export const categories: string[] = SEED.cats.slice();
-
-/** 위스키 시음 다양성: 지역×숙성 매트릭스 / 캐스크 축 (원본 그대로 노출, 구매 참고용) */
-export const matrixAxes = SEED.matrix.slice();
-export const caskAxes = SEED.cask.slice();

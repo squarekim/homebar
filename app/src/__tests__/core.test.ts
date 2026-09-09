@@ -66,6 +66,17 @@ describe('seed adapters', () => {
     expect(sim.overlaps.some((h) => h.value === '싱글몰트' || h.value === '셰리')).toBe(true);
     expect(sim.gain).toBeGreaterThan(0);
   });
+  it('지역×숙성 매트릭스가 현재 컬렉션으로 실시간 계산된다', async () => {
+    const { computeRegionMaturityMatrix } = await import('../services/whiskyDiversityService');
+    const m = computeRegionMaturityMatrix(whiskies);
+    const spey = m.find((r) => r.region === '스페이사이드')!;
+    expect(spey.cells['스탠다드'].length).toBeGreaterThan(0); // 맥캘란12·글렌피딕15 등
+    expect(spey.cells['스탠다드'].some((n) => n.includes('맥캘란'))).toBe(true);
+    const islay = m.find((r) => r.region === '아일라')!;
+    expect(islay.cells['엔트리'].length + islay.cells['스탠다드'].length + islay.cells['고숙성(18+)'].length).toBe(0); // 아일라 미보유
+    // 18+ 는 현재 전 지역 결손
+    expect(m.every((r) => r.cells['고숙성(18+)'].length === 0)).toBe(true);
+  });
   it('용어 사전: 태그 라벨을 정규화해 해설을 찾는다', async () => {
     const { lookupTerm } = await import('../data/glossary');
     expect(lookupTerm('셰리 캐스크')).toContain('셰리');
