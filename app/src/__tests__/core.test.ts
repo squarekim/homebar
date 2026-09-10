@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { ingredients, cocktails, bottles, whiskies } from '../data/adapters';
-import { evaluateAll, tallyStatus } from '../services/availabilityService';
+import { evaluateAll, evaluateCocktail, tallyStatus } from '../services/availabilityService';
 import { recommendCocktails, recommendWhiskies, RecommendContext } from '../services/recommendationService';
 import { calculatePurchases } from '../services/purchaseService';
 import { recommendGroupCocktails } from '../services/groupService';
@@ -180,5 +180,49 @@ describe('group', () => {
     // 강한 스모크/피트 향미 칵테일에서 그룹(하나가 기피) 점수가 솔로보다 낮아야 함
     const smoky = grp.find((r) => soloMap.has(r.id) && (soloMap.get(r.id) ?? 0) > 0);
     expect(smoky).toBeTruthy();
+  });
+});
+
+describe('레시피 note 위생 — 재고 서술 분리', () => {
+  // 판정은 ingredientId × 재고로만 계산된다. note 는 판정에 쓰이지 않으며 재고 서술을 담지 않는다.
+  const INVENTORY_CLAIM = [
+    /충족/, /미보유/, /보유\s*(재료|재고|품)/, /(전부|모두|나머지는)\s*보유/, /보유\s*중입니다/,
+    /없어\s*(조주\s*|제조\s*)?(불가|안\s*됨)/, /없으면\s*(조주\s*)?불가/, /불가로\s*둡니다/, /불가입니다/,
+    /(조주|제조|제작)\s*(가능|불가)/, /구매\s*시/, /구매하면/, /한\s*병이면\s*(열림|완성|가능)/,
+    /막히는\s*건/, /걸립니다|걸린다/, /부족한\s*재료/,
+  ];
+
+  it('note 에 특정 사용자의 재고 상태 문장이 없다', () => {
+    const bad: string[] = [];
+    for (const c of cocktails) {
+      if (!c.note) continue;
+      for (const re of INVENTORY_CLAIM) if (re.test(c.note)) bad.push(`${c.name} :: ${re} :: ${c.note}`);
+    }
+    expect(bad, bad.slice(0, 5).join('\n')).toHaveLength(0);
+  });
+
+  it('재료 표기에 재고 마커([없음])가 남아 있지 않다', () => {
+    const bad = cocktails.flatMap((c) => c.ingredients.filter((i) => i.raw.includes('[없음]')).map((i) => `${c.name}/${i.raw}`));
+    expect(bad).toHaveLength(0);
+  });
+
+  it('레시피 본문(맛·기법·역사·가니시·대체 안내)은 보존된다', () => {
+    const byName = (n: string) => cocktails.find((c) => c.name === n)!;
+    expect(byName('카이피리냐').note).toContain('럼으로 대체되지 않습니다');   // 일반 대체 안내
+    expect(byName('피나 콜라다').note).toContain('가니시');                    // 가니시
+    expect(byName('비외 카레').note).toContain('뉴올리언스');                  // 유래
+    expect(byName('러스티 네일').note).toContain('2.5ml 부족했습니다');        // 레시피 분량 정정(재고 아님)
+    expect(cocktails.filter((c) => c.note && c.note.length > 0).length).toBeGreaterThan(180);
+  });
+
+  it('판정은 note 가 아니라 재고 변화에만 반응한다', () => {
+    const negroni = cocktails.find((c) => c.name === '네그로니')!;
+    const ids = negroni.ingredients.filter((i) => !i.optional).map((i) => i.ingredientId);
+    expect(evaluateCocktail(negroni, new Set(), new Map()).status).toBe('UNAVAILABLE');
+    expect(evaluateCocktail(negroni, new Set(ids.slice(0, 2)), new Map()).status).not.toBe('READY');
+    expect(evaluateCocktail(negroni, new Set(ids), new Map()).status).toBe('READY');
+    // 같은 표준 재료를 쓰는 제품이면 어떤 제품이든 동일하게 충족된다(제품명 매칭 아님)
+    const gin = ids[0];
+    expect(evaluateCocktail(negroni, new Set([...ids.slice(1), gin]), new Map()).status).toBe('READY');
   });
 });

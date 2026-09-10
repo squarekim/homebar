@@ -92,6 +92,9 @@ npm test              # 핵심 로직 단위 테스트(vitest)
 ### 데이터 재사용
 
 원본 `const DATA`를 무손실 추출해 `app/src/data/seed.ts`에 읽기 전용 시드로 보관한다.
+시드 변환이 필요하면 손으로 고치지 않고 `app/scripts/` 의 스크립트로 일괄 처리한다
+(`cleanRecipeNotes.mjs` — 레시피 note 의 "특정 사용자 재고" 문장과 재료 표기의 `[없음]` 마커 제거.
+제조 가능 판정은 `ingredientId × 재고`로만 계산되므로 중복 서술이었다).
 이름·ID를 바꾸지 않고, 파생 필드(ID·ml 환산·향미 벡터)만 어댑터(`app/src/data/adapters.ts`)로 덧붙인다.
 레시피 재료 732건은 재료 마스터(128종)로 100% 매핑됨을 확인했다. 레거시 `localStorage['homebar.v54.held']`
 재고는 최초 실행 시 자동 이관된다.
