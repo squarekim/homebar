@@ -1,0 +1,21 @@
+name: 기능 제안
+description: 있었으면 하는 것, 불편한 것
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 어떤 상황이 불편한가요
+      description: 원하는 기능보다 **겪은 상황**을 적어주면 더 나은 해법이 나옵니다
+      placeholder: 술을 새로 사면 재고를 두 군데(재고, 내 술)에서 따로 손봐야 한다
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: 생각한 해법 (선택)
+  - type: dropdown
+    id: area
+    attributes:
+      label: 어느 화면
+      options: [홈(추천), 홈바(칵테일·간단조합·재료), 위스키, 술장(내 술·재고), 프로필, 데이터·판정, 기타]

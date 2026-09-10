@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 개발 참여 방법
+    url: https://github.com/squarekim/homebar/blob/main/CONTRIBUTING.md
+    about: 세팅·아키텍처·작업 규칙은 여기에 정리돼 있습니다
+  - name: 베타 앱 열기
+    url: https://squarekim.github.io/homebar/
+    about: 제보 전에 최신 버전인지 확인해 주세요
