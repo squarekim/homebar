@@ -6,14 +6,14 @@
 
 서버·계정·설치 없이 브라우저에서 돌아간다. 입력한 건 전부 **내 브라우저에만** 저장된다.
 
-| | 주소 |
-|---|---|
-| 홈바 플랫폼 (베타) | `https://squarekim.github.io/homebar/` |
-| 레거시 단일 파일 앱 | `https://squarekim.github.io/homebar/legacy/` |
-
-> **베타 안내.** 지금 올라간 버전에는 **오너의 홈바(보유 주류 82종·재고 69종)가 들어 있다.**
+> **아직 정식 공개 전이다.** 자동 배포는 꺼져 있고, 올릴 때만 Actions 에서 직접 실행한다.
+> 내부 확인용 `beta` 빌드에는 **오너의 홈바(보유 주류 82종·재고 69종)가 들어 있다.**
 > 링크를 받은 사람은 아무거나 눌러봐도 된다 — 바꾼 값은 각자 브라우저에만 저장되고 원본은 그대로다.
 > 정식 공개판(개인 데이터 제외)은 프로필만 바꿔 배포한다. [배포 프로필](#배포-프로필) 참고.
+>
+> 게시하면 앱은 `https://squarekim.github.io/homebar/`, 레거시 단일 파일 앱은 `.../homebar/legacy/` 로 열린다.
+
+**같이 개발하려면 → [CONTRIBUTING.md](CONTRIBUTING.md)** (세팅 10분, 아키텍처 지도, 작업 규칙, 열려 있는 과제)
 
 ---
 
@@ -148,9 +148,10 @@ React 18 + TypeScript + Vite + Dexie(IndexedDB) + PWA. 추후 Capacitor 로 Andr
 | 오너 보유 주류 82종 · 개인 재고 69건 | **포함** | **번들에서 제외** |
 | 첫 화면 | 오너 컬렉션 그대로 (정규 105) | 기본 홈바 세트 41종 (정규 79) |
 
-`.github/workflows/deploy-pages.yml` 이 `main` 또는 작업 브랜치 푸시마다 **beta** 로 Pages에 배포한다.
-정식 공개로 전환할 땐 Actions 탭에서 `profile: public` 으로 수동 실행하면 된다.
-최초 1회 **Settings → Pages → Source 를 `GitHub Actions`** 로 지정해야 한다.
+`.github/workflows/deploy-pages.yml` 은 **수동 실행 전용**이다(정식 공개 전이라 push 트리거를 꺼 뒀다).
+올릴 때 Actions 탭 → `Deploy to GitHub Pages` → **Run workflow** → 프로필 선택.
+공개 단계로 넘어가면 워크플로 상단의 `push:` 블록 주석을 풀면 `main` 푸시마다 자동 배포된다.
+Pages 소스는 **Settings → Pages → Source = `GitHub Actions`** 로 이미 지정돼 있다.
 
 공개 프로필은 `scripts/makePublicSeed.mjs` 가 만든 `seed.public.ts` 를 vite 플러그인이 원본 대신 물려 빌드한다.
 **원본 `seed.ts` 는 수정하지 않는다.**

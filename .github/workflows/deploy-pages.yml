@@ -2,15 +2,18 @@
 # 레거시 단일 파일 앱(index.html)은 /legacy/ 로 함께 배포되어 기존 링크가 죽지 않는다.
 #
 # 프로필
-#   beta   (기본) 오너의 홈바(보유 주류·재고)가 들어간 채로 공개. 방문자가 바꾼 값은 방문자 브라우저에만 남는다.
+#   beta   (기본) 오너의 홈바(보유 주류·재고)가 들어간 채로 배포. 지금은 내부 확인용.
 #   public        개인 데이터를 뺀 정식 공개판. 기본 홈바 세트로 시작한다.
-# 정식 공개로 넘어갈 때는 Actions 에서 profile=public 으로 수동 실행하거나 아래 DEFAULT_PROFILE 을 바꾼다.
+# 정식 공개 때는 Actions 에서 profile=public 으로 실행한다.
 name: Deploy to GitHub Pages
 
+# 정식 공개 전까지 자동 배포는 꺼 둔다. 푸시로는 아무것도 게시되지 않고,
+# 올릴 때만 Actions 탭에서 "Run workflow" 로 직접 실행한다.
+# 공개 단계로 넘어가면 아래 push 블록의 주석을 풀면 된다.
 on:
-  push:
-    branches: [main, 'claude/**']     # 작업 브랜치에 푸시하면 그대로 베타가 갱신된다
-    paths: ['app/**', 'index.html', '.github/workflows/deploy-pages.yml']
+  # push:
+  #   branches: [main]
+  #   paths: ['app/**', 'index.html', '.github/workflows/deploy-pages.yml']
   workflow_dispatch:
     inputs:
       profile:
