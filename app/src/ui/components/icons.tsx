@@ -9,6 +9,12 @@ function svg(children: ReactNode) {
   return <svg className="svgic" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" {...P}>{children}</svg>;
 }
 
+/** 술장 — 병 */
+export const IconBottle = () => svg(<>
+  <path d="M10 3h4v3.6l2.1 3.1c.6.9.9 1.9.9 3V19a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-6.3c0-1.1.3-2.1.9-3L10 6.6V3Z" />
+  <path d="M7.2 13.6h9.6" />
+</>);
+
 /** 홈 — 집 */
 export function IconHome() {
   return svg(<><path d="M4 11.5 12 5l8 6.5" /><path d="M6 10.5V19a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-8.5" /><path d="M10 20v-5h4v5" /></>);

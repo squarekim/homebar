@@ -45,7 +45,7 @@ export function WhiskyClassTags({ cls }: { cls?: WhiskyClass }) {
 /** 제조사/공식 테이스팅 노트 표시 (출처 링크 포함) */
 export function MakerNoteView({ note }: { note?: MakerNote }) {
   if (!note) {
-    return <div className="hint" style={{ margin: '6px 0 0' }}>공식 노트 미확보 — 아래에 직접 기록할 수 있습니다.</div>;
+    return <div className="hint" style={{ margin: '6px 0 0' }}>제조사 공식 노트가 아직 없는 술입니다. 아래에 직접 기록해 두세요.</div>;
   }
   return (
     <div className="makernote">

@@ -13,7 +13,6 @@ import { CATEGORY_LABELS, CATEGORY_ORDER, CATEGORY_DEFAULT_INGREDIENT, SUBCATEGO
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { LiquorCategory, LiquorMasterItem, UserBottle, WhiskyClass } from '../../models/types';
 
-const USES = ['시음-축', '겸용', '조주', '미활용'];
 const ORIGINS = ['스카치', '버번', '테네시', '아이리시', '재패니즈', '코리안', '기타'];
 const TYPES = ['싱글몰트', '블렌디드', '블렌디드 몰트', '스트레이트 버번', '휘티드 버번', '테네시 위스키', '싱글 팟 스틸'];
 const REGIONS = ['스페이사이드', '하이랜드', '아일라', '아일랜드', '캠벨타운', '로우랜드', '켄터키'];
@@ -76,7 +75,7 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
   const [abv, setAbv] = useState('');
   const [volume, setVolume] = useState('');
   const [qty, setQty] = useState(1);
-  const [use, setUse] = useState('시음-축');
+  const [use] = useState('겸용');   // 표시하지 않는 내부 값(레거시 호환)
   const [note, setNote] = useState('');
   const [ingName, setIngName] = useState('');
   const [link, setLink] = useState(true);
@@ -93,7 +92,7 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
   useEffect(() => {
     if (!open) return;
     setStep('search'); setQ(initialQuery); setPicked(null);
-    setName(''); setCategory('whisky'); setAbv(''); setVolume(''); setQty(1); setUse('시음-축');
+    setName(''); setCategory('whisky'); setAbv(''); setVolume(''); setQty(1);
     setNote(''); setIngName(''); setLink(true); setDetail(false); setSaving(false);
     setOrigin('스카치'); setType('싱글몰트'); setRegion(''); setCasks([]); setChars([]);
   }, [open, initialQuery]);
@@ -112,7 +111,6 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
     setCategory(item.category);
     setAbv(item.abv ? String(item.abv) : '');
     setVolume(item.volumeMl ? String(item.volumeMl) : '');
-    setUse(d.use);
     setQty(1); setNote(''); setDetail(false);
     setIngName(d.ingredientName ?? '');
     setLink(!!d.ingredientName);
@@ -125,7 +123,6 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
     const ing = guessIngredientName(guessed, nm);
     setName(q);
     setCategory(guessed);
-    setUse(guessed === 'whisky' ? '시음-축' : '조주');
     setIngName(ing ?? '');
     setLink(!!ing);
     if (guessed === 'whisky') {
@@ -254,11 +251,8 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
             </label>
             <IngredientLink value={ingName} onChange={(v) => { setIngName(v); setLink(!!v); }} />
 
-            <div className="sechead" style={{ margin: '14px 0 6px' }}>수량 · 용도</div>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <input type="number" min={1} value={qty} onChange={(e) => setQty(Math.max(1, +e.target.value || 1))} style={{ maxWidth: 90 }} />
-              <div style={{ flex: 1 }}><Pick options={USES} value={use} onPick={setUse} /></div>
-            </div>
+            <div className="sechead" style={{ margin: '14px 0 6px' }}>수량</div>
+            <input type="number" min={1} value={qty} onChange={(e) => setQty(Math.max(1, +e.target.value || 1))} style={{ maxWidth: 110 }} />
 
             <div className="btnrow" style={{ marginTop: 6 }}>
               <button className="btn ghost" onClick={() => setDetail((v) => !v)}>{detail ? '세부 항목 접기' : '도수·용량·메모 수정'}</button>

@@ -10,6 +10,7 @@
  */
 import { AvailabilityStatus, Bottle, Cocktail } from '../models/types';
 import { referenceRepo } from '../repositories/referenceRepo';
+import { bottleKind } from '../data/bottleIngredients';
 import { evaluateCocktail } from './availabilityService';
 
 /** 믹서 조합표의 그룹 → 재료 마스터 카테고리 */
@@ -110,19 +111,6 @@ export function evaluateSimpleBuild(
 
 
 /* ── 내 술로 무엇을 쓸까 ── */
-
-/** 병을 대분류 키로 환원 (시드 병은 node 접두, 사용자 추가 병은 master.<category>) */
-function bottleKind(b: Bottle): string {
-  if (b.node.startsWith('master.')) return b.node.slice('master.'.length);
-  if (b.group === '위스키') return 'whisky';
-  if (b.group === '진') return 'gin';
-  if (b.group === '보드카') return 'vodka';
-  if (b.group === '리큐르') return 'liqueur';
-  if (b.node.startsWith('r.')) return 'rum';
-  if (b.node.startsWith('t.')) return 'tequila';
-  if (b.node.startsWith('b.')) return 'brandy';
-  return 'other';
-}
 
 const GROUP_TO_KIND: Record<string, string[]> = {
   위스키: ['whisky'], 진: ['gin'], 보드카: ['vodka'], 럼: ['rum'],

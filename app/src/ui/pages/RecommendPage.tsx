@@ -1,3 +1,7 @@
+/**
+ * 추천 화면 조각들 — 홈 탭의 서브탭에서 쓰인다.
+ * (독립 '추천' 탭은 홈과 내용이 겹쳐 홈 안으로 합쳤다)
+ */
 import { useMemo, useState } from 'react';
 import { useUI } from '../UIContext';
 import { useRecommendContext } from '../../hooks/useRecommendContext';
@@ -7,35 +11,17 @@ import { recommendGroupCocktails } from '../../services/groupService';
 import { calculatePurchases } from '../../services/purchaseService';
 import { RecCard, ChipRow } from '../components/common';
 
-type Sub = 'cocktail' | 'whisky' | 'group' | 'clearstock' | 'purchase';
-
-export function RecommendPage() {
-  const [sub, setSub] = useState<Sub>('cocktail');
-  return (
-    <>
-      <div className="controls strip">
-        {([['cocktail', '칵테일'], ['whisky', '위스키'], ['group', '그룹'], ['clearstock', '재고 소진'], ['purchase', '구매']] as [Sub, string][]).map(([v, l]) => (
-          <button key={v} className="chip" aria-pressed={sub === v} onClick={() => setSub(v)}>{l}</button>
-        ))}
-      </div>
-      {sub === 'cocktail' && <CocktailRec />}
-      {sub === 'whisky' && <WhiskyRec />}
-      {sub === 'group' && <GroupRec />}
-      {sub === 'clearstock' && <ClearStockRec />}
-      {sub === 'purchase' && <PurchaseRec />}
-    </>
-  );
-}
-
-const MODES: { v: RecommendMode; label: string }[] = [
+/** 기분별 추천 모드 — 홈의 '오늘'과 칵테일 추천이 함께 쓴다 */
+export const MODES: { v: RecommendMode; label: string }[] = [
   { v: 'available', label: '있는 재료만' },
   { v: 'sweet', label: '달달한' },
   { v: 'refreshing', label: '상큼한' },
   { v: 'strong', label: '강한' },
   { v: 'light', label: '가벼운' },
+  { v: 'whisky', label: '위스키' },
 ];
 
-function CocktailRec() {
+export function CocktailRec() {
   const ctx = useRecommendContext();
   const { openCocktail } = useUI();
   const [mode, setMode] = useState<RecommendMode>('available');
@@ -51,7 +37,7 @@ function CocktailRec() {
   );
 }
 
-function WhiskyRec() {
+export function WhiskyRec() {
   const ctx = useRecommendContext();
   const { openLog } = useUI();
   const recs = useMemo(() => recommendWhiskies(ctx, 20), [ctx]);
@@ -65,7 +51,7 @@ function WhiskyRec() {
   );
 }
 
-function GroupRec() {
+export function GroupRec() {
   const profiles = useTasteProfiles();
   const heldIds = useHeldIds();
   const subMap = useSubMap();
@@ -100,13 +86,13 @@ function GroupRec() {
   );
 }
 
-function ClearStockRec() {
+export function ClearStockRec() {
   const ctx = useRecommendContext();
   const { openCocktail } = useUI();
   const recs = useMemo(() => recommendCocktails(ctx, 'clearstock', 30), [ctx]);
   return (
     <>
-      <div className="hint">잔량이 적은 보유 재료를 활용하는 레시피를 우선합니다. (홈바에서 잔량을 입력하세요)</div>
+      <div className="hint">잔량이 적은 보유 재료를 활용하는 레시피를 우선합니다. (술장 → 재고에서 잔량을 입력하세요)</div>
       <div className="list">
         {recs.map((r) => <RecCard key={r.id} rec={r} onClick={() => openCocktail(r.id)} />)}
       </div>
@@ -114,7 +100,7 @@ function ClearStockRec() {
   );
 }
 
-function PurchaseRec() {
+export function PurchaseRec() {
   const ctx = useRecommendContext();
   const buys = useMemo(() => calculatePurchases(ctx, 30), [ctx]);
   const max = Math.max(1, ...buys.map((b) => b.addedRecipes));

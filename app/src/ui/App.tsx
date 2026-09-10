@@ -8,9 +8,9 @@ import { AddBottleDialog } from './components/AddBottleDialog';
 import { HomePage } from './pages/HomePage';
 import { HomeBarPage, Sub as HomeBarSub } from './pages/HomeBarPage';
 import { WhiskyPage } from './pages/WhiskyPage';
-import { RecommendPage } from './pages/RecommendPage';
+import { CellarPage, CellarSub } from './pages/CellarPage';
 import { ProfilePage } from './pages/ProfilePage';
-import { IconHome, IconMartini, IconWhisky, IconSparkle, IconProfile, IconLogo } from './components/icons';
+import { IconHome, IconMartini, IconWhisky, IconBottle, IconProfile, IconLogo } from './components/icons';
 import { IS_BETA } from '../config';
 
 /** 집계 타일 설명 — 처음 들어온 사람이 숫자의 뜻을 바로 알 수 있게 */
@@ -18,23 +18,29 @@ const TALLY_TERMS: Record<string, [string, string]> = {
   정규: ['정규', '필수 재료를 전부 보유하고 대체 없이 원 레시피대로 만들 수 있는 칵테일 수입니다.'],
   근사: ['근사', '필수 재료는 다 있지만 일부를 대체재로 채워 만드는 경우입니다. 맛이 원형과 조금 달라집니다.'],
   불가: ['불가', '필수 재료가 빠져 지금은 못 만드는 칵테일 수입니다. 재고를 체크하거나 술을 추가하면 즉시 줄어듭니다.'],
-  보유재료: ['보유재료', '지금 보유로 체크된 재료 수입니다. 목록은 홈바 → 재고에서 보고 고칩니다. 남의 재고로 시작했다면 그곳의 \'보유재료 초기화\'로 비우고 내 것만 채우면 됩니다.'],
+  보유재료: ['보유재료', '지금 보유로 체크된 재료 수입니다. 목록은 술장 → 재고에서 보고 고칩니다. 남의 재고로 시작했다면 그곳의 \'보유재료 초기화\'로 비우고 내 것만 채우면 됩니다.'],
 };
 
-export type Tab = 'home' | 'homebar' | 'whisky' | 'recommend' | 'profile';
+export type Tab = 'home' | 'homebar' | 'whisky' | 'cellar' | 'profile';
 
 const TABS: { id: Tab; label: string; ic: ReactNode }[] = [
   { id: 'home', label: '홈', ic: <IconHome /> },
   { id: 'homebar', label: '홈바', ic: <IconMartini /> },
   { id: 'whisky', label: '위스키', ic: <IconWhisky /> },
-  { id: 'recommend', label: '추천', ic: <IconSparkle /> },
+  { id: 'cellar', label: '술장', ic: <IconBottle /> },
   { id: 'profile', label: '프로필', ic: <IconProfile /> },
 ];
 
 function Shell() {
   const [tab, setTab] = useState<Tab>('home');
   const [homebarSub, setHomebarSub] = useState<HomeBarSub>('cocktail');
-  const go = (t: Tab, sub?: HomeBarSub) => { if (sub) setHomebarSub(sub); setTab(t); window.scrollTo(0, 0); };
+  const [cellarSub, setCellarSub] = useState<CellarSub>('bottles');
+  const go = (t: Tab, sub?: HomeBarSub | CellarSub) => {
+    if (sub === 'stock' || sub === 'bottles') setCellarSub(sub);
+    else if (sub) setHomebarSub(sub);
+    setTab(t);
+    window.scrollTo(0, 0);
+  };
   const heldIds = useHeldIds();
   const subMap = useSubMap();
   const { toastMsg, termInfo, closeTerm, addOpen, addQuery, openAdd, closeAdd, showTerm } = useUI();
@@ -80,7 +86,7 @@ function Shell() {
         {tab === 'home' && <HomePage go={go} />}
         {tab === 'homebar' && <HomeBarPage sub={homebarSub} onSub={setHomebarSub} />}
         {tab === 'whisky' && <WhiskyPage />}
-        {tab === 'recommend' && <RecommendPage />}
+        {tab === 'cellar' && <CellarPage sub={cellarSub} onSub={setCellarSub} />}
         {tab === 'profile' && <ProfilePage />}
       </main>
 

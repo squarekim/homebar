@@ -58,3 +58,30 @@ export const NODE_TO_INGREDIENTS: Record<string, string[]> = {
 export function ingredientNamesForNode(node: string): string[] {
   return NODE_TO_INGREDIENTS[node] ?? [];
 }
+
+
+/* ── 병의 대분류 ── */
+
+/** 시드 병은 분류 경로, 사용자 추가 병은 master.<category> 로 대분류를 판별한다 */
+export function bottleKind(b: { node: string; group: string }): string {
+  if (b.node.startsWith('master.')) return b.node.slice('master.'.length);
+  if (b.group === '위스키') return 'whisky';
+  if (b.group === '진') return 'gin';
+  if (b.group === '보드카') return 'vodka';
+  if (b.group === '리큐르') return 'liqueur';
+  if (b.node.startsWith('r.')) return 'rum';
+  if (b.node.startsWith('t.')) return 'tequila';
+  if (b.node.startsWith('b.')) return 'brandy';
+  return 'other';
+}
+
+const KIND_LABELS: Record<string, string> = {
+  whisky: '위스키', gin: '진', vodka: '보드카', rum: '럼', tequila: '데킬라',
+  mezcal: '메즈칼', brandy: '브랜디', liqueur: '리큐르', vermouth: '베르무트',
+  wine: '와인', beer: '맥주', sake: '사케·소주', spirit: '증류주', mixer: '부재료',
+};
+
+/** 카드 우측에 적는 술 종류 (럼·데킬라·브랜디 묶음 대신 '데킬라'처럼 실제 종류로) */
+export function bottleKindLabel(b: { node: string; group: string }): string {
+  return KIND_LABELS[bottleKind(b)] ?? b.group;
+}

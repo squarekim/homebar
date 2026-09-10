@@ -13,6 +13,7 @@ import { StatusBadge, FlavorBars, MakerNoteView, WhiskyClassTags, MethodIcon } f
 import { CLASS_FILTERS, classMatchesTerm, classTags } from '../../data/whiskyClass';
 import { AvailabilityStatus, Bottle } from '../../models/types';
 import { isUserBottle } from '../../data/userBottles';
+import { bottleKindLabel } from '../../data/bottleIngredients';
 import { LIQUOR_MASTER } from '../../data/liquorMaster';
 import { CATEGORY_LABELS } from '../../data/liquorCategory';
 import { bottleService } from '../../services/bottleService';
@@ -232,6 +233,11 @@ export function SimpleBuildBrowser() {
   );
 }
 
+/** 카드 우측에 적을 술 종류 — 위스키는 타입(싱글몰트/블렌디드), 나머지는 대분류(데킬라·리큐르…) */
+function kindOf(b: Bottle): string {
+  return b.whiskyClass?.type ?? bottleKindLabel(b);
+}
+
 /**
  * BottleCard — 보유 병 하나. 눌러 펼치면 분류·향미·공식 노트·내 메모·기록/삭제가 나온다.
  * 위스키 탭과 홈바의 '내 술' 탭이 같은 카드를 쓴다.
@@ -246,18 +252,20 @@ function BottleCard({ bottle: w, open, onToggle }: { bottle: Bottle; open: boole
   return (
     <div className="card">
       <button style={{ width: '100%', textAlign: 'left' }} onClick={onToggle}>
-        <h3>{w.name}<em>{w.abv || w.group}{w.qty > 1 ? ` · ${w.qty}병` : ''}{w.makerNote ? ' · 📝' : ''}</em></h3>
-        {w.whiskyClass
-          ? <WhiskyClassTags cls={w.whiskyClass} />
-          : <div className="meta"><span className="mi">{w.group}</span><span className="mi">{w.use}</span></div>}
+        <h3>{w.name}<em>{kindOf(w)}</em></h3>
+        <div className="meta">
+          {w.abv && <span className="mi">{w.abv}</span>}
+          {w.qty > 1 && <span className="mi">{w.qty}병</span>}
+          {w.makerNote && <span className="mi note">공식 노트</span>}
+        </div>
+        {w.whiskyClass && <WhiskyClassTags cls={w.whiskyClass} />}
       </button>
       {open && (
         <>
-          {w.whiskyClass && <div className="meta"><span className="mi">{w.group}</span><span className="mi">{w.use}</span></div>}
           {linked.length > 0 && (
             <div className="meta" style={{ marginTop: 8 }}>
               {linked.map((i) => (
-                <span className="mi" key={i.id}>재료 {i.name}{heldIds.has(i.id) ? ' · 재고 ON' : ' · 재고 OFF'}</span>
+                <span className={`mi ${heldIds.has(i.id) ? 'on' : ''}`} key={i.id}>재료 {i.name}</span>
               ))}
             </div>
           )}

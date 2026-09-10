@@ -2,15 +2,15 @@ import { useEffect, useMemo, useState } from 'react';
 import { useUI } from '../UIContext';
 import { useRecommendContext } from '../../hooks/useRecommendContext';
 import { useLogs } from '../../hooks/useData';
-import { whatToDrink, recommendCocktails, RecommendMode } from '../../services/recommendationService';
-import { calculatePurchases } from '../../services/purchaseService';
-import { RecCard, ChipRow, StatusBadge } from '../components/common';
+import { whatToDrink, RecommendMode } from '../../services/recommendationService';
+import { RecCard, ChipRow } from '../components/common';
+import { CocktailRec, WhiskyRec, GroupRec, ClearStockRec, PurchaseRec, MODES } from './RecommendPage';
 import { SERVING_LABELS_KO } from '../../models/types';
 import { IS_BETA } from '../../config';
 
 const WELCOME_KEY = 'homebar.welcome.v1';
 
-type Go = (t: 'home' | 'homebar' | 'whisky' | 'recommend' | 'profile', sub?: 'cocktail' | 'stock' | 'ingredient') => void;
+type Go = (t: 'home' | 'homebar' | 'whisky' | 'cellar' | 'profile', sub?: 'cocktail' | 'simple' | 'ingredient' | 'bottles' | 'stock') => void;
 
 function readDismissed(): boolean {
   try { return localStorage.getItem(WELCOME_KEY) === '1'; } catch { return false; }
@@ -41,7 +41,7 @@ function Welcome({ go }: { go: Go }) {
         </p>
       )}
       <div className="btnrow">
-        <button className="btn primary" onClick={() => go('homebar', 'stock')}>내 재고로 맞추기</button>
+        <button className="btn primary" onClick={() => go('cellar', 'stock')}>내 재고로 맞추기</button>
         <button className="btn" onClick={() => openAdd()}>술 추가</button>
         <button className="btn ghost" onClick={close}>닫기</button>
       </div>
@@ -49,74 +49,67 @@ function Welcome({ go }: { go: Go }) {
   );
 }
 
-const MODES: { v: RecommendMode; label: string }[] = [
-  { v: 'available', label: '있는 재료만' },
-  { v: 'sweet', label: '달달한' },
-  { v: 'refreshing', label: '상큼한' },
-  { v: 'strong', label: '강한' },
-  { v: 'light', label: '가벼운' },
-  { v: 'whisky', label: '위스키' },
+type HomeSub = 'today' | 'cocktail' | 'whisky' | 'group' | 'purchase' | 'clearstock';
+
+const HOME_SUBS: [HomeSub, string][] = [
+  ['today', '오늘'], ['cocktail', '칵테일 추천'], ['whisky', '위스키 추천'],
+  ['group', '그룹'], ['purchase', '구매'], ['clearstock', '재고 소진'],
 ];
 
 export function HomePage({ go }: { go: Go }) {
   const ctx = useRecommendContext();
   const { openCocktail, openLog } = useUI();
   const logs = useLogs();
+  const [sub, setSub] = useState<HomeSub>('today');
   const [mode, setMode] = useState<RecommendMode>('available');
 
-  const today = useMemo(() => whatToDrink(ctx, mode, 5), [ctx, mode]);
-  const ready = useMemo(() => recommendCocktails(ctx, 'available', 6), [ctx]);
-  const buys = useMemo(() => calculatePurchases(ctx, 3), [ctx]);
+  const today = useMemo(() => whatToDrink(ctx, mode, 6), [ctx, mode]);
   const recent = logs.slice(0, 4);
 
   return (
     <>
       <Welcome go={go} />
-      <div className="sechead">오늘 뭐 마실까</div>
-      <ChipRow value={mode} options={MODES} onChange={setMode} />
-      <div className="list">
-        {today.length === 0 && <div className="empty">추천할 항목이 없습니다. 홈바에서 보유 재료를 등록하세요.</div>}
-        {today.map((r) => (
-          <RecCard key={r.kind + r.id} rec={r}
-            onClick={() => r.kind === 'cocktail' ? openCocktail(r.id) : openLog({ drinkId: r.id, drinkType: 'whisky', drinkName: r.name, servingStyle: 'neat' })} />
+      <div className="controls strip">
+        {HOME_SUBS.map(([v, l]) => (
+          <button key={v} className="chip" aria-pressed={sub === v} onClick={() => setSub(v)}>{l}</button>
         ))}
       </div>
 
-      <div className="sechead">바로 제조 가능</div>
-      <div className="list">
-        {ready.map((r) => (
-          <button className={`card row v${r.status}`} key={r.id} onClick={() => openCocktail(r.id)}>
-            <h3>{r.name}<em>{r.status && <StatusBadge status={r.status} />}</em></h3>
-            <div className="rs" style={{ fontSize: 12, color: 'var(--mute)', marginTop: 4 }}>{r.reason}</div>
-          </button>
-        ))}
-      </div>
-
-      <div className="sechead">최근 기록</div>
-      {recent.length === 0
-        ? <div className="hint">아직 기록이 없습니다. 추천 카드나 레시피에서 “기록하기”를 눌러보세요.</div>
-        : <div className="list">
-            {recent.map((l) => (
-              <div className="card" key={l.id}>
-                <h3>{l.drinkName}<em>{new Date(l.date).toLocaleDateString('ko')}</em></h3>
-                <div className="meta">
-                  <span className="mi">{SERVING_LABELS_KO[l.servingStyle]}</span>
-                  <span className="mi">{'★'.repeat(l.rating)}{'☆'.repeat(5 - l.rating)}</span>
-                  {l.retryIntent && <span className="mi">재음용</span>}
-                </div>
-              </div>
+      {sub === 'today' && (
+        <>
+          <div className="sechead">오늘 뭐 마실까</div>
+          <ChipRow value={mode} options={MODES} onChange={setMode} />
+          <div className="list">
+            {today.length === 0 && <div className="empty">추천할 항목이 없습니다. 술장 → 재고에서 보유 재료를 등록하세요.</div>}
+            {today.map((r) => (
+              <RecCard key={r.kind + r.id} rec={r}
+                onClick={() => r.kind === 'cocktail' ? openCocktail(r.id) : openLog({ drinkId: r.id, drinkType: 'whisky', drinkName: r.name, servingStyle: 'neat' })} />
             ))}
-          </div>}
+          </div>
 
-      <div className="sechead">추천 구매</div>
-      <div className="list">
-        {buys.map((b) => (
-          <button className="card" key={b.ingredientId} onClick={() => go('recommend')}>
-            <h3>{b.name}<em className="delta">+{b.addedRecipes}종</em></h3>
-            <div className="rs" style={{ fontSize: 12, color: 'var(--mute)', marginTop: 4 }}>{b.reason}</div>
-          </button>
-        ))}
-      </div>
+          <div className="sechead">최근 기록</div>
+          {recent.length === 0
+            ? <div className="hint">아직 기록이 없습니다. 추천 카드나 레시피에서 “기록하기”를 눌러보세요.</div>
+            : <div className="list">
+                {recent.map((l) => (
+                  <div className="card" key={l.id}>
+                    <h3>{l.drinkName}<em>{new Date(l.date).toLocaleDateString('ko')}</em></h3>
+                    <div className="meta">
+                      <span className="mi">{SERVING_LABELS_KO[l.servingStyle]}</span>
+                      <span className="mi">{'★'.repeat(l.rating)}{'☆'.repeat(5 - l.rating)}</span>
+                      {l.retryIntent && <span className="mi">재음용</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>}
+        </>
+      )}
+
+      {sub === 'cocktail' && <CocktailRec />}
+      {sub === 'whisky' && <WhiskyRec />}
+      {sub === 'group' && <GroupRec />}
+      {sub === 'purchase' && <PurchaseRec />}
+      {sub === 'clearstock' && <ClearStockRec />}
     </>
   );
 }
