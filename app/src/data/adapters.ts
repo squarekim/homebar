@@ -9,7 +9,7 @@ import { WHISKY_CLASS } from './whiskyClass';
 import { flavorForIngredient, flavorForBottle, combineCocktailFlavor } from './flavorLexicon';
 import {
   Ingredient, Cocktail, CocktailIngredient, Bottle, Mixer, MixerPairing,
-  PurchaseSeed, IngredientSubstitution, FlavorVector,
+  PurchaseSeed, IngredientSubstitution, FlavorVector, MethodKey,
 } from '../models/types';
 
 /* ── 재료 ── */
@@ -57,6 +57,22 @@ function parseAmount(raw: string, name: string): { amount: number | null; unit: 
   return { amount, unit, amountMl };
 }
 
+/* ── 조주법 파싱 ── */
+const METHOD_ALIASES: Array<[RegExp, MethodKey]> = [
+  [/build/i, 'build'], [/shake/i, 'shake'], [/stir/i, 'stir'], [/muddle/i, 'muddle'],
+  [/blend/i, 'blend'], [/layer/i, 'layer'], [/swizzle/i, 'swizzle'], [/float/i, 'float'],
+];
+
+/** "Shake + Build", "Build (Muddle)" 처럼 섞여 적힌 원문에서 등장 순서대로 키를 뽑는다 */
+export function parseMethod(raw: string): MethodKey[] {
+  const found: Array<[number, MethodKey]> = [];
+  for (const [re, key] of METHOD_ALIASES) {
+    const at = raw.search(re);
+    if (at >= 0) found.push([at, key]);
+  }
+  return found.sort((a, b) => a[0] - b[0]).map(([, k]) => k);
+}
+
 /* ── 칵테일 ── */
 export const cocktails: Cocktail[] = SEED.recipes.map((r) => {
   const ings: CocktailIngredient[] = r.i.map(([name, raw, optional, substitute]) => {
@@ -89,9 +105,11 @@ export const cocktails: Cocktail[] = SEED.recipes.map((r) => {
     base: r.b,
     iba: r.iba,
     method: r.m,
+    methodKeys: parseMethod(r.m),
     ingredients: ings,
     url: r.u,
     note: r.note,
+    garnish: r.g,
     flavor,
   };
 });

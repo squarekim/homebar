@@ -141,12 +141,41 @@ input::placeholder{color:var(--dim)}
 .rem b{font-size:11px;color:var(--mute);width:38px;text-align:right}
 
 /* flavor bars */
-.flavbars{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.flavbars{display:flex;flex-direction:column;gap:7px;margin-top:10px}
+.fbscale{display:flex;justify-content:space-between;font-size:10px;color:var(--dim);
+  margin-left:62px;margin-right:26px;font-variant-numeric:tabular-nums}
 .fb{display:flex;align-items:center;gap:8px}
-.fb .lb{font-size:11px;color:var(--mute);width:56px;flex:none}
-.fb .track{flex:1;height:8px;background:var(--raise);border-radius:5px;overflow:hidden}
-.fb .fill{height:100%;background:var(--amber);border-radius:5px}
-.fb .vv{font-size:11px;color:var(--dim);width:22px;text-align:right}
+.fb .lb{font-size:11.5px;color:var(--mute);width:54px;flex:none}
+.fb .track{position:relative;flex:1;height:12px;background:var(--raise);border-radius:6px;overflow:hidden}
+.fb .track .tick{position:absolute;z-index:2;top:0;bottom:0;width:1px;left:33.33%;
+  background:color-mix(in srgb,var(--panel) 70%,transparent)}
+.fb .track .tick.mid{left:66.66%}
+.fb .fill{position:relative;z-index:1;display:block;height:100%;background:var(--amber);border-radius:6px;opacity:.62}
+.fb.lead .fill{opacity:1}
+.fb.lead .lb{color:var(--ink);font-weight:700}
+.fb .vv{font-size:12px;color:var(--mute);width:20px;text-align:right;font-weight:700;
+  font-variant-numeric:tabular-nums}
+.fb.lead .vv{color:var(--amber)}
+.fbfoot{font-size:10.5px;color:var(--dim);text-align:right;margin-top:1px}
+
+/* 조주법 아이콘 — 칵테일 이름 옆 */
+.methods{display:inline-flex;align-items:center;gap:3px;margin-left:7px;vertical-align:-3px;color:var(--mute)}
+.card h3.withmethod{align-items:flex-start}
+h3.withmethod .nmwrap{display:inline-flex;align-items:center;min-width:0}
+.modal h2.withmethod{display:flex;align-items:center;gap:2px}
+.modal h2.withmethod .methods{color:var(--amber)}
+
+/* 가니시 */
+.garnish{display:flex;align-items:baseline;gap:10px;margin-top:12px;
+  background:var(--raise);border-radius:11px;padding:10px 13px}
+.garnish .gl{font-size:10.5px;font-weight:700;letter-spacing:.04em;color:var(--amber);flex:none}
+.garnish .gv{font-size:13.5px;color:var(--ink)}
+
+/* 간단 조합 구성 표기 */
+.parts{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:7px;font-size:12.5px;color:var(--ink)}
+.parts span{background:var(--raise);border-radius:7px;padding:3px 9px}
+.parts span.ratio{background:transparent;color:var(--amber);font-weight:700;padding:3px 2px;
+  font-variant-numeric:tabular-nums}
 
 /* slider rows */
 .slider{margin-bottom:12px}

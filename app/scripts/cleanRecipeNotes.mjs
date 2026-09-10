@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url';
 const SEED = resolve(dirname(fileURLToPath(import.meta.url)), '../src/data/seed.ts');
 
 /** 문장 단위 분해 — 한국어 종결(.!?) 기준. 구분자는 문장에 붙여 되돌린다. */
-function splitSentences(line) {
+export function splitSentences(line) {
   const out = [];
   let buf = '';
   for (let i = 0; i < line.length; i++) {

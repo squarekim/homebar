@@ -8,9 +8,9 @@ import { useInventory, inventoryRepo } from '../../hooks/useData';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { resetInventoryToSeed } from '../../db/migrate';
 import { IS_PUBLIC } from '../../config';
-import { CocktailBrowser, IngredientBrowser } from '../components/browsers';
+import { CocktailBrowser, IngredientBrowser, SimpleBuildBrowser } from '../components/browsers';
 
-export type Sub = 'cocktail' | 'stock' | 'ingredient';
+export type Sub = 'cocktail' | 'simple' | 'stock' | 'ingredient';
 
 export function HomeBarPage({ sub: subProp, onSub }: { sub?: Sub; onSub?: (s: Sub) => void } = {}) {
   const [local, setLocal] = useState<Sub>('cocktail');
@@ -20,10 +20,12 @@ export function HomeBarPage({ sub: subProp, onSub }: { sub?: Sub; onSub?: (s: Su
     <>
       <div className="controls strip">
         <button className="chip" aria-pressed={sub === 'cocktail'} onClick={() => setSub('cocktail')}>칵테일</button>
+        <button className="chip" aria-pressed={sub === 'simple'} onClick={() => setSub('simple')}>간단 조합</button>
         <button className="chip" aria-pressed={sub === 'stock'} onClick={() => setSub('stock')}>재고</button>
         <button className="chip" aria-pressed={sub === 'ingredient'} onClick={() => setSub('ingredient')}>재료</button>
       </div>
       {sub === 'cocktail' && <CocktailBrowser />}
+      {sub === 'simple' && <SimpleBuildBrowser />}
       {sub === 'stock' && <StockManager />}
       {sub === 'ingredient' && <IngredientBrowser />}
     </>

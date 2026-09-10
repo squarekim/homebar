@@ -209,9 +209,9 @@ describe('레시피 note 위생 — 재고 서술 분리', () => {
   it('레시피 본문(맛·기법·역사·가니시·대체 안내)은 보존된다', () => {
     const byName = (n: string) => cocktails.find((c) => c.name === n)!;
     expect(byName('카이피리냐').note).toContain('럼으로 대체되지 않습니다');   // 일반 대체 안내
-    expect(byName('피나 콜라다').note).toContain('가니시');                    // 가니시
+    expect(byName('피나 콜라다').garnish).toContain('체리');                   // 가니시는 별도 필드로
     expect(byName('비외 카레').note).toContain('뉴올리언스');                  // 유래
-    expect(byName('러스티 네일').note).toContain('2.5ml 부족했습니다');        // 레시피 분량 정정(재고 아님)
+    expect(byName('갓파더').note).toContain('3.5cl : 3.5cl');                  // 레시피 스펙 설명
     expect(cocktails.filter((c) => c.note && c.note.length > 0).length).toBeGreaterThan(180);
   });
 
@@ -224,5 +224,60 @@ describe('레시피 note 위생 — 재고 서술 분리', () => {
     // 같은 표준 재료를 쓰는 제품이면 어떤 제품이든 동일하게 충족된다(제품명 매칭 아님)
     const gin = ids[0];
     expect(evaluateCocktail(negroni, new Set([...ids.slice(1), gin]), new Map()).status).toBe('READY');
+  });
+});
+
+
+describe('가니시 분리 · 개정 이력 제거 · 조주법', () => {
+  it('가니시가 note 가 아니라 별도 필드에 있다', () => {
+    const withGarnish = cocktails.filter((c) => c.garnish);
+    expect(withGarnish.length).toBeGreaterThanOrEqual(50);
+    expect(cocktails.find((c) => c.name === '민트 줄립')!.garnish).toBe('민트 스프링');
+    expect(cocktails.find((c) => c.name === '깁슨')!.garnish).toBe('칵테일 어니언');
+    // note 에는 가니시 문장이 남아 있지 않다
+    expect(cocktails.filter((c) => /가니(시|쉬)\s*(\(선택\))?\s*[.!]?$/.test((c.note ?? '').trim()))).toHaveLength(0);
+  });
+
+  it('엑셀 개정 이력이 어디에도 남아 있지 않다', () => {
+    const REV = /\[V\d+(\.\d+)?\]|\bV\d{2}(\.\d+)?\b|전수\s*대조|재료\s*ID|시트/;
+    const bad: string[] = [];
+    for (const c of cocktails) if (REV.test(c.note ?? '')) bad.push(`레시피 ${c.name}`);
+    for (const b of bottles) if (REV.test(b.note ?? '')) bad.push(`병 ${b.name}`);
+    expect(bad, bad.join(', ')).toHaveLength(0);
+    // 실제 칵테일 역사는 남는다
+    expect(cocktails.find((c) => c.name === '갓파더')!.note).toContain('2020년 IBA 목록에서 제외');
+  });
+
+  it('조주법이 아이콘용 키로 파싱된다', () => {
+    const by = (n: string) => cocktails.find((c) => c.name === n)!;
+    expect(by('올드 패션드').methodKeys[0]).toBe('build');
+    expect(by('위스키 사워').methodKeys[0]).toBe('shake');
+    expect(by('마티니 (드라이 마티니)').methodKeys[0]).toBe('stir');
+    expect(by('프렌치 75').methodKeys).toEqual(['shake', 'build']); // "Shake + Build"
+    expect(cocktails.every((c) => c.methodKeys.length > 0)).toBe(true);
+  });
+});
+
+describe('간단 조합(빌드) 모음', () => {
+  it('믹서 조합표와 Build 레시피를 합치고 이름 중복은 레시피를 남긴다', async () => {
+    const { simpleBuilds } = await import('../services/simpleBuildService');
+    const rows = simpleBuilds();
+    expect(rows.length).toBeGreaterThan(60);
+    expect(new Set(rows.map((r) => r.name)).size).toBe(rows.length); // 이름 중복 없음
+    const recipeRows = rows.filter((r) => r.kind === 'recipe');
+    expect(recipeRows.every((r) => r.cocktail!.methodKeys[0] === 'build')).toBe(true);
+    expect(recipeRows.every((r) => r.cocktail!.ingredients.filter((i) => !i.optional).length <= 3)).toBe(true);
+    expect(rows.some((r) => r.kind === 'pairing' && r.ratio)).toBe(true);
+  });
+
+  it('조합표는 기주 카테고리 + 믹서 보유로 판정한다', async () => {
+    const { simpleBuilds, evaluateSimpleBuild } = await import('../services/simpleBuildService');
+    const pairing = simpleBuilds().find((r) => r.kind === 'pairing' && r.group === '위스키')!;
+    expect(evaluateSimpleBuild(pairing, new Set()).status).toBe('UNAVAILABLE');
+    const held = new Set(ingredients.filter((i) => i.seedOwned).map((i) => i.id));
+    expect(evaluateSimpleBuild(pairing, held).status).toBe('READY');
+    // 믹서만 빼면 기주는 있으므로 일부부족
+    const noMixer = new Set([...held].filter((id) => id !== pairing.mixerIngredientId));
+    expect(evaluateSimpleBuild(pairing, noMixer).status).toBe('MISSING');
   });
 });

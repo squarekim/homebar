@@ -8,7 +8,8 @@ import { useHeldIds, useSubMap, useBottleNotes, useWhiskies, useBottles } from '
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { bottleNoteRepo } from '../../repositories/bottleNoteRepo';
 import { evaluateCocktail } from '../../services/availabilityService';
-import { StatusBadge, FlavorBars, MakerNoteView, WhiskyClassTags } from './common';
+import { simpleBuilds, evaluateSimpleBuild } from '../../services/simpleBuildService';
+import { StatusBadge, FlavorBars, MakerNoteView, WhiskyClassTags, MethodIcon } from './common';
 import { CLASS_FILTERS, classMatchesTerm, classTags } from '../../data/whiskyClass';
 import { AvailabilityStatus } from '../../models/types';
 import { isUserBottle } from '../../data/userBottles';
@@ -80,8 +81,15 @@ export function CocktailBrowser() {
       <div className="list">
         {rows.map(({ c, e }) => (
           <button className={`card row v${e.status}`} key={c.id} onClick={() => openCocktail(c.id)}>
-            <h3>{c.name}<em><StatusBadge status={e.status} /></em></h3>
-            <div className="meta"><span className="mi">{c.base}</span><span className="mi">{c.method}</span><span className="mi">재료 {c.ingredients.length}</span></div>
+            <h3 className="withmethod">
+              <span className="nmwrap">{c.name}<MethodIcon keys={c.methodKeys} raw={c.method} /></span>
+              <em><StatusBadge status={e.status} /></em>
+            </h3>
+            <div className="meta">
+              <span className="mi">{c.base}</span>
+              <span className="mi">재료 {c.ingredients.length}</span>
+              {c.garnish && <span className="mi">가니시 {c.garnish}</span>}
+            </div>
             {e.lack.length > 0 && <div className="lack">{e.lack.slice(0, 4).map((n) => <span key={n}>{n}</span>)}{e.lack.length > 4 && <span>외 {e.lack.length - 4}</span>}</div>}
             {e.lack.length === 0 && e.sub.length > 0 && <div className="lack">{e.sub.map((n) => <span className="s" key={n}>{n} 대체</span>)}</div>}
           </button>
@@ -121,6 +129,81 @@ function MasterSuggestions({ category }: { category: 'whisky' | 'all' }) {
             </div>
           </button>
         ))}
+      </div>
+    </>
+  );
+}
+
+/**
+ * SimpleBuildBrowser — 셰이커 없이 잔에 바로 붓는 술만 모은 화면.
+ * 믹서 조합표(기주+믹서 비율)와 Build 계열 3재료 이하 레시피를 합쳐 기주별로 보여준다.
+ */
+export function SimpleBuildBrowser() {
+  const heldIds = useHeldIds();
+  const subMap = useSubMap();
+  const { openCocktail } = useUI();
+  const [q, setQ] = useState('');
+  const [grp, setGrp] = useState('all');
+  const [readyOnly, setReadyOnly] = useState(false);
+
+  const all = useMemo(() => simpleBuilds(), []);
+  const groups = useMemo(() => [...new Set(all.map((b) => b.group))], [all]);
+
+  const rows = useMemo(() => {
+    const t = q.trim().toLowerCase();
+    return all
+      .map((b) => ({ b, e: evaluateSimpleBuild(b, heldIds, subMap) }))
+      .filter(({ b, e }) => {
+        if (grp !== 'all' && b.group !== grp) return false;
+        if (readyOnly && e.status !== 'READY') return false;
+        if (!t) return true;
+        return (b.name + ' ' + b.parts.join(' ') + ' ' + (b.recommended ?? '')).toLowerCase().includes(t);
+      })
+      .sort((x, y) => rank(y.e.status) - rank(x.e.status) || x.b.name.localeCompare(y.b.name, 'ko'));
+  }, [all, q, grp, readyOnly, heldIds, subMap]);
+
+  const readyCount = useMemo(
+    () => all.filter((b) => evaluateSimpleBuild(b, heldIds, subMap).status === 'READY').length,
+    [all, heldIds, subMap],
+  );
+
+  return (
+    <>
+      <div className="controls"><input type="search" placeholder="하이볼·리키 등 이름·재료 검색" value={q} onChange={(e) => setQ(e.target.value)} /></div>
+      <div className="controls strip">
+        <button className="chip" aria-pressed={grp === 'all'} onClick={() => setGrp('all')}>전체</button>
+        {groups.map((g) => <button key={g} className="chip" aria-pressed={grp === g} onClick={() => setGrp(g)}>{g}</button>)}
+        <button className="chip ok" aria-pressed={readyOnly} onClick={() => setReadyOnly((v) => !v)}>바로 가능</button>
+      </div>
+      <div className="hint">
+        셰이커 없이 <b>잔에 바로 붓는</b> 조합만 모았습니다. {all.length}종 중 지금 <b>{readyCount}종</b> 가능.
+        비율은 기주 1 기준입니다.
+      </div>
+      <div className="list">
+        {rows.map(({ b, e }) => {
+          const body = (
+            <>
+              <h3 className="withmethod">
+                <span className="nmwrap">{b.name}<MethodIcon keys={['build']} raw="Build" /></span>
+                <em><StatusBadge status={e.status} /></em>
+              </h3>
+              <div className="parts">
+                {b.parts.map((p, i) => <span key={i}>{p}</span>)}
+                {b.ratio && <span className="ratio">{b.ratio}</span>}
+              </div>
+              <div className="meta">
+                <span className="mi">{b.group}</span>
+                {b.glass && <span className="mi">{b.glass} 잔</span>}
+                {b.recommended && <span className="mi">권장 {b.recommended}</span>}
+                {b.cocktail?.garnish && <span className="mi">가니시 {b.cocktail.garnish}</span>}
+              </div>
+              {e.lack.length > 0 && <div className="lack">{e.lack.map((n) => <span key={n}>{n}</span>)}</div>}
+            </>
+          );
+          return b.recipeId
+            ? <button className={`card row v${e.status}`} key={b.id} onClick={() => openCocktail(b.recipeId!)}>{body}</button>
+            : <div className={`card row v${e.status}`} key={b.id}>{body}</div>;
+        })}
       </div>
     </>
   );

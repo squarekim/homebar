@@ -2,7 +2,7 @@ import { useUI } from '../UIContext';
 import { useHeldIds, useSubMap } from '../../hooks/useData';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { evaluateCocktail, STATUS_LABEL_KO } from '../../services/availabilityService';
-import { FlavorBars } from './common';
+import { FlavorBars, MethodIcon } from './common';
 
 export function CocktailModal() {
   const { cocktailId, closeCocktail, openLog } = useUI();
@@ -20,7 +20,7 @@ export function CocktailModal() {
         {ck && ev && (
           <>
             <button className="close" onClick={closeCocktail} aria-label="닫기">×</button>
-            <h2>{ck.name}</h2>
+            <h2 className="withmethod">{ck.name}<MethodIcon keys={ck.methodKeys} raw={ck.method} /></h2>
             <div className="sub">
               <span className="mi">{ck.base}</span>
               <span className="mi">{ck.method}</span>
@@ -45,6 +45,12 @@ export function CocktailModal() {
                 );
               })}
             </div>
+            {ck.garnish && (
+              <div className="garnish">
+                <span className="gl">가니시</span>
+                <span className="gv">{ck.garnish}</span>
+              </div>
+            )}
             <div className="sechead">향미 프로파일</div>
             <FlavorBars vector={ck.flavor} compact />
             {(ck.note || ck.url) && (

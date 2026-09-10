@@ -1,8 +1,9 @@
 import { SyntheticEvent } from 'react';
-import { AvailabilityStatus, FlavorVector, FLAVOR_AXES, FLAVOR_LABELS_KO, RecommendationResult, MakerNote, WhiskyClass } from '../../models/types';
+import { MethodKey, METHOD_LABELS_KO, AvailabilityStatus, FlavorVector, FLAVOR_AXES, FLAVOR_LABELS_KO, RecommendationResult, MakerNote, WhiskyClass } from '../../models/types';
 import { STATUS_LABEL_KO } from '../../services/availabilityService';
 import { lookupTerm, normalizeTerm } from '../../data/glossary';
 import { useUI } from '../UIContext';
+import { IconBuild, IconShake, IconStir, IconMuddle, IconBlend, IconLayer, IconSwizzle, IconFloat } from './icons';
 
 /** 해설이 붙는 분류 태그. 데스크톱은 hover(native title), 모바일/클릭은 고정 팝오버(어떤 컨테이너에도 안 잘림). */
 export function Term({ label, term, className }: { label: string; term?: string; className?: string }) {
@@ -62,19 +63,49 @@ export function StatusBadge({ status }: { status: AvailabilityStatus }) {
 }
 
 /** 향미 14축 막대 (0 인 축 생략 옵션) */
+/** 조주법 아이콘 — 이름 옆에 붙어 만드는 방식을 글자 없이 알려준다 */
+const METHOD_ICONS: Record<MethodKey, () => JSX.Element> = {
+  build: IconBuild, shake: IconShake, stir: IconStir, muddle: IconMuddle,
+  blend: IconBlend, layer: IconLayer, swizzle: IconSwizzle, float: IconFloat,
+};
+
+export function MethodIcon({ keys, raw }: { keys: MethodKey[]; raw?: string }) {
+  if (!keys.length) return null;
+  const label = raw || keys.map((k) => METHOD_LABELS_KO[k]).join(' + ');
+  return (
+    <span className="methods" title={label} aria-label={`조주법 ${label}`}>
+      {keys.slice(0, 2).map((k) => {
+        const Ic = METHOD_ICONS[k];
+        return <span className="mic" key={k}><Ic /></span>;
+      })}
+    </span>
+  );
+}
+
+/**
+ * 향미 프로파일 — 14축 각 0~10점.
+ * 눈으로 강도가 바로 읽히도록 눈금(0·5·10)을 깔고, 가장 센 축을 진하게 준다.
+ */
 export function FlavorBars({ vector, compact }: { vector: FlavorVector; compact?: boolean }) {
   const axes = compact
     ? [...FLAVOR_AXES].filter((a) => vector[a] > 0).sort((x, y) => vector[y] - vector[x]).slice(0, 6)
     : FLAVOR_AXES;
+  if (!axes.length) return null;
+  const top = axes.reduce((m, a) => (vector[a] > vector[m] ? a : m), axes[0]);
   return (
     <div className="flavbars">
+      <div className="fbscale"><span>0</span><span>5</span><span>10</span></div>
       {axes.map((a) => (
-        <div className="fb" key={a}>
+        <div className={`fb ${a === top ? 'lead' : ''}`} key={a}>
           <span className="lb">{FLAVOR_LABELS_KO[a]}</span>
-          <span className="track"><span className="fill" style={{ width: `${vector[a] * 10}%` }} /></span>
-          <span className="vv">{vector[a].toFixed(0)}</span>
+          <span className="track">
+            <i className="tick" /><i className="tick mid" />
+            <span className="fill" style={{ width: `${Math.min(100, vector[a] * 10)}%` }} />
+          </span>
+          <span className="vv">{Math.round(vector[a])}</span>
         </div>
       ))}
+      <div className="fbfoot">10점 만점</div>
     </div>
   );
 }

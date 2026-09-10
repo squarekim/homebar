@@ -45,16 +45,26 @@ export interface CocktailIngredient {
   substitute: boolean;    // 대체 조주 마커
 }
 
+/** 조주법 — 이름 옆 아이콘과 필터에 쓰는 정규화 키 */
+export type MethodKey = 'build' | 'shake' | 'stir' | 'muddle' | 'blend' | 'layer' | 'swizzle' | 'float';
+
+export const METHOD_LABELS_KO: Record<MethodKey, string> = {
+  build: '빌드', shake: '셰이크', stir: '스터', muddle: '머들',
+  blend: '블렌드', layer: '레이어', swizzle: '스위즐', float: '플로트',
+};
+
 /** 칵테일 (기존 recipes) */
 export interface Cocktail {
   id: string;
   name: string;      // 원본 n
   base: string;      // 원본 b (기주)
   iba: string;       // 원본 iba
-  method: string;    // 원본 m
+  method: string;    // 원본 m ("Shake + Build" 등 원문 유지)
+  methodKeys: MethodKey[]; // 원문에서 파생한 정규화 키 (첫 번째가 주 기법)
   ingredients: CocktailIngredient[];
   url?: string;
   note?: string;
+  garnish?: string;  // 원본 note 끝에 붙어 있던 가니시 표기를 분리한 값
   flavor: FlavorVector; // 파생 향미 벡터
 }
 
