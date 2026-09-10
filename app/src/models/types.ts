@@ -235,11 +235,57 @@ export interface BackupSnapshot {
 export interface UserBottle {
   id: string;            // 'ub_...'
   name: string;
-  group: string;         // 위스키 / 진 / 보드카 / 럼·데킬라·브랜디 / 리큐르 / 기타
+  group: string;         // 위스키 / 진 / 보드카 / 럼·데킬라·브랜디 / 리큐르 / 기타 (레거시 컬렉션 그룹)
   abv?: string;          // '46%'
   qty: number;
   use: string;           // 시음-축 / 겸용 / 조주 / 미활용
   note?: string;
   whiskyClass?: WhiskyClass; // group 이 위스키일 때 분류
   createdAt: number;
+  /* 마스터 DB 연동으로 자동 채워지는 필드 (직접 추가 시에는 비어 있을 수 있다) */
+  masterId?: string;
+  nameEn?: string;
+  brand?: string;
+  category?: LiquorCategory;
+  subcategory?: string;
+  volumeMl?: number;
+  country?: string;
+  /** 칵테일 레시피가 참조하는 표준 재료 ID (제품 → 표준 재료 → 레시피) */
+  ingredientId?: string;
+  ingredientName?: string;
+  /** master: 기준 DB에서 선택 / user: 사용자가 직접 입력 */
+  source?: 'master' | 'user';
+}
+
+/* ── 주류 마스터 DB (제품 검색 → 자동 분류) ── */
+
+/** 대분류. 세부분류(subcategory)는 마스터 DB 내부에서 관리하며 사용자가 고르지 않는다. */
+export type LiquorCategory =
+  | 'whisky' | 'gin' | 'vodka' | 'rum' | 'tequila' | 'mezcal' | 'brandy'
+  | 'liqueur' | 'vermouth' | 'wine' | 'beer' | 'sake' | 'spirit' | 'mixer';
+
+/** 기준 제품 1건. 사용자는 이름만 검색해 고르고, 나머지는 여기서 자동 채워진다. */
+export interface LiquorMasterItem {
+  id: string;
+  nameKo: string;
+  nameEn: string;
+  brand: string;
+  category: LiquorCategory;
+  subcategory: string;
+  abv?: number;
+  volumeMl?: number;
+  country: string;
+  /** 기존 재료 마스터(128종)의 표준 재료명 — 칵테일 레시피와 연결되는 canonical 키 */
+  ingredientName?: string;
+  aliases: string[];
+  searchKeywords: string[];
+  whiskyClass?: WhiskyClass;
+  source: 'master';
+}
+
+/** 검색 결과 1건 */
+export interface LiquorSearchHit {
+  item: LiquorMasterItem;
+  score: number;
+  matched: 'exact' | 'alias' | 'partial' | 'token' | 'fuzzy';
 }

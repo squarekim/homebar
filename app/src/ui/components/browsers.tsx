@@ -13,7 +13,7 @@ import { CLASS_FILTERS, classMatchesTerm, classTags } from '../../data/whiskyCla
 import { AvailabilityStatus } from '../../models/types';
 import { AddBottleDialog } from './AddBottleDialog';
 import { isUserBottle } from '../../data/userBottles';
-import { userBottleRepo } from '../../repositories/userBottleRepo';
+import { bottleService } from '../../services/bottleService';
 
 function PersonalNote({ bottleId, initial, onSaved }: { bottleId: string; initial: string; onSaved: () => void }) {
   const [text, setText] = useState(initial);
@@ -93,7 +93,7 @@ export function CocktailBrowser() {
 export function WhiskyBrowser() {
   const { openLog, toast } = useUI();
   const [q, setQ] = useState('');
-  const [scope, setScope] = useState<'whisky' | 'notes'>('whisky');
+  const [scope, setScope] = useState<'whisky' | 'mine' | 'notes'>('whisky');
   const [cls, setCls] = useState<string>('all');
   const [detail, setDetail] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
@@ -105,7 +105,9 @@ export function WhiskyBrowser() {
     const t = q.trim().toLowerCase();
     const base = scope === 'whisky'
       ? whiskies
-      : allBottles.filter((b) => b.makerNote);
+      : scope === 'mine'
+        ? allBottles.filter((b) => isUserBottle(b.id))
+        : allBottles.filter((b) => b.makerNote);
     return base.filter((w) => {
       if (cls !== 'all' && !classMatchesTerm(w.whiskyClass, cls)) return false;
       if (!t) return true;
@@ -122,6 +124,7 @@ export function WhiskyBrowser() {
       <div className="controls"><input type="search" placeholder="이름·분류(셰리/피트/싱글몰트…) 검색" value={q} onChange={(e) => setQ(e.target.value)} /></div>
       <div className="controls strip">
         <button className="chip" aria-pressed={scope === 'whisky'} onClick={() => setScope('whisky')}>위스키</button>
+        <button className="chip" aria-pressed={scope === 'mine'} onClick={() => setScope('mine')}>내가 추가</button>
         <button className="chip" aria-pressed={scope === 'notes'} onClick={() => setScope('notes')}>공식 노트 있는 전체</button>
       </div>
       {scope === 'whisky' && (
@@ -130,7 +133,11 @@ export function WhiskyBrowser() {
           {CLASS_FILTERS.map((c) => <button key={c} className="chip" aria-pressed={cls === c} onClick={() => setCls(c)}>{c}</button>)}
         </div>
       )}
-      <div className="hint">{rows.length}종 · 위스키는 원산지·타입·지역·캐스크·캐릭터로 분류됩니다. 제조사 공식 노트는 출처와 함께 표기.</div>
+      <div className="hint">
+        {rows.length}종 · {scope === 'mine'
+          ? '내가 추가한 술 전체(위스키 외 카테고리 포함). 삭제는 항목을 눌러 상세에서.'
+          : '위스키는 원산지·타입·지역·캐스크·캐릭터로 분류됩니다. 제조사 공식 노트는 출처와 함께 표기.'}
+      </div>
       <div className="list">
         {rows.map((w) => (
           <div className="card" key={w.id}>
@@ -150,7 +157,7 @@ export function WhiskyBrowser() {
                 <div className="btnrow">
                   <button className="btn primary" onClick={() => openLog({ drinkId: w.id, drinkType: 'whisky', drinkName: w.name, servingStyle: 'neat' })}>기록하기</button>
                   {isUserBottle(w.id) && (
-                    <button className="btn ghost" onClick={async () => { await userBottleRepo.remove(w.id); toast('삭제됨'); }}>삭제</button>
+                    <button className="btn ghost" onClick={async () => { await bottleService.remove(w.id); toast('삭제됨'); }}>삭제</button>
                   )}
                 </div>
               </>
