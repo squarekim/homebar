@@ -5,6 +5,7 @@ import { evaluateAll, tallyStatus } from '../services/availabilityService';
 import { CocktailModal } from './components/CocktailModal';
 import { LogDialog } from './components/LogDialog';
 import { AddBottleDialog } from './components/AddBottleDialog';
+import { Modal } from './components/common';
 import { HomePage } from './pages/HomePage';
 import { HomeBarPage, type Sub as HomeBarSub } from './pages/HomeBarPage';
 import { WhiskyPage } from './pages/WhiskyPage';
@@ -113,16 +114,10 @@ function Shell() {
       <CocktailModal />
       <LogDialog />
       <AddBottleDialog open={addOpen} initialQuery={addQuery} onClose={closeAdd} />
-      {termInfo && (
-        <>
-          <div className="scrim on" onClick={closeTerm} />
-          <div className="terminfo" role="dialog" aria-modal="true">
-            <button className="close" onClick={closeTerm} aria-label="닫기">×</button>
-            <b>{termInfo.title}</b>
-            <p>{termInfo.body}</p>
-          </div>
-        </>
-      )}
+      <Modal open={!!termInfo} onClose={closeTerm} shell="terminfo">
+        <b>{termInfo?.title}</b>
+        <p>{termInfo?.body}</p>
+      </Modal>
       {toastMsg && <div className="toast">{toastMsg}</div>}
     </>
   );

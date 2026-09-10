@@ -50,6 +50,11 @@ export function evaluateCocktail(
 const STATUS_RANK: Record<AvailabilityStatus, number> = { READY: 3, SUBSTITUTE: 2, MISSING: 1, UNAVAILABLE: 0 };
 export function statusRank(s: AvailabilityStatus): number { return STATUS_RANK[s]; }
 
+/** 가용성 상태 → 추천 점수(0~100). 추천·그룹 엔진이 같은 값을 쓴다. */
+export const AVAIL_SCORE: Record<AvailabilityStatus, number> = {
+  READY: 100, SUBSTITUTE: 78, MISSING: 40, UNAVAILABLE: 5,
+};
+
 export const STATUS_LABEL_KO: Record<AvailabilityStatus, string> = {
   READY: '정규', SUBSTITUTE: '근사', MISSING: '일부부족', UNAVAILABLE: '불가',
 };

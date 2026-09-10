@@ -85,6 +85,20 @@ git push -u origin feat/무엇을-하는지
 
 **저장 항목 추가** → `models/types.ts` 에 타입 → `db/schema.ts` 에 버전 하나 올려 `.upgrade()` 로 기존 행 보정 → `repositories/` 에 접근 함수. 기존 스토어는 지우지 않는다.
 
+**화면 UI** → `ui/components/common.tsx` 의 공용 부품을 먼저 찾는다. `<button className="chip">` 이나 `<div className="scrim">` 을 새로 손으로 쓰지 않는다.
+
+| 필요한 것 | 쓰는 것 |
+| --- | --- |
+| 하나만 고르는 필터·서브탭 | `<ChipRow value options onChange wrap tight>` (문자열 배열은 `chips()` / `allChips()` 로 옵션화) |
+| 여러 개 켜는 필터 | `<ChipMulti options values onToggle>` |
+| 단독 on/off | `<ChipToggle label on onToggle>` — `ChipRow` 의 children 으로 넣으면 같은 줄에 붙는다 |
+| 목록 위 검색창 | `<SearchBox value onChange placeholder>` |
+| 다이얼로그·팝오버 | `<Modal open onClose>` — 스크림·닫기·ESC·스크롤 잠금이 딸려 온다 |
+| 추천 카드 목록 | `<RecList recs onPick empty>` |
+| 음용 기록 카드 | `<LogCard log>` |
+
+여백은 인라인 `style` 대신 `styles.css` 의 `.sechead.in` · `.hint.lbl` · `.hint.sub` · `.full` 을 쓴다.
+
 ## 6. 테스트 기준
 
 ```bash

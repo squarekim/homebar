@@ -12,29 +12,14 @@ import { draftFromMaster, draftManual } from '../../data/userBottles';
 import { CATEGORY_LABELS, CATEGORY_ORDER, CATEGORY_DEFAULT_INGREDIENT, SUBCATEGORY_INGREDIENT } from '../../data/liquorCategory';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { type LiquorCategory, type LiquorMasterItem, type UserBottle, type WhiskyClass } from '../../models/types';
+import { ChipRow, ChipMulti, Modal, chips, type ChipOption } from './common';
 
-const ORIGINS = ['스카치', '버번', '테네시', '아이리시', '재패니즈', '코리안', '기타'];
-const TYPES = ['싱글몰트', '블렌디드', '블렌디드 몰트', '스트레이트 버번', '휘티드 버번', '테네시 위스키', '싱글 팟 스틸'];
-const REGIONS = ['스페이사이드', '하이랜드', '아일라', '아일랜드', '캠벨타운', '로우랜드', '켄터키'];
-const CASKS = ['셰리', '버번', 'PX', '올로로소', '와인', '프렌치오크', '버진오크', '뉴 차드 오크', '미즈나라'];
-const CHARACTERS = ['피티드', '논피트', '스모키', '왁시', '캐스크 스트렝스', '휘티드', '해양성'];
-
-function Pick({ options, value, onPick, allowNone }: { options: string[]; value: string; onPick: (v: string) => void; allowNone?: boolean }) {
-  return (
-    <div className="controls" style={{ paddingTop: 0 }}>
-      {allowNone && <button className="chip" aria-pressed={value === ''} onClick={() => onPick('')}>없음</button>}
-      {options.map((o) => <button key={o} className="chip" aria-pressed={value === o} onClick={() => onPick(o)}>{o}</button>)}
-    </div>
-  );
-}
-
-function MultiPick({ options, values, onToggle }: { options: string[]; values: string[]; onToggle: (v: string) => void }) {
-  return (
-    <div className="controls" style={{ paddingTop: 0 }}>
-      {options.map((o) => <button key={o} className="chip" aria-pressed={values.includes(o)} onClick={() => onToggle(o)}>{o}</button>)}
-    </div>
-  );
-}
+const ORIGINS = chips(['스카치', '버번', '테네시', '아이리시', '재패니즈', '코리안', '기타']);
+const TYPES = chips(['싱글몰트', '블렌디드', '블렌디드 몰트', '스트레이트 버번', '휘티드 버번', '테네시 위스키', '싱글 팟 스틸']);
+const REGIONS: ChipOption<string>[] = [{ v: '', label: '없음' }, ...chips(['스페이사이드', '하이랜드', '아일라', '아일랜드', '캠벨타운', '로우랜드', '켄터키'])];
+const CASKS = chips(['셰리', '버번', 'PX', '올로로소', '와인', '프렌치오크', '버진오크', '뉴 차드 오크', '미즈나라']);
+const CHARACTERS = chips(['피티드', '논피트', '스모키', '왁시', '캐스크 스트렝스', '휘티드', '해양성']);
+const CATEGORY_CHIPS: ChipOption<LiquorCategory>[] = CATEGORY_ORDER.map((c) => ({ v: c, label: CATEGORY_LABELS[c] }));
 
 /** 제품 → 표준 재료 연결 선택 (칵테일 레시피와 이어지는 canonical 키) */
 function IngredientLink({ value, onChange }: { value: string; onChange: (v: string) => void }) {
@@ -169,130 +154,121 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
   };
 
   return (
-    <>
-      <div className="scrim on" onClick={onClose} />
-      <div className="modal on" role="dialog" aria-modal="true">
-        <button className="close" onClick={onClose} aria-label="닫기">×</button>
-
-        {step === 'search' && (
-          <>
-            <h2>술 추가</h2>
-            <p className="hint" style={{ margin: '4px 0 10px' }}>
-              제품명만 입력하면 분류·도수·용량·원산지·칵테일 재료가 자동으로 채워집니다.
-            </p>
-            <input type="search" autoFocus value={q} placeholder="예: 발베니 12 / 조니블랙 / Absolut" onChange={(e) => setQ(e.target.value)} />
-            {q.trim() === '' && <div className="hint" style={{ marginTop: 10 }}>한글·영문·줄임말 모두 검색됩니다.</div>}
-            {q.trim() !== '' && (
-              <div className="list" style={{ marginTop: 10 }}>
-                {hits.map(({ item, matched }) => (
-                  <button className="card row" key={item.id} style={{ width: '100%', textAlign: 'left' }} onClick={() => choose(item)}>
-                    <h3>{item.nameKo}{matched !== 'exact' && matched !== 'partial' && <em>{matched === 'alias' ? '별칭' : '유사'}</em>}</h3>
-                    <div className="hint" style={{ margin: '2px 0 4px' }}>{item.nameEn}</div>
-                    <div className="meta">
-                      <span className="mi">{CATEGORY_LABELS[item.category]}</span>
-                      <span className="mi">{item.subcategory}</span>
-                      {item.abv ? <span className="mi">{item.abv}%</span> : null}
-                      <span className="mi">{item.country}</span>
-                    </div>
-                  </button>
-                ))}
-                {hits.length === 0 && <div className="hint">검색 결과가 없습니다. 아래 <b>직접 추가</b>로 등록하세요.</div>}
-              </div>
-            )}
-            <div className="btnrow">
-              <button className="btn" onClick={goManual}>직접 추가</button>
-              <button className="btn ghost" onClick={onClose}>취소</button>
-            </div>
-          </>
-        )}
-
-        {step !== 'search' && (
-          <>
-            <h2>{step === 'confirm' ? '이 제품이 맞나요?' : '직접 추가'}</h2>
-
-            {step === 'confirm' && picked && (
-              <div className="card" style={{ marginTop: 6 }}>
-                <h3>{picked.nameKo}</h3>
-                <div className="hint" style={{ margin: '2px 0 6px' }}>{picked.nameEn}</div>
-                <div className="meta">
-                  <span className="mi">{CATEGORY_LABELS[picked.category]}</span>
-                  <span className="mi">{picked.subcategory}</span>
-                  {picked.abv ? <span className="mi">{picked.abv}%</span> : null}
-                  {picked.volumeMl ? <span className="mi">{picked.volumeMl}ml</span> : null}
-                  <span className="mi">{picked.country}</span>
-                  {picked.brand ? <span className="mi">{picked.brand}</span> : null}
-                </div>
-                {picked.whiskyClass && (
-                  <div className="hint" style={{ marginTop: 6 }}>
-                    자동 분류: {[picked.whiskyClass.origin, picked.whiskyClass.type, picked.whiskyClass.region,
-                      ...picked.whiskyClass.cask.map((c) => `${c} 캐스크`), ...picked.whiskyClass.character].filter(Boolean).join(' · ')}
+    <Modal open onClose={onClose}>
+      {step === 'search' && (
+        <>
+          <h2>술 추가</h2>
+          <p className="hint sub">
+            제품명만 입력하면 분류·도수·용량·원산지·칵테일 재료가 자동으로 채워집니다.
+          </p>
+          <input type="search" autoFocus value={q} placeholder="예: 발베니 12 / 조니블랙 / Absolut" onChange={(e) => setQ(e.target.value)} />
+          {q.trim() === '' && <div className="hint">한글·영문·줄임말 모두 검색됩니다.</div>}
+          {q.trim() !== '' && (
+            <div className="list" style={{ marginTop: 10 }}>
+              {hits.map(({ item, matched }) => (
+                <button className="card row" key={item.id} onClick={() => choose(item)}>
+                  <h3>{item.nameKo}{matched !== 'exact' && matched !== 'partial' && <em>{matched === 'alias' ? '별칭' : '유사'}</em>}</h3>
+                  <div className="hint sub">{item.nameEn}</div>
+                  <div className="meta">
+                    <span className="mi">{CATEGORY_LABELS[item.category]}</span>
+                    <span className="mi">{item.subcategory}</span>
+                    {item.abv ? <span className="mi">{item.abv}%</span> : null}
+                    <span className="mi">{item.country}</span>
                   </div>
-                )}
+                </button>
+              ))}
+              {hits.length === 0 && <div className="hint">검색 결과가 없습니다. 아래 <b>직접 추가</b>로 등록하세요.</div>}
+            </div>
+          )}
+          <div className="btnrow">
+            <button className="btn" onClick={goManual}>직접 추가</button>
+            <button className="btn ghost" onClick={onClose}>취소</button>
+          </div>
+        </>
+      )}
+
+      {step !== 'search' && (
+        <>
+          <h2>{step === 'confirm' ? '이 제품이 맞나요?' : '직접 추가'}</h2>
+
+          {step === 'confirm' && picked && (
+            <div className="card" style={{ marginTop: 6 }}>
+              <h3>{picked.nameKo}</h3>
+              <div className="hint sub">{picked.nameEn}</div>
+              <div className="meta">
+                <span className="mi">{CATEGORY_LABELS[picked.category]}</span>
+                <span className="mi">{picked.subcategory}</span>
+                {picked.abv ? <span className="mi">{picked.abv}%</span> : null}
+                {picked.volumeMl ? <span className="mi">{picked.volumeMl}ml</span> : null}
+                <span className="mi">{picked.country}</span>
+                {picked.brand ? <span className="mi">{picked.brand}</span> : null}
               </div>
-            )}
-
-            {step === 'manual' && (
-              <>
-                <div className="sechead" style={{ margin: '10px 0 6px' }}>이름</div>
-                <input type="text" value={name} placeholder="예: 라가불린 16년" onChange={(e) => setName(e.target.value)} />
-                <div className="sechead" style={{ margin: '14px 0 6px' }}>종류 <small style={{ color: 'var(--dim)', fontWeight: 400 }}>이름에서 자동 추정됨</small></div>
-                <div className="controls" style={{ paddingTop: 0 }}>
-                  {CATEGORY_ORDER.map((c) => (
-                    <button key={c} className="chip" aria-pressed={category === c} onClick={() => pickCategory(c)}>{CATEGORY_LABELS[c]}</button>
-                  ))}
+              {picked.whiskyClass && (
+                <div className="hint sub">
+                  자동 분류: {[picked.whiskyClass.origin, picked.whiskyClass.type, picked.whiskyClass.region,
+                    ...picked.whiskyClass.cask.map((c) => `${c} 캐스크`), ...picked.whiskyClass.character].filter(Boolean).join(' · ')}
                 </div>
-              </>
-            )}
-
-            <div className="sechead" style={{ margin: '14px 0 6px' }}>칵테일 재료 연결</div>
-            <label className="it" style={{ marginBottom: 6 }}>
-              <input type="checkbox" checked={link} onChange={(e) => setLink(e.target.checked)} />
-              <span>이 술을 표준 재료로 재고에 반영 (레시피 판정에 즉시 적용)</span>
-            </label>
-            <IngredientLink value={ingName} onChange={(v) => { setIngName(v); setLink(!!v); }} />
-
-            <div className="sechead" style={{ margin: '14px 0 6px' }}>수량</div>
-            <input type="number" min={1} value={qty} onChange={(e) => setQty(Math.max(1, +e.target.value || 1))} style={{ maxWidth: 110 }} />
-
-            <div className="btnrow" style={{ marginTop: 6 }}>
-              <button className="btn ghost" onClick={() => setDetail((v) => !v)}>{detail ? '세부 항목 접기' : '도수·용량·메모 수정'}</button>
+              )}
             </div>
+          )}
 
-            {detail && (
-              <>
-                <div className="sechead" style={{ margin: '10px 0 6px' }}>도수 · 용량(ml)</div>
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <input type="number" value={abv} placeholder="도수 (예: 46)" onChange={(e) => setAbv(e.target.value)} />
-                  <input type="number" value={volume} placeholder="용량 (예: 700)" onChange={(e) => setVolume(e.target.value)} />
-                </div>
-                <div className="sechead" style={{ margin: '14px 0 6px' }}>메모</div>
-                <textarea rows={2} value={note} placeholder="구매처·가격·시음 소감 등" onChange={(e) => setNote(e.target.value)} />
-              </>
-            )}
+          {step === 'manual' && (
+            <>
+              <div className="sechead in">이름</div>
+              <input type="text" value={name} placeholder="예: 라가불린 16년" onChange={(e) => setName(e.target.value)} />
+              <div className="sechead in">종류 <small className="sub">이름에서 자동 추정됨</small></div>
+              <ChipRow value={category} options={CATEGORY_CHIPS} onChange={pickCategory} wrap tight />
+            </>
+          )}
 
-            {step === 'manual' && category === 'whisky' && (
-              <>
-                <div className="sechead" style={{ margin: '16px 0 6px' }}>위스키 세부 분류 <small style={{ color: 'var(--dim)', fontWeight: 400 }}>선택 — 축별 결손 계산에 쓰입니다</small></div>
-                <div className="hint" style={{ marginBottom: 6 }}>원산지</div>
-                <Pick options={ORIGINS} value={origin} onPick={setOrigin} />
-                <div className="hint" style={{ margin: '8px 0 6px' }}>타입</div>
-                <Pick options={TYPES} value={type} onPick={setType} />
-                <div className="hint" style={{ margin: '8px 0 6px' }}>지역</div>
-                <Pick options={REGIONS} value={region} onPick={setRegion} allowNone />
-                <div className="hint" style={{ margin: '8px 0 6px' }}>캐스크</div>
-                <MultiPick options={CASKS} values={casks} onToggle={(v) => toggle(casks, setCasks, v)} />
-                <div className="hint" style={{ margin: '8px 0 6px' }}>캐릭터</div>
-                <MultiPick options={CHARACTERS} values={chars} onToggle={(v) => toggle(chars, setChars, v)} />
-              </>
-            )}
+          <div className="sechead in">칵테일 재료 연결</div>
+          <label className="it" style={{ marginBottom: 6 }}>
+            <input type="checkbox" checked={link} onChange={(e) => setLink(e.target.checked)} />
+            <span>이 술을 표준 재료로 재고에 반영 (레시피 판정에 즉시 적용)</span>
+          </label>
+          <IngredientLink value={ingName} onChange={(v) => { setIngName(v); setLink(!!v); }} />
 
-            <div className="btnrow">
-              <button className="btn primary" onClick={save} disabled={saving}>내 홈바에 추가</button>
-              <button className="btn" onClick={() => setStep('search')}>다시 검색</button>
-            </div>
-          </>
-        )}
-      </div>
-    </>
+          <div className="sechead in">수량</div>
+          <input type="number" min={1} value={qty} onChange={(e) => setQty(Math.max(1, +e.target.value || 1))} style={{ maxWidth: 110 }} />
+
+          <div className="btnrow" style={{ marginTop: 6 }}>
+            <button className="btn ghost" onClick={() => setDetail((v) => !v)}>{detail ? '세부 항목 접기' : '도수·용량·메모 수정'}</button>
+          </div>
+
+          {detail && (
+            <>
+              <div className="sechead in">도수 · 용량(ml)</div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <input type="number" value={abv} placeholder="도수 (예: 46)" onChange={(e) => setAbv(e.target.value)} />
+                <input type="number" value={volume} placeholder="용량 (예: 700)" onChange={(e) => setVolume(e.target.value)} />
+              </div>
+              <div className="sechead in">메모</div>
+              <textarea rows={2} value={note} placeholder="구매처·가격·시음 소감 등" onChange={(e) => setNote(e.target.value)} />
+            </>
+          )}
+
+          {step === 'manual' && category === 'whisky' && (
+            <>
+              <div className="sechead in">위스키 세부 분류 <small className="sub">선택 — 축별 결손 계산에 쓰입니다</small></div>
+              <div className="hint lbl">원산지</div>
+              <ChipRow value={origin} options={ORIGINS} onChange={setOrigin} wrap tight />
+              <div className="hint lbl">타입</div>
+              <ChipRow value={type} options={TYPES} onChange={setType} wrap tight />
+              <div className="hint lbl">지역</div>
+              <ChipRow value={region} options={REGIONS} onChange={setRegion} wrap tight />
+              <div className="hint lbl">캐스크</div>
+              <ChipMulti options={CASKS} values={casks} onToggle={(v) => toggle(casks, setCasks, v)} wrap tight />
+              <div className="hint lbl">캐릭터</div>
+              <ChipMulti options={CHARACTERS} values={chars} onToggle={(v) => toggle(chars, setChars, v)} wrap tight />
+            </>
+          )}
+
+          <div className="btnrow">
+            <button className="btn primary" onClick={save} disabled={saving}>내 홈바에 추가</button>
+            <button className="btn" onClick={() => setStep('search')}>다시 검색</button>
+          </div>
+        </>
+      )}
+    </Modal>
   );
 }

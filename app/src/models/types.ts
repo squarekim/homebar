@@ -301,3 +301,13 @@ export interface LiquorSearchHit {
   score: number;
   matched: 'exact' | 'alias' | 'partial' | 'token' | 'fuzzy';
 }
+
+/**
+ * 판정을 하는 서비스들이 공통으로 받는 입력.
+ * (추천 · 구매 · 그룹 서비스가 같은 모양을 각자 선언하고 있었다)
+ */
+export interface StockContext {
+  heldIds: Set<string>;
+  subMap: Map<string, string[]>;
+  logs: DrinkLog[];
+}

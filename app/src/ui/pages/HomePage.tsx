@@ -3,9 +3,8 @@ import { useUI } from '../UIContext';
 import { useRecommendContext } from '../../hooks/useRecommendContext';
 import { useLogs } from '../../hooks/useData';
 import { whatToDrink, type RecommendMode } from '../../services/recommendationService';
-import { RecCard, ChipRow } from '../components/common';
+import { RecCard, ChipRow, LogCard, type ChipOption } from '../components/common';
 import { CocktailRec, WhiskyRec, GroupRec, ClearStockRec, PurchaseRec, MODES } from './RecommendPage';
-import { SERVING_LABELS_KO } from '../../models/types';
 import { IS_BETA } from '../../config';
 
 const WELCOME_KEY = 'homebar.welcome.v1';
@@ -51,9 +50,9 @@ function Welcome({ go }: { go: Go }) {
 
 type HomeSub = 'today' | 'cocktail' | 'whisky' | 'group' | 'purchase' | 'clearstock';
 
-const HOME_SUBS: [HomeSub, string][] = [
-  ['today', '오늘'], ['cocktail', '칵테일 추천'], ['whisky', '위스키 추천'],
-  ['group', '그룹'], ['purchase', '구매'], ['clearstock', '재고 소진'],
+const HOME_SUBS: ChipOption<HomeSub>[] = [
+  { v: 'today', label: '오늘' }, { v: 'cocktail', label: '칵테일 추천' }, { v: 'whisky', label: '위스키 추천' },
+  { v: 'group', label: '그룹' }, { v: 'purchase', label: '구매' }, { v: 'clearstock', label: '재고 소진' },
 ];
 
 export function HomePage({ go }: { go: Go }) {
@@ -69,11 +68,7 @@ export function HomePage({ go }: { go: Go }) {
   return (
     <>
       <Welcome go={go} />
-      <div className="controls strip">
-        {HOME_SUBS.map(([v, l]) => (
-          <button key={v} className="chip" aria-pressed={sub === v} onClick={() => setSub(v)}>{l}</button>
-        ))}
-      </div>
+      <ChipRow value={sub} onChange={setSub} options={HOME_SUBS} />
 
       {sub === 'today' && (
         <>
@@ -91,16 +86,7 @@ export function HomePage({ go }: { go: Go }) {
           {recent.length === 0
             ? <div className="hint">아직 기록이 없습니다. 추천 카드나 레시피에서 “기록하기”를 눌러보세요.</div>
             : <div className="list">
-                {recent.map((l) => (
-                  <div className="card" key={l.id}>
-                    <h3>{l.drinkName}<em>{new Date(l.date).toLocaleDateString('ko')}</em></h3>
-                    <div className="meta">
-                      <span className="mi">{SERVING_LABELS_KO[l.servingStyle]}</span>
-                      <span className="mi">{'★'.repeat(l.rating)}{'☆'.repeat(5 - l.rating)}</span>
-                      {l.retryIntent && <span className="mi">재음용</span>}
-                    </div>
-                  </div>
-                ))}
+                {recent.map((l) => <LogCard key={l.id} log={l} />)}
               </div>}
         </>
       )}

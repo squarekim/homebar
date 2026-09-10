@@ -9,9 +9,15 @@ import { useInventory, useBottles, inventoryRepo } from '../../hooks/useData';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { resetInventoryToSeed } from '../../db/migrate';
 import { MyBottlesBrowser } from '../components/browsers';
+import { ChipRow, ChipToggle, type ChipOption } from '../components/common';
 import { IS_PUBLIC } from '../../config';
 
 export type CellarSub = 'bottles' | 'stock';
+
+const SUBS: ChipOption<CellarSub>[] = [
+  { v: 'bottles', label: '내 술' },
+  { v: 'stock', label: '재고' },
+];
 
 export function CellarPage({ sub: subProp, onSub }: { sub?: CellarSub; onSub?: (s: CellarSub) => void } = {}) {
   const [local, setLocal] = useState<CellarSub>('bottles');
@@ -19,10 +25,7 @@ export function CellarPage({ sub: subProp, onSub }: { sub?: CellarSub; onSub?: (
   const setSub = (s: CellarSub) => { setLocal(s); onSub?.(s); };
   return (
     <>
-      <div className="controls strip">
-        <button className="chip" aria-pressed={sub === 'bottles'} onClick={() => setSub('bottles')}>내 술</button>
-        <button className="chip" aria-pressed={sub === 'stock'} onClick={() => setSub('stock')}>재고</button>
-      </div>
+      <ChipRow value={sub} onChange={setSub} options={SUBS} />
       {sub === 'bottles' && <MyBottlesBrowser />}
       {sub === 'stock' && <StockManager />}
     </>
@@ -34,6 +37,12 @@ const MIXER_CATS = ['주스·과즙', '탄산·음료', '시럽·감미', '신�
 
 type View = 'all' | 'spirit' | 'mixer';
 type Own = 'all' | 'owned' | 'missing';
+
+const OWN_FILTERS: ChipOption<Own>[] = [
+  { v: 'all', label: '전체' },
+  { v: 'owned', label: '보유만', cls: 'ok' },
+  { v: 'missing', label: '미보유만' },
+];
 
 /**
  * StockManager — 내 보유 재료를 보고 고치는 곳.
@@ -88,15 +97,11 @@ function StockManager() {
         </div>
       </div>
 
-      <div className="controls">
-        <button className="chip" aria-pressed={own === 'all'} onClick={() => setOwn('all')}>전체</button>
-        <button className="chip ok" aria-pressed={own === 'owned'} onClick={() => setOwn('owned')}>보유만</button>
-        <button className="chip" aria-pressed={own === 'missing'} onClick={() => setOwn('missing')}>미보유만</button>
-      </div>
+      <ChipRow value={own} onChange={setOwn} options={OWN_FILTERS} wrap />
       <div className="controls" style={{ paddingTop: 0 }}>
-        <button className="chip" aria-pressed={view === 'spirit'} onClick={() => setView(view === 'spirit' ? 'all' : 'spirit')}>술·리큐르</button>
-        <button className="chip" aria-pressed={view === 'mixer'} onClick={() => setView(view === 'mixer' ? 'all' : 'mixer')}>믹서·재료</button>
-        <button className="chip" aria-pressed={showRemaining} onClick={() => setShowRemaining((v) => !v)}>잔량 표시</button>
+        <ChipToggle label="술·리큐르" on={view === 'spirit'} onToggle={() => setView(view === 'spirit' ? 'all' : 'spirit')} />
+        <ChipToggle label="믹서·재료" on={view === 'mixer'} onToggle={() => setView(view === 'mixer' ? 'all' : 'mixer')} />
+        <ChipToggle label="잔량 표시" on={showRemaining} onToggle={() => setShowRemaining((v) => !v)} />
       </div>
 
       {confirmReset ? (

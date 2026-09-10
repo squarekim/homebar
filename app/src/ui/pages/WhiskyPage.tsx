@@ -5,22 +5,20 @@
 import { useMemo, useState } from 'react';
 import { useWhiskies } from '../../hooks/useData';
 import { WhiskyBrowser } from '../components/browsers';
-import { Term } from '../components/common';
+import { Term, ChipRow, type ChipOption } from '../components/common';
 import {
   computeCoverage, simulateAdd, computeRegionMaturityMatrix, MATRIX_TIERS,
 } from '../../services/whiskyDiversityService';
 import { CANDIDATE_WHISKIES } from '../../data/candidateWhiskies';
 
 type Sub = 'collection' | 'matrix';
+const SUBS: ChipOption<Sub>[] = [{ v: 'collection', label: '컬렉션' }, { v: 'matrix', label: '축별 결손' }];
 
 export function WhiskyPage() {
   const [sub, setSub] = useState<Sub>('collection');
   return (
     <>
-      <div className="controls strip">
-        <button className="chip" aria-pressed={sub === 'collection'} onClick={() => setSub('collection')}>컬렉션</button>
-        <button className="chip" aria-pressed={sub === 'matrix'} onClick={() => setSub('matrix')}>축별 결손</button>
-      </div>
+      <ChipRow value={sub} options={SUBS} onChange={setSub} />
       {sub === 'collection' && <WhiskyBrowser />}
       {sub === 'matrix' && <MatrixView />}
     </>

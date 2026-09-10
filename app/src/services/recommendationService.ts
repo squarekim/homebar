@@ -6,10 +6,10 @@
  */
 import {
   type Cocktail, type Bottle, type FlavorVector, type RecommendationResult, type DrinkLog,
-  type AvailabilityResult, type AvailabilityStatus, FLAVOR_LABELS_KO, type FlavorAxis,
+  type AvailabilityResult, FLAVOR_LABELS_KO, type FlavorAxis, type StockContext,
 } from '../models/types';
 import { referenceRepo } from '../repositories/referenceRepo';
-import { evaluateCocktail } from './availabilityService';
+import { evaluateCocktail, AVAIL_SCORE } from './availabilityService';
 import { tasteMatch, topAxes, cosineSimilarity } from './flavorService';
 
 export type RecommendMode =
@@ -21,19 +21,12 @@ export type RecommendMode =
   | 'whisky'      // 위스키
   | 'clearstock'; // 재고 소진
 
-export interface RecommendContext {
+export interface RecommendContext extends StockContext {
   taste: FlavorVector;
-  heldIds: Set<string>;
-  subMap: Map<string, string[]>;
-  logs: DrinkLog[];
   remainingById: Map<string, number>; // ingredientId → 잔량(0~100)
 }
 
 const DAY = 86_400_000;
-
-const AVAIL_SCORE: Record<AvailabilityStatus, number> = {
-  READY: 100, SUBSTITUTE: 78, MISSING: 40, UNAVAILABLE: 5,
-};
 
 interface DrinkStat { count: number; last: number; }
 function drinkStats(logs: DrinkLog[]): Map<string, DrinkStat> {

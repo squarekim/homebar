@@ -6,7 +6,7 @@ import { tasteService } from '../../services/tasteService';
 import { tasteProfileRepo } from '../../repositories/tasteProfileRepo';
 import { drinkLogRepo } from '../../repositories/drinkLogRepo';
 import { backupService } from '../../services/backupService';
-import { FlavorBars } from '../components/common';
+import { FlavorBars, LogCard } from '../components/common';
 import {
   FLAVOR_AXES, FLAVOR_LABELS_KO, type FlavorVector, type FlavorAxis, SERVING_LABELS_KO,
 } from '../../models/types';
@@ -122,16 +122,10 @@ function LogList() {
       {logs.length === 0 && <div className="hint">기록이 없습니다.</div>}
       <div className="list">
         {logs.map((l) => (
-          <div className="card" key={l.id}>
-            <h3>{l.drinkName}<em>{new Date(l.date).toLocaleDateString('ko')}</em></h3>
-            <div className="meta">
-              <span className="mi">{SERVING_LABELS_KO[l.servingStyle]}</span>
-              <span className="mi">{'★'.repeat(l.rating)}{'☆'.repeat(5 - l.rating)}</span>
-              {l.retryIntent && <span className="mi">재음용</span>}
-            </div>
+          <LogCard key={l.id} log={l}>
             {l.memo && <div className="hint" style={{ margin: '6px 0 0' }}>{l.memo}</div>}
             <div className="btnrow"><button className="btn ghost" onClick={async () => { await drinkLogRepo.remove(l.id); toast('삭제됨'); }}>삭제</button></div>
-          </div>
+          </LogCard>
         ))}
       </div>
     </>

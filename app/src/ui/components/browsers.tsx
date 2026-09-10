@@ -9,7 +9,7 @@ import { referenceRepo } from '../../repositories/referenceRepo';
 import { bottleNoteRepo } from '../../repositories/bottleNoteRepo';
 import { evaluateCocktail } from '../../services/availabilityService';
 import { simpleBuilds, evaluateSimpleBuild, pickMyBottles } from '../../services/simpleBuildService';
-import { StatusBadge, FlavorBars, MakerNoteView, WhiskyClassTags, MethodIcon } from './common';
+import { StatusBadge, FlavorBars, MakerNoteView, WhiskyClassTags, MethodIcon, ChipRow, ChipToggle, SearchBox, allChips, type ChipOption } from './common';
 import { CLASS_FILTERS, classMatchesTerm, classTags } from '../../data/whiskyClass';
 import { type AvailabilityStatus, type Bottle } from '../../models/types';
 import { isUserBottle } from '../../data/userBottles';
@@ -34,6 +34,21 @@ function PersonalNote({ bottleId, initial, onSaved }: { bottleId: string; initia
 
 function rank(s: AvailabilityStatus) { return { READY: 3, SUBSTITUTE: 2, MISSING: 1, UNAVAILABLE: 0 }[s]; }
 
+type StatusFilter = 'all' | AvailabilityStatus;
+const STATUS_FILTERS: ChipOption<StatusFilter>[] = [
+  { v: 'all', label: '전체' },
+  { v: 'READY', label: '정규', cls: 'ok' },
+  { v: 'SUBSTITUTE', label: '근사' },
+  { v: 'MISSING', label: '일부부족' },
+  { v: 'UNAVAILABLE', label: '불가', cls: 'no' },
+];
+const IBA_FILTERS: ChipOption<string>[] = [
+  { v: 'all', label: 'IBA 전체' },
+  { v: '현행IBA', label: '현행IBA' },
+  { v: '구IBA', label: '구IBA' },
+  { v: '비IBA', label: '비IBA' },
+];
+
 export function CocktailBrowser() {
   const heldIds = useHeldIds();
   const subMap = useSubMap();
@@ -41,9 +56,9 @@ export function CocktailBrowser() {
   const [q, setQ] = useState('');
   const [base, setBase] = useState('all');
   const [iba, setIba] = useState('all');
-  const [status, setStatus] = useState<'all' | AvailabilityStatus>('all');
+  const [status, setStatus] = useState<StatusFilter>('all');
 
-  const bases = useMemo(() => [...new Set(referenceRepo.cocktails().map((c) => c.base))], []);
+  const bases = useMemo(() => allChips([...new Set(referenceRepo.cocktails().map((c) => c.base))], '기주 전체'), []);
 
   const rows = useMemo(() => {
     const t = q.trim().toLowerCase();
@@ -61,23 +76,10 @@ export function CocktailBrowser() {
 
   return (
     <>
-      <div className="controls"><input type="search" placeholder="칵테일 또는 재료 검색" value={q} onChange={(e) => setQ(e.target.value)} /></div>
-      <div className="controls strip">
-        {(['all', 'READY', 'SUBSTITUTE', 'MISSING', 'UNAVAILABLE'] as const).map((s) => (
-          <button key={s} className={`chip ${s === 'READY' ? 'ok' : s === 'UNAVAILABLE' ? 'no' : ''}`} aria-pressed={status === s} onClick={() => setStatus(s)}>
-            {s === 'all' ? '전체' : ({ READY: '정규', SUBSTITUTE: '근사', MISSING: '일부부족', UNAVAILABLE: '불가' } as const)[s]}
-          </button>
-        ))}
-      </div>
-      <div className="controls strip">
-        <button className="chip" aria-pressed={base === 'all'} onClick={() => setBase('all')}>기주 전체</button>
-        {bases.map((b) => <button key={b} className="chip" aria-pressed={base === b} onClick={() => setBase(b)}>{b}</button>)}
-      </div>
-      <div className="controls strip">
-        {['all', '현행IBA', '구IBA', '비IBA'].map((v) => (
-          <button key={v} className="chip" aria-pressed={iba === v} onClick={() => setIba(v)}>{v === 'all' ? 'IBA 전체' : v}</button>
-        ))}
-      </div>
+      <SearchBox value={q} onChange={setQ} placeholder="칵테일 또는 재료 검색" />
+      <ChipRow value={status} options={STATUS_FILTERS} onChange={setStatus} />
+      <ChipRow value={base} options={bases} onChange={setBase} />
+      <ChipRow value={iba} options={IBA_FILTERS} onChange={setIba} />
       <div className="hint">{rows.length}종</div>
       <div className="list">
         {rows.map(({ c, e }) => (
@@ -119,9 +121,9 @@ function MasterSuggestions({ category }: { category: 'whisky' | 'all' }) {
       <div className="hint">우하단 <b>+</b> 버튼으로도 언제든 추가할 수 있습니다. 제품을 누르면 검색창에 채워집니다.</div>
       <div className="list">
         {picks.map((i) => (
-          <button className="card row" key={i.id} style={{ width: '100%', textAlign: 'left' }} onClick={() => openAdd(i.nameKo)}>
+          <button className="card row" key={i.id} onClick={() => openAdd(i.nameKo)}>
             <h3>{i.nameKo}<em>담기 +</em></h3>
-            <div className="hint" style={{ margin: '2px 0 4px' }}>{i.nameEn}</div>
+            <div className="hint sub">{i.nameEn}</div>
             <div className="meta">
               <span className="mi">{CATEGORY_LABELS[i.category]}</span>
               <span className="mi">{i.subcategory}</span>
@@ -150,7 +152,7 @@ export function SimpleBuildBrowser() {
   const [open, setOpen] = useState<string | null>(null);
 
   const all = useMemo(() => simpleBuilds(), []);
-  const groups = useMemo(() => [...new Set(all.map((b) => b.group))], [all]);
+  const groups = useMemo(() => allChips([...new Set(all.map((b) => b.group))]), [all]);
 
   /** 판정은 재고가 바뀔 때만 다시 한다 (검색어·필터가 바뀌어도 재계산하지 않는다) */
   const judged = useMemo(
@@ -173,12 +175,10 @@ export function SimpleBuildBrowser() {
 
   return (
     <>
-      <div className="controls"><input type="search" placeholder="하이볼·토닉 등 이름·재료 검색" value={q} onChange={(e) => setQ(e.target.value)} /></div>
-      <div className="controls strip">
-        <button className="chip" aria-pressed={grp === 'all'} onClick={() => setGrp('all')}>전체</button>
-        {groups.map((g) => <button key={g} className="chip" aria-pressed={grp === g} onClick={() => setGrp(g)}>{g}</button>)}
-        <button className="chip ok" aria-pressed={readyOnly} onClick={() => setReadyOnly((v) => !v)}>바로 가능</button>
-      </div>
+      <SearchBox value={q} onChange={setQ} placeholder="하이볼·토닉 등 이름·재료 검색" />
+      <ChipRow value={grp} options={groups} onChange={setGrp}>
+        <ChipToggle label="바로 가능" cls="ok" on={readyOnly} onToggle={() => setReadyOnly((v) => !v)} />
+      </ChipRow>
       <div className="hint">
         셰이커 없이 <b>잔에 바로 붓는</b> 조합만 모았습니다. {all.length}종 중 지금 <b>{readyCount}종</b> 가능.
         항목을 누르면 내 술로 어떻게 만드는지 보여줍니다.
@@ -188,7 +188,7 @@ export function SimpleBuildBrowser() {
           const mine = pickMyBottles(b, bottles);
           return (
             <div className={`card row v${e.status}`} key={b.id}>
-              <button style={{ width: '100%', textAlign: 'left' }} onClick={() => setOpen(open === b.id ? null : b.id)}>
+              <button className="full" onClick={() => setOpen(open === b.id ? null : b.id)}>
                 <h3 className="withmethod">
                   <span className="nmwrap">{b.name}<MethodIcon keys={['build']} raw="Build" /></span>
                   <em><StatusBadge status={e.status} /></em>
@@ -207,7 +207,7 @@ export function SimpleBuildBrowser() {
               </button>
               {open === b.id && (
                 <>
-                  <div className="sechead" style={{ margin: '12px 0 6px' }}>내 술로 만들기</div>
+                  <div className="sechead in">내 술로 만들기</div>
                   {mine.length > 0 ? (
                     <div className="parts">
                       {mine.map((x) => <span key={x.id}>{x.name}{x.abv ? ` ${x.abv}` : ''}</span>)}
@@ -252,7 +252,7 @@ function BottleCard({ bottle: w, open, onToggle }: { bottle: Bottle; open: boole
     .filter((x): x is NonNullable<typeof x> => !!x);
   return (
     <div className="card">
-      <button style={{ width: '100%', textAlign: 'left' }} onClick={onToggle}>
+      <button className="full" onClick={onToggle}>
         <h3>{w.name}<em>{kindOf(w)}</em></h3>
         <div className="meta">
           {w.abv && <span className="mi">{w.abv}</span>}
@@ -272,9 +272,9 @@ function BottleCard({ bottle: w, open, onToggle }: { bottle: Bottle; open: boole
           )}
           <FlavorBars vector={w.flavor} compact />
           {w.note && <div className="hint">{w.note}</div>}
-          <div className="sechead" style={{ margin: '12px 0 4px' }}>제조사 공식 노트</div>
+          <div className="sechead in">제조사 공식 노트</div>
           <MakerNoteView note={w.makerNote} />
-          <div className="sechead" style={{ margin: '12px 0 4px' }}>내 메모</div>
+          <div className="sechead in">내 메모</div>
           <PersonalNote bottleId={w.id} initial={bottleNotes.get(w.id) ?? ''} onSaved={() => toast('메모 저장')} />
           <div className="btnrow">
             <button className="btn primary" onClick={() => openLog({ drinkId: w.id, drinkType: w.isWhisky ? 'whisky' : 'spirit', drinkName: w.name, servingStyle: 'neat' })}>기록하기</button>
@@ -298,7 +298,7 @@ export function MyBottlesBrowser() {
   const [grp, setGrp] = useState('all');
   const [detail, setDetail] = useState<string | null>(null);
 
-  const groups = useMemo(() => [...new Set(bottles.map((b) => b.group))], [bottles]);
+  const groups = useMemo(() => allChips([...new Set(bottles.map((b) => b.group))]), [bottles]);
   const rows = useMemo(() => {
     const t = q.trim().toLowerCase();
     return bottles.filter((b) => {
@@ -316,11 +316,8 @@ export function MyBottlesBrowser() {
 
   return (
     <>
-      <div className="controls"><input type="search" placeholder="내 술 이름 검색" value={q} onChange={(e) => setQ(e.target.value)} /></div>
-      <div className="controls">
-        <button className="chip" aria-pressed={grp === 'all'} onClick={() => setGrp('all')}>전체</button>
-        {groups.map((g) => <button key={g} className="chip" aria-pressed={grp === g} onClick={() => setGrp(g)}>{g}</button>)}
-      </div>
+      <SearchBox value={q} onChange={setQ} placeholder="내 술 이름 검색" />
+      <ChipRow value={grp} options={groups} onChange={setGrp} wrap />
       <div className="hint">
         보유 {bottles.length}종 · 항목을 누르면 도수·분류·공식 노트·연결된 표준 재료가 나옵니다.
         새 술은 우하단 <b>+</b> 버튼으로 추가합니다.
@@ -328,7 +325,7 @@ export function MyBottlesBrowser() {
       {rows.length === 0 && !q.trim() && <MasterSuggestions category="all" />}
       {byGroup.map(([g, items]) => (
         <div key={g}>
-          <div className="sechead" style={{ margin: '16px 0 8px' }}>{g} <small style={{ color: 'var(--dim)', fontWeight: 400 }}>{items.length}종</small></div>
+          <div className="sechead in">{g} <small className="sub">{items.length}종</small></div>
           <div className="list">
             {items.map((b) => (
               <BottleCard key={b.id} bottle={b} open={detail === b.id} onToggle={() => setDetail(detail === b.id ? null : b.id)} />
@@ -340,9 +337,17 @@ export function MyBottlesBrowser() {
   );
 }
 
+type WhiskyScope = 'whisky' | 'mine' | 'notes';
+const WHISKY_SCOPES: ChipOption<WhiskyScope>[] = [
+  { v: 'whisky', label: '위스키' },
+  { v: 'mine', label: '내가 추가' },
+  { v: 'notes', label: '공식 노트 있는 전체' },
+];
+const WHISKY_CLASS_CHIPS = allChips(CLASS_FILTERS, '분류 전체');
+
 export function WhiskyBrowser() {
   const [q, setQ] = useState('');
-  const [scope, setScope] = useState<'whisky' | 'mine' | 'notes'>('whisky');
+  const [scope, setScope] = useState<WhiskyScope>('whisky');
   const [cls, setCls] = useState<string>('all');
   const [detail, setDetail] = useState<string | null>(null);
   const whiskies = useWhiskies();
@@ -365,18 +370,9 @@ export function WhiskyBrowser() {
 
   return (
     <>
-      <div className="controls"><input type="search" placeholder="이름·분류(셰리/피트/싱글몰트…) 검색" value={q} onChange={(e) => setQ(e.target.value)} /></div>
-      <div className="controls strip">
-        <button className="chip" aria-pressed={scope === 'whisky'} onClick={() => setScope('whisky')}>위스키</button>
-        <button className="chip" aria-pressed={scope === 'mine'} onClick={() => setScope('mine')}>내가 추가</button>
-        <button className="chip" aria-pressed={scope === 'notes'} onClick={() => setScope('notes')}>공식 노트 있는 전체</button>
-      </div>
-      {scope === 'whisky' && (
-        <div className="controls" style={{ paddingTop: 0 }}>
-          <button className="chip" aria-pressed={cls === 'all'} onClick={() => setCls('all')}>분류 전체</button>
-          {CLASS_FILTERS.map((c) => <button key={c} className="chip" aria-pressed={cls === c} onClick={() => setCls(c)}>{c}</button>)}
-        </div>
-      )}
+      <SearchBox value={q} onChange={setQ} placeholder="이름·분류(셰리/피트/싱글몰트…) 검색" />
+      <ChipRow value={scope} options={WHISKY_SCOPES} onChange={setScope} />
+      {scope === 'whisky' && <ChipRow value={cls} options={WHISKY_CLASS_CHIPS} onChange={setCls} wrap tight />}
       <div className="hint">
         {rows.length}종 · {scope === 'mine'
           ? '내가 추가한 술 전체(위스키 외 카테고리 포함). 삭제는 항목을 눌러 상세에서.'
@@ -403,7 +399,7 @@ export function IngredientBrowser() {
   const [q, setQ] = useState('');
   const [cat, setCat] = useState('all');
   const [ownedOnly, setOwnedOnly] = useState(false);
-  const cats = referenceRepo.categories();
+  const cats = useMemo(() => allChips(referenceRepo.categories()), []);
 
   const rows = useMemo(() => {
     const t = q.trim().toLowerCase();
@@ -432,12 +428,10 @@ export function IngredientBrowser() {
 
   return (
     <>
-      <div className="controls"><input type="search" placeholder="재료 검색" value={q} onChange={(e) => setQ(e.target.value)} /></div>
-      <div className="controls strip">
-        <button className="chip" aria-pressed={cat === 'all'} onClick={() => setCat('all')}>전체</button>
-        {cats.map((c) => <button key={c} className="chip" aria-pressed={cat === c} onClick={() => setCat(c)}>{c}</button>)}
-        <button className="chip ok" aria-pressed={ownedOnly} onClick={() => setOwnedOnly((v) => !v)}>보유만</button>
-      </div>
+      <SearchBox value={q} onChange={setQ} placeholder="재료 검색" />
+      <ChipRow value={cat} options={cats} onChange={setCat}>
+        <ChipToggle label="보유만" cls="ok" on={ownedOnly} onToggle={() => setOwnedOnly((v) => !v)} />
+      </ChipRow>
       <div className="hint">{rows.length}종 · 보유 {rows.filter((r) => heldIds.has(r.id)).length} · 항목을 누르면 어디에 쓰이는지 보여줍니다.</div>
       <div className="items">
         {rows.map((i) => (

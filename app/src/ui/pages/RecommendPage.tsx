@@ -9,7 +9,9 @@ import { useTasteProfiles, useHeldIds, useSubMap, useLogs } from '../../hooks/us
 import { recommendCocktails, recommendWhiskies, type RecommendMode } from '../../services/recommendationService';
 import { recommendGroupCocktails } from '../../services/groupService';
 import { calculatePurchases } from '../../services/purchaseService';
-import { RecCard, ChipRow } from '../components/common';
+import { RecList, ChipRow, ChipMulti, type ChipOption } from '../components/common';
+
+const AVAIL_CHIPS: ChipOption<'avail' | 'all'>[] = [{ v: 'avail', label: '제조 가능만' }, { v: 'all', label: '전체' }];
 
 /** 기분별 추천 모드 — 홈의 '오늘'과 칵테일 추천이 함께 쓴다 */
 export const MODES: { v: RecommendMode; label: string }[] = [
@@ -29,10 +31,7 @@ export function CocktailRec() {
   return (
     <>
       <ChipRow value={mode} options={MODES} onChange={setMode} />
-      <div className="list">
-        {recs.length === 0 && <div className="empty">조건에 맞는 추천이 없습니다.</div>}
-        {recs.map((r) => <RecCard key={r.id} rec={r} onClick={() => openCocktail(r.id)} />)}
-      </div>
+      <RecList recs={recs} onPick={(r) => openCocktail(r.id)} empty="조건에 맞는 추천이 없습니다." />
     </>
   );
 }
@@ -44,9 +43,7 @@ export function WhiskyRec() {
   return (
     <>
       <div className="hint">보유 위스키를 취향·신선도로 정렬합니다.</div>
-      <div className="list">
-        {recs.map((r) => <RecCard key={r.id} rec={r} onClick={() => openLog({ drinkId: r.id, drinkType: 'whisky', drinkName: r.name, servingStyle: 'neat' })} />)}
-      </div>
+      <RecList recs={recs} onPick={(r) => openLog({ drinkId: r.id, drinkType: 'whisky', drinkName: r.name, servingStyle: 'neat' })} />
     </>
   );
 }
@@ -61,6 +58,7 @@ export function GroupRec() {
   const [onlyAvail, setOnlyAvail] = useState(true);
 
   const chosen = profiles.filter((p) => selected.has(p.id));
+  const profileChips = useMemo(() => profiles.map((p) => ({ v: p.id, label: p.name })), [profiles]);
   const recs = useMemo(() => {
     if (chosen.length === 0) return [];
     return recommendGroupCocktails({ profiles: chosen.map((p) => ({ name: p.name, vector: p.vector })), heldIds, subMap, logs }, onlyAvail, 30);
@@ -71,17 +69,10 @@ export function GroupRec() {
   return (
     <>
       <div className="hint">함께 마실 사람을 선택하세요. 평균이 아니라, 한 명이라도 매우 싫어하는 향미가 강한 술은 감점됩니다. (프로필은 프로필 탭에서 추가)</div>
-      <div className="controls strip">
-        {profiles.map((p) => <button key={p.id} className="chip" aria-pressed={selected.has(p.id)} onClick={() => toggle(p.id)}>{p.name}</button>)}
-      </div>
-      <div className="controls">
-        <button className="chip" aria-pressed={onlyAvail} onClick={() => setOnlyAvail(true)}>제조 가능만</button>
-        <button className="chip" aria-pressed={!onlyAvail} onClick={() => setOnlyAvail(false)}>전체</button>
-      </div>
+      <ChipMulti options={profileChips} values={[...selected]} onToggle={toggle} />
+      <ChipRow value={onlyAvail ? 'avail' : 'all'} options={AVAIL_CHIPS} onChange={(v) => setOnlyAvail(v === 'avail')} wrap />
       {chosen.length < 2 && <div className="hint">2명 이상 선택 시 그룹 패널티가 의미를 가집니다. (현재 {chosen.length}명)</div>}
-      <div className="list">
-        {recs.map((r) => <RecCard key={r.id} rec={r} onClick={() => openCocktail(r.id)} />)}
-      </div>
+      <RecList recs={recs} onPick={(r) => openCocktail(r.id)} />
     </>
   );
 }
@@ -93,9 +84,7 @@ export function ClearStockRec() {
   return (
     <>
       <div className="hint">잔량이 적은 보유 재료를 활용하는 레시피를 우선합니다. (술장 → 재고에서 잔량을 입력하세요)</div>
-      <div className="list">
-        {recs.map((r) => <RecCard key={r.id} rec={r} onClick={() => openCocktail(r.id)} />)}
-      </div>
+      <RecList recs={recs} onPick={(r) => openCocktail(r.id)} />
     </>
   );
 }

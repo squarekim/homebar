@@ -2,19 +2,14 @@
  * groupService — 여러 사람의 TasteProfile 을 합친 그룹 추천.
  * 평균만 쓰지 않고, 한 명이라도 매우 싫어하는 향미가 강한 술에는 패널티를 준다.
  */
-import { type FlavorVector, type RecommendationResult, type DrinkLog, FLAVOR_LABELS_KO } from '../models/types';
+import { type FlavorVector, type RecommendationResult, FLAVOR_LABELS_KO, type StockContext } from '../models/types';
 import { referenceRepo } from '../repositories/referenceRepo';
-import { evaluateCocktail } from './availabilityService';
+import { evaluateCocktail, AVAIL_SCORE } from './availabilityService';
 import { groupTasteMatch, topAxes } from './flavorService';
 
-export interface GroupContext {
+export interface GroupContext extends StockContext {
   profiles: { name: string; vector: FlavorVector }[];
-  heldIds: Set<string>;
-  subMap: Map<string, string[]>;
-  logs: DrinkLog[];
 }
-
-const AVAIL_SCORE = { READY: 100, SUBSTITUTE: 78, MISSING: 40, UNAVAILABLE: 5 } as const;
 
 function groupReason(flavor: FlavorVector, penalty: number): string {
   const parts: string[] = [];

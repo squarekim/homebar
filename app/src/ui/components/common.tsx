@@ -1,9 +1,49 @@
-import { type SyntheticEvent } from 'react';
-import { type MethodKey, METHOD_LABELS_KO, type AvailabilityStatus, type FlavorVector, FLAVOR_AXES, FLAVOR_LABELS_KO, type RecommendationResult, type MakerNote, type WhiskyClass } from '../../models/types';
+import { useEffect, type ReactNode, type SyntheticEvent } from 'react';
+import { type MethodKey, METHOD_LABELS_KO, type AvailabilityStatus, type FlavorVector, FLAVOR_AXES, FLAVOR_LABELS_KO, type RecommendationResult, type MakerNote, type WhiskyClass, type DrinkLog, SERVING_LABELS_KO } from '../../models/types';
 import { STATUS_LABEL_KO } from '../../services/availabilityService';
 import { lookupTerm, normalizeTerm } from '../../data/glossary';
 import { useUI } from '../UIContext';
 import { IconBuild, IconShake, IconStir, IconMuddle, IconBlend, IconLayer, IconSwizzle, IconFloat } from './icons';
+
+/**
+ * 모달 껍데기 — 스크림 · 닫기 버튼 · ESC 닫기 · 배경 스크롤 잠금.
+ * 다이얼로그 네 곳이 같은 마크업을 각자 들고 있었고, 그 어느 것도 ESC 로 닫히지 않았다.
+ * `.modal` 은 열림 전환(opacity)을 위해 항상 마운트된 채 `on` 만 토글한다.
+ */
+export function Modal({ open, onClose, shell = 'modal', children }: {
+  open: boolean;
+  onClose: () => void;
+  /** 화면 가운데 큰 다이얼로그(modal) / 하단 용어 팝오버(terminfo) */
+  shell?: 'modal' | 'terminfo';
+  children?: ReactNode;
+}) {
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    const prev = document.body.style.overflow;
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [open, onClose]);
+
+  if (shell === 'terminfo' && !open) return null;
+  return (
+    <>
+      <div className={`scrim ${open ? 'on' : ''}`.trim()} onClick={onClose} />
+      <div className={`${shell} ${open ? 'on' : ''}`.trim()} role="dialog" aria-modal="true">
+        {open && (
+          <>
+            <button className="close" onClick={onClose} aria-label="닫기">×</button>
+            {children}
+          </>
+        )}
+      </div>
+    </>
+  );
+}
 
 /** 해설이 붙는 분류 태그. 데스크톱은 hover(native title), 모바일/클릭은 고정 팝오버(어떤 컨테이너에도 안 잘림). */
 export function Term({ label, term, className }: { label: string; term?: string; className?: string }) {
@@ -110,6 +150,35 @@ export function FlavorBars({ vector, compact }: { vector: FlavorVector; compact?
   );
 }
 
+/** 추천 카드 목록 — 추천 화면 4곳이 같은 래퍼를 반복하고 있었다 */
+export function RecList({ recs, onPick, empty }: {
+  recs: RecommendationResult[];
+  onPick: (rec: RecommendationResult) => void;
+  empty?: string | undefined;
+}) {
+  return (
+    <div className="list">
+      {recs.length === 0 && empty && <div className="empty">{empty}</div>}
+      {recs.map((r) => <RecCard key={r.id} rec={r} onClick={() => onPick(r)} />)}
+    </div>
+  );
+}
+
+/** 음용 기록 카드 (홈 '최근 기록' · 프로필 '음용 기록' 공용). 추가 액션은 children 으로. */
+export function LogCard({ log, children }: { log: DrinkLog; children?: ReactNode }) {
+  return (
+    <div className="card">
+      <h3>{log.drinkName}<em>{new Date(log.date).toLocaleDateString('ko')}</em></h3>
+      <div className="meta">
+        <span className="mi">{SERVING_LABELS_KO[log.servingStyle]}</span>
+        <span className="mi">{'★'.repeat(log.rating)}{'☆'.repeat(5 - log.rating)}</span>
+        {log.retryIntent && <span className="mi">재음용</span>}
+      </div>
+      {children}
+    </div>
+  );
+}
+
 export function RecCard({ rec, onClick }: { rec: RecommendationResult; onClick?: () => void }) {
   return (
     <button className="rec" onClick={onClick}>
@@ -128,21 +197,90 @@ export function RecCard({ rec, onClick }: { rec: RecommendationResult; onClick?:
   );
 }
 
+/**
+ * 칩·검색 UI — 화면 곳곳에서 같은 마크업을 손으로 반복하지 않도록 한곳에 모았다.
+ * 선택 상태는 aria-pressed 로 표현하고 스타일은 .chip 이 전담한다.
+ */
+
+export interface ChipOption<T extends string> {
+  v: T;
+  label: string;
+  /** 상태 색을 다르게 줄 때 (ok / no) */
+  cls?: string | undefined;
+}
+
+/** 문자열 목록을 그대로 칩 옵션으로 */
+export function chips(values: readonly string[]): ChipOption<string>[] {
+  return values.map((v) => ({ v, label: v }));
+}
+
+/** 문자열 목록을 칩 옵션으로. 맨 앞에 '전체'(값 `all`)를 붙인다 — 가장 흔한 필터 모양. */
+export function allChips(values: readonly string[], allLabel = '전체'): ChipOption<string>[] {
+  return [{ v: 'all', label: allLabel }, ...chips(values)];
+}
+
+interface ChipBarProps {
+  /** 가로 스크롤(strip) 대신 줄바꿈 */
+  wrap?: boolean | undefined;
+  /** 위 여백 제거 (제목 바로 아래 붙일 때) */
+  tight?: boolean | undefined;
+  className?: string | undefined;
+  /** 같은 줄 끝에 덧붙일 칩 (예: 보유만 토글) */
+  children?: ReactNode;
+}
+
+function barClass({ wrap, tight, className }: ChipBarProps) {
+  return ['controls', wrap ? '' : 'strip', tight ? 'tight' : '', className ?? ''].filter(Boolean).join(' ');
+}
+
+/** 하나만 고르는 칩 줄 (서브탭·필터) */
 export function ChipRow<T extends string>({
-  value, options, onChange, className,
-}: {
+  value, options, onChange, children, ...bar
+}: ChipBarProps & {
   value: T;
-  options: { v: T; label: string; cls?: string }[];
+  options: readonly ChipOption<T>[];
   onChange: (v: T) => void;
-  className?: string;
 }) {
   return (
-    <div className={`controls strip ${className ?? ''}`}>
+    <div className={barClass(bar)}>
       {options.map((o) => (
-        <button key={o.v} className={`chip ${o.cls ?? ''}`} aria-pressed={value === o.v} onClick={() => onChange(o.v)}>
+        <button key={o.v} className={`chip ${o.cls ?? ''}`.trim()} aria-pressed={value === o.v} onClick={() => onChange(o.v)}>
           {o.label}
         </button>
       ))}
+      {children}
+    </div>
+  );
+}
+
+/** 여러 개를 켜고 끄는 칩 줄 (캐스크·캐릭터·인원 등) */
+export function ChipMulti<T extends string>({
+  options, values, onToggle, children, ...bar
+}: ChipBarProps & {
+  options: readonly ChipOption<T>[];
+  values: readonly T[];
+  onToggle: (v: T) => void;
+}) {
+  return (
+    <div className={barClass(bar)}>
+      {options.map((o) => (
+        <button key={o.v} className="chip" aria-pressed={values.includes(o.v)} onClick={() => onToggle(o.v)}>{o.label}</button>
+      ))}
+      {children}
+    </div>
+  );
+}
+
+/** 단독 on/off 칩 (보유만·바로 가능·잔량 표시) */
+export function ChipToggle({ label, on, onToggle, cls }: { label: string; on: boolean; onToggle: () => void; cls?: string | undefined }) {
+  return <button className={`chip ${cls ?? ''}`.trim()} aria-pressed={on} onClick={onToggle}>{label}</button>;
+}
+
+/** 목록 위의 검색 입력 — 6개 화면이 같은 마크업을 쓰고 있었다 */
+export function SearchBox({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {
+  return (
+    <div className="controls">
+      <input type="search" value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} />
     </div>
   );
 }
