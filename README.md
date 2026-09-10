@@ -58,13 +58,36 @@ MVP는 **서버 없음**(전부 브라우저 저장), 추후 Capacitor로 Androi
 ```bash
 cd app
 npm install
-npm run dev      # 개발 서버
-npm run build    # 타입체크 + 프로덕션 빌드(dist/)
-npm run preview  # 빌드 결과 미리보기
-npm test         # 핵심 로직 단위 테스트(vitest)
+npm run dev           # 개발 서버 (personal 프로필)
+npm run build         # 타입체크 + 프로덕션 빌드(dist/) — 내 데이터 포함
+npm run build:public  # 공개 배포 빌드(dist-public/) — 개인 데이터 제외
+npm run preview       # 빌드 결과 미리보기
+npm test              # 핵심 로직 단위 테스트(vitest)
 ```
 
-GitHub Pages 배포 시 `app/`을 빌드해 `dist/`를 게시한다(`base: './'`로 상대경로 산출).
+### 배포 (GitHub Pages)
+
+`.github/workflows/deploy-pages.yml` 이 `main` 푸시(또는 Actions 탭의 수동 실행)마다
+`npm run build:public` 결과를 Pages 에 올린다. 최초 1회만 **Settings → Pages → Source 를 `GitHub Actions`** 로 바꾸면 된다.
+
+| 경로 | 내용 |
+|---|---|
+| `https://<user>.github.io/homebar/` | 홈바 플랫폼 (공개 프로필) |
+| `https://<user>.github.io/homebar/legacy/` | 기존 단일 파일 앱(`index.html`) — 링크 유지용 |
+
+### 빌드 프로필 — 개인 데이터 분리
+
+| | personal (`npm run build`) | public (`npm run build:public`) |
+|---|---|---|
+| 레시피 202 · 재료 128 · 믹서 · 주류 마스터 275 | 포함 | **포함** |
+| 보유 주류 컬렉션 82종 (`SEED.bottles`) | 포함 | **번들에서 제외** |
+| 개인 재고 69건 (`ings[].own`) | 포함 | **제외** → 기본 홈바 세트 41종으로 시드(정규 79 · 근사 7) |
+| 레거시 개인 컬렉션 매트릭스 24행 | 포함 | **제외** |
+| 개인 병 분류·공식 노트 레코드(보유 목록이 드러남) | 포함 | **빈 스텁으로 치환** |
+
+공개 빌드는 `scripts/makePublicSeed.mjs` 가 생성한 `seed.public.ts` 를 vite 플러그인이 원본 대신 물려 만든다.
+**원본 `seed.ts` 는 수정하지 않으며**, 개인 기록(재고·음용 로그·취향·메모)은 원래 브라우저 IndexedDB 에만 있어 배포물에 포함되지 않는다.
+내 데이터를 공개 앱에서 다시 쓰려면 personal 빌드에서 **프로필 → JSON 백업** 후 공개 앱에서 복원하면 된다.
 
 ### 데이터 재사용
 
@@ -94,7 +117,7 @@ GitHub Pages 배포 시 `app/`을 빌드해 `dist/`를 게시한다(`base: './'`
 - **추천 엔진** — 외부 AI 없이 동작. `totalScore = taste·inventory·availability·novelty` 결합, cosine similarity 기반, 점수와 이유 반환
 - **그룹 추천** — 다인 취향 결합. 평균이 아니라, 한 명이라도 매우 싫어하는 향미가 강한 술에 패널티
 - **구매 추천** — 재료 하나 구매 시 추가 제조 가능 레시피 수(구매 전/후/증가)와 취향·활용도로 순위화
-- **술 추가(제품 검색 자동 입력)** — 위스키 탭의 `+ 술 추가`. **제품명만 검색해 고르면** 대분류·세부분류·브랜드·도수·용량·원산지·위스키 분류(싱글몰트/셰리/스카치…)·칵테일 표준 재료가 **자동으로 채워진다**. 사용자는 분류를 판단하지 않는다.
+- **술 추가(제품 검색 자동 입력)** — 어느 탭에서든 **우하단 + 플로팅 버튼**. **제품명만 검색해 고르면** 대분류·세부분류·브랜드·도수·용량·원산지·위스키 분류(싱글몰트/셰리/스카치…)·칵테일 표준 재료가 **자동으로 채워진다**. 사용자는 분류를 판단하지 않는다.
   - 기준 DB `liquor_master` 275종(`app/src/data/liquorMaster.ts`) — 국내에서 실제 구입 가능한 제품 위주. 위스키·진·보드카·럼·데킬라·메즈칼·브랜디·리큐르·베르무트·와인·맥주·사케/소주·기타 증류주·칵테일 부재료 14개 카테고리
   - 검색은 **완전일치 → 별칭 → 부분일치(접두·포함·토큰) → 퍼지(초성·부분열·편집거리)** 순(`app/src/services/liquorSearchService.ts`, 외부 의존성 없음). `발베니 12` → 발베니 더블우드 12년, `조니블랙` → 조니워커 블랙라벨, `메이커스` → 메이커스 마크, 영문/한글/띄어쓰기 차이 흡수
   - **제품 → 표준 재료 → 레시피** 구조. 제품명으로 레시피를 매칭하지 않고, 재고 DB와 레시피 DB가 같은 canonical ingredient ID를 참조한다(예: 봄베이 사파이어 → `런던 드라이 진` → 진토닉·네그로니·마티니). 추가 시 해당 재료 재고가 켜져 판정이 즉시 갱신된다

@@ -11,8 +11,9 @@ import { evaluateCocktail } from '../../services/availabilityService';
 import { StatusBadge, FlavorBars, MakerNoteView, WhiskyClassTags } from './common';
 import { CLASS_FILTERS, classMatchesTerm, classTags } from '../../data/whiskyClass';
 import { AvailabilityStatus } from '../../models/types';
-import { AddBottleDialog } from './AddBottleDialog';
 import { isUserBottle } from '../../data/userBottles';
+import { LIQUOR_MASTER } from '../../data/liquorMaster';
+import { CATEGORY_LABELS } from '../../data/liquorCategory';
 import { bottleService } from '../../services/bottleService';
 
 function PersonalNote({ bottleId, initial, onSaved }: { bottleId: string; initial: string; onSaved: () => void }) {
@@ -90,13 +91,47 @@ export function CocktailBrowser() {
   );
 }
 
+/** 컬렉션이 비었을 때 — 기준 DB에서 대표 제품을 보여주고 탭하면 바로 추가 흐름으로 넘긴다. */
+function MasterSuggestions({ category }: { category: 'whisky' | 'all' }) {
+  const { openAdd } = useUI();
+  const picks = useMemo(() => {
+    const pool = category === 'whisky' ? LIQUOR_MASTER.filter((i) => i.category === 'whisky') : LIQUOR_MASTER;
+    const seen = new Set<string>();
+    return pool.filter((i) => {
+      const key = category === 'whisky' ? i.subcategory + i.country : i.category;
+      if (seen.has(key + i.brand)) return false;
+      seen.add(key + i.brand);
+      return true;
+    }).slice(0, 12);
+  }, [category]);
+  return (
+    <>
+      <div className="sechead">기준 DB에서 골라 담기</div>
+      <div className="hint">우하단 <b>+</b> 버튼으로도 언제든 추가할 수 있습니다. 제품을 누르면 검색창에 채워집니다.</div>
+      <div className="list">
+        {picks.map((i) => (
+          <button className="card row" key={i.id} style={{ width: '100%', textAlign: 'left' }} onClick={() => openAdd(i.nameKo)}>
+            <h3>{i.nameKo}<em>담기 +</em></h3>
+            <div className="hint" style={{ margin: '2px 0 4px' }}>{i.nameEn}</div>
+            <div className="meta">
+              <span className="mi">{CATEGORY_LABELS[i.category]}</span>
+              <span className="mi">{i.subcategory}</span>
+              {i.abv ? <span className="mi">{i.abv}%</span> : null}
+              <span className="mi">{i.country}</span>
+            </div>
+          </button>
+        ))}
+      </div>
+    </>
+  );
+}
+
 export function WhiskyBrowser() {
   const { openLog, toast } = useUI();
   const [q, setQ] = useState('');
   const [scope, setScope] = useState<'whisky' | 'mine' | 'notes'>('whisky');
   const [cls, setCls] = useState<string>('all');
   const [detail, setDetail] = useState<string | null>(null);
-  const [adding, setAdding] = useState(false);
   const bottleNotes = useBottleNotes();
   const whiskies = useWhiskies();
   const allBottles = useBottles();
@@ -118,9 +153,6 @@ export function WhiskyBrowser() {
 
   return (
     <>
-      <div className="btnrow" style={{ margin: '12px 0 2px' }}>
-        <button className="btn primary" onClick={() => setAdding(true)}>+ 술 추가</button>
-      </div>
       <div className="controls"><input type="search" placeholder="이름·분류(셰리/피트/싱글몰트…) 검색" value={q} onChange={(e) => setQ(e.target.value)} /></div>
       <div className="controls strip">
         <button className="chip" aria-pressed={scope === 'whisky'} onClick={() => setScope('whisky')}>위스키</button>
@@ -138,6 +170,9 @@ export function WhiskyBrowser() {
           ? '내가 추가한 술 전체(위스키 외 카테고리 포함). 삭제는 항목을 눌러 상세에서.'
           : '위스키는 원산지·타입·지역·캐스크·캐릭터로 분류됩니다. 제조사 공식 노트는 출처와 함께 표기.'}
       </div>
+      {rows.length === 0 && !q.trim() && cls === 'all' && (
+        <MasterSuggestions category={scope === 'whisky' ? 'whisky' : 'all'} />
+      )}
       <div className="list">
         {rows.map((w) => (
           <div className="card" key={w.id}>
@@ -165,7 +200,6 @@ export function WhiskyBrowser() {
           </div>
         ))}
       </div>
-      <AddBottleDialog open={adding} onClose={() => setAdding(false)} />
     </>
   );
 }

@@ -10,7 +10,10 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run",
-    "build:demo": "vite build --config vite.config.demo.ts"
+    "build:demo": "vite build --config vite.config.demo.ts",
+    "build:public": "tsc --noEmit -p tsconfig.json && vite build --mode public",
+    "seed:public": "node scripts/makePublicSeed.mjs",
+    "build:demo:public": "vite build --config vite.config.demo.ts --mode public"
   },
   "dependencies": {
     "dexie": "^4.0.10",

@@ -8,3 +8,6 @@ _smoke.mjs
 *.tsbuildinfo
 dist-demo
 *-artifact.html
+dist-public
+dist-demo-public
+src/data/seed.public.ts

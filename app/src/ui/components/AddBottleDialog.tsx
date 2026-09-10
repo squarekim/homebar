@@ -64,7 +64,7 @@ function guessIngredientName(category: LiquorCategory, name: string): string | u
   return CATEGORY_DEFAULT_INGREDIENT[category];
 }
 
-export function AddBottleDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: boolean; onClose: () => void; initialQuery?: string }) {
   const { toast } = useUI();
   const [step, setStep] = useState<Step>('search');
   const [q, setQ] = useState('');
@@ -92,11 +92,11 @@ export function AddBottleDialog({ open, onClose }: { open: boolean; onClose: () 
 
   useEffect(() => {
     if (!open) return;
-    setStep('search'); setQ(''); setPicked(null);
+    setStep('search'); setQ(initialQuery); setPicked(null);
     setName(''); setCategory('whisky'); setAbv(''); setVolume(''); setQty(1); setUse('시음-축');
     setNote(''); setIngName(''); setLink(true); setDetail(false); setSaving(false);
     setOrigin('스카치'); setType('싱글몰트'); setRegion(''); setCasks([]); setChars([]);
-  }, [open]);
+  }, [open, initialQuery]);
 
   const hits = useMemo(() => (open ? searchLiquor(q, { limit: 8 }) : []), [q, open]);
 

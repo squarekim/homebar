@@ -1,0 +1,55 @@
+# GitHub Pages 배포 — app/ 를 공개 프로필(개인 데이터 제외)로 빌드해 사이트 루트에 올린다.
+# 레거시 단일 파일 앱(index.html)은 /legacy/ 로 함께 배포되어 기존 링크가 죽지 않는다.
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths: ['app/**', 'index.html', '.github/workflows/deploy-pages.yml']
+  workflow_dispatch: {}   # 다른 브랜치에서 수동 배포할 때 사용
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - name: Install
+        working-directory: app
+        run: npm ci
+      - name: Build (public profile — 개인 보유 데이터 제외)
+        working-directory: app
+        run: npm run build:public
+      - name: Assemble site
+        run: |
+          rm -rf _site
+          mkdir -p _site/legacy
+          cp -r app/dist-public/. _site/
+          cp index.html _site/legacy/index.html
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

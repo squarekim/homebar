@@ -4,6 +4,7 @@ import { useHeldIds, useSubMap } from '../hooks/useData';
 import { evaluateAll, tallyStatus } from '../services/availabilityService';
 import { CocktailModal } from './components/CocktailModal';
 import { LogDialog } from './components/LogDialog';
+import { AddBottleDialog } from './components/AddBottleDialog';
 import { HomePage } from './pages/HomePage';
 import { HomeBarPage } from './pages/HomeBarPage';
 import { WhiskyPage } from './pages/WhiskyPage';
@@ -25,7 +26,7 @@ function Shell() {
   const [tab, setTab] = useState<Tab>('home');
   const heldIds = useHeldIds();
   const subMap = useSubMap();
-  const { toastMsg, termInfo, closeTerm } = useUI();
+  const { toastMsg, termInfo, closeTerm, addOpen, addQuery, openAdd, closeAdd } = useUI();
 
   const tally = useMemo(() => tallyStatus(evaluateAll(heldIds, subMap)), [heldIds, subMap]);
 
@@ -66,6 +67,12 @@ function Shell() {
         {tab === 'profile' && <ProfilePage />}
       </main>
 
+      <button className="fab" onClick={() => openAdd()} aria-label="술 추가" title="술 추가">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+          <path d="M12 5v14M5 12h14" />
+        </svg>
+      </button>
+
       <nav className="tabbar">
         <div className="wrap">
           {TABS.map((t) => (
@@ -78,6 +85,7 @@ function Shell() {
 
       <CocktailModal />
       <LogDialog />
+      <AddBottleDialog open={addOpen} initialQuery={addQuery} onClose={closeAdd} />
       {termInfo && (
         <>
           <div className="scrim on" onClick={closeTerm} />

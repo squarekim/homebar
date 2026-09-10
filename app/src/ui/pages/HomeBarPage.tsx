@@ -7,6 +7,7 @@ import { useUI } from '../UIContext';
 import { useInventory, inventoryRepo } from '../../hooks/useData';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { resetInventoryToSeed } from '../../db/migrate';
+import { IS_PUBLIC } from '../../config';
 import { CocktailBrowser, IngredientBrowser } from '../components/browsers';
 
 type Sub = 'cocktail' | 'stock' | 'ingredient';
@@ -54,7 +55,7 @@ function StockManager() {
         <button className="chip" aria-pressed={showRemaining} onClick={() => setShowRemaining((v) => !v)}>잔량 표시</button>
       </div>
       <div className="btnrow">
-        <button className="btn" onClick={async () => { await resetInventoryToSeed(); toast('기본 컬렉션으로 초기화'); }}>기본 컬렉션</button>
+        <button className="btn" onClick={async () => { await resetInventoryToSeed(); toast(IS_PUBLIC ? '기본 홈바 세트로 초기화' : '기본 컬렉션으로 초기화'); }}>{IS_PUBLIC ? '기본 홈바 세트' : '기본 컬렉션'}</button>
         <button className="btn" onClick={async () => { await inventoryRepo.setAll(true, allIngredients.map((i) => ({ id: i.id, name: i.name }))); toast('전부 보유'); }}>전부 보유</button>
         <button className="btn" onClick={async () => { await inventoryRepo.setAll(false, allIngredients.map((i) => ({ id: i.id, name: i.name }))); toast('전부 해제'); }}>전부 해제</button>
       </div>

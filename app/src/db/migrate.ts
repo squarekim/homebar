@@ -7,6 +7,13 @@
 import { db } from './schema';
 import { ingredients, ingredientIdOf, substitutions as seedSubs } from '../data/adapters';
 import { InventoryItem, TasteProfile, FLAVOR_AXES, FlavorVector } from '../models/types';
+import { IS_PUBLIC, STARTER_INVENTORY } from '../config';
+
+/** 기본 재고 = 공개 배포면 '기본 홈바 세트', 개인 빌드면 원본 own 플래그 */
+const STARTER = new Set(STARTER_INVENTORY);
+function defaultOwned(ing: { name: string; seedOwned: boolean }): boolean {
+  return IS_PUBLIC ? STARTER.has(ing.name) : ing.seedOwned;
+}
 
 const SEED_VERSION = 1;
 const LEGACY_KEY = 'homebar.v54.held';
@@ -39,7 +46,7 @@ export async function ensureSeeded(): Promise<void> {
     const invCount = await db.inventory.count();
     if (invCount === 0) {
       const rows: InventoryItem[] = ingredients.map((ing) => {
-        const owned = legacy ? legacy.has(ing.name) : ing.seedOwned;
+        const owned = legacy ? legacy.has(ing.name) : defaultOwned(ing);
         return {
           ingredientId: ing.id,
           ingredientName: ing.name,
@@ -69,16 +76,13 @@ export async function ensureSeeded(): Promise<void> {
   });
 }
 
-/** 재고를 원본 기본 컬렉션으로 리셋(레거시의 '기본 컬렉션' 버튼 대응) */
+/** 재고를 기본 구성으로 리셋(레거시의 '기본 컬렉션' 버튼 대응) */
 export async function resetInventoryToSeed(): Promise<void> {
   const now = Date.now();
-  const rows: InventoryItem[] = ingredients.map((ing) => ({
-    ingredientId: ing.id,
-    ingredientName: ing.name,
-    owned: ing.seedOwned,
-    remaining: ing.seedOwned ? 100 : 0,
-    updatedAt: now,
-  }));
+  const rows: InventoryItem[] = ingredients.map((ing) => {
+    const owned = defaultOwned(ing);
+    return { ingredientId: ing.id, ingredientName: ing.name, owned, remaining: owned ? 100 : 0, updatedAt: now };
+  });
   await db.inventory.bulkPut(rows);
 }
 
