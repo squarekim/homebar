@@ -34,3 +34,7 @@ export const STARTER_INVENTORY: string[] = [
   // 상비
   '물', '우유', '생크림', '계란흰자',
 ];
+
+
+/** 이 화면이 어느 빌드인지 (프로필 하단에 표시) */
+export const BUILD_STAMP: string = typeof __BUILD__ === 'string' ? __BUILD__ : '개발 중';

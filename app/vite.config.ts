@@ -3,6 +3,15 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import { makePublicSeed } from './scripts/makePublicSeed.mjs';
 import { publicSeedPlugin } from './scripts/publicSeedPlugin.mjs';
+import { execSync } from 'node:child_process';
+
+/** 배포된 결과물이 어느 커밋인지 화면에서 확인할 수 있게 빌드 시각·커밋을 심는다 */
+function buildStamp() {
+  const at = new Date().toISOString().slice(0, 16).replace('T', ' ');
+  let sha = 'local';
+  try { sha = execSync('git rev-parse --short HEAD').toString().trim(); } catch { /* git 없는 환경 */ }
+  return `${at} · ${sha}`;
+}
 
 // base './' 로 상대경로 산출 → GitHub Pages 및 추후 Capacitor(file://) 양쪽 호환
 // mode 'public' → 개인 보유 데이터가 빠진 seed.public.ts 를 대신 번들한다(.env.public).
@@ -15,6 +24,7 @@ export default defineConfig(({ mode }) => {
   }
   return {
     base: './',
+    define: { __BUILD__: JSON.stringify(buildStamp()) },
     plugins: [
       isPublic && publicSeedPlugin(),
       react(),

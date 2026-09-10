@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import { useUI } from '../UIContext';
+import { BUILD_STAMP } from '../../config';
 import { useMe, useTasteProfiles, useLogs } from '../../hooks/useData';
 import { tasteService } from '../../services/tasteService';
 import { tasteProfileRepo } from '../../repositories/tasteProfileRepo';
@@ -170,6 +171,12 @@ function BackupRestore() {
         <button className="btn primary" onClick={doExport}>JSON 내보내기</button>
         <button className="btn" onClick={() => fileRef.current?.click()}>JSON 복원</button>
         <input ref={fileRef} type="file" accept="application/json" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) doImport(f); e.target.value = ''; }} />
+      </div>
+
+      <div className="sechead">버전</div>
+      <div className="hint">
+        지금 보고 있는 화면: <b>{BUILD_STAMP}</b>
+        <br />최신이 아니라면 브라우저를 완전히 닫았다 열거나, 새로고침을 한 번 더 해주세요.
       </div>
     </>
   );
