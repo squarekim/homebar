@@ -263,6 +263,9 @@ describe('간단 조합(빌드) 모음', () => {
     const { simpleBuilds } = await import('../services/simpleBuildService');
     const rows = simpleBuilds();
     expect(rows.length).toBeGreaterThan(60);
+    // 조합표 믹서는 상비 4종(플레인 탄산수·토닉·콜라·오렌지)으로만 간다
+    const pairingMixers = new Set(rows.filter((r) => r.kind === 'pairing').map((r) => r.parts[1]));
+    expect([...pairingMixers].sort()).toEqual(['오렌지 주스', '콜라', '클럽소다', '토닉워터']);
     expect(new Set(rows.map((r) => r.name)).size).toBe(rows.length); // 이름 중복 없음
     const recipeRows = rows.filter((r) => r.kind === 'recipe');
     expect(recipeRows.every((r) => r.cocktail!.methodKeys[0] === 'build')).toBe(true);
@@ -279,5 +282,31 @@ describe('간단 조합(빌드) 모음', () => {
     // 믹서만 빼면 기주는 있으므로 일부부족
     const noMixer = new Set([...held].filter((id) => id !== pairing.mixerIngredientId));
     expect(evaluateSimpleBuild(pairing, noMixer).status).toBe('MISSING');
+  });
+});
+
+
+describe('내 술 기반 추천 · 보유 재료', () => {
+  it('조합표 권장은 고정 제품명이 아니라 내가 가진 술에서 고른다', async () => {
+    const { simpleBuilds, pickMyBottles } = await import('../services/simpleBuildService');
+    const jackCoke = simpleBuilds().find((r) => r.name === '잭콕')!;
+    // 이름이 겹치는 병을 먼저 고른다
+    const withJack = pickMyBottles(jackCoke, bottles);
+    expect(withJack.some((b) => b.name.includes('잭 다니엘'))).toBe(true);
+    // 그 병이 없으면 같은 대분류(위스키)에서 고른다
+    const noJack = bottles.filter((b) => !b.name.includes('잭 다니엘'));
+    const fallback = pickMyBottles(jackCoke, noJack);
+    expect(fallback.length).toBeGreaterThan(0);
+    expect(fallback.every((b) => b.isWhisky)).toBe(true);
+    // 가진 술이 하나도 없으면 빈 배열 → 화면은 "추가하세요" 안내를 띄운다
+    expect(pickMyBottles(jackCoke, [])).toHaveLength(0);
+  });
+
+  it('진 조합은 진 병만 추천한다', async () => {
+    const { simpleBuilds, pickMyBottles } = await import('../services/simpleBuildService');
+    const gt = simpleBuilds().find((r) => r.name === '진 토닉')!;
+    const mine = pickMyBottles(gt, bottles);
+    expect(mine.length).toBeGreaterThan(0);
+    expect(mine.every((b) => b.group === '진')).toBe(true);
   });
 });

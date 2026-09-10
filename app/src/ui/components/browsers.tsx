@@ -8,7 +8,7 @@ import { useHeldIds, useSubMap, useBottleNotes, useWhiskies, useBottles } from '
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { bottleNoteRepo } from '../../repositories/bottleNoteRepo';
 import { evaluateCocktail } from '../../services/availabilityService';
-import { simpleBuilds, evaluateSimpleBuild } from '../../services/simpleBuildService';
+import { simpleBuilds, evaluateSimpleBuild, pickMyBottles } from '../../services/simpleBuildService';
 import { StatusBadge, FlavorBars, MakerNoteView, WhiskyClassTags, MethodIcon } from './common';
 import { CLASS_FILTERS, classMatchesTerm, classTags } from '../../data/whiskyClass';
 import { AvailabilityStatus } from '../../models/types';
@@ -141,10 +141,12 @@ function MasterSuggestions({ category }: { category: 'whisky' | 'all' }) {
 export function SimpleBuildBrowser() {
   const heldIds = useHeldIds();
   const subMap = useSubMap();
+  const bottles = useBottles();
   const { openCocktail } = useUI();
   const [q, setQ] = useState('');
   const [grp, setGrp] = useState('all');
   const [readyOnly, setReadyOnly] = useState(false);
+  const [open, setOpen] = useState<string | null>(null);
 
   const all = useMemo(() => simpleBuilds(), []);
   const groups = useMemo(() => [...new Set(all.map((b) => b.group))], [all]);
@@ -157,7 +159,7 @@ export function SimpleBuildBrowser() {
         if (grp !== 'all' && b.group !== grp) return false;
         if (readyOnly && e.status !== 'READY') return false;
         if (!t) return true;
-        return (b.name + ' ' + b.parts.join(' ') + ' ' + (b.recommended ?? '')).toLowerCase().includes(t);
+        return (b.name + ' ' + b.parts.join(' ')).toLowerCase().includes(t);
       })
       .sort((x, y) => rank(y.e.status) - rank(x.e.status) || x.b.name.localeCompare(y.b.name, 'ko'));
   }, [all, q, grp, readyOnly, heldIds, subMap]);
@@ -169,7 +171,7 @@ export function SimpleBuildBrowser() {
 
   return (
     <>
-      <div className="controls"><input type="search" placeholder="하이볼·리키 등 이름·재료 검색" value={q} onChange={(e) => setQ(e.target.value)} /></div>
+      <div className="controls"><input type="search" placeholder="하이볼·토닉 등 이름·재료 검색" value={q} onChange={(e) => setQ(e.target.value)} /></div>
       <div className="controls strip">
         <button className="chip" aria-pressed={grp === 'all'} onClick={() => setGrp('all')}>전체</button>
         {groups.map((g) => <button key={g} className="chip" aria-pressed={grp === g} onClick={() => setGrp(g)}>{g}</button>)}
@@ -177,32 +179,53 @@ export function SimpleBuildBrowser() {
       </div>
       <div className="hint">
         셰이커 없이 <b>잔에 바로 붓는</b> 조합만 모았습니다. {all.length}종 중 지금 <b>{readyCount}종</b> 가능.
-        비율은 기주 1 기준입니다.
+        항목을 누르면 내 술로 어떻게 만드는지 보여줍니다.
       </div>
       <div className="list">
         {rows.map(({ b, e }) => {
-          const body = (
-            <>
-              <h3 className="withmethod">
-                <span className="nmwrap">{b.name}<MethodIcon keys={['build']} raw="Build" /></span>
-                <em><StatusBadge status={e.status} /></em>
-              </h3>
-              <div className="parts">
-                {b.parts.map((p, i) => <span key={i}>{p}</span>)}
-                {b.ratio && <span className="ratio">{b.ratio}</span>}
-              </div>
-              <div className="meta">
-                <span className="mi">{b.group}</span>
-                {b.glass && <span className="mi">{b.glass} 잔</span>}
-                {b.recommended && <span className="mi">권장 {b.recommended}</span>}
-                {b.cocktail?.garnish && <span className="mi">가니시 {b.cocktail.garnish}</span>}
-              </div>
-              {e.lack.length > 0 && <div className="lack">{e.lack.map((n) => <span key={n}>{n}</span>)}</div>}
-            </>
+          const mine = pickMyBottles(b, bottles);
+          return (
+            <div className={`card row v${e.status}`} key={b.id}>
+              <button style={{ width: '100%', textAlign: 'left' }} onClick={() => setOpen(open === b.id ? null : b.id)}>
+                <h3 className="withmethod">
+                  <span className="nmwrap">{b.name}<MethodIcon keys={['build']} raw="Build" /></span>
+                  <em><StatusBadge status={e.status} /></em>
+                </h3>
+                <div className="parts">
+                  {b.parts.map((p, i) => <span key={i}>{p}</span>)}
+                  {b.ratio && <span className="ratio">{b.ratio}</span>}
+                </div>
+                <div className="meta">
+                  <span className="mi">{b.group}</span>
+                  {b.glass && <span className="mi">{b.glass} 잔</span>}
+                  {b.cocktail?.garnish && <span className="mi">가니시 {b.cocktail.garnish}</span>}
+                  {mine.length > 0 && <span className="mi">내 술 {mine.length}종</span>}
+                </div>
+                {e.lack.length > 0 && <div className="lack">{e.lack.map((n) => <span key={n}>{n}</span>)}</div>}
+              </button>
+              {open === b.id && (
+                <>
+                  <div className="sechead" style={{ margin: '12px 0 6px' }}>내 술로 만들기</div>
+                  {mine.length > 0 ? (
+                    <div className="parts">
+                      {mine.map((x) => <span key={x.id}>{x.name}{x.abv ? ` ${x.abv}` : ''}</span>)}
+                    </div>
+                  ) : (
+                    <div className="hint" style={{ margin: '2px 0' }}>
+                      보유한 {b.group}이(가) 없습니다. 우하단 <b>+</b> 버튼으로 추가하면 여기에 뜹니다.
+                    </div>
+                  )}
+                  {b.ratio && <div className="hint" style={{ margin: '8px 0 0' }}>비율 {b.ratio} (기주 1 기준){b.glass ? ` · ${b.glass} 잔` : ''}</div>}
+                  {b.note && <div className="hint" style={{ margin: '6px 0 0' }}>{b.note}</div>}
+                  {b.recipeId && (
+                    <div className="btnrow">
+                      <button className="btn primary" onClick={() => openCocktail(b.recipeId!)}>레시피 상세</button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           );
-          return b.recipeId
-            ? <button className={`card row v${e.status}`} key={b.id} onClick={() => openCocktail(b.recipeId!)}>{body}</button>
-            : <div className={`card row v${e.status}`} key={b.id}>{body}</div>;
         })}
       </div>
     </>
@@ -287,29 +310,54 @@ export function WhiskyBrowser() {
   );
 }
 
+/** 재료 목록 — 항목을 누르면 활용 레시피·보유 여부·대체재를 팝오버로 보여준다 */
 export function IngredientBrowser() {
   const heldIds = useHeldIds();
+  const subMap = useSubMap();
+  const { showTerm } = useUI();
   const [q, setQ] = useState('');
   const [cat, setCat] = useState('all');
+  const [ownedOnly, setOwnedOnly] = useState(false);
   const cats = referenceRepo.categories();
+
   const rows = useMemo(() => {
     const t = q.trim().toLowerCase();
-    return referenceRepo.ingredients().filter((i) => (cat === 'all' || i.category === cat) && (!t || i.name.toLowerCase().includes(t)));
-  }, [q, cat]);
+    return referenceRepo.ingredients().filter((i) =>
+      (cat === 'all' || i.category === cat)
+      && (!t || i.name.toLowerCase().includes(t))
+      && (!ownedOnly || heldIds.has(i.id)));
+  }, [q, cat, ownedOnly, heldIds]);
+
+  const describe = (id: string, name: string, category: string, usage: number) => {
+    const uses = referenceRepo.cocktails()
+      .filter((c) => c.ingredients.some((x) => x.ingredientId === id))
+      .map((c) => c.name);
+    const subs = (subMap.get(id) ?? [])
+      .map((sid) => referenceRepo.ingredientById(sid)?.name)
+      .filter(Boolean) as string[];
+    const lines = [
+      `${category} · 레시피 ${usage}회 사용 · ${heldIds.has(id) ? '보유 중' : '미보유'}`,
+      subs.length ? `대체 가능: ${subs.join(', ')}` : '',
+      uses.length ? `쓰이는 레시피: ${uses.slice(0, 12).join(', ')}${uses.length > 12 ? ` 외 ${uses.length - 12}종` : ''}` : '이 재료를 쓰는 레시피가 없습니다.',
+    ].filter(Boolean);
+    showTerm(name, lines.join('\n\n'));
+  };
+
   return (
     <>
       <div className="controls"><input type="search" placeholder="재료 검색" value={q} onChange={(e) => setQ(e.target.value)} /></div>
       <div className="controls strip">
         <button className="chip" aria-pressed={cat === 'all'} onClick={() => setCat('all')}>전체</button>
         {cats.map((c) => <button key={c} className="chip" aria-pressed={cat === c} onClick={() => setCat(c)}>{c}</button>)}
+        <button className="chip ok" aria-pressed={ownedOnly} onClick={() => setOwnedOnly((v) => !v)}>보유만</button>
       </div>
-      <div className="hint">{rows.length}종 · 보유 {rows.filter((r) => heldIds.has(r.id)).length}</div>
+      <div className="hint">{rows.length}종 · 보유 {rows.filter((r) => heldIds.has(r.id)).length} · 항목을 누르면 어디에 쓰이는지 보여줍니다.</div>
       <div className="items">
         {rows.map((i) => (
-          <div className={`it ${heldIds.has(i.id) ? '' : 'off'}`} key={i.id}>
+          <button className={`it ${heldIds.has(i.id) ? '' : 'off'}`} key={i.id} onClick={() => describe(i.id, i.name, i.category, i.usageCount)}>
             <span>{heldIds.has(i.id) ? '●' : '○'} {i.name}</span>
             <small>{i.usageCount}</small>
-          </div>
+          </button>
         ))}
       </div>
     </>
