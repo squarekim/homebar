@@ -100,6 +100,8 @@ export interface Bottle {
   note?: string;
   isSpirit: boolean;
   isWhisky: boolean;
+  /** 이 병으로 충당되는 표준 재료 ID들 (재고 화면에서 "그래서 어떤 술?"을 되짚는 데 쓴다) */
+  ingredientIds: string[];
   flavor: FlavorVector;
   makerNote?: MakerNote;
   whiskyClass?: WhiskyClass;

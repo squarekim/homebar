@@ -310,3 +310,33 @@ describe('내 술 기반 추천 · 보유 재료', () => {
     expect(mine.every((b) => b.group === '진')).toBe(true);
   });
 });
+
+describe('보유 병 ↔ 표준 재료 연결', () => {
+  it('시드 병이 표준 재료로 연결된다', () => {
+    const by = (n: string) => bottles.find((b) => b.name === n)!;
+    const ingName = (id: string) => ingredients.find((i) => i.id === id)!.name;
+    expect(by('호세 쿠엘보 에스페시알 골드').ingredientIds.map(ingName)).toEqual(['데킬라']);
+    expect(by('봄베이 사파이어').ingredientIds.map(ingName)).toEqual(['런던 드라이 진']);
+    expect(by('잭 다니엘스 올드 No.7').ingredientIds.map(ingName)).toEqual(['테네시']);
+    expect(by('더 맥캘란 더블 캐스크 12년').ingredientIds.map(ingName)).toEqual(['싱글몰트 스카치', '스카치']);
+    // 칵테일에 쓰지 않는 술은 연결이 비어 있다
+    expect(by('화요 25').ingredientIds).toHaveLength(0);
+  });
+
+  it('재고의 재료에서 실제 보유 제품을 되짚을 수 있다', () => {
+    const tequila = ingredients.find((i) => i.name === '데킬라')!;
+    const mine = bottles.filter((b) => b.ingredientIds.includes(tequila.id));
+    expect(mine.map((b) => b.name)).toContain('호세 쿠엘보 에스페시알 골드');
+  });
+
+  it('사용자가 추가한 병도 고른 표준 재료로 연결된다', async () => {
+    const { draftFromMaster, userBottleToDomain } = await import('../data/userBottles');
+    const { liquorMasterById } = await import('../data/liquorMaster');
+    const { resolveIngredient } = await import('../services/bottleService');
+    const draft = draftFromMaster(liquorMasterById.get('m_patron_silver')!);
+    const ing = resolveIngredient(draft.ingredientName)!;
+    const b = userBottleToDomain({ ...draft, id: 'ub_t', createdAt: Date.now(), ingredientId: ing.id });
+    expect(b.ingredientIds).toEqual([ing.id]);
+    expect(ing.name).toBe('100% 아가베 데킬라');
+  });
+});

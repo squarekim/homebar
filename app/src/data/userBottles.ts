@@ -31,6 +31,7 @@ export function userBottleToDomain(ub: UserBottle): Bottle {
     note: noteParts.join(' · ') || undefined,
     isSpirit: SPIRIT_GROUPS.includes(ub.group),
     isWhisky,
+    ingredientIds: ub.ingredientId ? [ub.ingredientId] : [],
     flavor: flavorForBottle(ub.name, ub.group, ub.subcategory ?? 'user.added', isWhisky),
     whiskyClass: isWhisky ? ub.whiskyClass : undefined,
   };

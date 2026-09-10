@@ -11,7 +11,7 @@ import { evaluateCocktail } from '../../services/availabilityService';
 import { simpleBuilds, evaluateSimpleBuild, pickMyBottles } from '../../services/simpleBuildService';
 import { StatusBadge, FlavorBars, MakerNoteView, WhiskyClassTags, MethodIcon } from './common';
 import { CLASS_FILTERS, classMatchesTerm, classTags } from '../../data/whiskyClass';
-import { AvailabilityStatus } from '../../models/types';
+import { AvailabilityStatus, Bottle } from '../../models/types';
 import { isUserBottle } from '../../data/userBottles';
 import { LIQUOR_MASTER } from '../../data/liquorMaster';
 import { CATEGORY_LABELS } from '../../data/liquorCategory';
@@ -232,13 +232,110 @@ export function SimpleBuildBrowser() {
   );
 }
 
-export function WhiskyBrowser() {
+/**
+ * BottleCard — 보유 병 하나. 눌러 펼치면 분류·향미·공식 노트·내 메모·기록/삭제가 나온다.
+ * 위스키 탭과 홈바의 '내 술' 탭이 같은 카드를 쓴다.
+ */
+function BottleCard({ bottle: w, open, onToggle }: { bottle: Bottle; open: boolean; onToggle: () => void }) {
   const { openLog, toast } = useUI();
+  const bottleNotes = useBottleNotes();
+  const heldIds = useHeldIds();
+  const linked = w.ingredientIds
+    .map((id) => referenceRepo.ingredientById(id))
+    .filter((x): x is NonNullable<typeof x> => !!x);
+  return (
+    <div className="card">
+      <button style={{ width: '100%', textAlign: 'left' }} onClick={onToggle}>
+        <h3>{w.name}<em>{w.abv || w.group}{w.qty > 1 ? ` · ${w.qty}병` : ''}{w.makerNote ? ' · 📝' : ''}</em></h3>
+        {w.whiskyClass
+          ? <WhiskyClassTags cls={w.whiskyClass} />
+          : <div className="meta"><span className="mi">{w.group}</span><span className="mi">{w.use}</span></div>}
+      </button>
+      {open && (
+        <>
+          {w.whiskyClass && <div className="meta"><span className="mi">{w.group}</span><span className="mi">{w.use}</span></div>}
+          {linked.length > 0 && (
+            <div className="meta" style={{ marginTop: 8 }}>
+              {linked.map((i) => (
+                <span className="mi" key={i.id}>재료 {i.name}{heldIds.has(i.id) ? ' · 재고 ON' : ' · 재고 OFF'}</span>
+              ))}
+            </div>
+          )}
+          <FlavorBars vector={w.flavor} compact />
+          {w.note && <div className="hint">{w.note}</div>}
+          <div className="sechead" style={{ margin: '12px 0 4px' }}>제조사 공식 노트</div>
+          <MakerNoteView note={w.makerNote} />
+          <div className="sechead" style={{ margin: '12px 0 4px' }}>내 메모</div>
+          <PersonalNote bottleId={w.id} initial={bottleNotes.get(w.id) ?? ''} onSaved={() => toast('메모 저장')} />
+          <div className="btnrow">
+            <button className="btn primary" onClick={() => openLog({ drinkId: w.id, drinkType: w.isWhisky ? 'whisky' : 'spirit', drinkName: w.name, servingStyle: 'neat' })}>기록하기</button>
+            {isUserBottle(w.id) && (
+              <button className="btn ghost" onClick={async () => { await bottleService.remove(w.id); toast('삭제됨'); }}>삭제</button>
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+/**
+ * MyBottlesBrowser — 내 술장 전체. 재고가 "데킬라"로 켜져 있을 때
+ * 그게 어떤 제품인지(호세 쿠엘보 에스페시알 골드) 여기서 확인한다.
+ */
+export function MyBottlesBrowser() {
+  const bottles = useBottles();
+  const [q, setQ] = useState('');
+  const [grp, setGrp] = useState('all');
+  const [detail, setDetail] = useState<string | null>(null);
+
+  const groups = useMemo(() => [...new Set(bottles.map((b) => b.group))], [bottles]);
+  const rows = useMemo(() => {
+    const t = q.trim().toLowerCase();
+    return bottles.filter((b) => {
+      if (grp !== 'all' && b.group !== grp) return false;
+      if (!t) return true;
+      return (b.name + ' ' + b.group + ' ' + (b.abv ?? '')).toLowerCase().includes(t);
+    });
+  }, [bottles, q, grp]);
+
+  const byGroup = useMemo(() => {
+    const m = new Map<string, Bottle[]>();
+    for (const b of rows) m.set(b.group, [...(m.get(b.group) ?? []), b]);
+    return [...m.entries()];
+  }, [rows]);
+
+  return (
+    <>
+      <div className="controls"><input type="search" placeholder="내 술 이름 검색" value={q} onChange={(e) => setQ(e.target.value)} /></div>
+      <div className="controls">
+        <button className="chip" aria-pressed={grp === 'all'} onClick={() => setGrp('all')}>전체</button>
+        {groups.map((g) => <button key={g} className="chip" aria-pressed={grp === g} onClick={() => setGrp(g)}>{g}</button>)}
+      </div>
+      <div className="hint">
+        보유 {bottles.length}종 · 항목을 누르면 도수·분류·공식 노트·연결된 표준 재료가 나옵니다.
+        새 술은 우하단 <b>+</b> 버튼으로 추가합니다.
+      </div>
+      {rows.length === 0 && !q.trim() && <MasterSuggestions category="all" />}
+      {byGroup.map(([g, items]) => (
+        <div key={g}>
+          <div className="sechead" style={{ margin: '16px 0 8px' }}>{g} <small style={{ color: 'var(--dim)', fontWeight: 400 }}>{items.length}종</small></div>
+          <div className="list">
+            {items.map((b) => (
+              <BottleCard key={b.id} bottle={b} open={detail === b.id} onToggle={() => setDetail(detail === b.id ? null : b.id)} />
+            ))}
+          </div>
+        </div>
+      ))}
+    </>
+  );
+}
+
+export function WhiskyBrowser() {
   const [q, setQ] = useState('');
   const [scope, setScope] = useState<'whisky' | 'mine' | 'notes'>('whisky');
   const [cls, setCls] = useState<string>('all');
   const [detail, setDetail] = useState<string | null>(null);
-  const bottleNotes = useBottleNotes();
   const whiskies = useWhiskies();
   const allBottles = useBottles();
 
@@ -281,29 +378,7 @@ export function WhiskyBrowser() {
       )}
       <div className="list">
         {rows.map((w) => (
-          <div className="card" key={w.id}>
-            <button style={{ width: '100%', textAlign: 'left' }} onClick={() => setDetail(detail === w.id ? null : w.id)}>
-              <h3>{w.name}<em>{w.abv || w.group}{w.qty > 1 ? ` · ${w.qty}병` : ''}{w.makerNote ? ' · 📝' : ''}</em></h3>
-              {w.whiskyClass ? <WhiskyClassTags cls={w.whiskyClass} /> : <div className="meta"><span className="mi">{w.node}</span><span className="mi">{w.use}</span></div>}
-            </button>
-            {detail === w.id && (
-              <>
-                {w.whiskyClass && <div className="meta"><span className="mi">{w.node}</span><span className="mi">{w.use}</span></div>}
-                <FlavorBars vector={w.flavor} compact />
-                {w.note && <div className="hint">{w.note}</div>}
-                <div className="sechead" style={{ margin: '12px 0 4px' }}>제조사 공식 노트</div>
-                <MakerNoteView note={w.makerNote} />
-                <div className="sechead" style={{ margin: '12px 0 4px' }}>내 메모</div>
-                <PersonalNote bottleId={w.id} initial={bottleNotes.get(w.id) ?? ''} onSaved={() => toast('메모 저장')} />
-                <div className="btnrow">
-                  <button className="btn primary" onClick={() => openLog({ drinkId: w.id, drinkType: 'whisky', drinkName: w.name, servingStyle: 'neat' })}>기록하기</button>
-                  {isUserBottle(w.id) && (
-                    <button className="btn ghost" onClick={async () => { await bottleService.remove(w.id); toast('삭제됨'); }}>삭제</button>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
+          <BottleCard key={w.id} bottle={w} open={detail === w.id} onToggle={() => setDetail(detail === w.id ? null : w.id)} />
         ))}
       </div>
     </>
@@ -314,6 +389,7 @@ export function WhiskyBrowser() {
 export function IngredientBrowser() {
   const heldIds = useHeldIds();
   const subMap = useSubMap();
+  const bottles = useBottles();
   const { showTerm } = useUI();
   const [q, setQ] = useState('');
   const [cat, setCat] = useState('all');
@@ -335,8 +411,10 @@ export function IngredientBrowser() {
     const subs = (subMap.get(id) ?? [])
       .map((sid) => referenceRepo.ingredientById(sid)?.name)
       .filter(Boolean) as string[];
+    const mine = bottles.filter((b) => b.ingredientIds.includes(id));
     const lines = [
       `${category} · 레시피 ${usage}회 사용 · ${heldIds.has(id) ? '보유 중' : '미보유'}`,
+      mine.length ? `내 술: ${mine.map((b) => `${b.name}${b.abv ? ` (${b.abv})` : ''}`).join(', ')}` : '',
       subs.length ? `대체 가능: ${subs.join(', ')}` : '',
       uses.length ? `쓰이는 레시피: ${uses.slice(0, 12).join(', ')}${uses.length > 12 ? ` 외 ${uses.length - 12}종` : ''}` : '이 재료를 쓰는 레시피가 없습니다.',
     ].filter(Boolean);

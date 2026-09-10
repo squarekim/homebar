@@ -135,6 +135,8 @@ input::placeholder{color:var(--dim)}
 .it.off{opacity:.55;box-shadow:none;background:var(--raise)}
 .it input{width:18px;height:18px;accent-color:var(--amber);flex:none}
 .it span{flex:1;font-size:13px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.it span .bmine{display:block;font-size:10.5px;font-weight:600;color:var(--amber);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}
 .it small{color:var(--dim);font-size:11px}
 .rem{display:flex;align-items:center;gap:8px;margin-top:4px}
 .rem input[type=range]{flex:1;accent-color:var(--amber)}

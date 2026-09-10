@@ -7,6 +7,7 @@ import { slugId } from './ids';
 import { MAKER_NOTES } from './makerNotes';
 import { WHISKY_CLASS } from './whiskyClass';
 import { flavorForIngredient, flavorForBottle, combineCocktailFlavor } from './flavorLexicon';
+import { ingredientNamesForNode } from './bottleIngredients';
 import {
   Ingredient, Cocktail, CocktailIngredient, Bottle, Mixer, MixerPairing,
   PurchaseSeed, IngredientSubstitution, FlavorVector, MethodKey,
@@ -141,6 +142,7 @@ export const bottles: Bottle[] = SEED.bottles.map((b) => {
     note: b.note,
     isSpirit: isSpiritBottle(b),
     isWhisky: whisky,
+    ingredientIds: ingredientNamesForNode(b.node).filter((n) => ingIdByName.has(n)).map((n) => ingredientIdOf(n)),
     flavor: flavorForBottle(b.ko, b.g, b.node, whisky),
     makerNote: MAKER_NOTES[b.id],
     whiskyClass: WHISKY_CLASS[b.id],

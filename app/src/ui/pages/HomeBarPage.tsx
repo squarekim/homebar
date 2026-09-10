@@ -4,13 +4,13 @@
  */
 import { useMemo, useState } from 'react';
 import { useUI } from '../UIContext';
-import { useInventory, inventoryRepo } from '../../hooks/useData';
+import { useInventory, useBottles, inventoryRepo } from '../../hooks/useData';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { resetInventoryToSeed } from '../../db/migrate';
 import { IS_PUBLIC } from '../../config';
-import { CocktailBrowser, IngredientBrowser, SimpleBuildBrowser } from '../components/browsers';
+import { CocktailBrowser, IngredientBrowser, SimpleBuildBrowser, MyBottlesBrowser } from '../components/browsers';
 
-export type Sub = 'cocktail' | 'simple' | 'stock' | 'ingredient';
+export type Sub = 'cocktail' | 'simple' | 'bottles' | 'stock' | 'ingredient';
 
 export function HomeBarPage({ sub: subProp, onSub }: { sub?: Sub; onSub?: (s: Sub) => void } = {}) {
   const [local, setLocal] = useState<Sub>('cocktail');
@@ -21,11 +21,13 @@ export function HomeBarPage({ sub: subProp, onSub }: { sub?: Sub; onSub?: (s: Su
       <div className="controls strip">
         <button className="chip" aria-pressed={sub === 'cocktail'} onClick={() => setSub('cocktail')}>칵테일</button>
         <button className="chip" aria-pressed={sub === 'simple'} onClick={() => setSub('simple')}>간단 조합</button>
+        <button className="chip" aria-pressed={sub === 'bottles'} onClick={() => setSub('bottles')}>내 술</button>
         <button className="chip" aria-pressed={sub === 'stock'} onClick={() => setSub('stock')}>재고</button>
         <button className="chip" aria-pressed={sub === 'ingredient'} onClick={() => setSub('ingredient')}>재료</button>
       </div>
       {sub === 'cocktail' && <CocktailBrowser />}
       {sub === 'simple' && <SimpleBuildBrowser />}
+      {sub === 'bottles' && <MyBottlesBrowser />}
       {sub === 'stock' && <StockManager />}
       {sub === 'ingredient' && <IngredientBrowser />}
     </>
@@ -55,6 +57,13 @@ function StockManager() {
   const ownedById = useMemo(() => new Map((inv ?? []).map((i) => [i.ingredientId, i.owned])), [inv]);
 
   const allIngredients = referenceRepo.ingredients();
+  const bottles = useBottles();
+  /** 재료 ID → 그 재료를 충당하는 내 병 이름들 ("데킬라"가 어떤 술인지 바로 보이게) */
+  const bottlesByIngredient = useMemo(() => {
+    const m = new Map<string, string[]>();
+    for (const b of bottles) for (const id of b.ingredientIds) m.set(id, [...(m.get(id) ?? []), b.name]);
+    return m;
+  }, [bottles]);
   const ownedCount = allIngredients.filter((i) => ownedById.get(i.id)).length;
 
   const perCategory = useMemo(() => referenceRepo.categories().map((c) => {
@@ -127,11 +136,16 @@ function StockManager() {
               {items.map((i) => {
                 const owned = ownedById.get(i.id) ?? false;
                 const rem = remainingById.get(i.id) ?? (owned ? 100 : 0);
+                const mine = bottlesByIngredient.get(i.id) ?? [];
                 return (
                   <label className={`it ${owned ? '' : 'off'}`} key={i.id} style={showRemaining && owned ? { flexDirection: 'column', alignItems: 'stretch' } : undefined}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 7, width: '100%' }}>
                       <input type="checkbox" checked={owned} onChange={(e) => inventoryRepo.setOwned(i.id, i.name, e.target.checked)} />
-                      <span>{i.name}</span><small>{i.usageCount}</small>
+                      <span>
+                        {i.name}
+                        {mine.length > 0 && <b className="bmine">{mine.slice(0, 2).join(' · ')}{mine.length > 2 ? ` 외 ${mine.length - 2}` : ''}</b>}
+                      </span>
+                      <small>{i.usageCount}</small>
                     </div>
                     {showRemaining && owned && (
                       <div className="rem" onClick={(e) => e.preventDefault()}>
