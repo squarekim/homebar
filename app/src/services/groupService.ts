@@ -2,7 +2,7 @@
  * groupService — 여러 사람의 TasteProfile 을 합친 그룹 추천.
  * 평균만 쓰지 않고, 한 명이라도 매우 싫어하는 향미가 강한 술에는 패널티를 준다.
  */
-import { FlavorVector, RecommendationResult, DrinkLog, FLAVOR_LABELS_KO } from '../models/types';
+import { type FlavorVector, type RecommendationResult, type DrinkLog, FLAVOR_LABELS_KO } from '../models/types';
 import { referenceRepo } from '../repositories/referenceRepo';
 import { evaluateCocktail } from './availabilityService';
 import { groupTasteMatch, topAxes } from './flavorService';

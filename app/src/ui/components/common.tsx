@@ -1,5 +1,5 @@
-import { SyntheticEvent } from 'react';
-import { MethodKey, METHOD_LABELS_KO, AvailabilityStatus, FlavorVector, FLAVOR_AXES, FLAVOR_LABELS_KO, RecommendationResult, MakerNote, WhiskyClass } from '../../models/types';
+import { type SyntheticEvent } from 'react';
+import { type MethodKey, METHOD_LABELS_KO, type AvailabilityStatus, type FlavorVector, FLAVOR_AXES, FLAVOR_LABELS_KO, type RecommendationResult, type MakerNote, type WhiskyClass } from '../../models/types';
 import { STATUS_LABEL_KO } from '../../services/availabilityService';
 import { lookupTerm, normalizeTerm } from '../../data/glossary';
 import { useUI } from '../UIContext';
@@ -43,7 +43,7 @@ export function WhiskyClassTags({ cls }: { cls?: WhiskyClass }) {
 }
 
 /** 제조사/공식 테이스팅 노트 표시 (출처 링크 포함) */
-export function MakerNoteView({ note }: { note?: MakerNote }) {
+export function MakerNoteView({ note }: { note?: MakerNote | undefined }) {
   if (!note) {
     return <div className="hint" style={{ margin: '6px 0 0' }}>제조사 공식 노트가 아직 없는 술입니다. 아래에 직접 기록해 두세요.</div>;
   }

@@ -1,5 +1,5 @@
 import { db } from '../db/schema';
-import { InventoryItem } from '../models/types';
+import { type InventoryItem } from '../models/types';
 
 export const inventoryRepo = {
   all: (): Promise<InventoryItem[]> => db.inventory.toArray(),

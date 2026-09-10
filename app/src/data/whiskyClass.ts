@@ -4,7 +4,7 @@
  * 병(bottle) id 별로 정립한 파생 레이어. 원본 데이터는 변경하지 않는다.
  * 값은 검증 가능한 사실(라벨·증류소 공개 정보) 기준.
  */
-import { WhiskyClass } from '../models/types';
+import { type WhiskyClass } from '../models/types';
 
 export { WHISKY_CLASS } from './whiskyClassSeed';
 

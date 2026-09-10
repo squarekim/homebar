@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useMemo, useState } from 'react';
+import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { UIProvider, useUI } from './UIContext';
 import { useHeldIds, useSubMap } from '../hooks/useData';
 import { evaluateAll, tallyStatus } from '../services/availabilityService';
@@ -6,15 +6,16 @@ import { CocktailModal } from './components/CocktailModal';
 import { LogDialog } from './components/LogDialog';
 import { AddBottleDialog } from './components/AddBottleDialog';
 import { HomePage } from './pages/HomePage';
-import { HomeBarPage, Sub as HomeBarSub } from './pages/HomeBarPage';
+import { HomeBarPage, type Sub as HomeBarSub } from './pages/HomeBarPage';
 import { WhiskyPage } from './pages/WhiskyPage';
-import { CellarPage, CellarSub } from './pages/CellarPage';
+import { CellarPage, type CellarSub } from './pages/CellarPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { IconHome, IconMartini, IconWhisky, IconBottle, IconProfile, IconLogo } from './components/icons';
 import { IS_BETA } from '../config';
 
 /** 집계 타일 설명 — 처음 들어온 사람이 숫자의 뜻을 바로 알 수 있게 */
-const TALLY_TERMS: Record<string, [string, string]> = {
+type TallyLabel = '정규' | '근사' | '불가' | '보유재료';
+const TALLY_TERMS: Record<TallyLabel, [title: string, body: string]> = {
   정규: ['정규', '필수 재료를 전부 보유하고 대체 없이 원 레시피대로 만들 수 있는 칵테일 수입니다.'],
   근사: ['근사', '필수 재료는 다 있지만 일부를 대체재로 채워 만드는 경우입니다. 맛이 원형과 조금 달라집니다.'],
   불가: ['불가', '필수 재료가 빠져 지금은 못 만드는 칵테일 수입니다. 재고를 체크하거나 술을 추가하면 즉시 줄어듭니다.'],
@@ -73,11 +74,14 @@ function Shell() {
           <div className="tally">
             {([['t-ok', tally.READY, '정규'], ['t-ap', tally.SUBSTITUTE, '근사'],
                ['t-no', tally.MISSING + tally.UNAVAILABLE, '불가'], ['t-st', heldIds.size, '보유재료']] as const).map(
-              ([cls, value, label]) => (
-                <button key={label} className={cls} onClick={() => showTerm(...TALLY_TERMS[label])} title={TALLY_TERMS[label][1]}>
-                  <b>{value}</b><small>{label}</small>
-                </button>
-              ))}
+              ([cls, value, label]) => {
+                const [title, body] = TALLY_TERMS[label];
+                return (
+                  <button key={label} className={cls} onClick={() => showTerm(title, body)} title={body}>
+                    <b>{value}</b><small>{label}</small>
+                  </button>
+                );
+              })}
           </div>
         </div>
       </header>

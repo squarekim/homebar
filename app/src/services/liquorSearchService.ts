@@ -3,7 +3,7 @@
  * 단계: 1) 완전일치 → 2) 별칭 → 3) 부분일치(접두/포함/토큰) → 4) 퍼지(초성·부분열·편집거리).
  * UI 는 이 서비스만 호출하고 데이터 구조를 직접 뒤지지 않는다. 외부 라이브러리 없음.
  */
-import { LiquorCategory, LiquorMasterItem, LiquorSearchHit } from '../models/types';
+import { type LiquorCategory, type LiquorMasterItem, type LiquorSearchHit } from '../models/types';
 import { LIQUOR_MASTER } from '../data/liquorMaster';
 import { normalizeQuery, tokenize, initials, isSubsequence, subsequenceDensity, similarity } from '../data/textMatch';
 

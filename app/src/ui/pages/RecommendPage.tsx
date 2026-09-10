@@ -6,7 +6,7 @@ import { useMemo, useState } from 'react';
 import { useUI } from '../UIContext';
 import { useRecommendContext } from '../../hooks/useRecommendContext';
 import { useTasteProfiles, useHeldIds, useSubMap, useLogs } from '../../hooks/useData';
-import { recommendCocktails, recommendWhiskies, RecommendMode } from '../../services/recommendationService';
+import { recommendCocktails, recommendWhiskies, type RecommendMode } from '../../services/recommendationService';
 import { recommendGroupCocktails } from '../../services/groupService';
 import { calculatePurchases } from '../../services/purchaseService';
 import { RecCard, ChipRow } from '../components/common';

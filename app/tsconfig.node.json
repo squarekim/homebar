@@ -1,32 +1,26 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "target": "ES2022",
+    "lib": ["ES2023"],
     "module": "ESNext",
-    "skipLibCheck": true,
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
+    "types": ["node"],
+    "allowJs": false,
+    "checkJs": false,
+    "skipLibCheck": true,
     "isolatedModules": true,
     "moduleDetection": "force",
     "noEmit": true,
-    "allowJs": false,
-    "checkJs": false,
-    "jsx": "react-jsx",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
-    "noPropertyAccessFromIndexSignature": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
-    "verbatimModuleSyntax": true,
-    "forceConsistentCasingInFileNames": true
+    "verbatimModuleSyntax": true
   },
-  "include": ["src"]
+  "include": ["vite.config.ts", "vite.config.demo.ts", "scripts/**/*.d.mts"]
 }

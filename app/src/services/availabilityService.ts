@@ -7,7 +7,7 @@
  *   UNAVAILABLE 핵심(기주 등) 부족
  * 대체재 판단은 substitution DB(map)를 재사용한다.
  */
-import { Cocktail, AvailabilityResult, AvailabilityStatus } from '../models/types';
+import { type Cocktail, type AvailabilityResult, type AvailabilityStatus } from '../models/types';
 import { referenceRepo } from '../repositories/referenceRepo';
 
 const SPIRIT_CATEGORIES = new Set(['위스키', '진', '보드카', '럼', '데킬라·아가베', '브랜디']);

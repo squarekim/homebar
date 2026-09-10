@@ -8,7 +8,7 @@
  * 판정은 다른 화면과 동일하게 재고(ingredientId)로만 한다.
  * 믹서 조합표의 기주는 특정 제품명("산토리 가쿠빈")이라 제품이 아니라 **기주 카테고리 보유 여부**로 본다.
  */
-import { AvailabilityStatus, Bottle, Cocktail } from '../models/types';
+import { type AvailabilityStatus, type Bottle, type Cocktail } from '../models/types';
 import { referenceRepo } from '../repositories/referenceRepo';
 import { bottleKind } from '../data/bottleIngredients';
 import { evaluateCocktail } from './availabilityService';
@@ -36,15 +36,15 @@ export interface SimpleBuild {
   kind: 'pairing' | 'recipe';
   group: string;            // 기주 그룹 (위스키/진/…)
   parts: string[];          // 표기용 구성
-  ratio?: string;           // 1:3 등
-  glass?: string;
-  baseHint?: string;        // 조합표 원문의 기주 표기 — 보유 술을 고를 때 힌트로만 쓴다
-  recipeId?: string;        // 레시피면 상세 모달 연결
-  note?: string;
+  ratio?: string | undefined;           // 1:3 등
+  glass?: string | undefined;
+  baseHint?: string | undefined;        // 조합표 원문의 기주 표기 — 보유 술을 고를 때 힌트로만 쓴다
+  recipeId?: string | undefined;        // 레시피면 상세 모달 연결
+  note?: string | undefined;
   /** 판정용 */
-  baseCategory?: string;    // 이 카테고리 재료를 하나라도 보유하면 기주 충족
-  mixerIngredientId?: string;
-  cocktail?: Cocktail;
+  baseCategory?: string | undefined;    // 이 카테고리 재료를 하나라도 보유하면 기주 충족
+  mixerIngredientId?: string | undefined;
+  cocktail?: Cocktail | undefined;
 }
 
 let cache: SimpleBuild[] | null = null;
@@ -117,7 +117,7 @@ export function evaluateSimpleBuild(
   const hasBase = idsInCategory(b.baseCategory).some((id) => heldIds.has(id));
   if (!hasBase) lack.push(b.group);
   const hasMixer = !!b.mixerIngredientId && heldIds.has(b.mixerIngredientId);
-  if (!hasMixer) lack.push(b.parts[1]);
+  if (!hasMixer) lack.push(b.parts[1] ?? '믹서');
   const status: AvailabilityStatus = lack.length === 0 ? 'READY' : !hasBase ? 'UNAVAILABLE' : 'MISSING';
   return { status, lack };
 }

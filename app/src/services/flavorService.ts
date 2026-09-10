@@ -2,7 +2,7 @@
  * flavorService — 향미 벡터 수학 및 취향 파생.
  * 추천 엔진의 유사도 계산(cosine / weighted distance)을 제공한다.
  */
-import { FlavorVector, FlavorAxis, FLAVOR_AXES, zeroVector, DrinkLog } from '../models/types';
+import { type FlavorVector, type FlavorAxis, FLAVOR_AXES, zeroVector, type DrinkLog } from '../models/types';
 
 export function cosineSimilarity(a: FlavorVector, b: FlavorVector): number {
   let dot = 0, na = 0, nb = 0;

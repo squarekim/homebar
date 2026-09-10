@@ -3,9 +3,9 @@
  * 이 앱은 브라우저 저장소(IndexedDB)에 의존하는데, 카카오톡·인스타그램 같은 앱 내장 브라우저나
  * 사파리 시크릿 모드에서는 저장소가 막혀 있어 그대로 두면 아무것도 안 뜨는 흰 화면이 된다.
  */
-import { Component, ErrorInfo, ReactNode } from 'react';
+import { Component, type ErrorInfo, type ReactNode } from 'react';
 
-function Failure({ title, detail, hint }: { title: string; detail?: string; hint: ReactNode }) {
+function Failure({ title, detail, hint }: { title: string; detail?: string | undefined; hint: ReactNode }) {
   return (
     <div className="wrap" style={{ paddingTop: 48 }}>
       <div className="hero">
@@ -21,7 +21,7 @@ function Failure({ title, detail, hint }: { title: string; detail?: string; hint
 }
 
 /** 저장소를 열 수 없을 때 */
-export function StorageBlocked({ detail }: { detail?: string }) {
+export function StorageBlocked({ detail }: { detail?: string | undefined }) {
   return (
     <Failure
       title="이 브라우저에서는 저장소를 쓸 수 없습니다"
@@ -37,13 +37,13 @@ export function StorageBlocked({ detail }: { detail?: string }) {
 
 /** 렌더 도중 예외 — 흰 화면 대신 이유와 복구 수단을 보여준다 */
 export class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
-  state: { error: Error | null } = { error: null };
+  override state: { error: Error | null } = { error: null };
   static getDerivedStateFromError(error: Error) { return { error }; }
-  componentDidCatch(error: Error, info: ErrorInfo) {
+  override componentDidCatch(error: Error, info: ErrorInfo) {
     // eslint-disable-next-line no-console
     console.error('[홈바] 렌더 오류', error, info.componentStack);
   }
-  render() {
+  override render() {
     if (!this.state.error) return this.props.children;
     return (
       <Failure

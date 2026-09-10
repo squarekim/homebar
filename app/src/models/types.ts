@@ -62,27 +62,27 @@ export interface Cocktail {
   method: string;    // 원본 m ("Shake + Build" 등 원문 유지)
   methodKeys: MethodKey[]; // 원문에서 파생한 정규화 키 (첫 번째가 주 기법)
   ingredients: CocktailIngredient[];
-  url?: string;
-  note?: string;
-  garnish?: string;  // 원본 note 끝에 붙어 있던 가니시 표기를 분리한 값
+  url?: string | undefined;
+  note?: string | undefined;
+  garnish?: string | undefined;  // 원본 note 끝에 붙어 있던 가니시 표기를 분리한 값
   flavor: FlavorVector; // 파생 향미 벡터
 }
 
 /** 제조사/공식 테이스팅 노트 (파생 레이어, 출처 포함) */
 export interface MakerNote {
-  nose?: string;
-  palate?: string;
-  finish?: string;
-  text?: string;      // nose/palate/finish 로 나누지 않은 통짜 노트
+  nose?: string | undefined;
+  palate?: string | undefined;
+  finish?: string | undefined;
+  text?: string | undefined;      // nose/palate/finish 로 나누지 않은 통짜 노트
   source: string;     // 출처 URL
-  sourceName?: string; // 출처 표기명
+  sourceName?: string | undefined; // 출처 표기명
 }
 
 /** 위스키 분류 체계 (원본 매트릭스/캐스크 축을 구조화한 파생 레이어) */
 export interface WhiskyClass {
   origin: string;       // 스카치 / 버번 / 테네시 / 아이리시 / 재패니즈 / 코리안 / 기타
   type: string;         // 싱글몰트 / 블렌디드 / 블렌디드 몰트 / 스트레이트 버번 / 휘티드 버번 / 테네시 / 플레이버드
-  region?: string;      // 스페이사이드 / 하이랜드 / 아일라 / 아일랜드 / 캠벨타운 / 로우랜드 / 켄터키
+  region?: string | undefined;      // 스페이사이드 / 하이랜드 / 아일라 / 아일랜드 / 캠벨타운 / 로우랜드 / 켄터키
   cask: string[];       // 셰리 / 버번 / 프렌치오크 / 버진오크 / 와인 / PX / 올로로소 / 뉴 차드 오크
   character: string[];  // 피티드 / 논피트 / 스모키 / 왁시 / 캐스크 스트렝스 / 휘티드 / 차콜 멜로잉 등
 }
@@ -97,14 +97,14 @@ export interface Bottle {
   abvNum: number | null; // 파싱된 도수
   qty: number;     // 원본 qty
   use: string;     // 원본 use
-  note?: string;
+  note?: string | undefined;
   isSpirit: boolean;
   isWhisky: boolean;
   /** 이 병으로 충당되는 표준 재료 ID들 (재고 화면에서 "그래서 어떤 술?"을 되짚는 데 쓴다) */
   ingredientIds: string[];
   flavor: FlavorVector;
-  makerNote?: MakerNote;
-  whiskyClass?: WhiskyClass;
+  makerNote?: MakerNote | undefined;
+  whiskyClass?: WhiskyClass | undefined;
 }
 
 /** Spirit / Whisky 는 Bottle 위의 뷰 타입 */
@@ -127,7 +127,7 @@ export interface MixerPairing {
   ratio: string;
   name: string;    // 원본 ko
   glass: string;
-  note?: string;
+  note?: string | undefined;
 }
 
 /** 재고 (기존 held Set 를 레코드화). key = ingredientId */
@@ -136,7 +136,7 @@ export interface InventoryItem {
   ingredientName: string;
   owned: boolean;
   remaining: number;   // 잔량 0~100 (%)
-  note?: string;
+  note?: string | undefined;
   updatedAt: number;
 }
 
@@ -159,7 +159,7 @@ export interface DrinkLog {
   rating: number;       // 0~5
   retryIntent: boolean; // 재음용 의향
   flavorRatings: Partial<FlavorVector>; // 이 잔에서 느낀 향미 (0~10)
-  memo?: string;
+  memo?: string | undefined;
 }
 
 /** 취향 프로필 (여러 사용자 지원 → 그룹 추천용) */
@@ -176,7 +176,7 @@ export interface IngredientSubstitution {
   id: string;
   ingredientId: string;    // 원 재료
   substituteId: string;    // 대체 재료
-  note?: string;
+  note?: string | undefined;
 }
 
 /** 폐기·구매우선순위 시드 (기존 archive) */
@@ -186,7 +186,7 @@ export interface PurchaseSeed {
   why: string;
   again: string;
   unlockLabel: string; // 원본 unlock "+14종"
-  note?: string;
+  note?: string | undefined;
 }
 
 /* ── 서비스 결과 타입 ── */
@@ -211,7 +211,7 @@ export interface RecommendationResult {
   inventoryScore: number;
   availabilityScore: number;
   noveltyScore: number;
-  status?: AvailabilityStatus;
+  status?: AvailabilityStatus | undefined;
   reason: string;
 }
 
@@ -240,7 +240,7 @@ export interface BackupSnapshot {
   tasteProfiles: TasteProfile[];
   substitutions: IngredientSubstitution[];
   bottleNotes?: { bottleId: string; text: string; updatedAt: number }[];
-  userBottles?: UserBottle[];
+  userBottles?: UserBottle[] | undefined;
 }
 
 /** 사용자가 직접 추가한 보유 술 (시드 bottles 와 병합되어 컬렉션·분류·결손 계산에 반영) */
@@ -248,23 +248,23 @@ export interface UserBottle {
   id: string;            // 'ub_...'
   name: string;
   group: string;         // 위스키 / 진 / 보드카 / 럼·데킬라·브랜디 / 리큐르 / 기타 (레거시 컬렉션 그룹)
-  abv?: string;          // '46%'
+  abv?: string | undefined;          // '46%'
   qty: number;
   use: string;           // 시음-축 / 겸용 / 조주 / 미활용
-  note?: string;
-  whiskyClass?: WhiskyClass; // group 이 위스키일 때 분류
+  note?: string | undefined;
+  whiskyClass?: WhiskyClass | undefined; // group 이 위스키일 때 분류
   createdAt: number;
   /* 마스터 DB 연동으로 자동 채워지는 필드 (직접 추가 시에는 비어 있을 수 있다) */
-  masterId?: string;
-  nameEn?: string;
-  brand?: string;
-  category?: LiquorCategory;
-  subcategory?: string;
-  volumeMl?: number;
-  country?: string;
+  masterId?: string | undefined;
+  nameEn?: string | undefined;
+  brand?: string | undefined;
+  category?: LiquorCategory | undefined;
+  subcategory?: string | undefined;
+  volumeMl?: number | undefined;
+  country?: string | undefined;
   /** 칵테일 레시피가 참조하는 표준 재료 ID (제품 → 표준 재료 → 레시피) */
-  ingredientId?: string;
-  ingredientName?: string;
+  ingredientId?: string | undefined;
+  ingredientName?: string | undefined;
   /** master: 기준 DB에서 선택 / user: 사용자가 직접 입력 */
   source?: 'master' | 'user';
 }
@@ -284,14 +284,14 @@ export interface LiquorMasterItem {
   brand: string;
   category: LiquorCategory;
   subcategory: string;
-  abv?: number;
-  volumeMl?: number;
+  abv?: number | undefined;
+  volumeMl?: number | undefined;
   country: string;
   /** 기존 재료 마스터(128종)의 표준 재료명 — 칵테일 레시피와 연결되는 canonical 키 */
-  ingredientName?: string;
+  ingredientName?: string | undefined;
   aliases: string[];
   searchKeywords: string[];
-  whiskyClass?: WhiskyClass;
+  whiskyClass?: WhiskyClass | undefined;
   source: 'master';
 }
 

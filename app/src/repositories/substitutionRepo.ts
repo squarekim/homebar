@@ -1,5 +1,5 @@
 import { db } from '../db/schema';
-import { IngredientSubstitution } from '../models/types';
+import { type IngredientSubstitution } from '../models/types';
 
 export const substitutionRepo = {
   all: (): Promise<IngredientSubstitution[]> => db.substitutions.toArray(),

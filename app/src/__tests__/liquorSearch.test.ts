@@ -81,8 +81,8 @@ describe('제품 → 표준 재료 → 레시피 매칭', () => {
     const picks = ['m_bombay_sapphire', 'm_campari', 'm_martini_rosso']
       .map((id) => liquorMasterById.get(id)!)
       .map((item) => draftFromMaster(item));
-    expect(picks[0].ingredientName).toBe('런던 드라이 진');
-    expect(picks[2].ingredientName).toBe('스위트 베르무트');
+    expect(picks[0]!.ingredientName).toBe('런던 드라이 진');
+    expect(picks[2]!.ingredientName).toBe('스위트 베르무트');
 
     const ids = picks.map((p) => resolveIngredient(p.ingredientName)!.id);
     expect(ids.every(Boolean)).toBe(true);

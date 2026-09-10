@@ -1,5 +1,5 @@
 import { db } from '../db/schema';
-import { TasteProfile, FlavorVector, FLAVOR_AXES } from '../models/types';
+import { type TasteProfile, type FlavorVector, FLAVOR_AXES } from '../models/types';
 
 function uid(): string {
   return 'tp_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);

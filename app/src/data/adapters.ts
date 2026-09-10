@@ -9,8 +9,8 @@ import { WHISKY_CLASS } from './whiskyClass';
 import { flavorForIngredient, flavorForBottle, combineCocktailFlavor } from './flavorLexicon';
 import { ingredientNamesForNode } from './bottleIngredients';
 import {
-  Ingredient, Cocktail, CocktailIngredient, Bottle, Mixer, MixerPairing,
-  PurchaseSeed, IngredientSubstitution, FlavorVector, MethodKey,
+  type Ingredient, type Cocktail, type CocktailIngredient, type Bottle, type Mixer, type MixerPairing,
+  type PurchaseSeed, type IngredientSubstitution, type FlavorVector, type MethodKey,
 } from '../models/types';
 
 /* ── 재료 ── */
@@ -48,7 +48,7 @@ function parseAmount(raw: string, name: string): { amount: number | null; unit: 
   rest = rest.replace(/\(.*?\)/g, '').trim(); // (선택) 등 제거
   const m = rest.match(/([\d]+(?:\.\d+)?)(?:\s*[~\-]\s*([\d]+(?:\.\d+)?))?\s*([a-zA-Z가-힣]+)?/);
   if (!m) return { amount: null, unit: null, amountMl: null };
-  const lo = parseFloat(m[1]);
+  const lo = parseFloat(m[1] ?? '');
   const hi = m[2] ? parseFloat(m[2]) : null;
   const amount = hi != null ? (lo + hi) / 2 : lo;
   if (isNaN(amount)) return { amount: null, unit: null, amountMl: null };
@@ -126,7 +126,7 @@ function isSpiritBottle(b: { g: string }): boolean {
 }
 function parseAbv(abv: string): number | null {
   const m = abv.match(/([\d]+(?:\.\d+)?)\s*%/);
-  return m ? parseFloat(m[1]) : null;
+  return m?.[1] ? parseFloat(m[1]) : null;
 }
 export const bottles: Bottle[] = SEED.bottles.map((b) => {
   const whisky = isWhiskyBottle(b);

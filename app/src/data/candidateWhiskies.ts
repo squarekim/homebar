@@ -3,7 +3,7 @@
  * 결손 축을 채울 수 있는 대표적 위스키를 분류와 함께 큐레이션했다(사실 기준).
  * 시뮬레이터는 이 후보를 보유 컬렉션에 넣었을 때의 겹침/신규 축을 계산한다.
  */
-import { WhiskyClass } from '../models/types';
+import { type WhiskyClass } from '../models/types';
 
 export interface CandidateWhisky {
   id: string;

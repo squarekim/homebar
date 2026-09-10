@@ -3,7 +3,7 @@
  * 공개 배포 빌드에서는 whiskyClassSeed.public.ts(빈 레코드)로 치환된다 — 어떤 병을 갖고 있는지 자체가 개인 정보이므로.
  * 분류 체계(용어·필터·매칭 함수)는 whiskyClass.ts 에 남아 공용으로 쓰인다.
  */
-import { WhiskyClass } from '../models/types';
+import { type WhiskyClass } from '../models/types';
 
 export const WHISKY_CLASS: Record<string, WhiskyClass> = {
   // ── 스카치 싱글몰트 ──

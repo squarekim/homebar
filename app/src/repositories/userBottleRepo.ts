@@ -1,5 +1,5 @@
 import { db } from '../db/schema';
-import { UserBottle } from '../models/types';
+import { type UserBottle } from '../models/types';
 
 function uid(): string {
   return 'ub_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);

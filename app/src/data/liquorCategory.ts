@@ -3,7 +3,7 @@
  * 기존 컬렉션의 그룹(위스키/진/보드카/…)을 버리지 않고, 확장 카테고리를 그 위에 얹는다.
  * 사용자는 세부분류(subcategory)를 고르지 않는다 — 마스터 DB가 들고 있다.
  */
-import { LiquorCategory } from '../models/types';
+import { type LiquorCategory } from '../models/types';
 
 export const CATEGORY_ORDER: LiquorCategory[] = [
   'whisky', 'gin', 'vodka', 'rum', 'tequila', 'mezcal', 'brandy',

@@ -11,7 +11,7 @@ import { searchLiquor, guessCategory, guessWhiskySubcategory } from '../../servi
 import { draftFromMaster, draftManual } from '../../data/userBottles';
 import { CATEGORY_LABELS, CATEGORY_ORDER, CATEGORY_DEFAULT_INGREDIENT, SUBCATEGORY_INGREDIENT } from '../../data/liquorCategory';
 import { referenceRepo } from '../../repositories/referenceRepo';
-import { LiquorCategory, LiquorMasterItem, UserBottle, WhiskyClass } from '../../models/types';
+import { type LiquorCategory, type LiquorMasterItem, type UserBottle, type WhiskyClass } from '../../models/types';
 
 const ORIGINS = ['스카치', '버번', '테네시', '아이리시', '재패니즈', '코리안', '기타'];
 const TYPES = ['싱글몰트', '블렌디드', '블렌디드 몰트', '스트레이트 버번', '휘티드 버번', '테네시 위스키', '싱글 팟 스틸'];

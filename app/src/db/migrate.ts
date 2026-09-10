@@ -6,7 +6,7 @@
  */
 import { db } from './schema';
 import { ingredients, ingredientIdOf, substitutions as seedSubs } from '../data/adapters';
-import { InventoryItem, TasteProfile, FLAVOR_AXES, FlavorVector } from '../models/types';
+import { type InventoryItem, type TasteProfile, FLAVOR_AXES, type FlavorVector } from '../models/types';
 import { IS_PUBLIC, STARTER_INVENTORY } from '../config';
 
 /** 기본 재고 = 공개 배포면 '기본 홈바 세트', 개인 빌드면 원본 own 플래그 */

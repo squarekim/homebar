@@ -3,7 +3,7 @@
  * 순수 로직만 담당(문자열 <-> DB). 파일 다운로드/업로드는 UI 계층이 처리(Capacitor 호환).
  */
 import { db } from '../db/schema';
-import { BackupSnapshot } from '../models/types';
+import { type BackupSnapshot } from '../models/types';
 
 const SCHEMA = 'homebar-platform';
 const VERSION = 1;

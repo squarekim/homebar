@@ -6,12 +6,12 @@
   "description": "홈바 종합 주류 플랫폼 - 기존 홈바 레지스트리 DB 기반 웹앱",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit -p tsconfig.json && vite build",
+    "build": "npm run typecheck && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.node.json",
     "test": "vitest run",
     "build:demo": "vite build --config vite.config.demo.ts",
-    "build:public": "tsc --noEmit -p tsconfig.json && vite build --mode public",
+    "build:public": "npm run typecheck && vite build --mode public",
     "seed:public": "node scripts/makePublicSeed.mjs",
     "build:demo:public": "vite build --config vite.config.demo.ts --mode public"
   },
@@ -22,6 +22,7 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@types/node": "^22.20.2",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",

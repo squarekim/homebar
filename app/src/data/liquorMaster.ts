@@ -9,7 +9,7 @@
  *  - ing 는 기존 재료 마스터(128종)의 "표준 재료명"이다. 제품 → 표준 재료 → 칵테일 레시피로 연결된다.
  *  - 기존 seed 데이터는 손대지 않는다. 이 파일은 순수 추가 레이어다.
  */
-import { LiquorCategory, LiquorMasterItem, WhiskyClass } from '../models/types';
+import { type LiquorCategory, type LiquorMasterItem, type WhiskyClass } from '../models/types';
 import { normalizeQuery, initials } from './textMatch';
 import { LIQUOR_ALIASES } from './liquorAliases';
 

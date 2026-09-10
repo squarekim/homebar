@@ -11,7 +11,7 @@ import { evaluateCocktail } from '../../services/availabilityService';
 import { simpleBuilds, evaluateSimpleBuild, pickMyBottles } from '../../services/simpleBuildService';
 import { StatusBadge, FlavorBars, MakerNoteView, WhiskyClassTags, MethodIcon } from './common';
 import { CLASS_FILTERS, classMatchesTerm, classTags } from '../../data/whiskyClass';
-import { AvailabilityStatus, Bottle } from '../../models/types';
+import { type AvailabilityStatus, type Bottle } from '../../models/types';
 import { isUserBottle } from '../../data/userBottles';
 import { bottleKindLabel } from '../../data/bottleIngredients';
 import { LIQUOR_MASTER } from '../../data/liquorMaster';

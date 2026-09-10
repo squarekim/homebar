@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { db } from '../db/schema';
 import { inventoryRepo } from '../repositories/inventoryRepo';
 import { substitutionRepo } from '../repositories/substitutionRepo';
-import { InventoryItem, DrinkLog, TasteProfile, FLAVOR_AXES, FlavorVector, Bottle, UserBottle } from '../models/types';
+import { type InventoryItem, type DrinkLog, type TasteProfile, FLAVOR_AXES, type FlavorVector, type Bottle, type UserBottle } from '../models/types';
 import { referenceRepo } from '../repositories/referenceRepo';
 import { userBottleToDomain } from '../data/userBottles';
 

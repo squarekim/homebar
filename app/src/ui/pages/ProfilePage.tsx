@@ -8,7 +8,7 @@ import { drinkLogRepo } from '../../repositories/drinkLogRepo';
 import { backupService } from '../../services/backupService';
 import { FlavorBars } from '../components/common';
 import {
-  FLAVOR_AXES, FLAVOR_LABELS_KO, FlavorVector, FlavorAxis, SERVING_LABELS_KO,
+  FLAVOR_AXES, FLAVOR_LABELS_KO, type FlavorVector, type FlavorAxis, SERVING_LABELS_KO,
 } from '../../models/types';
 
 export function ProfilePage() {

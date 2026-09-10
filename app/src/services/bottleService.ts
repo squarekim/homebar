@@ -3,7 +3,7 @@
  * "제품 → 표준 재료 → 칵테일 레시피" 연결을 여기서 맺는다.
  * (제품명으로 레시피를 매칭하지 않는다. 재고 DB와 레시피 DB는 같은 canonical ingredient ID 를 참조한다.)
  */
-import { UserBottle } from '../models/types';
+import { type UserBottle } from '../models/types';
 import { userBottleRepo } from '../repositories/userBottleRepo';
 import { inventoryRepo } from '../repositories/inventoryRepo';
 import { referenceRepo } from '../repositories/referenceRepo';

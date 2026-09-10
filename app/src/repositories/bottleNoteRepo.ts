@@ -1,4 +1,4 @@
-import { db, BottleNote } from '../db/schema';
+import { db, type BottleNote } from '../db/schema';
 
 export const bottleNoteRepo = {
   all: (): Promise<BottleNote[]> => db.bottleNotes.toArray(),

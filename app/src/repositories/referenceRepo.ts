@@ -7,7 +7,7 @@ import {
   cocktails, cocktailById, bottles, whiskies, spirits,
   mixers, mixerPairings, purchaseSeeds, categories,
 } from '../data/adapters';
-import { Ingredient, Cocktail, Bottle } from '../models/types';
+import { type Ingredient, type Cocktail, type Bottle } from '../models/types';
 
 export const referenceRepo = {
   ingredients: (): Ingredient[] => ingredients,

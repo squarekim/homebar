@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useUI } from '../UIContext';
 import { useRecommendContext } from '../../hooks/useRecommendContext';
 import { useLogs } from '../../hooks/useData';
-import { whatToDrink, RecommendMode } from '../../services/recommendationService';
+import { whatToDrink, type RecommendMode } from '../../services/recommendationService';
 import { RecCard, ChipRow } from '../components/common';
 import { CocktailRec, WhiskyRec, GroupRec, ClearStockRec, PurchaseRec, MODES } from './RecommendPage';
 import { SERVING_LABELS_KO } from '../../models/types';

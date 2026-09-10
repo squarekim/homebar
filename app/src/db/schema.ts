@@ -4,8 +4,8 @@
  * 참조 데이터(재료·칵테일·병)는 seed 에서 파생되며 여기 저장하지 않는다.
  * 저장소 교체(Supabase 등) 시 이 파일과 repository 만 갈아끼우면 되도록 격리.
  */
-import Dexie, { Table } from 'dexie';
-import { InventoryItem, DrinkLog, TasteProfile, IngredientSubstitution, UserBottle } from '../models/types';
+import Dexie, { type Table } from 'dexie';
+import { type InventoryItem, type DrinkLog, type TasteProfile, type IngredientSubstitution, type UserBottle } from '../models/types';
 import { categoryFromGroup } from '../data/liquorCategory';
 
 interface MetaRow { key: string; value: unknown; }

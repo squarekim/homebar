@@ -3,7 +3,7 @@
  * 시드 병과 동일한 형태가 되어 컬렉션·분류 배지·축별 커버리지·매트릭스·시뮬레이터에 그대로 참여한다.
  * 마스터 DB에서 고른 제품은 분류·도수·원산지·표준 재료가 이미 채워져 들어온다.
  */
-import { Bottle, LiquorCategory, LiquorMasterItem, UserBottle } from '../models/types';
+import { type Bottle, type LiquorCategory, type LiquorMasterItem, type UserBottle } from '../models/types';
 import { flavorForBottle } from './flavorLexicon';
 import { CATEGORY_GROUP, CATEGORY_DEFAULT_INGREDIENT, categoryFromGroup } from './liquorCategory';
 
@@ -12,7 +12,7 @@ const SPIRIT_GROUPS = ['위스키', '진', '보드카', '럼·데킬라·브랜�
 function parseAbv(abv?: string): number | null {
   if (!abv) return null;
   const m = abv.match(/([\d]+(?:\.\d+)?)/);
-  return m ? parseFloat(m[1]) : null;
+  return m?.[1] ? parseFloat(m[1]) : null;
 }
 
 export function userBottleToDomain(ub: UserBottle): Bottle {

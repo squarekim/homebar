@@ -1,7 +1,7 @@
 /**
  * tasteService — DrinkLog/Rating 으로 취향 프로필을 갱신.
  */
-import { FlavorVector, TasteProfile } from '../models/types';
+import { type FlavorVector, type TasteProfile } from '../models/types';
 import { drinkLogRepo } from '../repositories/drinkLogRepo';
 import { tasteProfileRepo } from '../repositories/tasteProfileRepo';
 import { deriveTasteFromLogs, blendVectors } from './flavorService';

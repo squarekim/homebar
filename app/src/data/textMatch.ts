@@ -58,15 +58,18 @@ export function editDistance(a: string, b: string): number {
   if (a === b) return 0;
   if (!a.length) return b.length;
   if (!b.length) return a.length;
-  let prev = Array.from({ length: b.length + 1 }, (_, j) => j);
+  let prev: number[] = Array.from({ length: b.length + 1 }, (_, j) => j);
   for (let i = 1; i <= a.length; i++) {
-    const cur = [i];
+    const cur: number[] = [i];
     for (let j = 1; j <= b.length; j++) {
-      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      const del = (prev[j] ?? 0) + 1;                 // 위
+      const ins = (cur[j - 1] ?? 0) + 1;              // 왼쪽
+      const sub = (prev[j - 1] ?? 0) + (a[i - 1] === b[j - 1] ? 0 : 1); // 대각
+      cur[j] = Math.min(del, ins, sub);
     }
     prev = cur;
   }
-  return prev[b.length];
+  return prev[b.length] ?? 0;
 }
 
 /** 0~1 유사도 */

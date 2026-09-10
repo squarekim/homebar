@@ -5,8 +5,8 @@
  * UI 와 완전히 분리된 순수 로직.
  */
 import {
-  Cocktail, Bottle, FlavorVector, RecommendationResult, DrinkLog,
-  AvailabilityResult, AvailabilityStatus, FLAVOR_LABELS_KO, FlavorAxis,
+  type Cocktail, type Bottle, type FlavorVector, type RecommendationResult, type DrinkLog,
+  type AvailabilityResult, type AvailabilityStatus, FLAVOR_LABELS_KO, type FlavorAxis,
 } from '../models/types';
 import { referenceRepo } from '../repositories/referenceRepo';
 import { evaluateCocktail } from './availabilityService';

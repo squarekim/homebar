@@ -5,7 +5,7 @@
  * 외부 AI 없이 추천 엔진(cosine similarity / weighted distance)을 구동하기 위한 근거 레이어.
  * 값은 0~10 기여도. 규칙 매칭 결과를 합산 후 0~10 로 클램프한다.
  */
-import { FlavorVector, FlavorAxis, zeroVector } from '../models/types';
+import { type FlavorVector, type FlavorAxis, zeroVector } from '../models/types';
 
 type Partial14 = Partial<Record<FlavorAxis, number>>;
 
@@ -123,11 +123,11 @@ export function flavorForIngredient(name: string, category: string): FlavorVecto
 /** 보유병 향미 (그룹/노드/이름 기반) */
 export function flavorForBottle(name: string, group: string, node: string, isWhisky: boolean): FlavorVector {
   const v = zeroVector();
-  if (isWhisky) addInto(v, CATEGORY_BASE['위스키']);
-  else if (/진/.test(group)) addInto(v, CATEGORY_BASE['진']);
-  else if (/보드카/.test(group)) addInto(v, CATEGORY_BASE['보드카']);
-  else if (/럼|데킬라|브랜디/.test(group)) addInto(v, CATEGORY_BASE['브랜디']);
-  else if (/리큐르/.test(group)) addInto(v, CATEGORY_BASE['리큐르']);
+  if (isWhisky) addInto(v, CATEGORY_BASE['위스키'] ?? {});
+  else if (/진/.test(group)) addInto(v, CATEGORY_BASE['진'] ?? {});
+  else if (/보드카/.test(group)) addInto(v, CATEGORY_BASE['보드카'] ?? {});
+  else if (/럼|데킬라|브랜디/.test(group)) addInto(v, CATEGORY_BASE['브랜디'] ?? {});
+  else if (/리큐르/.test(group)) addInto(v, CATEGORY_BASE['리큐르'] ?? {});
   const hay = `${name} ${node}`;
   for (const [re, part] of NAME_RULES) {
     if (re.test(hay)) addInto(v, part);

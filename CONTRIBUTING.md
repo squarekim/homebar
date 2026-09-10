@@ -88,9 +88,21 @@ git push -u origin feat/무엇을-하는지
 ## 6. 테스트 기준
 
 ```bash
-npm test          # vitest 32건
-npm run build     # tsc --noEmit + vite build
+npm test          # vitest 42건
+npm run typecheck # 앱(tsconfig.json) + 빌드 설정(tsconfig.node.json) 둘 다
+npm run build     # typecheck + vite build
 ```
+
+타입 설정은 엄격하게 잡혀 있다. 특히 아래 두 가지는 처음 보면 걸리기 쉽다.
+
+- `noUncheckedIndexedAccess` — 배열·인덱스 접근은 `T | undefined` 다. `m[1]` 같은 정규식 캡처도 마찬가지라
+  `m?.[1] ? ... : null` 처럼 좁혀서 쓴다
+- `verbatimModuleSyntax` — 타입만 쓰는 import 에는 `import type` 또는 `{ type Foo }` 를 붙인다
+- `exactOptionalPropertyTypes` — 도메인 모델의 선택 필드는 `foo?: T | undefined` 로 선언해 두었다.
+  원본 데이터를 그대로 매핑하기 위한 의도이니 새 필드도 같은 형태로 맞춘다
+
+`app/scripts/*.mjs` 는 Node 가 바로 실행할 수 있게 JS 로 두되, 옆에 `.d.mts` 로 타입만 따로 선언해 둔다
+(`allowJs: false` 이므로 선언이 없으면 vite 설정에서 import 할 수 없다).
 
 데이터를 만졌다면 **판정이 의도치 않게 변하지 않았는지**가 가장 중요하다.
 원본 재고 기준 기대값은 **정규 105 · 근사 16 · 일부부족 57 · 불가 24** 이고 `core.test.ts` 가 이를 지킨다.

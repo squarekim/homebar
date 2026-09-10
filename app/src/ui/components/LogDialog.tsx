@@ -3,8 +3,8 @@ import { useUI } from '../UIContext';
 import { drinkLogRepo } from '../../repositories/drinkLogRepo';
 import { tasteService } from '../../services/tasteService';
 import {
-  ServingStyle, SERVING_STYLES, SERVING_LABELS_KO,
-  FLAVOR_AXES, FLAVOR_LABELS_KO, FlavorAxis,
+  type ServingStyle, SERVING_STYLES, SERVING_LABELS_KO,
+  FLAVOR_AXES, FLAVOR_LABELS_KO, type FlavorAxis,
 } from '../../models/types';
 
 export function LogDialog() {

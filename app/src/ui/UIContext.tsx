@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
-import { DrinkType, ServingStyle } from '../models/types';
+import { createContext, useContext, useState, type ReactNode, useCallback } from 'react';
+import { type DrinkType, type ServingStyle } from '../models/types';
 
 export interface LogPrefill {
   drinkId: string;

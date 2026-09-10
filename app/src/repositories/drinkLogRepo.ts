@@ -1,5 +1,5 @@
 import { db } from '../db/schema';
-import { DrinkLog } from '../models/types';
+import { type DrinkLog } from '../models/types';
 
 function uid(): string {
   return 'log_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);

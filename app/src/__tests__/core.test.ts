@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { ingredients, cocktails, bottles, whiskies } from '../data/adapters';
 import { evaluateAll, evaluateCocktail, tallyStatus } from '../services/availabilityService';
-import { recommendCocktails, recommendWhiskies, RecommendContext } from '../services/recommendationService';
+import { recommendCocktails, recommendWhiskies, type RecommendContext } from '../services/recommendationService';
 import { calculatePurchases } from '../services/purchaseService';
 import { recommendGroupCocktails } from '../services/groupService';
-import { FLAVOR_AXES, FlavorVector } from '../models/types';
+import { FLAVOR_AXES, type FlavorVector } from '../models/types';
 
 function vec(partial: Partial<FlavorVector>): FlavorVector {
   return FLAVOR_AXES.reduce((v, a) => { v[a] = partial[a] ?? 5; return v; }, {} as FlavorVector);
@@ -142,14 +142,14 @@ describe('recommendation', () => {
   it('칵테일 추천이 점수·이유 반환', () => {
     const recs = recommendCocktails(ctx, 'available', 10);
     expect(recs.length).toBeGreaterThan(0);
-    expect(recs[0].score).toBeGreaterThanOrEqual(recs[recs.length - 1].score);
-    expect(recs[0].reason.length).toBeGreaterThan(0);
+    expect(recs[0]!.score).toBeGreaterThanOrEqual(recs[recs.length - 1]!.score);
+    expect(recs[0]!.reason.length).toBeGreaterThan(0);
     expect(recs.every((r) => r.status === 'READY' || r.status === 'SUBSTITUTE')).toBe(true);
   });
   it('위스키 추천', () => {
     const recs = recommendWhiskies(ctx, 5);
     expect(recs.length).toBeGreaterThan(0);
-    expect(recs[0].tasteScore).toBeGreaterThan(0);
+    expect(recs[0]!.tasteScore).toBeGreaterThan(0);
   });
 });
 
@@ -160,8 +160,8 @@ describe('purchase', () => {
     const ctx = { taste: vec({}), heldIds: partial, subMap: new Map<string, string[]>(), logs: [] };
     const res = calculatePurchases(ctx, 10);
     expect(res.length).toBeGreaterThan(0);
-    expect(res[0].afterCount - res[0].beforeCount).toBe(res[0].addedRecipes);
-    expect(res[0].addedRecipes).toBeGreaterThanOrEqual(res[res.length - 1].addedRecipes);
+    expect(res[0]!.afterCount - res[0]!.beforeCount).toBe(res[0]!.addedRecipes);
+    expect(res[0]!.addedRecipes).toBeGreaterThanOrEqual(res[res.length - 1]!.addedRecipes);
   });
 });
 
@@ -222,7 +222,7 @@ describe('레시피 note 위생 — 재고 서술 분리', () => {
     expect(evaluateCocktail(negroni, new Set(ids.slice(0, 2)), new Map()).status).not.toBe('READY');
     expect(evaluateCocktail(negroni, new Set(ids), new Map()).status).toBe('READY');
     // 같은 표준 재료를 쓰는 제품이면 어떤 제품이든 동일하게 충족된다(제품명 매칭 아님)
-    const gin = ids[0];
+    const gin = ids[0]!;
     expect(evaluateCocktail(negroni, new Set([...ids.slice(1), gin]), new Map()).status).toBe('READY');
   });
 });

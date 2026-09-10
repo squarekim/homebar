@@ -2,7 +2,7 @@
  * icons.tsx — 하단 네비용 2D 선형(라인아트) 아이콘.
  * 전부 24 뷰박스, fill 없음, stroke=currentColor 로 통일 → 활성 탭 색을 따라간다.
  */
-import { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 const P = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
 function svg(children: ReactNode) {

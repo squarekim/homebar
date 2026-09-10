@@ -4,7 +4,7 @@
  * 접근 불가하거나 공식 노트가 확인되지 않은 병은 여기 없으며 UI 에서 "공식 노트 미확보"로 표시된다.
  * 원본 seed 는 변경하지 않고 파생 레이어로만 부착한다.
  */
-import { MakerNote } from '../models/types';
+import { type MakerNote } from '../models/types';
 
 export const MAKER_NOTES: Record<string, MakerNote> = {
   "olesmoky": {

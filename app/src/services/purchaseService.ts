@@ -6,7 +6,7 @@
  * 최적화: 기준 상태를 1회 계산하고, 재료를 추가했을 때 상태가 바뀔 수 있는
  * "영향 레시피"(그 재료를 직접 쓰거나, 대체 대상이 그 재료인 레시피)만 재평가한다.
  */
-import { FlavorVector, PurchaseSuggestion, DrinkLog, Cocktail } from '../models/types';
+import { type FlavorVector, type PurchaseSuggestion, type DrinkLog, type Cocktail } from '../models/types';
 import { referenceRepo } from '../repositories/referenceRepo';
 import { evaluateCocktail, statusRank } from './availabilityService';
 import { tasteMatch } from './flavorService';

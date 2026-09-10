@@ -3,7 +3,7 @@
  * 후보 위스키를 넣었을 때 겹치는 축과 새로 채우는 축을 시뮬레이션한다.
  * 정적 표가 아니라 컬렉션(분류) 변화에 실시간 반응한다.
  */
-import { Bottle, WhiskyClass } from '../models/types';
+import { type Bottle, type WhiskyClass } from '../models/types';
 
 export interface AxisFamily {
   key: string;

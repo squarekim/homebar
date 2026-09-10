@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useHeldIds, useSubMap, useLogs, useMe, useRemainingMap, neutralVector } from './useData';
-import { RecommendContext } from '../services/recommendationService';
+import { type RecommendContext } from '../services/recommendationService';
 
 export function useRecommendContext(): RecommendContext {
   const heldIds = useHeldIds();
