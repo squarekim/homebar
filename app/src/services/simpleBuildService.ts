@@ -90,6 +90,19 @@ export function simpleBuilds(): SimpleBuild[] {
   return cache;
 }
 
+/** 카테고리별 재료 ID — 조합표 판정에서 매번 128종을 훑지 않도록 한 번만 만든다 */
+let categoryIndex: Map<string, string[]> | null = null;
+function idsInCategory(category?: string): string[] {
+  if (!category) return [];
+  if (!categoryIndex) {
+    categoryIndex = new Map();
+    for (const i of referenceRepo.ingredients()) {
+      categoryIndex.set(i.category, [...(categoryIndex.get(i.category) ?? []), i.id]);
+    }
+  }
+  return categoryIndex.get(category) ?? [];
+}
+
 /** 간단 조합 판정 — 레시피는 기존 판정을, 조합표는 기주 카테고리 + 믹서 보유로 본다 */
 export function evaluateSimpleBuild(
   b: SimpleBuild,
@@ -101,7 +114,7 @@ export function evaluateSimpleBuild(
     return { status: e.status, lack: e.lack };
   }
   const lack: string[] = [];
-  const hasBase = referenceRepo.ingredients().some((i) => i.category === b.baseCategory && heldIds.has(i.id));
+  const hasBase = idsInCategory(b.baseCategory).some((id) => heldIds.has(id));
   if (!hasBase) lack.push(b.group);
   const hasMixer = !!b.mixerIngredientId && heldIds.has(b.mixerIngredientId);
   if (!hasMixer) lack.push(b.parts[1]);

@@ -152,10 +152,16 @@ export function SimpleBuildBrowser() {
   const all = useMemo(() => simpleBuilds(), []);
   const groups = useMemo(() => [...new Set(all.map((b) => b.group))], [all]);
 
+  /** 판정은 재고가 바뀔 때만 다시 한다 (검색어·필터가 바뀌어도 재계산하지 않는다) */
+  const judged = useMemo(
+    () => all.map((b) => ({ b, e: evaluateSimpleBuild(b, heldIds, subMap) })),
+    [all, heldIds, subMap],
+  );
+  const readyCount = useMemo(() => judged.filter(({ e }) => e.status === 'READY').length, [judged]);
+
   const rows = useMemo(() => {
     const t = q.trim().toLowerCase();
-    return all
-      .map((b) => ({ b, e: evaluateSimpleBuild(b, heldIds, subMap) }))
+    return judged
       .filter(({ b, e }) => {
         if (grp !== 'all' && b.group !== grp) return false;
         if (readyOnly && e.status !== 'READY') return false;
@@ -163,12 +169,7 @@ export function SimpleBuildBrowser() {
         return (b.name + ' ' + b.parts.join(' ')).toLowerCase().includes(t);
       })
       .sort((x, y) => rank(y.e.status) - rank(x.e.status) || x.b.name.localeCompare(y.b.name, 'ko'));
-  }, [all, q, grp, readyOnly, heldIds, subMap]);
-
-  const readyCount = useMemo(
-    () => all.filter((b) => evaluateSimpleBuild(b, heldIds, subMap).status === 'READY').length,
-    [all, heldIds, subMap],
-  );
+  }, [judged, q, grp, readyOnly]);
 
   return (
     <>

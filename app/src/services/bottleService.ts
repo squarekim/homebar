@@ -13,11 +13,13 @@ export interface AddBottleOptions {
   linkIngredient?: boolean;
 }
 
+let byName: Map<string, { id: string; name: string }> | null = null;
+
 /** 표준 재료명 → 재료 마스터의 canonical ID (없으면 undefined) */
 export function resolveIngredient(name?: string): { id: string; name: string } | undefined {
   if (!name) return undefined;
-  const found = referenceRepo.ingredients().find((i) => i.name === name);
-  return found ? { id: found.id, name: found.name } : undefined;
+  if (!byName) byName = new Map(referenceRepo.ingredients().map((i) => [i.name, { id: i.id, name: i.name }]));
+  return byName.get(name);
 }
 
 export const bottleService = {
