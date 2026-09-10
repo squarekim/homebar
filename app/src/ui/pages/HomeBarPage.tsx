@@ -10,10 +10,12 @@ import { resetInventoryToSeed } from '../../db/migrate';
 import { IS_PUBLIC } from '../../config';
 import { CocktailBrowser, IngredientBrowser } from '../components/browsers';
 
-type Sub = 'cocktail' | 'stock' | 'ingredient';
+export type Sub = 'cocktail' | 'stock' | 'ingredient';
 
-export function HomeBarPage() {
-  const [sub, setSub] = useState<Sub>('cocktail');
+export function HomeBarPage({ sub: subProp, onSub }: { sub?: Sub; onSub?: (s: Sub) => void } = {}) {
+  const [local, setLocal] = useState<Sub>('cocktail');
+  const sub = subProp ?? local;
+  const setSub = (s: Sub) => { setLocal(s); onSub?.(s); };
   return (
     <>
       <div className="controls strip">

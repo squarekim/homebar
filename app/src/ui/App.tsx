@@ -6,11 +6,20 @@ import { CocktailModal } from './components/CocktailModal';
 import { LogDialog } from './components/LogDialog';
 import { AddBottleDialog } from './components/AddBottleDialog';
 import { HomePage } from './pages/HomePage';
-import { HomeBarPage } from './pages/HomeBarPage';
+import { HomeBarPage, Sub as HomeBarSub } from './pages/HomeBarPage';
 import { WhiskyPage } from './pages/WhiskyPage';
 import { RecommendPage } from './pages/RecommendPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { IconHome, IconMartini, IconWhisky, IconSparkle, IconProfile, IconLogo } from './components/icons';
+import { IS_BETA } from '../config';
+
+/** 집계 타일 설명 — 처음 들어온 사람이 숫자의 뜻을 바로 알 수 있게 */
+const TALLY_TERMS: Record<string, [string, string]> = {
+  정규: ['정규', '필수 재료를 전부 보유하고 대체 없이 원 레시피대로 만들 수 있는 칵테일 수입니다.'],
+  근사: ['근사', '필수 재료는 다 있지만 일부를 대체재로 채워 만드는 경우입니다. 맛이 원형과 조금 달라집니다.'],
+  불가: ['불가', '필수 재료가 빠져 지금은 못 만드는 칵테일 수입니다. 재고를 체크하거나 술을 추가하면 즉시 줄어듭니다.'],
+  보유재료: ['보유재료', '재고 탭에서 체크한 재료 수입니다. 이 값 하나로 위 세 숫자가 전부 다시 계산됩니다.'],
+};
 
 export type Tab = 'home' | 'homebar' | 'whisky' | 'recommend' | 'profile';
 
@@ -24,9 +33,11 @@ const TABS: { id: Tab; label: string; ic: ReactNode }[] = [
 
 function Shell() {
   const [tab, setTab] = useState<Tab>('home');
+  const [homebarSub, setHomebarSub] = useState<HomeBarSub>('cocktail');
+  const go = (t: Tab, sub?: HomeBarSub) => { if (sub) setHomebarSub(sub); setTab(t); window.scrollTo(0, 0); };
   const heldIds = useHeldIds();
   const subMap = useSubMap();
-  const { toastMsg, termInfo, closeTerm, addOpen, addQuery, openAdd, closeAdd } = useUI();
+  const { toastMsg, termInfo, closeTerm, addOpen, addQuery, openAdd, closeAdd, showTerm } = useUI();
 
   const tally = useMemo(() => tallyStatus(evaluateAll(heldIds, subMap)), [heldIds, subMap]);
 
@@ -48,20 +59,26 @@ function Shell() {
         <div className="wrap">
           <div className="brand">
             <span className="logomark"><IconLogo /></span>
-            <div className="brandtext"><h1>홈바 플랫폼</h1><span>내 취향·재고 기반</span></div>
+            <div className="brandtext">
+              <h1>홈바 플랫폼{IS_BETA && <i className="betatag">BETA</i>}</h1>
+              <span>{IS_BETA ? '오너 컬렉션 기준 · 바꾼 건 내 브라우저에만 저장' : '내 취향·재고 기반'}</span>
+            </div>
           </div>
           <div className="tally">
-            <div className="t-ok"><b>{tally.READY}</b><small>정규</small></div>
-            <div className="t-ap"><b>{tally.SUBSTITUTE}</b><small>근사</small></div>
-            <div className="t-no"><b>{tally.MISSING + tally.UNAVAILABLE}</b><small>불가</small></div>
-            <div className="t-st"><b>{heldIds.size}</b><small>보유재료</small></div>
+            {([['t-ok', tally.READY, '정규'], ['t-ap', tally.SUBSTITUTE, '근사'],
+               ['t-no', tally.MISSING + tally.UNAVAILABLE, '불가'], ['t-st', heldIds.size, '보유재료']] as const).map(
+              ([cls, value, label]) => (
+                <button key={label} className={cls} onClick={() => showTerm(...TALLY_TERMS[label])} title={TALLY_TERMS[label][1]}>
+                  <b>{value}</b><small>{label}</small>
+                </button>
+              ))}
           </div>
         </div>
       </header>
 
       <main className="wrap">
-        {tab === 'home' && <HomePage go={setTab} />}
-        {tab === 'homebar' && <HomeBarPage />}
+        {tab === 'home' && <HomePage go={go} />}
+        {tab === 'homebar' && <HomeBarPage sub={homebarSub} onSub={setHomebarSub} />}
         {tab === 'whisky' && <WhiskyPage />}
         {tab === 'recommend' && <RecommendPage />}
         {tab === 'profile' && <ProfilePage />}
@@ -76,7 +93,7 @@ function Shell() {
       <nav className="tabbar">
         <div className="wrap">
           {TABS.map((t) => (
-            <button key={t.id} aria-selected={tab === t.id} onClick={() => { setTab(t.id); window.scrollTo(0, 0); }}>
+            <button key={t.id} aria-selected={tab === t.id} onClick={() => go(t.id)}>
               <span className="ic">{t.ic}</span>{t.label}
             </button>
           ))}

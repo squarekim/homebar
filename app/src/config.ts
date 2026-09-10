@@ -7,6 +7,15 @@
 export const IS_PUBLIC = import.meta.env.VITE_PUBLIC === '1';
 
 /**
+ * 배포 프로필.
+ *  beta   — 오너의 홈바(보유 주류·재고)가 들어간 채로 공개한다. 지금 웹에 올라가는 버전.
+ *  public — 개인 데이터를 뺀 정식 공개판. 기본 홈바 세트로 시작한다.
+ * 방문자가 화면에서 무엇을 하든 자기 브라우저(IndexedDB)에만 저장되며 오너 데이터는 바뀌지 않는다.
+ */
+export const PROFILE: 'beta' | 'public' = IS_PUBLIC ? 'public' : 'beta';
+export const IS_BETA = PROFILE === 'beta';
+
+/**
  * 공개 배포 초기 재고 — 특정 개인의 술장이 아니라, 입문자 홈바에 흔한 기본 구성.
  * 이 세트로 202종 중 정규 79 · 근사 6이 열린다(빈 화면 방지). 재고 탭에서 전부 수정 가능.
  */

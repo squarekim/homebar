@@ -1,12 +1,26 @@
-# GitHub Pages 배포 — app/ 를 공개 프로필(개인 데이터 제외)로 빌드해 사이트 루트에 올린다.
+# GitHub Pages 배포 — app/ 을 빌드해 사이트 루트에 올린다.
 # 레거시 단일 파일 앱(index.html)은 /legacy/ 로 함께 배포되어 기존 링크가 죽지 않는다.
+#
+# 프로필
+#   beta   (기본) 오너의 홈바(보유 주류·재고)가 들어간 채로 공개. 방문자가 바꾼 값은 방문자 브라우저에만 남는다.
+#   public        개인 데이터를 뺀 정식 공개판. 기본 홈바 세트로 시작한다.
+# 정식 공개로 넘어갈 때는 Actions 에서 profile=public 으로 수동 실행하거나 아래 DEFAULT_PROFILE 을 바꾼다.
 name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [main, 'claude/**']     # 작업 브랜치에 푸시하면 그대로 베타가 갱신된다
     paths: ['app/**', 'index.html', '.github/workflows/deploy-pages.yml']
-  workflow_dispatch: {}   # 다른 브랜치에서 수동 배포할 때 사용
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: '배포 프로필 (beta = 내 술 포함, public = 개인 데이터 제외)'
+        type: choice
+        options: [beta, public]
+        default: beta
+
+env:
+  DEFAULT_PROFILE: beta
 
 permissions:
   contents: read
@@ -30,14 +44,25 @@ jobs:
       - name: Install
         working-directory: app
         run: npm ci
-      - name: Build (public profile — 개인 보유 데이터 제외)
+      - name: Build
         working-directory: app
-        run: npm run build:public
+        env:
+          PROFILE: ${{ github.event.inputs.profile || '' }}
+        run: |
+          PROFILE="${PROFILE:-$DEFAULT_PROFILE}"
+          echo "profile=$PROFILE"
+          if [ "$PROFILE" = "public" ]; then
+            npm run build:public
+            echo "OUT=dist-public" >> "$GITHUB_ENV"
+          else
+            npm run build
+            echo "OUT=dist" >> "$GITHUB_ENV"
+          fi
       - name: Assemble site
         run: |
           rm -rf _site
           mkdir -p _site/legacy
-          cp -r app/dist-public/. _site/
+          cp -r "app/$OUT/." _site/
           cp index.html _site/legacy/index.html
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
