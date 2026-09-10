@@ -67,7 +67,11 @@ jobs:
           mkdir -p _site/legacy
           cp -r "app/$OUT/." _site/
           cp index.html _site/legacy/index.html
+      # enablement: Pages 빌드 타입을 'GitHub Actions' 로 되돌린다.
+      # 브랜치 소스로 남아 있으면 main 푸시마다 Jekyll 이 레포 루트(=레거시 index.html)를 덮어쓰기 때문.
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
