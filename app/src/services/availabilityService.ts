@@ -62,12 +62,15 @@ export const STATUS_LABEL_KO: Record<AvailabilityStatus, string> = {
 /**
  * 같은 판정을 사람 말로. '정규·근사'는 데이터를 만드는 쪽의 용어라
  * 처음 보는 사람에게는 결과를 설명하지 못한다 (배지·통계에는 짧은 쪽을 계속 쓴다).
+ *
+ * READY 는 일부러 비워 둔다. 레시피대로 만들 수 있는 게 기본값이고,
+ * 거기에 "그대로 만들 수 있어요"를 붙이면 대부분의 카드에 같은 말이 반복돼 정보가 되지 않는다.
+ * 말을 붙일 값어치가 있는 건 평소와 다른 두 가지뿐이다 — 바꿔 써야 하거나, 아예 안 되거나.
  */
-export const STATUS_SENTENCE_KO: Record<AvailabilityStatus, string> = {
-  READY: '그대로 만들 수 있어요',
-  SUBSTITUTE: '대체 재료로 가능',
-  MISSING: '재료 몇 가지가 부족해요',
-  UNAVAILABLE: '핵심 재료가 없어요',
+export const STATUS_SENTENCE_KO: Partial<Record<AvailabilityStatus, string>> = {
+  SUBSTITUTE: '대체해서 만들 수 있어요',
+  MISSING: '없어서 안 돼요',
+  UNAVAILABLE: '없어서 안 돼요',
 };
 
 /** 전체 레시피 판정. 통계/정렬용 */

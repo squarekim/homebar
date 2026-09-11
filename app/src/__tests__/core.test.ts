@@ -2,11 +2,12 @@ import { describe, it, expect } from 'vitest';
 import { ingredients, cocktails, bottles, whiskies } from '../data/adapters';
 import { evaluateAll, evaluateCocktail, tallyStatus, STATUS_LABEL_KO, STATUS_SENTENCE_KO } from '../services/availabilityService';
 import { isNeutralTaste } from '../services/flavorService';
+import { availabilityLine } from '../ui/pages/TodayPicks';
 import { recommendCocktails, recommendWhiskies, todayPicks, type RecommendContext } from '../services/recommendationService';
 import { calculatePurchases } from '../services/purchaseService';
 import { recommendGroupCocktails } from '../services/groupService';
 import { milestoneBadges, repeatBadges } from '../services/collectionBadges';
-import { FLAVOR_AXES, type FlavorVector, type Bottle, type WhiskyClass } from '../models/types';
+import { FLAVOR_AXES, type FlavorVector, type Bottle, type WhiskyClass, type RecommendationResult } from '../models/types';
 
 function vec(partial: Partial<FlavorVector>): FlavorVector {
   return FLAVOR_AXES.reduce((v, a) => { v[a] = partial[a] ?? 5; return v; }, {} as FlavorVector);
@@ -525,11 +526,24 @@ describe('홈 첫 화면 추천 — 대표 한 잔과 다른 성격', () => {
     expect(picks.every((p) => p.kind === 'whisky')).toBe(true);
   });
 
-  it('판정 용어가 아니라 결과를 설명하는 문장을 쓴다', () => {
-    expect(STATUS_SENTENCE_KO.READY).toBe('그대로 만들 수 있어요');
-    expect(STATUS_SENTENCE_KO.SUBSTITUTE).toBe('대체 재료로 가능');
+  it('평소와 다를 때만 상태를 적는다 — 레시피대로 되는 건 기본값이라 쓰지 않는다', () => {
+    expect(STATUS_SENTENCE_KO.READY).toBeUndefined();
+    expect(STATUS_SENTENCE_KO.SUBSTITUTE).toBe('대체해서 만들 수 있어요');
+    expect(STATUS_SENTENCE_KO.UNAVAILABLE).toBe('없어서 안 돼요');
     // 짧은 표기(배지·통계)는 그대로 남는다
     expect(STATUS_LABEL_KO.READY).toBe('정규');
+  });
+
+  it('추천 카드가 상태 줄을 붙이는 경우와 붙이지 않는 경우', () => {
+    const rec = (over: Partial<RecommendationResult>): RecommendationResult => ({
+      kind: 'cocktail', id: 'x', name: '테스트', score: 90, tasteScore: 80,
+      inventoryScore: 100, availabilityScore: 100, noveltyScore: 50, reason: '', flavorWords: ['단맛'], ...over,
+    });
+    expect(availabilityLine(rec({ status: 'READY' }))).toBeNull();          // 아무것도 적지 않는다
+    expect(availabilityLine(rec({ kind: 'whisky' }))).toBeNull();           // 위스키는 이미 병에 있다
+    expect(availabilityLine(rec({ status: 'SUBSTITUTE' }))?.text).toBe('대체해서 만들 수 있어요');
+    expect(availabilityLine(rec({ status: 'MISSING' }))?.text).toBe('없어서 안 돼요');
+    expect(availabilityLine(rec({ status: 'UNAVAILABLE' }))?.text).toBe('없어서 안 돼요');
   });
 
   it('중립 프로필은 취향 설정으로 치지 않는다 (부팅 때 자동 생성된다)', () => {

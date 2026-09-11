@@ -131,29 +131,52 @@ input::placeholder{color:var(--dim)}
 .rec .nm{font-weight:700;font-size:15.5px;letter-spacing:-.01em}
 .rec .sc{font-size:23px;font-weight:800;color:var(--amber);letter-spacing:-.04em}
 .rec .rs{font-size:12.5px;color:var(--mute);margin-top:6px;line-height:1.55}
-/* 홈 첫 화면의 추천 — 대표 한 잔은 크게, 다른 선택지는 구분선으로 (이슈 #1 홈 항목) */
-.pick.hero{position:relative;background:var(--panel);border-radius:var(--r);box-shadow:var(--shadow);
-  padding:18px 18px 16px;margin:4px 0 2px;overflow:hidden}
-.pick.hero::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--amber)}
-.pick.hero .kicker{font-size:10.5px;font-weight:800;letter-spacing:.08em;color:var(--amber);text-transform:uppercase}
-.pick.hero h3{font-size:22px;font-weight:800;letter-spacing:-.03em;margin:6px 0 0;line-height:1.25}
-.pick .taste{font-size:13px;color:var(--mute);margin:5px 0 0;line-height:1.5}
-.pick.hero .btnrow{margin-top:14px}
-.avail{display:inline-block;margin-top:10px;font-size:12px;font-weight:700;border-radius:8px;padding:4px 10px}
-.avail.a-READY{color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,transparent)}
-.avail.a-SUBSTITUTE{color:var(--mid);background:color-mix(in srgb,var(--mid) 15%,transparent)}
-.avail.a-MISSING{color:var(--mute);background:var(--raise)}
-.avail.a-UNAVAILABLE{color:var(--no);background:color-mix(in srgb,var(--no) 12%,transparent)}
-.why{margin-top:12px;padding-top:11px;border-top:1px solid var(--line)}
-.why p{font-size:12.5px;color:var(--mute);line-height:1.55;margin:0 0 8px}
-.sechead.sm{font-size:13px;font-weight:700;color:var(--mute);margin:18px 0 2px}
+/* 홈 첫 화면의 추천 — 바 메뉴판 (이슈 #1 홈 항목). 이 블록에만 종이색·먹색·버건디를 쓴다.
+   잔 이름이 가장 크고, 맛이 그 다음, 점수는 적지 않는다. */
+.menucard{
+  --paper:#FBF7F1; --ink2:#231D1A; --wine:#7B2E3B; --hair:#E3D9CB; --on-wine:#FFF7F4;
+  background:var(--paper);border-radius:var(--r);box-shadow:var(--shadow);
+  padding:20px 20px 16px;margin:6px 0 2px;color:var(--ink2)}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme=light]) .menucard{--paper:#1D1816; --ink2:#F1E8DF; --wine:#D68E98; --hair:#3A302B; --on-wine:#23181A}
+}
+:root[data-theme=dark] .menucard{--paper:#1D1816; --ink2:#F1E8DF; --wine:#D68E98; --hair:#3A302B; --on-wine:#23181A}
+
+.menucard .kicker{font-size:10.5px;font-weight:800;letter-spacing:.22em;color:var(--wine)}
+.menucard .glass{display:block;color:var(--wine);opacity:.9;margin:10px 0 2px}
+.menucard .glass .svgic{width:30px;height:30px}
+.pick.lead h3{font-size:27px;font-weight:800;letter-spacing:-.035em;line-height:1.2;margin:4px 0 0;color:var(--ink2)}
+.pick .taste{font-size:14px;color:var(--ink2);opacity:.9;margin:6px 0 0;line-height:1.5}
+.pick .sub{font-size:12px;color:var(--ink2);opacity:.6;margin:3px 0 0}
+.pick.lead .btnrow{margin-top:15px}
+.menucard .btn.primary{background:var(--wine);border-color:var(--wine);color:var(--on-wine)}
+.menucard .btn.ghost{color:var(--ink2);opacity:.75}
+
+/* 평소와 다를 때만 붙는 한 줄 */
+.avail{display:inline-block;margin-top:11px;font-size:12px;font-weight:700;border-radius:8px;padding:4px 10px}
+.avail.a-SUBSTITUTE{color:var(--wine);background:color-mix(in srgb,var(--wine) 13%,transparent)}
+.avail.a-MISSING,.avail.a-UNAVAILABLE{color:var(--no);background:color-mix(in srgb,var(--no) 12%,transparent)}
+
+/* 메뉴판의 단 구분선 */
+.menucard .rule{position:relative;text-align:center;margin:20px 0 2px}
+.menucard .rule::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--hair)}
+.menucard .rule span{position:relative;background:var(--paper);padding:0 10px;
+  font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--ink2);opacity:.55}
+
 .picks{display:flex;flex-direction:column}
-.pick.alt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;
-  padding:13px 2px;border-bottom:1px solid var(--line)}
-.pick.alt .nm{font-size:15px;font-weight:700;letter-spacing:-.01em}
-.pick.alt .avail{margin-top:7px;font-size:11px;padding:3px 8px}
-.basis{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:12px 0 2px;font-size:12px;color:var(--dim)}
-.lnk{font-size:12px;font-weight:700;color:var(--amber);text-decoration:underline;text-underline-offset:3px}
+.pick.alt{display:block;width:100%;text-align:left;padding:13px 0;border-bottom:1px solid var(--hair)}
+.pick.alt:last-child{border-bottom:0}
+.pick.alt .line{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.pick.alt .nm{font-size:16px;font-weight:700;letter-spacing:-.02em;color:var(--ink2)}
+.pick.alt .taste{margin:0;font-size:12.5px;text-align:right;flex:0 1 auto}
+.pick.alt .foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pick.alt .avail{margin-top:6px;font-size:11px;padding:3px 8px}
+
+.why{margin-top:13px;padding-top:12px;border-top:1px solid var(--hair)}
+.why p{font-size:12.5px;color:var(--ink2);opacity:.75;line-height:1.55;margin:0 0 8px}
+.basis{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 0;padding-top:12px;
+  border-top:1px solid var(--hair);font-size:11.5px;color:var(--ink2);opacity:.6}
+.lnk{font-size:11.5px;font-weight:700;color:var(--wine);opacity:1;text-decoration:underline;text-underline-offset:3px}
 .subscores{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
 .ss{font-size:10.5px;color:var(--dim);background:var(--raise);padding:3px 8px;border-radius:7px}
 .ss b{color:var(--ink);font-weight:700}
