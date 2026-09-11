@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { ingredients, cocktails, bottles, whiskies } from '../data/adapters';
-import { evaluateAll, evaluateCocktail, tallyStatus } from '../services/availabilityService';
-import { recommendCocktails, recommendWhiskies, type RecommendContext } from '../services/recommendationService';
+import { evaluateAll, evaluateCocktail, tallyStatus, STATUS_LABEL_KO, STATUS_SENTENCE_KO } from '../services/availabilityService';
+import { isNeutralTaste } from '../services/flavorService';
+import { recommendCocktails, recommendWhiskies, todayPicks, type RecommendContext } from '../services/recommendationService';
 import { calculatePurchases } from '../services/purchaseService';
 import { recommendGroupCocktails } from '../services/groupService';
 import { milestoneBadges, repeatBadges } from '../services/collectionBadges';
@@ -135,6 +136,7 @@ describe('availability', () => {
 describe('recommendation', () => {
   const ctx: RecommendContext = {
     taste: vec({ vanilla: 9, caramel: 8, sweet: 7, smoke: 2, peat: 0 }),
+    hasTaste: true,
     heldIds: seedHeld(),
     subMap: new Map(),
     logs: [],
@@ -492,5 +494,46 @@ describe('재구매 업적', () => {
       isWhisky: false, isSpirit: false, qty: 5, addedAt: 100, productId: 'm_coke',
     });
     expect(repeatBadges([cola]).size).toBe(0);
+  });
+});
+
+describe('홈 첫 화면 추천 — 대표 한 잔과 다른 성격', () => {
+  const ctx: RecommendContext = {
+    taste: vec({}), hasTaste: false, heldIds: seedHeld(), subMap: new Map(), logs: [], remainingById: new Map(),
+  };
+
+  it('대표 1 + 선택지 2, 성격이 서로 겹치지 않는다', () => {
+    const picks = todayPicks(ctx, 'available', 3);
+    expect(picks).toHaveLength(3);
+    // 기주가 전부 다르다 (사워 계열이 연달아 나오던 문제)
+    expect(new Set(picks.map((p) => p.base)).size).toBe(3);
+    // 지배적인 맛 축도 전부 다르다
+    expect(new Set(picks.map((p) => p.flavorWords[0])).size).toBe(3);
+  });
+
+  it('맛의 방향과 기주가 채워져 있다 — 화면이 점수 대신 이걸 먼저 쓴다', () => {
+    for (const p of todayPicks(ctx, 'available', 3)) {
+      expect(p.flavorWords.length).toBeGreaterThan(0);
+      expect(p.base).toBeTruthy();
+      expect(p.name.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('후보가 적은 모드에서도 요청한 수를 채운다', () => {
+    const picks = todayPicks(ctx, 'whisky', 3);
+    expect(picks).toHaveLength(3);
+    expect(picks.every((p) => p.kind === 'whisky')).toBe(true);
+  });
+
+  it('판정 용어가 아니라 결과를 설명하는 문장을 쓴다', () => {
+    expect(STATUS_SENTENCE_KO.READY).toBe('그대로 만들 수 있어요');
+    expect(STATUS_SENTENCE_KO.SUBSTITUTE).toBe('대체 재료로 가능');
+    // 짧은 표기(배지·통계)는 그대로 남는다
+    expect(STATUS_LABEL_KO.READY).toBe('정규');
+  });
+
+  it('중립 프로필은 취향 설정으로 치지 않는다 (부팅 때 자동 생성된다)', () => {
+    expect(isNeutralTaste(vec({}))).toBe(true);
+    expect(isNeutralTaste(vec({ smoke: 9 }))).toBe(false);
   });
 });

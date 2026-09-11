@@ -2,7 +2,7 @@
  * flavorService — 향미 벡터 수학 및 취향 파생.
  * 추천 엔진의 유사도 계산(cosine / weighted distance)을 제공한다.
  */
-import { type FlavorVector, type FlavorAxis, FLAVOR_AXES, zeroVector, type DrinkLog } from '../models/types';
+import { type FlavorVector, type FlavorAxis, FLAVOR_AXES, FLAVOR_LABELS_KO, zeroVector, type DrinkLog } from '../models/types';
 
 export function cosineSimilarity(a: FlavorVector, b: FlavorVector): number {
   let dot = 0, na = 0, nb = 0;
@@ -91,6 +91,19 @@ export function blendVectors(current: FlavorVector, incoming: FlavorVector, alph
   const out = zeroVector();
   for (const axis of FLAVOR_AXES) out[axis] = current[axis] * (1 - alpha) + incoming[axis] * alpha;
   return out;
+}
+
+/**
+ * 아직 손대지 않은 취향인지. 부팅 때 중립(모든 축 5) 프로필 'me' 가 자동으로 만들어지므로
+ * "프로필이 있다"는 것만으로는 취향을 설정했다고 말할 수 없다.
+ */
+export function isNeutralTaste(v: FlavorVector): boolean {
+  return FLAVOR_AXES.every((a) => v[a] === 5);
+}
+
+/** 맛의 방향 한두 마디 ('단맛', '시트러스') — 화면이 점수보다 먼저 보여주는 말 */
+export function flavorWords(v: FlavorVector, n = 2): string[] {
+  return topAxes(v, n).map((a) => FLAVOR_LABELS_KO[a]);
 }
 
 export function topAxes(v: FlavorVector, n = 3): FlavorAxis[] {

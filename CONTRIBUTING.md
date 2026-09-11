@@ -98,6 +98,10 @@ git push -u origin feat/무엇을-하는지
 설명은 `note` 에 **한 문장**. IBA 등재 연혁은 적지 않는다(화면의 IBA 배지가 이미 말한다).
 일괄 정리는 `scripts/structureRecipeNotes.mjs` 가 한다.
 
+**추천 화면 문구** → 판정 결과는 `STATUS_SENTENCE_KO`(그대로 만들 수 있어요 / 대체 재료로 가능)로 쓴다.
+`STATUS_LABEL_KO`(정규·근사)는 배지·통계처럼 자리가 좁은 곳에만 남긴다. 점수는 카드 앞면에 두지 않는다 —
+맛·재료 충족 여부가 먼저고, 숫자는 '추천 근거'를 펼쳤을 때 나온다(이슈 #1).
+
 **새 판정/추천 로직** → `services/` 에 순수 함수로 짜고 `src/__tests__/` 에 테스트를 붙인다. UI에 로직을 넣지 않는다.
 
 **저장 항목 추가** → `models/types.ts` 에 타입 → `db/schema.ts` 에 버전 하나 올려 `.upgrade()` 로 기존 행 보정 → `repositories/` 에 접근 함수. 기존 스토어는 지우지 않는다.

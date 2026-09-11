@@ -2,9 +2,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { useUI } from '../UIContext';
 import { useRecommendContext } from '../../hooks/useRecommendContext';
 import { useLogs } from '../../hooks/useData';
-import { whatToDrink, type RecommendMode } from '../../services/recommendationService';
-import { RecCard, ChipRow, LogCard, type ChipOption } from '../components/common';
+import { todayPicks, type RecommendMode } from '../../services/recommendationService';
+import { ChipRow, LogCard, type ChipOption } from '../components/common';
 import { CocktailRec, WhiskyRec, GroupRec, ClearStockRec, PurchaseRec, MODES } from './RecommendPage';
+import { TodayPicks } from './TodayPicks';
 import { IS_BETA } from '../../config';
 
 const WELCOME_KEY = 'homebar.welcome.v1';
@@ -62,7 +63,7 @@ export function HomePage({ go }: { go: Go }) {
   const [sub, setSub] = useState<HomeSub>('today');
   const [mode, setMode] = useState<RecommendMode>('available');
 
-  const today = useMemo(() => whatToDrink(ctx, mode, 6), [ctx, mode]);
+  const today = useMemo(() => todayPicks(ctx, mode, 3), [ctx, mode]);
   const recent = logs.slice(0, 4);
 
   return (
@@ -74,13 +75,14 @@ export function HomePage({ go }: { go: Go }) {
         <>
           <div className="sechead">오늘 뭐 마실까</div>
           <ChipRow value={mode} options={MODES} onChange={setMode} />
-          <div className="list">
-            {today.length === 0 && <div className="empty">추천할 항목이 없습니다. 술장 → 재고에서 보유 재료를 등록하세요.</div>}
-            {today.map((r) => (
-              <RecCard key={r.kind + r.id} rec={r}
-                onClick={() => r.kind === 'cocktail' ? openCocktail(r.id) : openLog({ drinkId: r.id, drinkType: 'whisky', drinkName: r.name, servingStyle: 'neat' })} />
-            ))}
-          </div>
+          <TodayPicks
+            picks={today}
+            hasTaste={ctx.hasTaste}
+            onOpen={(r) => r.kind === 'cocktail'
+              ? openCocktail(r.id)
+              : openLog({ drinkId: r.id, drinkType: 'whisky', drinkName: r.name, servingStyle: 'neat' })}
+            onMore={() => setSub('cocktail')}
+          />
 
           <div className="sechead">최근 기록</div>
           {recent.length === 0

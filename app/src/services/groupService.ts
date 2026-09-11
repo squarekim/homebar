@@ -5,7 +5,7 @@
 import { type FlavorVector, type RecommendationResult, FLAVOR_LABELS_KO, type StockContext } from '../models/types';
 import { referenceRepo } from '../repositories/referenceRepo';
 import { evaluateCocktail, AVAIL_SCORE } from './availabilityService';
-import { groupTasteMatch, topAxes } from './flavorService';
+import { flavorWords, groupTasteMatch, topAxes } from './flavorService';
 
 export interface GroupContext extends StockContext {
   profiles: { name: string; vector: FlavorVector }[];
@@ -40,6 +40,7 @@ export function recommendGroupCocktails(ctx: GroupContext, onlyAvailable = false
       kind: 'cocktail', id: ck.id, name: ck.name, score,
       tasteScore: groupScore, inventoryScore: 0, availabilityScore, noveltyScore: 0,
       status: avail.status, reason: groupReason(ck.flavor, penalty),
+      flavorWords: flavorWords(ck.flavor), base: ck.base,
     });
   }
   return out.sort((a, b) => b.score - a.score).slice(0, limit);
@@ -54,6 +55,7 @@ export function recommendGroupWhiskies(ctx: GroupContext, limit = 12): Recommend
       kind: 'whisky', id: w.id, name: w.name, score: groupScore,
       tasteScore: groupScore, inventoryScore: 100, availabilityScore: 100, noveltyScore: 0,
       reason: groupReason(w.flavor, penalty),
+      flavorWords: flavorWords(w.flavor), base: w.whiskyClass?.origin ?? '위스키',
     });
   }
   return out.sort((a, b) => b.score - a.score).slice(0, limit);

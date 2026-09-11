@@ -59,6 +59,17 @@ export const STATUS_LABEL_KO: Record<AvailabilityStatus, string> = {
   READY: '정규', SUBSTITUTE: '근사', MISSING: '일부부족', UNAVAILABLE: '불가',
 };
 
+/**
+ * 같은 판정을 사람 말로. '정규·근사'는 데이터를 만드는 쪽의 용어라
+ * 처음 보는 사람에게는 결과를 설명하지 못한다 (배지·통계에는 짧은 쪽을 계속 쓴다).
+ */
+export const STATUS_SENTENCE_KO: Record<AvailabilityStatus, string> = {
+  READY: '그대로 만들 수 있어요',
+  SUBSTITUTE: '대체 재료로 가능',
+  MISSING: '재료 몇 가지가 부족해요',
+  UNAVAILABLE: '핵심 재료가 없어요',
+};
+
 /** 전체 레시피 판정. 통계/정렬용 */
 export function evaluateAll(
   heldIds: Set<string>,

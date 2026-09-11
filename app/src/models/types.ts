@@ -245,6 +245,10 @@ export interface RecommendationResult {
   noveltyScore: number;
   status?: AvailabilityStatus | undefined;
   reason: string;
+  /** 맛의 방향 한두 마디 ('단맛', '시트러스'). 화면이 점수보다 먼저 보여주는 말 */
+  flavorWords: string[];
+  /** 기주(칵테일) 또는 원산지(위스키). 성격이 겹치지 않게 고르는 데 쓴다 */
+  base?: string | undefined;
 }
 
 /** 구매 추천 결과 */

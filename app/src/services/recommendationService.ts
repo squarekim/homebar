@@ -10,7 +10,7 @@ import {
 } from '../models/types';
 import { referenceRepo } from '../repositories/referenceRepo';
 import { evaluateCocktail, AVAIL_SCORE } from './availabilityService';
-import { tasteMatch, topAxes, cosineSimilarity } from './flavorService';
+import { tasteMatch, topAxes, flavorWords, cosineSimilarity } from './flavorService';
 
 export type RecommendMode =
   | 'available'   // 있는 재료만
@@ -24,6 +24,8 @@ export type RecommendMode =
 export interface RecommendContext extends StockContext {
   taste: FlavorVector;
   remainingById: Map<string, number>; // ingredientId → 잔량(0~100)
+  /** 취향 프로파일을 실제로 설정했는지. 아니면 추천 근거는 '보유 재료 기준'이다 */
+  hasTaste: boolean;
 }
 
 const DAY = 86_400_000;
@@ -153,6 +155,7 @@ export function recommendCocktails(
       kind: 'cocktail', id: ck.id, name: ck.name, score,
       tasteScore, inventoryScore, availabilityScore, noveltyScore: nov,
       status: avail.status, reason: reasonFor(ck, ctx.taste, avail, inventoryScore),
+      flavorWords: flavorWords(ck.flavor), base: ck.base,
     });
   }
 
@@ -191,9 +194,37 @@ export function recommendWhiskies(
       kind: 'whisky', id: w.id, name: w.name, score,
       tasteScore, inventoryScore, availabilityScore, noveltyScore: nov,
       reason: whiskyReason(w, ctx.taste),
+      flavorWords: flavorWords(w.flavor), base: w.whiskyClass?.origin ?? '위스키',
     });
   }
   return out.sort((a, b) => b.score - a.score).slice(0, limit);
+}
+
+/**
+ * 홈 첫 화면용 — 대표 한 잔과 성격이 다른 선택지.
+ * 점수순 상위를 그대로 늘어놓으면 사워 계열처럼 같은 성격이 연달아 나온다.
+ * 기주와 지배적인 맛 축이 앞에 고른 것과 겹치면 건너뛰고, 후보가 모자라면 점수순으로 채운다.
+ */
+export function todayPicks(ctx: RecommendContext, mode: RecommendMode = 'available', count = 3): RecommendationResult[] {
+  const pool = whatToDrink(ctx, mode, 40);
+  const picked: RecommendationResult[] = [];
+  const bases = new Set<string>();
+  const axes = new Set<string>();
+
+  for (const r of pool) {
+    if (picked.length >= count) break;
+    const base = r.base ?? '';
+    const axis = r.flavorWords[0] ?? '';
+    if (picked.length > 0 && (bases.has(base) || axes.has(axis))) continue;
+    picked.push(r);
+    bases.add(base);
+    axes.add(axis);
+  }
+  for (const r of pool) {
+    if (picked.length >= count) break;
+    if (!picked.includes(r)) picked.push(r);
+  }
+  return picked;
 }
 
 /** "오늘 뭐 마실까" — 칵테일+위스키 통합 상위 추천 */

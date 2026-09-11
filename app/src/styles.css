@@ -131,6 +131,29 @@ input::placeholder{color:var(--dim)}
 .rec .nm{font-weight:700;font-size:15.5px;letter-spacing:-.01em}
 .rec .sc{font-size:23px;font-weight:800;color:var(--amber);letter-spacing:-.04em}
 .rec .rs{font-size:12.5px;color:var(--mute);margin-top:6px;line-height:1.55}
+/* 홈 첫 화면의 추천 — 대표 한 잔은 크게, 다른 선택지는 구분선으로 (이슈 #1 홈 항목) */
+.pick.hero{position:relative;background:var(--panel);border-radius:var(--r);box-shadow:var(--shadow);
+  padding:18px 18px 16px;margin:4px 0 2px;overflow:hidden}
+.pick.hero::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--amber)}
+.pick.hero .kicker{font-size:10.5px;font-weight:800;letter-spacing:.08em;color:var(--amber);text-transform:uppercase}
+.pick.hero h3{font-size:22px;font-weight:800;letter-spacing:-.03em;margin:6px 0 0;line-height:1.25}
+.pick .taste{font-size:13px;color:var(--mute);margin:5px 0 0;line-height:1.5}
+.pick.hero .btnrow{margin-top:14px}
+.avail{display:inline-block;margin-top:10px;font-size:12px;font-weight:700;border-radius:8px;padding:4px 10px}
+.avail.a-READY{color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,transparent)}
+.avail.a-SUBSTITUTE{color:var(--mid);background:color-mix(in srgb,var(--mid) 15%,transparent)}
+.avail.a-MISSING{color:var(--mute);background:var(--raise)}
+.avail.a-UNAVAILABLE{color:var(--no);background:color-mix(in srgb,var(--no) 12%,transparent)}
+.why{margin-top:12px;padding-top:11px;border-top:1px solid var(--line)}
+.why p{font-size:12.5px;color:var(--mute);line-height:1.55;margin:0 0 8px}
+.sechead.sm{font-size:13px;font-weight:700;color:var(--mute);margin:18px 0 2px}
+.picks{display:flex;flex-direction:column}
+.pick.alt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;
+  padding:13px 2px;border-bottom:1px solid var(--line)}
+.pick.alt .nm{font-size:15px;font-weight:700;letter-spacing:-.01em}
+.pick.alt .avail{margin-top:7px;font-size:11px;padding:3px 8px}
+.basis{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:12px 0 2px;font-size:12px;color:var(--dim)}
+.lnk{font-size:12px;font-weight:700;color:var(--amber);text-decoration:underline;text-underline-offset:3px}
 .subscores{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
 .ss{font-size:10.5px;color:var(--dim);background:var(--raise);padding:3px 8px;border-radius:7px}
 .ss b{color:var(--ink);font-weight:700}
