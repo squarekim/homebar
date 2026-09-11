@@ -213,6 +213,8 @@ const SUBSTITUTION_PAIRS: Array<[from: string, to: string, note?: string]> = [
   ['코앵트로', '트리플 섹', '트리플 섹으로 대체 가능(당도 차이)'],
   ['설탕시럽', '심플시럽', '동일'],
   ['라임즙', '레몬즙', '시트러스 대체(산미 유사)'],
+  ['포도 브랜디', '코냑', '코냑은 포도 브랜디의 한 종류(원산지 한정)'],
+  ['포도 브랜디', 'XO 브랜디(코냑 외)', '같은 포도 브랜디 계열'],
 ];
 export const substitutions: IngredientSubstitution[] = SUBSTITUTION_PAIRS
   .filter(([f, t]) => ingIdByName.has(f) || ingIdByName.has(t))

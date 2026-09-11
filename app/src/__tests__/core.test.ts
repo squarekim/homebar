@@ -122,7 +122,7 @@ describe('availability', () => {
     const held = seedHeld();
     const all = evaluateAll(held);
     const t = tallyStatus(all);
-    // 원본 README: 정규 105 근처. READY 가 상당수 존재해야 함
+    // 원본 재고 기준 정규 121 (레시피의 [대체] 표시를 걷어낸 뒤)
     expect(t.READY).toBeGreaterThan(50);
     expect(t.READY + t.SUBSTITUTE + t.MISSING + t.UNAVAILABLE).toBe(202);
   });
