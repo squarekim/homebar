@@ -171,6 +171,17 @@ describe('기준 DB 확장', () => {
     expect(appletree.volumeMl).toBe(700);
   });
 
+  it('수제맥주를 이름·브랜드로 찾는다', () => {
+    expect(top('강서맥주')).toBe('강서맥주');
+    expect(top('펠롱')).toBe('제주 펠롱 에일');
+    expect(top('브루독')).toContain('브루독');
+    expect(top('파울라너')).toContain('파울라너');
+    // 스타일(IPA·페일에일)로 훑을 수 있다
+    const ipa = LIQUOR_MASTER.filter((i) => i.category === 'beer' && i.subcategory === 'IPA');
+    expect(ipa.length).toBeGreaterThanOrEqual(3);
+    expect(LIQUOR_MASTER.filter((i) => i.category === 'beer').length).toBeGreaterThanOrEqual(35);
+  });
+
   it('RTD·캔칵테일도 이름으로 찾는다', () => {
     expect(top('호로요이')).toContain('호로요이');
     expect(top('하이볼 캔')).toContain('하이볼 캔');

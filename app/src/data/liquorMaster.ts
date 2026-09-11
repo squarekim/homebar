@@ -395,6 +395,26 @@ const BEER: Row[] = [
   ['m_kronenbourg_blanc', '크로넨버그 1664 블랑', 'Kronenbourg 1664 Blanc', '크로넨버그', '밀맥주', 5, 330, '프랑스', '', '크로넨버그 1664 블랑 blanc'],
 ];
 
+/* ── 수제맥주 (국산 크래프트 + 편의점·마트에서 집는 수입 크래프트) ── */
+const CRAFT_BEER: Row[] = [
+  ['m_gangseo', '강서맥주', 'Gangseo Ale', '세븐브로이', '에일', 0, 500, '한국', '', '강서맥주 강서에일 세븐브로이'],
+  ['m_dalseo', '달서맥주', 'Dalseo Ale', '세븐브로이', '오렌지 에일', 4.2, 500, '한국', '', '달서맥주 달서에일'],
+  ['m_jeju_pellong', '제주 펠롱 에일', 'Jeju Pellong Ale', '제주맥주', '페일에일', 5.5, 330, '한국', '', '펠롱에일 제주펠롱'],
+  ['m_jeju_slice', '제주 슬라이스', 'Jeju Slice', '제주맥주', '프루트 에일', 0, 330, '한국', '', '제주슬라이스 슬라이스'],
+  ['m_jeju_geomeong', '제주 거멍 에일', 'Jeju Geomeong Ale', '제주맥주', '스타우트', 0, 330, '한국', '', '거멍에일 제주거멍'],
+  ['m_kabrew_ipa', '카브루 IPA', 'KABREW IPA', '카브루', 'IPA', 5.9, 500, '한국', '', '카브루 구미호 kabrew'],
+  ['m_platinum_life', '인생에일', 'Life Ale', '플래티넘', '페일에일', 0, 500, '한국', '', '인생에일 플래티넘'],
+  ['m_brewdog_punk', '브루독 펑크 IPA', 'BrewDog Punk IPA', '브루독', 'IPA', 5.4, 330, '영국', '', '브루독 펑크 punkipa brewdog'],
+  ['m_sierra_pale', '시에라 네바다 페일 에일', 'Sierra Nevada Pale Ale', '시에라네바다', '페일에일', 5.6, 355, '미국', '', '시에라네바다 페일에일 sierranevada'],
+  ['m_goose_ipa', '구스 아일랜드 IPA', 'Goose Island IPA', '구스아일랜드', 'IPA', 0, 355, '미국', '', '구스아일랜드 구스 gooseisland'],
+  ['m_paulaner_hefe', '파울라너 헤페 바이스비어', 'Paulaner Hefe-Weißbier', '파울라너', '바이젠', 5.5, 500, '독일', '', '파울라너 헤페 바이스비어 paulaner'],
+  ['m_erdinger_weiss', '에딩거 바이스비어', 'Erdinger Weissbier', '에딩거', '바이젠', 0, 500, '독일', '', '에딩거 erdinger'],
+  ['m_duvel', '듀벨', 'Duvel', '듀벨모르트가트', '벨지안 스트롱 에일', 0, 330, '벨기에', '', '듀벨 duvel'],
+  ['m_leffe_brune', '레페 브라운', 'Leffe Brune', '레페', '벨지안 다크 에일', 0, 330, '벨기에', '', '레페 브라운 leffe'],
+  ['m_delirium_tremens', '델리리움 트레멘스', 'Delirium Tremens', '휘헤', '벨지안 스트롱 에일', 0, 330, '벨기에', '', '델리리움 트레멘스 delirium'],
+  ['m_chimay_blue', '시메이 블루', 'Chimay Bleue', '시메이', '트라피스트 에일', 0, 330, '벨기에', '', '시메이 블루 chimay'],
+];
+
 /* ── 사케 · 소주 ── */
 const SAKE: Row[] = [
   ['m_dassai45', '닷사이 45 준마이다이긴조', 'Dassai 45 Junmai Daiginjo', '아사히슈조', '준마이다이긴조', 16, 720, '일본', '', '닷사이 다사이 dassai'],
@@ -468,7 +488,7 @@ const GROUPS: Array<[LiquorCategory, Row[]]> = [
   ['whisky', WHISKY_AMERICAN], ['whisky', WHISKY_WORLD],
   ['gin', GIN], ['vodka', VODKA], ['rum', RUM], ['tequila', TEQUILA], ['mezcal', MEZCAL],
   ['brandy', BRANDY], ['liqueur', LIQUEUR], ['vermouth', VERMOUTH], ['wine', WINE],
-  ['beer', BEER], ['sake', SAKE], ['rtd', RTD], ['spirit', SPIRIT], ['mixer', MIXER],
+  ['beer', BEER], ['beer', CRAFT_BEER], ['sake', SAKE], ['rtd', RTD], ['spirit', SPIRIT], ['mixer', MIXER],
 ];
 
 function build([id, ko, en, brand, sub, abv, ml, country, ing, alias, wc]: Row, category: LiquorCategory): LiquorMasterItem {

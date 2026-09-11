@@ -31,7 +31,7 @@ data(시드·파생)  →  models(타입)  →  db(Dexie)  →  repositories  �
 | 제조 가능 판정 규칙 | `src/services/availabilityService.ts` |
 | 추천 점수·이유 | `src/services/recommendationService.ts`, `groupService.ts`, `purchaseService.ts` |
 | 술 이름 검색(별칭·퍼지) | `src/services/liquorSearchService.ts` + `src/data/textMatch.ts` |
-| 기준 제품 DB(361종) | `src/data/liquorMaster.ts`, 별칭은 `liquorAliases.ts` |
+| 기준 제품 DB(377종) | `src/data/liquorMaster.ts`, 별칭은 `liquorAliases.ts` |
 | 제품별 공식 노트 | `src/data/makerNotesMaster.ts` (제품 id 키), 보유 병 연결은 `makerNotes.ts` |
 | 위스키 분류 체계·용어 | `src/data/whiskyClass.ts`, `glossary.ts` |
 | 저장 스키마 | `src/db/schema.ts` (Dexie 버전 마이그레이션) |
@@ -161,7 +161,7 @@ npm run build     # typecheck + vite build
 
 | | 과제 | 왜 필요한가 |
 |---|---|---|
-| 쉬움 | 기준 제품 DB 확장 (현재 361종) | 검색해서 안 나오는 술이 아직 많다. 데이터만 추가하면 된다 |
+| 쉬움 | 기준 제품 DB 확장 (현재 377종) | 검색해서 안 나오는 술이 아직 많다. 데이터만 추가하면 된다 |
 | 쉬움 | 추가한 술 **편집** 기능 | 지금은 추가/삭제만 된다 |
 | 쉬움 | 제조사 공식 노트 **채우기** | 43종뿐이다. 공식 페이지가 있는 제품부터 `makerNotesMaster.ts` 에 출처와 함께 추가하면 된다 |
 | 중간 | 재고 잔량 UI 개선 | 잔량 입력이 슬라이더뿐이라 실사용이 번거롭다 |
