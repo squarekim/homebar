@@ -1,6 +1,6 @@
 import { useEffect, type ReactNode, type SyntheticEvent } from 'react';
 import { type MethodKey, METHOD_LABELS_KO, type AvailabilityStatus, type FlavorVector, FLAVOR_AXES, FLAVOR_LABELS_KO, type RecommendationResult, type MakerNote, type BottleBadge, type WhiskyClass, type DrinkLog, SERVING_LABELS_KO } from '../../models/types';
-import { STATUS_LABEL_KO } from '../../services/availabilityService';
+import { STATUS_LABEL_KO, STATUS_SENTENCE_KO } from '../../services/availabilityService';
 import { lookupTerm, normalizeTerm } from '../../data/glossary';
 import { useUI } from '../UIContext';
 import { IconBuild, IconShake, IconStir, IconMuddle, IconBlend, IconLayer, IconSwizzle, IconFloat } from './icons';
@@ -115,8 +115,23 @@ export function MakerNoteView({ note, empty }: { note?: MakerNote | undefined; e
   );
 }
 
+/**
+ * 제조 가능 상태 한 줄. 색만으로 구분하지 않고 문구를 함께 쓴다.
+ * 부족한 경우에는 무엇이 없는지까지 적는다 — '불가'라는 판정명보다 그게 행동에 쓰인다.
+ */
+export function StateLine({ status, lack }: { status: AvailabilityStatus; lack?: readonly string[] }) {
+  const short = STATUS_SENTENCE_KO[status];
+  const missing = (status === 'MISSING' || status === 'UNAVAILABLE') && lack && lack.length > 0;
+  return (
+    <span className={`state s-${status}`}>
+      {missing ? `${lack.slice(0, 2).join(' · ')}${lack.length > 2 ? ` 외 ${lack.length - 2}` : ''} 없음` : short}
+    </span>
+  );
+}
+
+/** 필터 칩·통계처럼 자리가 좁은 곳에서 쓰는 짧은 판정명 */
 export function StatusBadge({ status }: { status: AvailabilityStatus }) {
-  return <span className={`badge b-${status}`}>{STATUS_LABEL_KO[status]}</span>;
+  return <span className={`state s-${status}`}>{STATUS_LABEL_KO[status]}</span>;
 }
 
 /** 향미 14축 막대 (0 인 축 생략 옵션) */
@@ -167,52 +182,49 @@ export function FlavorBars({ vector, compact }: { vector: FlavorVector; compact?
   );
 }
 
-/** 추천 카드 목록 — 추천 화면 4곳이 같은 래퍼를 반복하고 있었다 */
+/** 추천 목록 — 이름·맛·상태 순으로 읽히는 행. 점수는 상세의 '추천 이유'에서 본다. */
 export function RecList({ recs, onPick, empty }: {
   recs: RecommendationResult[];
   onPick: (rec: RecommendationResult) => void;
   empty?: string | undefined;
 }) {
+  if (recs.length === 0) return empty ? <div className="empty">{empty}</div> : null;
   return (
-    <div className="list">
-      {recs.length === 0 && empty && <div className="empty">{empty}</div>}
-      {recs.map((r) => <RecCard key={r.id} rec={r} onClick={() => onPick(r)} />)}
+    <div className="rowlist">
+      {recs.map((r) => (
+        <button className="rowitem" key={r.kind + r.id} onClick={() => onPick(r)}>
+          <div className="body">
+            <span className="nm">{r.name}</span>
+            <div className="taste">{r.flavorWords.join(' · ')}{r.base ? ` · ${r.base}` : ''}</div>
+            <div className="foot">
+              {r.status ? <StateLine status={r.status} /> : <span className="mi">보유 중인 병</span>}
+            </div>
+          </div>
+        </button>
+      ))}
     </div>
   );
 }
 
-/** 음용 기록 카드 (홈 '최근 기록' · 프로필 '음용 기록' 공용). 추가 액션은 children 으로. */
+/** 시음 노트 한 줄 (오늘의 '최근 기록' · 기록 화면 공용). 추가 액션은 children 으로. */
 export function LogCard({ log, children }: { log: DrinkLog; children?: ReactNode }) {
   return (
-    <div className="card">
-      <h3>{log.drinkName}<em>{new Date(log.date).toLocaleDateString('ko')}</em></h3>
+    <div className="tnote">
+      <div className="top">
+        <span className="nm">{log.drinkName}</span>
+        <span className="date">{new Date(log.date).toLocaleDateString('ko')}</span>
+      </div>
+      <div className="rate" aria-label={`평점 ${log.rating}점`}>{'★'.repeat(log.rating)}{'☆'.repeat(5 - log.rating)}</div>
       <div className="meta">
         <span className="mi">{SERVING_LABELS_KO[log.servingStyle]}</span>
-        <span className="mi">{'★'.repeat(log.rating)}{'☆'.repeat(5 - log.rating)}</span>
-        {log.retryIntent && <span className="mi">재음용</span>}
+        {log.retryIntent && <span className="mi">또 마시고 싶음</span>}
       </div>
+      {log.memo && <p className="memo">{log.memo}</p>}
       {children}
     </div>
   );
 }
 
-export function RecCard({ rec, onClick }: { rec: RecommendationResult; onClick?: () => void }) {
-  return (
-    <button className="rec" onClick={onClick}>
-      <div className="top">
-        <span className="nm">{rec.name}{rec.kind === 'whisky' ? ' 🥃' : ''}</span>
-        <span className="sc">{rec.score}</span>
-      </div>
-      <div className="rs">{rec.reason}</div>
-      <div className="subscores">
-        <span className="ss">취향 <b>{rec.tasteScore}</b></span>
-        {rec.kind === 'cocktail' && <span className="ss">가용 <b>{rec.availabilityScore}</b></span>}
-        {rec.kind === 'cocktail' && <span className="ss">재고 <b>{rec.inventoryScore}</b></span>}
-        <span className="ss">신선 <b>{rec.noveltyScore}</b></span>
-      </div>
-    </button>
-  );
-}
 
 /**
  * 칩·검색 UI — 화면 곳곳에서 같은 마크업을 손으로 반복하지 않도록 한곳에 모았다.

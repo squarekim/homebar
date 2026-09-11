@@ -1,32 +1,113 @@
 /**
- * CellarPage — 내 술장.
- * [내 술] 실제로 가진 병 목록, [재고] 표준 재료 보유 관리.
- * 둘은 같은 것을 다른 각도에서 본다: 병 → 표준 재료 → 레시피 판정.
+ * CellarPage — '내 술장'. 무엇을 얼마나 갖고 있는지 관리하는 곳이다.
+ *
+ * 모든 화면 위에 붙어 있던 통계('정규·근사·불가·보유재료')를 여기로 옮겼다.
+ * 개별 제품(병)과 표준 재료는 서로 다른 집계라 한 줄에 섞지 않고 나눠 적는다.
+ * 제품 소개는 위스키 화면이 맡고, 여기서는 보유 수량·용량·잔량·재료 연결만 다룬다.
  */
 import { useMemo, useState } from 'react';
 import { useUI } from '../UIContext';
-import { useInventory, useBottles, inventoryRepo } from '../../hooks/useData';
+import { useBottles, useHeldIds, useSubMap, useInventory, inventoryRepo } from '../../hooks/useData';
 import { referenceRepo } from '../../repositories/referenceRepo';
+import { evaluateAll, tallyStatus } from '../../services/availabilityService';
+import { bottleService } from '../../services/bottleService';
 import { resetInventoryToSeed } from '../../db/migrate';
-import { MyBottlesBrowser } from '../components/browsers';
-import { ChipRow, ChipToggle, type ChipOption } from '../components/common';
-import { useSubTab } from '../listUtils';
+import { isUserBottle } from '../../data/userBottles';
+import { bottleKindLabel } from '../../data/bottleIngredients';
+import { ChipRow, ChipToggle, SearchBox, BottleBadges, type ChipOption } from '../components/common';
+import { normalize, hits, useGroupChips } from '../listUtils';
 import { IS_PUBLIC } from '../../config';
+import { type Bottle } from '../../models/types';
 
-export type CellarSub = 'bottles' | 'stock';
+type Sub = 'bottles' | 'stock';
+const SUBS: ChipOption<Sub>[] = [{ v: 'bottles', label: '보유 술' }, { v: 'stock', label: '재료 재고' }];
 
-const SUBS: ChipOption<CellarSub>[] = [
-  { v: 'bottles', label: '내 술' },
-  { v: 'stock', label: '재고' },
-];
+export function CellarPage() {
+  const [sub, setSub] = useState<Sub>('bottles');
+  const bottles = useBottles();
+  const heldIds = useHeldIds();
+  const subMap = useSubMap();
+  const tally = useMemo(() => tallyStatus(evaluateAll(heldIds, subMap)), [heldIds, subMap]);
+  const totalIngredients = referenceRepo.ingredients().length;
 
-export function CellarPage({ sub: subProp, onSub }: { sub?: CellarSub; onSub?: (s: CellarSub) => void } = {}) {
-  const [sub, setSub] = useSubTab<CellarSub>('bottles', subProp, onSub);
   return (
     <>
+      <h2 className="pagetitle">내 술장</h2>
+
+      {/* 두 가지 집계를 나눠 적는다 — 병 수와 재료 수는 다른 것이다 */}
+      <div className="statline">
+        <div className="cell"><b>{bottles.length}</b><small>보유 제품(병)</small></div>
+        <div className="cell"><b>{heldIds.size}<small style={{ fontSize: 14 }}> / {totalIngredients}</small></b><small>표준 재료</small></div>
+        <div className="cell ok"><b>{tally.READY}</b><small>그대로 만들 수 있는 레시피</small></div>
+        <div className="cell alt"><b>{tally.SUBSTITUTE}</b><small>대체로 가능</small></div>
+        <div className="cell"><b>{tally.MISSING + tally.UNAVAILABLE}</b><small>재료 부족</small></div>
+      </div>
+
       <ChipRow value={sub} onChange={setSub} options={SUBS} />
-      {sub === 'bottles' && <MyBottlesBrowser />}
-      {sub === 'stock' && <StockManager />}
+      {sub === 'bottles' ? <BottleList bottles={bottles} /> : <StockManager />}
+    </>
+  );
+}
+
+/** 보유 술 — 비교하기 쉬운 정렬된 행. 저장된 값만 적는다(없는 항목은 비워 둔다). */
+function BottleList({ bottles }: { bottles: Bottle[] }) {
+  const { openAdd, openBottle, toast } = useUI();
+  const heldIds = useHeldIds();
+  const [q, setQ] = useState('');
+  const [grp, setGrp] = useState('all');
+  const groups = useGroupChips(bottles, (b) => b.group);
+
+  const rows = useMemo(() => {
+    const t = normalize(q);
+    return bottles
+      .filter((b) => (grp === 'all' || b.group === grp) && hits(t, b.name, b.group, b.abv))
+      .sort((a, b) => a.group.localeCompare(b.group, 'ko') || a.name.localeCompare(b.name, 'ko'));
+  }, [bottles, q, grp]);
+
+  return (
+    <>
+      <div className="btnrow">
+        <button className="btn primary" onClick={() => openAdd()}>술 추가</button>
+      </div>
+      <SearchBox value={q} onChange={setQ} placeholder="내 술 이름 검색" />
+      <ChipRow value={grp} options={groups} onChange={setGrp} wrap />
+      {rows.length === 0 && (
+        <div className="empty">
+          {q.trim() ? '검색 결과가 없습니다.' : '아직 등록한 술이 없습니다. 위의 술 추가로 시작하세요.'}
+        </div>
+      )}
+      <div className="rowlist">
+        {rows.map((b) => {
+          const linked = b.ingredientIds
+            .map((id) => referenceRepo.ingredientById(id))
+            .filter((x): x is NonNullable<typeof x> => !!x);
+          return (
+            <div className="kvrow" key={b.id}>
+              <div>
+                <button className="full" onClick={() => openBottle(b.id)}>
+                  <span className="nm">{b.name}</span>
+                  <div className="meta">
+                    <span className="mi">{bottleKindLabel(b)}</span>
+                    {b.abv && <span className="mi">{b.abv}</span>}
+                    {b.volumeMl ? <span className="mi">{b.volumeMl}ml</span> : null}
+                    {linked.map((i) => (
+                      <span className={`mi ${heldIds.has(i.id) ? 'on' : ''}`} key={i.id}>재료 {i.name}</span>
+                    ))}
+                  </div>
+                  <BottleBadges badges={b.badges} />
+                </button>
+              </div>
+              <div className="num">
+                {b.qty > 1 ? `${b.qty}병` : '1병'}
+                {isUserBottle(b.id) && (
+                  <div><button className="btn sm ghost" onClick={async () => { await bottleService.remove(b.id); toast('삭제됨'); }}>삭제</button></div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <p className="hint">항목을 누르면 위스키 화면의 상세(맛·공식 노트)로 갑니다. 수량·용량은 저장된 값이며, 없는 항목은 비워 둡니다.</p>
     </>
   );
 }
@@ -36,18 +117,11 @@ const MIXER_CATS = ['주스·과즙', '탄산·음료', '시럽·감미', '신�
 
 type View = 'all' | 'spirit' | 'mixer';
 type Own = 'all' | 'owned' | 'missing';
-
 const OWN_FILTERS: ChipOption<Own>[] = [
-  { v: 'all', label: '전체' },
-  { v: 'owned', label: '보유만', cls: 'ok' },
-  { v: 'missing', label: '미보유만' },
+  { v: 'all', label: '전체' }, { v: 'owned', label: '보유만', cls: 'ok' }, { v: 'missing', label: '미보유만' },
 ];
 
-/**
- * StockManager — 내 보유 재료를 보고 고치는 곳.
- * 상단에 보유 현황을 먼저 보여주고, '보유만'으로 좁혀 볼 수 있다.
- * '보유재료 초기화'는 남의 재고(베타 기본값)를 비우고 내 것부터 채우기 위한 출발점이다.
- */
+/** 재료 재고 — 레시피 판정에 직접 쓰이는 표준 재료의 보유·잔량 */
 function StockManager() {
   const inv = useInventory();
   const { toast } = useUI();
@@ -58,10 +132,8 @@ function StockManager() {
 
   const remainingById = useMemo(() => new Map((inv ?? []).map((i) => [i.ingredientId, i.remaining])), [inv]);
   const ownedById = useMemo(() => new Map((inv ?? []).map((i) => [i.ingredientId, i.owned])), [inv]);
-
   const allIngredients = referenceRepo.ingredients();
   const bottles = useBottles();
-  /** 재료 ID → 그 재료를 충당하는 내 병 이름들 ("데킬라"가 어떤 술인지 바로 보이게) */
   const bottlesByIngredient = useMemo(() => {
     const m = new Map<string, string[]>();
     for (const b of bottles) for (const id of b.ingredientIds) m.set(id, [...(m.get(id) ?? []), b.name]);
@@ -69,14 +141,8 @@ function StockManager() {
   }, [bottles]);
   const ownedCount = allIngredients.filter((i) => ownedById.get(i.id)).length;
 
-  const perCategory = useMemo(() => referenceRepo.categories().map((c) => {
-    const items = allIngredients.filter((i) => i.category === c);
-    return { cat: c, owned: items.filter((i) => ownedById.get(i.id)).length, total: items.length };
-  }), [allIngredients, ownedById]);
-
   const cats = referenceRepo.categories().filter((c) =>
     view === 'all' ? true : view === 'spirit' ? SPIRIT_CATS.includes(c) : MIXER_CATS.includes(c));
-
   const visible = (i: { id: string }) => {
     const isOwned = ownedById.get(i.id) ?? false;
     return own === 'all' || (own === 'owned' ? isOwned : !isOwned);
@@ -84,20 +150,12 @@ function StockManager() {
 
   return (
     <>
-      <div className="stockhead">
-        <div className="sh-top">
-          <b>{ownedCount}</b><span>/ {allIngredients.length}종 보유</span>
-        </div>
-        <div className="sh-cats">
-          {perCategory.filter((p) => p.owned > 0).map((p) => (
-            <span className="sh-cat" key={p.cat}>{p.cat} <b>{p.owned}</b><small>/{p.total}</small></span>
-          ))}
-          {ownedCount === 0 && <span className="sh-empty">아직 체크한 재료가 없습니다. 아래에서 집에 있는 것만 켜세요.</span>}
-        </div>
-      </div>
-
+      <p className="hint">
+        레시피 판정은 <b>표준 재료</b>로 합니다. 체크한 재료만 보유로 계산되고, 위 숫자가 즉시 바뀝니다.
+        현재 {ownedCount}/{allIngredients.length}종.
+      </p>
       <ChipRow value={own} onChange={setOwn} options={OWN_FILTERS} wrap />
-      <div className="controls" style={{ paddingTop: 0 }}>
+      <div className="controls tight">
         <ChipToggle label="술·리큐르" on={view === 'spirit'} onToggle={() => setView(view === 'spirit' ? 'all' : 'spirit')} />
         <ChipToggle label="믹서·재료" on={view === 'mixer'} onToggle={() => setView(view === 'mixer' ? 'all' : 'mixer')} />
         <ChipToggle label="잔량 표시" on={showRemaining} onToggle={() => setShowRemaining((v) => !v)} />
@@ -105,25 +163,25 @@ function StockManager() {
 
       {confirmReset ? (
         <div className="confirm">
-          <p>보유 재료를 <b>전부 해제</b>합니다. 지금 켜져 있는 {ownedCount}종이 모두 꺼지고, 이후 내 것만 체크해 채우면 됩니다.</p>
+          <p>보유 재료를 <b>전부 해제</b>합니다. 지금 켜져 있는 {ownedCount}종이 모두 꺼집니다.</p>
           <p className="sub">음용 기록·취향·추가한 술은 지워지지 않습니다.</p>
           <div className="btnrow">
             <button className="btn danger" onClick={async () => {
               await inventoryRepo.setAll(false, allIngredients.map((i) => ({ id: i.id, name: i.name })));
               setConfirmReset(false); setOwn('all'); toast('보유재료를 비웠습니다');
-            }}>비우기
-            </button>
+            }}>비우기</button>
             <button className="btn" onClick={() => setConfirmReset(false)}>취소</button>
           </div>
         </div>
       ) : (
         <div className="btnrow">
-          <button className="btn" onClick={() => setConfirmReset(true)}>보유재료 초기화</button>
-          <button className="btn" onClick={async () => { await resetInventoryToSeed(); toast(IS_PUBLIC ? '기본 홈바 세트로 되돌림' : '기본 컬렉션으로 되돌림'); }}>{IS_PUBLIC ? '기본 홈바 세트' : '기본 컬렉션'}</button>
-          <button className="btn" onClick={async () => { await inventoryRepo.setAll(true, allIngredients.map((i) => ({ id: i.id, name: i.name }))); toast('전부 보유'); }}>전부 보유</button>
+          <button className="btn sm" onClick={() => setConfirmReset(true)}>보유재료 초기화</button>
+          <button className="btn sm" onClick={async () => { await resetInventoryToSeed(); toast(IS_PUBLIC ? '기본 홈바 세트로 되돌림' : '기본 컬렉션으로 되돌림'); }}>
+            {IS_PUBLIC ? '기본 홈바 세트' : '기본 컬렉션'}
+          </button>
+          <button className="btn sm" onClick={async () => { await inventoryRepo.setAll(true, allIngredients.map((i) => ({ id: i.id, name: i.name }))); toast('전부 보유'); }}>전부 보유</button>
         </div>
       )}
-      <div className="hint">체크한 재료만 보유로 계산되어 상단 판정이 즉시 갱신됩니다. 이 브라우저에만 저장됩니다.</div>
 
       {cats.map((c) => {
         const items = allIngredients.filter((i) => i.category === c).filter(visible);
@@ -137,8 +195,9 @@ function StockManager() {
                 const rem = remainingById.get(i.id) ?? (owned ? 100 : 0);
                 const mine = bottlesByIngredient.get(i.id) ?? [];
                 return (
-                  <label className={`it ${owned ? '' : 'off'}`} key={i.id} style={showRemaining && owned ? { flexDirection: 'column', alignItems: 'stretch' } : undefined}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 7, width: '100%' }}>
+                  <label className={`it ${owned ? '' : 'off'}`} key={i.id}
+                    style={showRemaining && owned ? { flexDirection: 'column', alignItems: 'stretch' } : undefined}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
                       <input type="checkbox" checked={owned} onChange={(e) => inventoryRepo.setOwned(i.id, i.name, e.target.checked)} />
                       <span>
                         {i.name}
@@ -148,7 +207,8 @@ function StockManager() {
                     </div>
                     {showRemaining && owned && (
                       <div className="rem" onClick={(e) => e.preventDefault()}>
-                        <input type="range" min={0} max={100} step={10} value={rem} onChange={(e) => inventoryRepo.setRemaining(i.id, +e.target.value)} />
+                        <input type="range" min={0} max={100} step={10} value={rem}
+                          onChange={(e) => inventoryRepo.setRemaining(i.id, +e.target.value)} />
                         <b>{rem}%</b>
                       </div>
                     )}

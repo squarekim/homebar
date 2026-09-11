@@ -1,12 +1,12 @@
 /**
- * 추천 화면 조각들 — 홈 탭의 서브탭에서 쓰인다.
- * (독립 '추천' 탭은 홈과 내용이 겹쳐 홈 안으로 합쳤다)
+ * 추천 조각들 — '오늘' 화면 아래의 '다르게 골라보기'에서 펼쳐 쓴다.
+ * 점수 계산은 서비스가 그대로 하고, 여기서는 목록 모양만 맞춘다.
  */
 import { useMemo, useState } from 'react';
 import { useUI } from '../UIContext';
 import { useRecommendContext } from '../../hooks/useRecommendContext';
 import { useTasteProfiles, useHeldIds, useSubMap, useLogs } from '../../hooks/useData';
-import { recommendCocktails, recommendWhiskies, type RecommendMode } from '../../services/recommendationService';
+import { recommendCocktails, type RecommendMode } from '../../services/recommendationService';
 import { recommendGroupCocktails } from '../../services/groupService';
 import { calculatePurchases } from '../../services/purchaseService';
 import { RecList, ChipRow, ChipMulti, type ChipOption } from '../components/common';
@@ -22,31 +22,6 @@ export const MODES: { v: RecommendMode; label: string }[] = [
   { v: 'light', label: '가벼운' },
   { v: 'whisky', label: '위스키' },
 ];
-
-export function CocktailRec() {
-  const ctx = useRecommendContext();
-  const { openCocktail } = useUI();
-  const [mode, setMode] = useState<RecommendMode>('available');
-  const recs = useMemo(() => recommendCocktails(ctx, mode, 30), [ctx, mode]);
-  return (
-    <>
-      <ChipRow value={mode} options={MODES} onChange={setMode} />
-      <RecList recs={recs} onPick={(r) => openCocktail(r.id)} empty="조건에 맞는 추천이 없습니다." />
-    </>
-  );
-}
-
-export function WhiskyRec() {
-  const ctx = useRecommendContext();
-  const { openLog } = useUI();
-  const recs = useMemo(() => recommendWhiskies(ctx, 20), [ctx]);
-  return (
-    <>
-      <div className="hint">보유 위스키를 취향·신선도로 정렬합니다.</div>
-      <RecList recs={recs} onPick={(r) => openLog({ drinkId: r.id, drinkType: 'whisky', drinkName: r.name, servingStyle: 'neat' })} />
-    </>
-  );
-}
 
 export function GroupRec() {
   const profiles = useTasteProfiles();

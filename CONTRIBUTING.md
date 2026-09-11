@@ -35,7 +35,8 @@ data(시드·파생)  →  models(타입)  →  db(Dexie)  →  repositories  �
 | 제품별 공식 노트 | `src/data/makerNotesMaster.ts` (제품 id 키), 보유 병 연결은 `makerNotes.ts` |
 | 위스키 분류 체계·용어 | `src/data/whiskyClass.ts`, `glossary.ts` |
 | 저장 스키마 | `src/db/schema.ts` (Dexie 버전 마이그레이션) |
-| 화면 | `src/ui/pages/*`, 공용 컴포넌트는 `src/ui/components/*` |
+| 화면 | `src/ui/pages/*` — 오늘·칵테일·위스키·내 술장·기록·설정, 공용 부품은 `src/ui/components/*` |
+| 디자인 토큰(색·간격·모서리) | `src/styles.css` 맨 위 `:root` — 컴포넌트는 토큰만 쓴다 |
 
 핵심 흐름 하나만 외우면 된다:
 
@@ -109,6 +110,8 @@ git push -u origin feat/무엇을-하는지
 **저장 항목 추가** → `models/types.ts` 에 타입 → `db/schema.ts` 에 버전 하나 올려 `.upgrade()` 로 기존 행 보정 → `repositories/` 에 접근 함수. 기존 스토어는 지우지 않는다.
 
 **화면 UI** → `ui/components/common.tsx` 의 공용 부품을 먼저 찾는다. `<button className="chip">` 이나 `<div className="scrim">` 을 새로 손으로 쓰지 않는다.
+목록은 같은 카드를 반복하지 않는다 — 탐색 목록은 `.rowlist/.rowitem`(얇은 구분선), 보유 현황은 `.kvrow`(값 비교 행),
+대표 추천만 `.lead` 로 크게 둔다. 사진이 없는 자리는 `components/Mark.tsx` 의 잔·병 마크로 통일한다(높이 고정).
 
 | 필요한 것 | 쓰는 것 |
 | --- | --- |

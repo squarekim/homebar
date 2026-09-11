@@ -95,3 +95,19 @@ export const IconSwizzle = () => (
 export const IconFloat = () => (
   <svg {...M}><path d="M6.6 9h10.8l-1.3 11.2H7.9L6.6 9Z" /><path d="M7.2 12.6h9.6" /><path d="M12 2.4v4.2" /><path d="M14.4 4.6 12 2.4 9.6 4.6" /></svg>
 );
+
+/** 기록 — 시음 노트 */
+export function IconNote() {
+  return svg(<>
+    <path d="M6 3.5h9.5L19 7v13.5H6z" /><path d="M15 3.5V7h3.6" />
+    <path d="M9 11h7M9 14.5h7M9 18h4" />
+  </>);
+}
+
+/** 설정 */
+export function IconGear() {
+  return svg(<>
+    <circle cx="12" cy="12" r="3.2" />
+    <path d="M12 2.8v2.4M12 18.8v2.4M4.5 7.8l2 1.2M17.5 15l2 1.2M4.5 16.2l2-1.2M17.5 9l2-1.2" />
+  </>);
+}
