@@ -15,6 +15,13 @@ import { FlavorBars, MethodIcon, Term } from './common';
 import { GlassArt } from './GlassArt';
 import { type Cocktail, type RecommendationResult } from '../../models/types';
 
+/** 받침이 있으면 '으로', 없으면 '로' — 레몬즙으로 / 코앵트로로 */
+function ro(word: string): string {
+  const last = word.trim().slice(-1).charCodeAt(0);
+  const hangul = last >= 0xac00 && last <= 0xd7a3;
+  return hangul && (last - 0xac00) % 28 !== 0 ? '으로' : '로';
+}
+
 /** "버번 45ml" 에서 재료명을 뺀 나머지 = 용량 표기 */
 function amountOf(raw: string, name: string): string {
   const rest = raw.startsWith(name) ? raw.slice(name.length).trim() : raw;
@@ -102,13 +109,16 @@ export function CocktailDetail({ id }: { id: string }) {
       <div className="recipe">
         {ck.ingredients.map((ing, i) => {
           const has = heldIds.has(ing.ingredientId);
-          const bySub = !has && (subMap.get(ing.ingredientId) ?? []).some((s) => heldIds.has(s));
-          const off = !has && !bySub && !ing.optional;
+          // 내가 가진 대체재로 채워지는 경우 — 무엇으로 바꾸는지까지 적는다
+          const swapId = has ? undefined : (subMap.get(ing.ingredientId) ?? []).find((s) => heldIds.has(s));
+          const swap = swapId ? referenceRepo.ingredientById(swapId)?.name : undefined;
+          const off = !has && !swap && !ing.optional;
           return (
             <div className={`ing ${off ? 'off' : ''}`.trim()} key={i}>
               <span>
-                {ing.ingredientName}
-                {(ing.substitute || bySub) && <span className="tag">대체 재료로 가능</span>}
+                {swap ? <s>{ing.ingredientName}</s> : ing.ingredientName}
+                {swap && <span className="swap">→ {swap}{ro(swap)} 대체</span>}
+                {!swap && ing.substitute && <span className="tag">대체 조주</span>}
                 {ing.optional && <span className="opt">선택</span>}
               </span>
               <span className="amt">{amountOf(ing.raw, ing.ingredientName) || '적당량'}</span>
@@ -132,7 +142,12 @@ export function CocktailDetail({ id }: { id: string }) {
           <h4>{ev.lack.length > 0 ? '지금 없는 재료' : '대체 재료로 채우는 것'}</h4>
           <ul>
             {ev.lack.map((n) => <li key={n}>{n}</li>)}
-            {ev.sub.map((n) => <li className="s" key={n}>{n} — 대체 재료로 가능</li>)}
+            {ev.sub.map((n) => {
+              const id = referenceRepo.ingredients().find((x) => x.name === n)?.id;
+              const swapId = id && !heldIds.has(id) ? (subMap.get(id) ?? []).find((s) => heldIds.has(s)) : undefined;
+              const swap = swapId ? referenceRepo.ingredientById(swapId)?.name : undefined;
+              return <li className="s" key={n}>{swap ? <><s>{n}</s> → {swap}</> : `${n} — 대체 조주`}</li>;
+            })}
           </ul>
         </div>
       )}

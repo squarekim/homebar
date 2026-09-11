@@ -245,6 +245,9 @@ input::placeholder{color:var(--dim)}
 .recipe .ing .amt{margin-left:auto;color:var(--mute);font-size:14px;white-space:nowrap}
 .recipe .ing.off{color:var(--mute)}
 .recipe .ing .tag{font-size:12px;color:var(--sub);margin-left:6px}
+.recipe .ing s{color:var(--mute);text-decoration-thickness:1px}
+.recipe .ing .swap{font-size:14px;color:var(--sub);font-weight:700;margin-left:6px}
+.shortage li.s s{color:var(--mute)}
 .recipe .ing .opt{font-size:12px;color:var(--dim);margin-left:6px}
 .method{display:flex;gap:var(--s2);align-items:center;margin-top:var(--s3);
   background:var(--raise);border-radius:var(--r);padding:var(--s2) var(--s3);font-size:15px}
