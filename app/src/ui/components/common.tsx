@@ -1,5 +1,5 @@
 import { useEffect, type ReactNode, type SyntheticEvent } from 'react';
-import { type MethodKey, METHOD_LABELS_KO, type AvailabilityStatus, type FlavorVector, FLAVOR_AXES, FLAVOR_LABELS_KO, type RecommendationResult, type MakerNote, type WhiskyClass, type DrinkLog, SERVING_LABELS_KO } from '../../models/types';
+import { type MethodKey, METHOD_LABELS_KO, type AvailabilityStatus, type FlavorVector, FLAVOR_AXES, FLAVOR_LABELS_KO, type RecommendationResult, type MakerNote, type BottleBadge, type WhiskyClass, type DrinkLog, SERVING_LABELS_KO } from '../../models/types';
 import { STATUS_LABEL_KO } from '../../services/availabilityService';
 import { lookupTerm, normalizeTerm } from '../../data/glossary';
 import { useUI } from '../UIContext';
@@ -82,10 +82,23 @@ export function WhiskyClassTags({ cls }: { cls?: WhiskyClass }) {
   );
 }
 
+/**
+ * 병 뱃지 — "첫 피트 싱글몰트"처럼 메모에 적던 개인 이력을 한 칸으로.
+ * 라벨 텍스트를 해석하지 않는다. 종류(kind)는 데이터가 들고 온다.
+ */
+export function BottleBadges({ badges }: { badges: BottleBadge[] }) {
+  if (!badges.length) return null;
+  return (
+    <div className="badges">
+      {badges.map((b, i) => <span className={`bdg ${b.kind}`} key={`${b.kind}${i}`}>{b.label}</span>)}
+    </div>
+  );
+}
+
 /** 제조사/공식 테이스팅 노트 표시 (출처 링크 포함) */
-export function MakerNoteView({ note }: { note?: MakerNote | undefined }) {
+export function MakerNoteView({ note, empty }: { note?: MakerNote | undefined; empty?: string | undefined }) {
   if (!note) {
-    return <div className="hint" style={{ margin: '6px 0 0' }}>제조사 공식 노트가 아직 없는 술입니다. 아래에 직접 기록해 두세요.</div>;
+    return <div className="hint" style={{ margin: '6px 0 0' }}>{empty ?? '제조사 공식 노트가 아직 없는 술입니다. 아래에 직접 기록해 두세요.'}</div>;
   }
   return (
     <div className="makernote">

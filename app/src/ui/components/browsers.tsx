@@ -9,7 +9,7 @@ import { referenceRepo } from '../../repositories/referenceRepo';
 import { bottleNoteRepo } from '../../repositories/bottleNoteRepo';
 import { evaluateCocktail } from '../../services/availabilityService';
 import { simpleBuilds, evaluateSimpleBuild, pickMyBottles } from '../../services/simpleBuildService';
-import { StatusBadge, FlavorBars, MakerNoteView, WhiskyClassTags, MethodIcon, ChipRow, ChipToggle, SearchBox, allChips, type ChipOption } from './common';
+import { StatusBadge, FlavorBars, MakerNoteView, WhiskyClassTags, BottleBadges, MethodIcon, ChipRow, ChipToggle, SearchBox, allChips, type ChipOption } from './common';
 import { normalize, hits, byReadyThenName, useGroupChips } from '../listUtils';
 import { CLASS_FILTERS, classMatchesTerm, classTags } from '../../data/whiskyClass';
 import { type AvailabilityStatus, type Bottle } from '../../models/types';
@@ -254,9 +254,11 @@ function BottleCard({ bottle: w, open, onToggle }: { bottle: Bottle; open: boole
         <h3>{w.name}<em>{kindOf(w)}</em></h3>
         <div className="meta">
           {w.abv && <span className="mi">{w.abv}</span>}
+          {w.volumeMl ? <span className="mi">{w.volumeMl}ml</span> : null}
           {w.qty > 1 && <span className="mi">{w.qty}병</span>}
           {w.makerNote && <span className="mi note">공식 노트</span>}
         </div>
+        <BottleBadges badges={w.badges} />
         {w.whiskyClass && <WhiskyClassTags cls={w.whiskyClass} />}
       </button>
       {open && (
@@ -270,6 +272,7 @@ function BottleCard({ bottle: w, open, onToggle }: { bottle: Bottle; open: boole
           )}
           <FlavorBars vector={w.flavor} compact />
           {w.note && <div className="hint">{w.note}</div>}
+          {w.buy && <div className="hint lbl">구매 기록 · {w.buy}</div>}
           <div className="sechead in">제조사 공식 노트</div>
           <MakerNoteView note={w.makerNote} />
           <div className="sechead in">내 메모</div>

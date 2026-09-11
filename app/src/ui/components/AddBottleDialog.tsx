@@ -12,7 +12,8 @@ import { draftFromMaster, draftManual } from '../../data/userBottles';
 import { CATEGORY_LABELS, CATEGORY_ORDER, CATEGORY_DEFAULT_INGREDIENT, SUBCATEGORY_INGREDIENT } from '../../data/liquorCategory';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { type LiquorCategory, type LiquorMasterItem, type UserBottle, type WhiskyClass } from '../../models/types';
-import { ChipRow, ChipMulti, Modal, chips, type ChipOption } from './common';
+import { ChipRow, ChipMulti, Modal, MakerNoteView, chips, type ChipOption } from './common';
+import { MASTER_MAKER_NOTES } from '../../data/makerNotesMaster';
 import { toggleValue } from '../listUtils';
 
 const ORIGINS = chips(['스카치', '버번', '테네시', '아이리시', '재패니즈', '코리안', '기타']);
@@ -172,6 +173,7 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
                     <span className="mi">{item.subcategory}</span>
                     {item.abv ? <span className="mi">{item.abv}%</span> : null}
                     <span className="mi">{item.country}</span>
+                    {MASTER_MAKER_NOTES[item.id] && <span className="mi note">공식 노트</span>}
                   </div>
                 </button>
               ))}
@@ -207,6 +209,11 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
                     ...picked.whiskyClass.cask.map((c) => `${c} 캐스크`), ...picked.whiskyClass.character].filter(Boolean).join(' · ')}
                 </div>
               )}
+              <div className="sechead in">제조사 공식 노트</div>
+              <MakerNoteView
+                note={MASTER_MAKER_NOTES[picked.id]}
+                empty="이 제품은 확인된 제조사 공식 노트가 없습니다. 추가한 뒤 술장에서 직접 기록할 수 있습니다."
+              />
             </div>
           )}
 

@@ -6,6 +6,7 @@
 import { type Bottle, type LiquorCategory, type LiquorMasterItem, type UserBottle } from '../models/types';
 import { flavorForBottle } from './flavorLexicon';
 import { CATEGORY_GROUP, CATEGORY_DEFAULT_INGREDIENT, categoryFromGroup } from './liquorCategory';
+import { MASTER_MAKER_NOTES } from './makerNotesMaster';
 
 const SPIRIT_GROUPS = ['위스키', '진', '보드카', '럼·데킬라·브랜디'];
 
@@ -18,7 +19,7 @@ function parseAbv(abv?: string): number | null {
 export function userBottleToDomain(ub: UserBottle): Bottle {
   const isWhisky = ub.category ? ub.category === 'whisky' : ub.group === '위스키';
   const abv = ub.abv ?? '';
-  const noteParts = [ub.subcategory, ub.volumeMl ? `${ub.volumeMl}ml` : '', ub.note ?? ''].filter(Boolean);
+  const noteParts = [ub.subcategory, ub.note ?? ''].filter(Boolean);
   return {
     id: ub.id,
     group: ub.group,
@@ -29,6 +30,11 @@ export function userBottleToDomain(ub: UserBottle): Bottle {
     qty: ub.qty,
     use: ub.use,
     note: noteParts.join(' · ') || undefined,
+    volumeMl: ub.volumeMl,
+    badges: [],
+    addedAt: ub.createdAt,
+    // 기준 DB 제품이면 그 제품의 공식 노트를 그대로 단다 (수기 입력 없이)
+    makerNote: ub.masterId ? MASTER_MAKER_NOTES[ub.masterId] : undefined,
     isSpirit: SPIRIT_GROUPS.includes(ub.group),
     isWhisky,
     ingredientIds: ub.ingredientId ? [ub.ingredientId] : [],

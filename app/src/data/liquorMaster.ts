@@ -86,6 +86,9 @@ const WHISKY_SCOTCH_MALT: Row[] = [
   ['m_benriach10', '벤리악 10년', 'The BenRiach The Original Ten', '벤리악', '싱글몰트 스카치', 43, 700, '스코틀랜드', '싱글몰트 스카치', '벤리악', sm('스페이사이드', ['셰리', '버번', '버진오크'])],
   ['m_singleton12', '싱글톤 더프타운 12년', 'The Singleton of Dufftown 12 Year Old', '싱글톤', '싱글몰트 스카치', 40, 700, '스코틀랜드', '싱글몰트 스카치', '싱글톤 singleton', sm('스페이사이드', ['셰리', '버번'])],
   ['m_cardhu12', '카듀 12년', 'Cardhu 12 Year Old', '카듀', '싱글몰트 스카치', 40, 700, '스코틀랜드', '싱글몰트 스카치', '카듀', sm('스페이사이드', ['버번'])],
+  ['m_glenmorangie12', '글렌모렌지 디 오리지널 12년', 'Glenmorangie The Original 12 Year Old', '글렌모렌지', '싱글몰트 스카치', 40, 700, '스코틀랜드', '싱글몰트 스카치', '글렌모렌지12 오리지널12', sm('하이랜드', ['버번'])],
+  ['m_glenallachie10cs', '글렌알라키 10년 캐스크 스트렝스', 'The GlenAllachie 10 Year Old Cask Strength', '글렌알라키', '싱글몰트 스카치', 0, 700, '스코틀랜드', '싱글몰트 스카치', '글렌알라키10 캐스크스트렝스 cs', sm('스페이사이드', ['PX', '올로로소', '와인', '버진오크'], ['캐스크 스트렝스', '논피트'])],
+  ['m_ballantine_glenburgie12', '발렌타인 싱글몰트 글렌버기 12년', "Ballantine's Single Malt Glenburgie 12 Year Old", '발렌타인', '싱글몰트 스카치', 40, 700, '스코틀랜드', '싱글몰트 스카치', '글렌버기 발렌타인싱글몰트', sm('스페이사이드', [])],
 ];
 
 /* ── 위스키: 블렌디드 스카치 ── */
@@ -116,6 +119,7 @@ const WHISKY_SCOTCH_BLEND: Row[] = [
   ['m_oldparr12', '올드 파 12년', 'Old Parr 12 Year Old', '올드파', '블렌디드 스카치', 40, 700, '스코틀랜드', '블렌디드 스카치', '올드파 oldparr', sb()],
   ['m_windsor12', '윈저 12년', 'Windsor 12 Year Old', '윈저', '블렌디드 스카치', 40, 500, '스코틀랜드', '블렌디드 스카치', '윈저 windsor', sb()],
   ['m_imperial17', '임페리얼 17년', 'Imperial 17 Year Old', '임페리얼', '블렌디드 스카치', 40, 500, '스코틀랜드', '블렌디드 스카치', '임페리얼 imperial', sb()],
+  ['m_jw_ruby', '조니워커 블랙 루비', 'Johnnie Walker Black Ruby', '조니워커', '블렌디드 스카치', 40, 700, '스코틀랜드', '블렌디드 스카치', '블랙루비 조니루비 jwruby', { origin: '스카치', type: '블렌디드', cask: ['PX', '올로로소', '와인', '버번'], character: [] }],
 ];
 
 /* ── 위스키: 아메리칸 ── */
@@ -148,6 +152,7 @@ const WHISKY_AMERICAN: Row[] = [
   ['m_gentlemanjack', '젠틀맨 잭', 'Gentleman Jack', '잭다니엘스', '테네시 위스키', 40, 700, '미국', '테네시', '젠틀맨잭', { origin: '테네시', type: '테네시 위스키', cask: ['뉴 차드 오크'], character: ['차콜 멜로잉'] }],
   ['m_jd_singlebarrel', '잭 다니엘스 싱글 배럴', "Jack Daniel's Single Barrel Select", '잭다니엘스', '테네시 위스키', 45, 700, '미국', '테네시', '잭다니엘싱글배럴', { origin: '테네시', type: '테네시 위스키', cask: ['뉴 차드 오크'], character: ['차콜 멜로잉'] }],
   ['m_georgedickel12', '조지 디켈 12년', 'George Dickel No.12', '조지디켈', '테네시 위스키', 45, 750, '미국', '테네시', '조지디켈', { origin: '테네시', type: '테네시 위스키', cask: ['뉴 차드 오크'], character: ['차콜 멜로잉'] }],
+  ['m_wildturkey8', '와일드 터키 8년', 'Wild Turkey 8 Year Old 101 Proof', '와일드터키', '스트레이트 버번', 50.5, 700, '미국', '버번', '와일드터키8 101프루프', bb('스트레이트 버번', ['하이프루프'])],
 ];
 
 /* ── 위스키: 아이리시 · 재패니즈 · 코리안 · 월드 ── */
@@ -190,6 +195,7 @@ const GIN: Row[] = [
   ['m_citadelle', '시타델 진', 'Citadelle Gin', '시타델', '드라이 진', 44, 700, '프랑스', '런던 드라이 진', '시타델 citadelle'],
   ['m_nordes', '노르데스', 'Nordés Atlantic Galician Gin', '노르데스', '컨템포러리 진', 40, 700, '스페인', '런던 드라이 진', '노르데스 nordes'],
   ['m_hayman_oldtom', '헤이맨스 올드 톰 진', "Hayman's Old Tom Gin", '헤이맨스', '올드 톰 진', 41.4, 700, '영국', '올드 톰 진', '올드톰 oldtom 헤이맨스'],
+  ['m_buja', '부자진', 'Buja Gin', '부자진', '크래프트 진', 44, 0, '한국', '런던 드라이 진', '부자 진 bujagin 양평'],
 ];
 
 /* ── 보드카 ── */
@@ -204,6 +210,7 @@ const VODKA: Row[] = [
   ['m_stoli', '스톨리치나야', 'Stolichnaya', '스톨리치나야', '플레인 보드카', 40, 700, '라트비아', '플레인 보드카', '스톨리 stoli'],
   ['m_ciroc', '시락', 'Cîroc', '시락', '플레인 보드카', 40, 700, '프랑스', '플레인 보드카', '시록 ciroc'],
   ['m_skyy', '스카이 보드카', 'SKYY Vodka', '스카이', '플레인 보드카', 40, 750, '미국', '플레인 보드카', '스카이 skyy'],
+  ['m_kirkland_french', '커클랜드 프렌치 보드카', 'Kirkland Signature French Vodka', '커클랜드', '플레인 보드카', 40, 1750, '프랑스', '플레인 보드카', '커클랜드 코스트코 kirkland'],
 ];
 
 /* ── 럼 ── */
@@ -302,6 +309,13 @@ const LIQUEUR: Row[] = [
   ['m_bols_banana', '볼스 바나나 리큐르', 'Bols Crème de Banane', '볼스', '바나나 리큐르', 17, 700, '네덜란드', '바나나 리큐르', '바나나리큐르'],
   ['m_velvet_falernum', '벨벳 팔레르넘', 'Velvet Falernum', '존디테일러', '팔레르넘', 11, 700, '바베이도스', '팔레르넘', '팔레르넘 falernum'],
   ['m_goldschlager', '시나몬 리큐르', 'Cinnamon Liqueur', '골드슐라거', '시나몬 리큐르', 0, 700, '스위스', '시나몬 리큐르(시에가)', '시나몬 골드슐라거'],
+  ['m_appletree', '애플트리', 'Appletree', '피치트리', '사과 리큐르', 0, 700, '네덜란드', '기타 리큐르', '애플트리 사과리큐르 appletree'],
+  ['m_dekuyper_triplesec', '드 카이퍼 트리플 섹', 'De Kuyper Triple Sec', '디카이퍼', '오렌지 리큐르', 40, 700, '네덜란드', '트리플 섹', '드카이퍼트리플섹 dekuyper'],
+  ['m_dekuyper_blue', '드 카이퍼 블루 큐라소', 'De Kuyper Blue Curaçao', '디카이퍼', '오렌지 리큐르', 24, 700, '네덜란드', '블루 큐라소', '드카이퍼블루 큐라소'],
+  ['m_dekuyper_cacao', '드 카이퍼 크렘 드 카카오', 'De Kuyper Crème de Cacao', '디카이퍼', '카카오 리큐르', 24, 700, '네덜란드', '크렘 드 카카오', '드카이퍼카카오'],
+  ['m_dekuyper_menthe', '드 카이퍼 크렘 드 멘트', 'De Kuyper Crème de Menthe', '디카이퍼', '민트 리큐르', 24, 700, '네덜란드', '크렘 드 멘트', '드카이퍼멘트'],
+  ['m_dekuyper_cassis', '드 카이퍼 크렘 드 카시스', 'De Kuyper Crème de Cassis', '디카이퍼', '베리 리큐르', 15, 700, '네덜란드', '크렘 드 카시스', '드카이퍼카시스'],
+  ['m_hermes_greentea', '산토리 헤르메스 그린티', 'Suntory Hermes Green Tea Liqueur', '산토리', '녹차 리큐르', 20, 0, '일본', '기타 리큐르', '헤르메스 그린티 greentea'],
 ];
 
 /* ── 베르무트 ── */
@@ -338,6 +352,9 @@ const BEER: Row[] = [
   ['m_corona', '코로나 엑스트라', 'Corona Extra', '코로나', '라거', 4.5, 355, '멕시코', '', '코로나 corona'],
   ['m_hoegaarden', '호가든', 'Hoegaarden', '호가든', '밀맥주', 4.9, 500, '벨기에', '', '호가든 hoegaarden'],
   ['m_pilsner_urquell', '필스너 우르켈', 'Pilsner Urquell', '필스너우르켈', '필스너', 4.4, 500, '체코', '', '우르켈 pilsner'],
+  ['m_gouden_carolus_imperial', '구덴 카롤루스 임페리얼 다크', 'Gouden Carolus Imperial Dark', '헷앙커', '벨지안 다크 에일', 0, 330, '벨기에', '', '구덴카롤루스 카롤루스 goudencarolus'],
+  ['m_kagua_blanc', '카구아 블랑', 'Kagua Blanc', '니혼비어', '벨지안 화이트 에일', 7.5, 330, '일본', '', '카구아 블랑 kagua'],
+  ['m_kagua_rouge', '카구아 루즈', 'Kagua Rouge', '니혼비어', '벨지안 다크 에일', 9, 330, '일본', '', '카구아 루즈'],
 ];
 
 /* ── 사케 · 소주 ── */
@@ -349,12 +366,23 @@ const SAKE: Row[] = [
   ['m_hwayo41', '화요 41', 'Hwayo 41', '화요', '증류식 소주', 41, 375, '한국', '', '화요41'],
   ['m_chamisul', '참이슬 후레쉬', 'Chamisul Fresh', '하이트진로', '희석식 소주', 0, 360, '한국', '', '참이슬 소주 chamisul'],
   ['m_chumchurum', '처음처럼', 'Chum Churum', '롯데칠성', '희석식 소주', 0, 360, '한국', '', '처음처럼'],
+  ['m_wonsoju_spirit', '원소주 스피릿', 'Won Soju Spirit', '원스피리츠', '증류식 소주', 24, 375, '한국', '', '원소주 스피릿 wonsoju'],
+  ['m_tokki_white', '토끼소주 화이트', 'Tokki Soju White', '토끼소주', '증류식 소주', 23, 375, '한국', '', '토끼소주 tokki'],
+  ['m_tokki_sunbee', '토끼소주 선비진', 'Tokki Soju Sunbee', '토끼소주', '증류식 소주', 40, 375, '한국', '', '선비진 토끼소주40'],
+  ['m_jinro_isback', '진로 이즈백', 'Jinro Is Back', '하이트진로', '희석식 소주', 0, 360, '한국', '', '진로이즈백 진로'],
+  ['m_saero', '새로', 'Saero', '롯데칠성', '희석식 소주', 0, 360, '한국', '', '새로 제로슈거'],
+  ['m_hallasan', '한라산 오리지널', 'Hallasan Original', '한라산소주', '희석식 소주', 0, 375, '한국', '', '한라산소주 제주소주'],
+  ['m_wolgyegwan_junmai', '월계관 준마이', 'Gekkeikan Junmai', '월계관', '준마이', 0, 720, '일본', '', '월계관 겟케이칸 gekkeikan'],
+  ['m_yumeginga', '유메긴가 준마이 다이긴조', 'Yumeginga Junmai Daiginjo', '야마자키카모시', '준마이다이긴조', 16, 720, '일본', '', '유메긴가 dream 드림'],
+  ['m_neungi', '내국양조 능이주', 'Naeguk Neungi-ju', '내국양조', '약주', 13, 375, '한국', '', '능이주 내국양조'],
+  ['m_songi', '내국양조 송이주', 'Naeguk Songi-ju', '내국양조', '약주', 13, 375, '한국', '', '송이주 내국양조'],
 ];
 
 /* ── 기타 증류주 ── */
 const SPIRIT: Row[] = [
   ['m_baijiu_luzhou', '루저우라오자오', 'Luzhou Laojiao', '루저우라오자오', '농향형 백주', 52, 500, '중국', '', '백주 고량주 baijiu'],
   ['m_soju_andong', '안동소주', 'Andong Soju', '민속주안동소주', '증류식 소주', 45, 400, '한국', '', '안동소주'],
+  ['m_yeontae', '연태구냥', 'Yantai Guniang', '옌타이', '농향형 백주', 0, 500, '중국', '', '연태구냥 옌타이 yantai'],
 ];
 
 /* ── 칵테일 부재료 (믹서·시럽) ── */

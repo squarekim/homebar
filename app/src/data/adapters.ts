@@ -2,7 +2,7 @@
  * adapters.ts — 원본 시드(RawData)를 도메인 객체로 변환.
  * 원본 이름/ID 는 보존하고, 파생 필드(ID, ml 환산, 향미 벡터)만 추가한다.
  */
-import { SEED } from './seed';
+import { SEED, type RawBottleBadge } from './seed';
 import { slugId } from './ids';
 import { MAKER_NOTES } from './makerNotes';
 import { WHISKY_CLASS } from './whiskyClass';
@@ -11,6 +11,7 @@ import { ingredientNamesForNode } from './bottleIngredients';
 import {
   type Ingredient, type Cocktail, type CocktailIngredient, type Bottle, type Mixer, type MixerPairing,
   type PurchaseSeed, type IngredientSubstitution, type FlavorVector, type MethodKey,
+  type BottleBadge, type BottleBadgeKind, BOTTLE_BADGE_KINDS,
 } from '../models/types';
 
 /* ── 재료 ── */
@@ -142,6 +143,13 @@ function parseAbv(abv: string): number | null {
   const m = abv.match(/([\d]+(?:\.\d+)?)\s*%/);
   return m?.[1] ? parseFloat(m[1]) : null;
 }
+/** 시드의 뱃지 튜플 → 도메인 뱃지. 모르는 종류는 버린다(화면이 스타일을 갖고 있는 것만 단다). */
+function badgesOf(raw: RawBottleBadge[] | undefined): BottleBadge[] {
+  return (raw ?? [])
+    .filter((t): t is [BottleBadgeKind, string] => (BOTTLE_BADGE_KINDS as string[]).includes(t[0]) && !!t[1])
+    .map(([kind, label]) => ({ kind, label }));
+}
+
 export const bottles: Bottle[] = SEED.bottles.map((b) => {
   const whisky = isWhiskyBottle(b);
   return {
@@ -154,6 +162,9 @@ export const bottles: Bottle[] = SEED.bottles.map((b) => {
     qty: b.qty,
     use: b.use,
     note: b.note,
+    volumeMl: b.ml,
+    buy: b.buy,
+    badges: badgesOf(b.t),
     isSpirit: isSpiritBottle(b),
     isWhisky: whisky,
     ingredientIds: ingredientNamesForNode(b.node).filter((n) => ingIdByName.has(n)).map((n) => ingredientIdOf(n)),

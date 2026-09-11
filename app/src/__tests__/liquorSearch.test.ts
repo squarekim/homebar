@@ -3,6 +3,8 @@ import { searchLiquor, guessCategory } from '../services/liquorSearchService';
 import { LIQUOR_MASTER, liquorMasterById } from '../data/liquorMaster';
 import { ingredients } from '../data/adapters';
 import { CATEGORY_GROUP } from '../data/liquorCategory';
+import { MASTER_MAKER_NOTES } from '../data/makerNotesMaster';
+import { SEED_BOTTLE_MASTER } from '../data/makerNotes';
 
 const top = (q: string) => searchLiquor(q, { limit: 5 })[0]?.item.nameKo;
 
@@ -118,5 +120,52 @@ describe('제품 → 표준 재료 → 레시피 매칭', () => {
     expect(d.group).toBe('진');
     expect(d.ingredientName).toBe('런던 드라이 진');
     expect(d.source).toBe('user');
+  });
+});
+
+describe('기준 DB 제품 공식 노트', () => {
+  it('노트의 키는 실재하는 제품이고, 모든 노트는 출처 URL 을 가진다', () => {
+    for (const [id, note] of Object.entries(MASTER_MAKER_NOTES)) {
+      expect(liquorMasterById.get(id), `${id} 제품이 기준 DB에 없음`).toBeTruthy();
+      expect(note.source, `${id} 출처 누락`).toMatch(/^https?:\/\//);
+      expect(note.nose || note.palate || note.finish || note.text, `${id} 본문 없음`).toBeTruthy();
+    }
+    expect(Object.keys(MASTER_MAKER_NOTES).length).toBeGreaterThanOrEqual(40);
+  });
+
+  it('보유 병 → 제품 연결이 전부 실재하는 제품을 가리킨다', () => {
+    for (const [bottleId, masterId] of Object.entries(SEED_BOTTLE_MASTER)) {
+      expect(liquorMasterById.get(masterId), `${bottleId} → ${masterId} 없음`).toBeTruthy();
+    }
+  });
+
+  it('마스터에서 고른 제품은 수기 입력 없이 공식 노트를 물고 온다', async () => {
+    const { draftFromMaster, userBottleToDomain } = await import('../data/userBottles');
+    const draft = draftFromMaster(liquorMasterById.get('m_talisker10')!);
+    const bottle = userBottleToDomain({ ...draft, id: 'ub_t', createdAt: Date.now() });
+    expect(bottle.makerNote?.source).toMatch(/^https?:\/\//);
+    // 노트가 없는 제품은 없는 채로 둔다 (추정해서 채우지 않는다)
+    const plain = userBottleToDomain({
+      ...draftFromMaster(liquorMasterById.get('m_jimbeam_white')!), id: 'ub_j', createdAt: Date.now(),
+    });
+    expect(plain.makerNote).toBeUndefined();
+  });
+});
+
+describe('기준 DB 확장', () => {
+  it('새로 들어온 제품을 이름으로 찾는다', () => {
+    expect(top('블랙 루비')).toBe('조니워커 블랙 루비');
+    expect(top('애플트리')).toBe('애플트리');
+    expect(top('원소주')).toBe('원소주 스피릿');
+    expect(top('토끼소주')).toBe('토끼소주 화이트');
+    expect(top('커클랜드')).toBe('커클랜드 프렌치 보드카');
+    expect(top('부자진')).toBe('부자진');
+  });
+
+  it('도수를 확인하지 못한 제품은 값을 지어내지 않는다', () => {
+    const appletree = liquorMasterById.get('m_appletree')!;
+    expect(appletree.abv).toBeUndefined();          // 0 = 미상
+    expect(appletree.volumeMl).toBe(700);           // 보도자료로 확인된 값만 채운다
+    expect(liquorMasterById.get('m_glenallachie10cs')!.abv).toBeUndefined(); // 배치별 상이
   });
 });

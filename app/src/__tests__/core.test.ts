@@ -4,7 +4,8 @@ import { evaluateAll, evaluateCocktail, tallyStatus } from '../services/availabi
 import { recommendCocktails, recommendWhiskies, type RecommendContext } from '../services/recommendationService';
 import { calculatePurchases } from '../services/purchaseService';
 import { recommendGroupCocktails } from '../services/groupService';
-import { FLAVOR_AXES, type FlavorVector } from '../models/types';
+import { milestoneBadges } from '../services/collectionBadges';
+import { FLAVOR_AXES, type FlavorVector, type Bottle, type WhiskyClass } from '../models/types';
 
 function vec(partial: Partial<FlavorVector>): FlavorVector {
   return FLAVOR_AXES.reduce((v, a) => { v[a] = partial[a] ?? 5; return v; }, {} as FlavorVector);
@@ -377,5 +378,66 @@ describe('설명란 구조화 — 변형 레시피 · 출처 · 코멘터리', (
     const HISTORY = /IBA.{0,12}(등재|제외|이탈)|코드화까지/;
     expect(cocktails.filter((c) => HISTORY.test(c.note ?? '')).map((c) => c.name)).toHaveLength(0);
     expect(cocktails.find((c) => c.name === '갓파더')!.iba).toBe('구IBA');
+  });
+});
+
+describe('병 뱃지 — 개인 이력을 메모에서 뱃지로', () => {
+  const byId = (id: string) => bottles.find((b) => b.id === id)!;
+
+  it('마일스톤·입수 경위·상태가 뱃지로 붙는다', () => {
+    expect(byId('talisker10').badges).toContainEqual({ kind: 'first', label: '첫 피트 싱글몰트' });
+    expect(byId('kakubin').badges).toContainEqual({ kind: 'first', label: '첫 일본 위스키' });
+    expect(byId('jw_green').badges).toContainEqual({ kind: 'first', label: '첫 블렌디드 몰트' });
+    expect(byId('jw_black').badges).toContainEqual({ kind: 'gift', label: '선물' });
+    expect(byId('bulhwi').badges).toContainEqual({ kind: 'status', label: '단종' });
+    expect(byId('kakubin').badges).toContainEqual({ kind: 'use', label: '하이볼 전용' });
+  });
+
+  it('메모에는 남이 읽어도 뜻이 통하는 제품 사실만 남는다', () => {
+    // 개인 이력(첫 ○○·★신규·선물·가격)과 앱이 계산하는 값(N종 해금)이 메모에 남아 있지 않다
+    const LEFTOVER = /첫 |최초|★|선물|만원|\d+종 해금|해금/;
+    expect(bottles.filter((b) => LEFTOVER.test(b.note ?? '')).map((b) => b.name)).toHaveLength(0);
+    expect(byId('sy_grenadine').note).toBe('농축과즙 — 개봉 후 냉장');
+  });
+
+  it('가격·구매처는 구매 기록으로, 용량은 필드로 빠진다', () => {
+    expect(byId('jw_blue').buy).toBe('16만원');
+    expect(byId('jw_blue').note).toBeUndefined();
+    expect(byId('kahlua').volumeMl).toBe(1000);
+    expect(byId('kagua_blanc').volumeMl).toBe(330);
+  });
+});
+
+describe('첫 ○○ 마일스톤 자동 계산', () => {
+  const mk = (id: string, addedAt: number, over: Partial<Bottle> = {}): Bottle => ({
+    id, group: '위스키', name: id, node: 'master.whisky', abv: '40%', abvNum: 40, qty: 1, use: '시음-축',
+    badges: [], isSpirit: true, isWhisky: true, ingredientIds: [], flavor: vec({}), addedAt, ...over,
+  });
+  const cls = (over: Partial<WhiskyClass> = {}): WhiskyClass =>
+    ({ origin: '스카치', type: '싱글몰트', cask: [], character: ['논피트'], ...over });
+
+  it('컬렉션이 비어 있으면 첫 병은 가장 넓은 축을 받는다', () => {
+    const found = milestoneBadges([mk('ub_1', 100, { whiskyClass: cls() })]);
+    expect(found.get('ub_1')?.label).toBe('첫 위스키');
+  });
+
+  it('이미 있는 축은 다시 첫이 되지 않고, 새 축만 뱃지가 된다', () => {
+    const found = milestoneBadges([
+      mk('ub_1', 100, { whiskyClass: cls() }),
+      mk('ub_2', 200, { whiskyClass: cls({ character: ['피티드'] }) }),
+      mk('ub_3', 300, { whiskyClass: cls({ character: ['피티드'] }) }),
+    ]);
+    expect(found.get('ub_2')?.label).toBe('첫 피티드 위스키');
+    expect(found.has('ub_3')).toBe(false);
+  });
+
+  it('앱 이전부터 있던 시드 병이 차지한 축은 사용자 병이 가져가지 못한다', () => {
+    const found = milestoneBadges([...whiskies, mk('ub_1', 100, { whiskyClass: cls() })]);
+    expect(found.has('ub_1')).toBe(false);   // 시드에 이미 스카치 싱글몰트가 있다
+  });
+
+  it('믹서·부재료는 마일스톤을 세지 않는다', () => {
+    const soda = mk('ub_s', 100, { group: '음료·믹서·시럽·비터·상비품', node: 'master.mixer', isWhisky: false, isSpirit: false });
+    expect(milestoneBadges([soda]).has('ub_s')).toBe(false);
   });
 });

@@ -7,6 +7,7 @@ import { substitutionRepo } from '../repositories/substitutionRepo';
 import { type InventoryItem, type DrinkLog, type TasteProfile, FLAVOR_AXES, type FlavorVector, type Bottle, type UserBottle } from '../models/types';
 import { referenceRepo } from '../repositories/referenceRepo';
 import { userBottleToDomain } from '../data/userBottles';
+import { withMilestones } from '../services/collectionBadges';
 
 export function useInventory(): InventoryItem[] | undefined {
   return useLiveQuery(() => db.inventory.toArray(), []);
@@ -49,10 +50,10 @@ export function useUserBottles(): UserBottle[] {
   return useLiveQuery(() => db.userBottles.orderBy('createdAt').reverse().toArray(), []) ?? [];
 }
 
-/** 시드 병 + 사용자 추가 병 (컬렉션 전체) */
+/** 시드 병 + 사용자 추가 병 (컬렉션 전체). '첫 ○○' 뱃지는 여기서 한 번만 계산해 붙인다. */
 export function useBottles(): Bottle[] {
   const ubs = useUserBottles();
-  return useMemo(() => [...referenceRepo.bottles(), ...ubs.map(userBottleToDomain)], [ubs]);
+  return useMemo(() => withMilestones([...referenceRepo.bottles(), ...ubs.map(userBottleToDomain)]), [ubs]);
 }
 
 /** 위스키만 (시드 + 사용자 추가). 분류·매트릭스·시뮬레이터가 이걸 쓴다. */

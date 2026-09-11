@@ -93,6 +93,19 @@ export interface WhiskyClass {
   character: string[];  // 피티드 / 논피트 / 스모키 / 왁시 / 캐스크 스트렝스 / 휘티드 / 차콜 멜로잉 등
 }
 
+/**
+ * 병에 붙는 뱃지 — 자유 메모 대신 구조화해서 단다.
+ *  first  : 마일스톤. "첫 피트 싱글몰트" — 시드 병은 t 필드, 사용자 병은 추가 순서에서 계산한다.
+ *  gift   : 선물로 들어온 병      new : 최근 들인 병
+ *  use    : 용도 한정("하이볼 전용")  status : 제품 상태("단종")
+ */
+export type BottleBadgeKind = 'first' | 'gift' | 'new' | 'use' | 'status';
+export interface BottleBadge {
+  kind: BottleBadgeKind;
+  label: string;
+}
+export const BOTTLE_BADGE_KINDS: BottleBadgeKind[] = ['first', 'gift', 'new', 'use', 'status'];
+
 /** 실물 보유병 (기존 bottles). id 원본 그대로 재사용 */
 export interface Bottle {
   id: string;
@@ -104,6 +117,13 @@ export interface Bottle {
   qty: number;     // 원본 qty
   use: string;     // 원본 use
   note?: string | undefined;
+  volumeMl?: number | undefined;
+  /** 구매 기록(가격·구매처) — 제품 정보가 아니라 개인 이력이라 따로 둔다 */
+  buy?: string | undefined;
+  /** 뱃지. 시드 병은 데이터에서, 사용자 병은 추가 순서에서 온다 */
+  badges: BottleBadge[];
+  /** 사용자가 추가한 시각. 시드 병(=앱 사용 이전부터 있던 병)은 없다 */
+  addedAt?: number | undefined;
   isSpirit: boolean;
   isWhisky: boolean;
   /** 이 병으로 충당되는 표준 재료 ID들 (재고 화면에서 "그래서 어떤 술?"을 되짚는 데 쓴다) */
