@@ -245,10 +245,11 @@ th{color:var(--mute);font-size:11px;font-weight:700}
 .badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .bdg{font-size:10.5px;font-weight:700;border-radius:7px;padding:3px 8px;white-space:nowrap;
   color:var(--mute);background:var(--raise)}
+.bdg i{font-style:normal;font-weight:600;opacity:.72;margin-left:5px;font-size:9.5px}
 .bdg.first{color:#fff;background:var(--amber)}
-.bdg.gift{color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,transparent)}
-.bdg.new{color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,transparent)}
-.bdg.use{color:var(--mute);background:var(--raise)}
+.bdg.repeat{color:#fff;background:var(--ok)}
+/* 업적(첫 ○○ · 재구매)만 색을 쓴다. 입수 경위·용도는 부가 정보라 차분하게. */
+.bdg.gift, .bdg.new, .bdg.use{color:var(--mute);background:var(--raise)}
 .bdg.status{color:var(--no);background:color-mix(in srgb,var(--no) 12%,transparent)}
 .clstags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .cltag{font-size:10.5px;color:var(--mute);background:var(--raise);border-radius:7px;padding:3px 8px;font-weight:600}

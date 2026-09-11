@@ -7,14 +7,14 @@ import { type LiquorCategory } from '../models/types';
 
 export const CATEGORY_ORDER: LiquorCategory[] = [
   'whisky', 'gin', 'vodka', 'rum', 'tequila', 'mezcal', 'brandy',
-  'liqueur', 'vermouth', 'wine', 'beer', 'sake', 'spirit', 'mixer',
+  'liqueur', 'vermouth', 'wine', 'beer', 'sake', 'rtd', 'spirit', 'mixer',
 ];
 
 export const CATEGORY_LABELS: Record<LiquorCategory, string> = {
   whisky: '위스키', gin: '진', vodka: '보드카', rum: '럼', tequila: '데킬라',
   mezcal: '메즈칼', brandy: '브랜디·코냑', liqueur: '리큐르', vermouth: '베르무트',
-  wine: '와인·주정강화', beer: '맥주', sake: '사케·소주', spirit: '기타 증류주',
-  mixer: '칵테일 부재료',
+  wine: '와인·주정강화', beer: '맥주', sake: '사케·소주', rtd: 'RTD·캔칵테일',
+  spirit: '기타 증류주', mixer: '칵테일 부재료',
 };
 
 /** 확장 카테고리 → 레거시 컬렉션 그룹(seed bottles 의 g). 기존 화면/집계를 그대로 태우기 위한 다리. */
@@ -22,7 +22,8 @@ export const CATEGORY_GROUP: Record<LiquorCategory, string> = {
   whisky: '위스키', gin: '진', vodka: '보드카',
   rum: '럼·데킬라·브랜디', tequila: '럼·데킬라·브랜디', mezcal: '럼·데킬라·브랜디', brandy: '럼·데킬라·브랜디',
   liqueur: '리큐르', vermouth: '기타 (칵테일 미활용)', wine: '기타 (칵테일 미활용)',
-  beer: '기타 (칵테일 미활용)', sake: '기타 (칵테일 미활용)', spirit: '기타 (칵테일 미활용)',
+  beer: '기타 (칵테일 미활용)', sake: '기타 (칵테일 미활용)', rtd: '기타 (칵테일 미활용)',
+  spirit: '기타 (칵테일 미활용)',
   mixer: '음료·믹서·시럽·비터·상비품',
 };
 

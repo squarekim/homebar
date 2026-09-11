@@ -78,7 +78,7 @@ export function bottleKind(b: { node: string; group: string }): string {
 const KIND_LABELS: Record<string, string> = {
   whisky: '위스키', gin: '진', vodka: '보드카', rum: '럼', tequila: '데킬라',
   mezcal: '메즈칼', brandy: '브랜디', liqueur: '리큐르', vermouth: '베르무트',
-  wine: '와인', beer: '맥주', sake: '사케·소주', spirit: '증류주', mixer: '부재료',
+  wine: '와인', beer: '맥주', sake: '사케·소주', rtd: 'RTD', spirit: '증류주', mixer: '부재료',
 };
 
 /** 카드 우측에 적는 술 종류 (럼·데킬라·브랜디 묶음 대신 '데킬라'처럼 실제 종류로) */

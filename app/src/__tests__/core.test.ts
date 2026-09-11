@@ -4,7 +4,7 @@ import { evaluateAll, evaluateCocktail, tallyStatus } from '../services/availabi
 import { recommendCocktails, recommendWhiskies, type RecommendContext } from '../services/recommendationService';
 import { calculatePurchases } from '../services/purchaseService';
 import { recommendGroupCocktails } from '../services/groupService';
-import { milestoneBadges } from '../services/collectionBadges';
+import { milestoneBadges, repeatBadges } from '../services/collectionBadges';
 import { FLAVOR_AXES, type FlavorVector, type Bottle, type WhiskyClass } from '../models/types';
 
 function vec(partial: Partial<FlavorVector>): FlavorVector {
@@ -439,5 +439,58 @@ describe('첫 ○○ 마일스톤 자동 계산', () => {
   it('믹서·부재료는 마일스톤을 세지 않는다', () => {
     const soda = mk('ub_s', 100, { group: '음료·믹서·시럽·비터·상비품', node: 'master.mixer', isWhisky: false, isSpirit: false });
     expect(milestoneBadges([soda]).has('ub_s')).toBe(false);
+  });
+});
+
+describe('재구매 업적', () => {
+  const mk = (id: string, over: Partial<Bottle> = {}): Bottle => ({
+    id, group: '위스키', name: id, node: 'master.whisky', abv: '40%', abvNum: 40, qty: 1, use: '시음-축',
+    badges: [], isSpirit: true, isWhisky: true, ingredientIds: [], flavor: vec({}), ...over,
+  });
+
+  it('같은 제품을 다시 들이면 횟수에 따라 업적이 올라간다', () => {
+    const tier = (count: number) => {
+      const rows = Array.from({ length: count }, (_, i) =>
+        mk(`ub_${i}`, { addedAt: 100 + i, productId: 'm_x' }));
+      return repeatBadges(rows).get(`ub_${count - 1}`);
+    };
+    expect(tier(1)).toBeUndefined();                    // 한 병이면 재구매가 아니다
+    expect(tier(2)?.label).toBe('마셔보니 좋더라');
+    expect(tier(2)?.detail).toBe('재구매 1회');
+    expect(tier(3)?.label).toBe('이제 상비품');
+    expect(tier(4)?.label).toBe('없으니 못 살겠다');
+    expect(tier(9)?.label).toBe('없으니 못 살겠다');
+  });
+
+  it('뱃지는 가장 최근에 들인 병에만 붙는다', () => {
+    const found = repeatBadges([
+      mk('ub_old', { addedAt: 100, productId: 'm_x' }),
+      mk('ub_new', { addedAt: 200, productId: 'm_x' }),
+    ]);
+    expect(found.has('ub_old')).toBe(false);
+    expect(found.get('ub_new')?.detail).toBe('재구매 1회');
+  });
+
+  it('이름 표기가 달라도 같은 기준 DB 제품이면 같이 센다', () => {
+    const found = repeatBadges([
+      mk('ub_1', { name: '조니워커 블랙', addedAt: 100, productId: 'm_jw_black' }),
+      mk('ub_2', { name: '조니워커 블랙라벨 12년', addedAt: 200, productId: 'm_jw_black' }),
+    ]);
+    expect(found.get('ub_2')?.detail).toBe('재구매 1회');
+  });
+
+  it('한 줄에 여러 병이어도(선물로 늘어난 병) 재구매로 센다', () => {
+    // 시드의 조니워커 블랙 라벨은 선물로 1병 늘어 2병이다
+    const jw = bottles.find((b) => b.id === 'jw_black')!;
+    expect(jw.qty).toBe(2);
+    expect(repeatBadges([jw]).get('jw_black')?.label).toBe('마셔보니 좋더라');
+  });
+
+  it('믹서는 재구매를 세지 않는다', () => {
+    const cola = mk('ub_c', {
+      group: '음료·믹서·시럽·비터·상비품', node: 'master.mixer',
+      isWhisky: false, isSpirit: false, qty: 5, addedAt: 100, productId: 'm_coke',
+    });
+    expect(repeatBadges([cola]).size).toBe(0);
   });
 });

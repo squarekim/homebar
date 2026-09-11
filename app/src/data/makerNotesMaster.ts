@@ -288,9 +288,19 @@ export const MASTER_MAKER_NOTES: Record<string, MakerNote> = {
     sourceName: "The Spirits Business — 브랜드 공식 노트 인용",
   },
   m_appletree: {
-    text: "새콤달콤한 풋사과를 베이스로 한 사과 리큐르. 피치트리의 신규 플레이버로 2026년 6월 국내 출시(700ml).",
-    source: "https://www.itbiznews.com/news/articleView.html?idxno=214729",
-    sourceName: "수입사 에프제이코리아 보도자료(IT비즈뉴스) — 제조사 테이스팅 노트는 미공개",
+    nose: "싱그러운 그린 애플 향이 입안 가득 퍼진다",
+    palate: "과하지 않은 달콤함과 산뜻한 산미가 균형을 이룬다",
+    finish: "깔끔하고 경쾌 — 스트레이트는 물론 탄산수·토닉워터와도 잘 맞는다",
+    text: "피치트리가 새로 낸 '트리 시리즈'의 사과 리큐르. 그린 애플의 신선하고 상큼한 매력을 담았다(700ml · 15%).",
+    source: "https://www.fjkorea.co.kr/",
+    sourceName: "수입사 에프제이코리아 제품 설명",
+  },
+  m_jimbeam_white: {
+    nose: "오크를 두른 바닐라에 스파이시한 배경",
+    palate: "미디엄 바디에 은은한 캐러멜과 바닐라",
+    text: "제조사는 향미를 GRAIN·OAK·FRUIT·CHAR·SWEET 5축 균형도로도 표기한다(축별 수치는 비공개).",
+    source: "https://www.jimbeam.com/en-us/bourbons/jim-beam",
+    sourceName: "Jim Beam 공식 — Aroma/Flavor 표기",
   },
   m_balvenie12dw: {
     text: "아메리칸 오크에서 숙성해 바닐라 스파이스를 입힌 뒤, 12년째에 유러피언 오크 셰리 캐스크로 옮겨 9개월 추가 숙성해 과일·꿀의 깊이를 더한다.",

@@ -1,8 +1,10 @@
 /**
- * collectionBadges — "첫 ○○" 마일스톤 계산.
+ * collectionBadges — 업적 뱃지 계산.
  *
- * 술장에 새 병이 들어올 때 그 병이 내 컬렉션에서 처음인 축(위스키 → 스카치 → 싱글몰트 → 피티드)을 찾아
- * 뱃지 하나를 준다. 메모에 손으로 적던 "첫 피트 싱글몰트"를 사람이 쓰지 않아도 되게 하는 게 목적이다.
+ *  ① 마일스톤 — 내 컬렉션에서 처음인 축(위스키 → 스카치 → 싱글몰트 → 피티드)을 찾아 "첫 ○○"
+ *  ② 재구매   — 같은 제품을 또 들인 횟수. 1회 "마셔보니 좋더라" → 3회 "없으니 못 살겠다"
+ *
+ * 메모에 손으로 적던 말을 사람이 쓰지 않아도 되게 하는 게 목적이다.
  *
  * 규칙
  *  - 판정은 추가 시각(addedAt)과 분류 필드로만 한다. 메모 텍스트는 보지 않는다.
@@ -52,11 +54,50 @@ export function milestoneBadges(bottles: readonly Bottle[]): Map<string, BottleB
   return out;
 }
 
+/**
+ * 재구매 업적 — 같은 제품을 몇 번 더 들였는지.
+ * 세는 단위는 병 수(qty)다. 선물로 한 병 더 들어온 것도 "또 생긴 것"이라 같이 센다.
+ * 제품 동일성은 기준 DB 제품 id 로 본다(없으면 이름). 이름 표기가 조금 달라도
+ * 같은 제품을 고르면 같은 것으로 세진다.
+ */
+const REPEAT_TIERS: Array<[min: number, label: string]> = [
+  [3, '없으니 못 살겠다'],
+  [2, '이제 상비품'],
+  [1, '마셔보니 좋더라'],
+];
+
+function productKey(b: Bottle): string {
+  return b.productId ?? b.name.replace(/\s+/g, '').toLowerCase();
+}
+
+export function repeatBadges(bottles: readonly Bottle[]): Map<string, BottleBadge> {
+  const byProduct = new Map<string, { bottles: number; latest: Bottle }>();
+  for (const b of bottles) {
+    if (SKIP.has(bottleKindLabel(b))) continue;          // 믹서는 재구매를 세지 않는다
+    const key = productKey(b);
+    const cur = byProduct.get(key);
+    if (!cur) byProduct.set(key, { bottles: b.qty, latest: b });
+    else {
+      cur.bottles += b.qty;
+      if ((b.addedAt ?? 0) >= (cur.latest.addedAt ?? 0)) cur.latest = b;   // 뱃지는 가장 최근 것에 단다
+    }
+  }
+
+  const out = new Map<string, BottleBadge>();
+  for (const { bottles: count, latest } of byProduct.values()) {
+    const repeats = count - 1;
+    const tier = REPEAT_TIERS.find(([min]) => repeats >= min);
+    if (tier) out.set(latest.id, { kind: 'repeat', label: tier[1], detail: `재구매 ${repeats}회` });
+  }
+  return out;
+}
+
 /** 컬렉션 전체에 계산된 뱃지를 얹어 돌려준다 (데이터에 적힌 뱃지는 그대로 둔다) */
 export function withMilestones(bottles: Bottle[]): Bottle[] {
-  const found = milestoneBadges(bottles);
+  const first = milestoneBadges(bottles);
+  const repeat = repeatBadges(bottles);
   return bottles.map((b) => {
-    const m = found.get(b.id);
-    return m ? { ...b, badges: [...b.badges, m] } : b;
+    const add = [first.get(b.id), repeat.get(b.id)].filter((x): x is BottleBadge => !!x);
+    return add.length ? { ...b, badges: [...b.badges, ...add] } : b;
   });
 }

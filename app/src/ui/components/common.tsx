@@ -90,7 +90,11 @@ export function BottleBadges({ badges }: { badges: BottleBadge[] }) {
   if (!badges.length) return null;
   return (
     <div className="badges">
-      {badges.map((b, i) => <span className={`bdg ${b.kind}`} key={`${b.kind}${i}`}>{b.label}</span>)}
+      {badges.map((b, i) => (
+        <span className={`bdg ${b.kind}`} key={`${b.kind}${i}`}>
+          {b.label}{b.detail && <i>{b.detail}</i>}
+        </span>
+      ))}
     </div>
   );
 }

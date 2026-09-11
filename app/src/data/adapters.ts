@@ -4,7 +4,7 @@
  */
 import { SEED, type RawBottleBadge } from './seed';
 import { slugId } from './ids';
-import { MAKER_NOTES } from './makerNotes';
+import { MAKER_NOTES, SEED_BOTTLE_MASTER } from './makerNotes';
 import { WHISKY_CLASS } from './whiskyClass';
 import { flavorForIngredient, flavorForBottle, combineCocktailFlavor } from './flavorLexicon';
 import { ingredientNamesForNode } from './bottleIngredients';
@@ -165,6 +165,7 @@ export const bottles: Bottle[] = SEED.bottles.map((b) => {
     volumeMl: b.ml,
     buy: b.buy,
     badges: badgesOf(b.t),
+    productId: SEED_BOTTLE_MASTER[b.id],
     isSpirit: isSpiritBottle(b),
     isWhisky: whisky,
     ingredientIds: ingredientNamesForNode(b.node).filter((n) => ingIdByName.has(n)).map((n) => ingredientIdOf(n)),

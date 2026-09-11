@@ -33,6 +33,7 @@ export function userBottleToDomain(ub: UserBottle): Bottle {
     volumeMl: ub.volumeMl,
     badges: [],
     addedAt: ub.createdAt,
+    productId: ub.masterId,
     // 기준 DB 제품이면 그 제품의 공식 노트를 그대로 단다 (수기 입력 없이)
     makerNote: ub.masterId ? MASTER_MAKER_NOTES[ub.masterId] : undefined,
     isSpirit: SPIRIT_GROUPS.includes(ub.group),

@@ -117,7 +117,8 @@ const CATEGORY_HINTS: Array<[RegExp, LiquorCategory]> = [
   [/리큐르|liqueur|큐라소|슈납스|아마레토|캄파리|아페롤|비터|bitters|크렘 드|아마로/i, 'liqueur'],
   [/와인|wine|샴페인|champagne|프로세코|셰리|포트|sherry|port/i, 'wine'],
   [/맥주|beer|라거|에일|ale|스타우트|ipa/i, 'beer'],
-  [/사케|sake|준마이|다이긴조|소주|soju|shochu|막걸리/i, 'sake'],
+  [/사케|sake|준마이|다이긴조|소주|soju|shochu|막걸리|탁주|약주/i, 'sake'],
+  [/하이볼\s*캔|캔\s*하이볼|츄하이|chuhai|호로요이|스트롱\s*제로|rtd|칵테일\s*캔/i, 'rtd'],
   [/토닉|tonic|진저에일|콜라|시럽|syrup|탄산|소다/i, 'mixer'],
 ];
 

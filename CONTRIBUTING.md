@@ -31,7 +31,7 @@ data(시드·파생)  →  models(타입)  →  db(Dexie)  →  repositories  �
 | 제조 가능 판정 규칙 | `src/services/availabilityService.ts` |
 | 추천 점수·이유 | `src/services/recommendationService.ts`, `groupService.ts`, `purchaseService.ts` |
 | 술 이름 검색(별칭·퍼지) | `src/services/liquorSearchService.ts` + `src/data/textMatch.ts` |
-| 기준 제품 DB(303종) | `src/data/liquorMaster.ts`, 별칭은 `liquorAliases.ts` |
+| 기준 제품 DB(361종) | `src/data/liquorMaster.ts`, 별칭은 `liquorAliases.ts` |
 | 제품별 공식 노트 | `src/data/makerNotesMaster.ts` (제품 id 키), 보유 병 연결은 `makerNotes.ts` |
 | 위스키 분류 체계·용어 | `src/data/whiskyClass.ts`, `glossary.ts` |
 | 저장 스키마 | `src/db/schema.ts` (Dexie 버전 마이그레이션) |
@@ -88,10 +88,11 @@ git push -u origin feat/무엇을-하는지
 확인하지 못한 제품은 **비워 둔다**(화면이 "공식 노트 미확보"로 말한다). 리뷰 글을 공식 노트인 양 적지 않는다.
 `sourceName` 에는 그 출처가 제조사 공식인지 매체·보도자료인지 그대로 밝힌다.
 
-**병에 붙는 말** → 자유 메모에 적지 않고 뱃지로 만든다. `first`(첫 ○○)·`gift`·`new`·`use`·`status` 다섯 종류다.
+**병에 붙는 말** → 자유 메모에 적지 않고 뱃지로 만든다. `first`(첫 ○○)·`repeat`(재구매)·`gift`·`new`·`use`·`status` 여섯 종류다.
 시드 병은 `scripts/structureBottleNotes.mjs` 가 메모를 뱃지·용량·구매 기록으로 쪼개고,
-사용자가 추가한 병은 `services/collectionBadges.ts` 가 추가 순서로 "첫 ○○"를 계산한다.
-**뱃지를 라벨 텍스트로 판정하지 않는다** — 종류(kind)는 데이터가 들고 온다.
+사용자가 추가한 병은 `services/collectionBadges.ts` 가 계산한다 — 추가 순서로 "첫 ○○",
+같은 제품을 또 들이면 재구매 업적(1회 "마셔보니 좋더라" → 3회 "없으니 못 살겠다").
+색은 업적(first·repeat)에만 쓴다. **뱃지를 라벨 텍스트로 판정하지 않는다** — 종류(kind)는 데이터가 들고 온다.
 
 **레시피 설명란** → 한 칸에 여러 성격의 글을 넣지 않는다. 출처는 `s`, 변형 관계는 `v: [원형 이름, 무엇을 바꿨는지]`,
 설명은 `note` 에 **한 문장**. IBA 등재 연혁은 적지 않는다(화면의 IBA 배지가 이미 말한다).
@@ -160,9 +161,9 @@ npm run build     # typecheck + vite build
 
 | | 과제 | 왜 필요한가 |
 |---|---|---|
-| 쉬움 | 기준 제품 DB 확장 (현재 303종) | 검색해서 안 나오는 술이 아직 많다. 데이터만 추가하면 된다 |
+| 쉬움 | 기준 제품 DB 확장 (현재 361종) | 검색해서 안 나오는 술이 아직 많다. 데이터만 추가하면 된다 |
 | 쉬움 | 추가한 술 **편집** 기능 | 지금은 추가/삭제만 된다 |
-| 쉬움 | 제조사 공식 노트 **채우기** | 41종뿐이다. 공식 페이지가 있는 제품부터 `makerNotesMaster.ts` 에 출처와 함께 추가하면 된다 |
+| 쉬움 | 제조사 공식 노트 **채우기** | 43종뿐이다. 공식 페이지가 있는 제품부터 `makerNotesMaster.ts` 에 출처와 함께 추가하면 된다 |
 | 중간 | 재고 잔량 UI 개선 | 잔량 입력이 슬라이더뿐이라 실사용이 번거롭다 |
 | 중간 | 그룹 추천 UX | 사람 등록·선택 흐름이 아직 투박하다 |
 | 어려움 | 계정·동기화(Supabase 등) | 기기 간 동기화. `repositories/` 뒤만 갈아끼우면 되도록 이미 격리해 뒀다 |

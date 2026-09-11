@@ -94,17 +94,21 @@ export interface WhiskyClass {
 }
 
 /**
- * 병에 붙는 뱃지 — 자유 메모 대신 구조화해서 단다.
+ * 병에 붙는 뱃지 — 자유 메모 대신 구조화해서 단다. 게임의 업적처럼 읽히는 게 목적이다.
  *  first  : 마일스톤. "첫 피트 싱글몰트" — 시드 병은 t 필드, 사용자 병은 추가 순서에서 계산한다.
+ *  repeat : 같은 술을 또 산 횟수. 1회 "마셔보니 좋더라" → 3회 "없으니 못 살겠다"
  *  gift   : 선물로 들어온 병      new : 최근 들인 병
  *  use    : 용도 한정("하이볼 전용")  status : 제품 상태("단종")
  */
-export type BottleBadgeKind = 'first' | 'gift' | 'new' | 'use' | 'status';
+export type BottleBadgeKind = 'first' | 'repeat' | 'gift' | 'new' | 'use' | 'status';
 export interface BottleBadge {
   kind: BottleBadgeKind;
+  /** 업적 이름 — 화면에 크게 나오는 말 */
   label: string;
+  /** 그 업적을 왜 받았는지 (예: '재구매 2회') */
+  detail?: string | undefined;
 }
-export const BOTTLE_BADGE_KINDS: BottleBadgeKind[] = ['first', 'gift', 'new', 'use', 'status'];
+export const BOTTLE_BADGE_KINDS: BottleBadgeKind[] = ['first', 'repeat', 'gift', 'new', 'use', 'status'];
 
 /** 실물 보유병 (기존 bottles). id 원본 그대로 재사용 */
 export interface Bottle {
@@ -124,6 +128,8 @@ export interface Bottle {
   badges: BottleBadge[];
   /** 사용자가 추가한 시각. 시드 병(=앱 사용 이전부터 있던 병)은 없다 */
   addedAt?: number | undefined;
+  /** 기준 DB 제품 id. 같은 제품을 다시 들였는지(재구매) 세는 키다 */
+  productId?: string | undefined;
   isSpirit: boolean;
   isWhisky: boolean;
   /** 이 병으로 충당되는 표준 재료 ID들 (재고 화면에서 "그래서 어떤 술?"을 되짚는 데 쓴다) */
@@ -300,7 +306,7 @@ export interface UserBottle {
 /** 대분류. 세부분류(subcategory)는 마스터 DB 내부에서 관리하며 사용자가 고르지 않는다. */
 export type LiquorCategory =
   | 'whisky' | 'gin' | 'vodka' | 'rum' | 'tequila' | 'mezcal' | 'brandy'
-  | 'liqueur' | 'vermouth' | 'wine' | 'beer' | 'sake' | 'spirit' | 'mixer';
+  | 'liqueur' | 'vermouth' | 'wine' | 'beer' | 'sake' | 'rtd' | 'spirit' | 'mixer';
 
 /** 기준 제품 1건. 사용자는 이름만 검색해 고르고, 나머지는 여기서 자동 채워진다. */
 export interface LiquorMasterItem {

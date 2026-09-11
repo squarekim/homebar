@@ -146,7 +146,7 @@ describe('기준 DB 제품 공식 노트', () => {
     expect(bottle.makerNote?.source).toMatch(/^https?:\/\//);
     // 노트가 없는 제품은 없는 채로 둔다 (추정해서 채우지 않는다)
     const plain = userBottleToDomain({
-      ...draftFromMaster(liquorMasterById.get('m_jimbeam_white')!), id: 'ub_j', createdAt: Date.now(),
+      ...draftFromMaster(liquorMasterById.get('m_kelly')!), id: 'ub_k', createdAt: Date.now(),
     });
     expect(plain.makerNote).toBeUndefined();
   });
@@ -163,9 +163,19 @@ describe('기준 DB 확장', () => {
   });
 
   it('도수를 확인하지 못한 제품은 값을 지어내지 않는다', () => {
+    expect(liquorMasterById.get('m_glenallachie10cs')!.abv).toBeUndefined();  // 배치별 상이
+    expect(liquorMasterById.get('m_joeunday')!.abv).toBeUndefined();          // 희석식 소주는 도수가 자주 바뀐다
+    // 수입사 제품 설명으로 확인된 값은 채운다
     const appletree = liquorMasterById.get('m_appletree')!;
-    expect(appletree.abv).toBeUndefined();          // 0 = 미상
-    expect(appletree.volumeMl).toBe(700);           // 보도자료로 확인된 값만 채운다
-    expect(liquorMasterById.get('m_glenallachie10cs')!.abv).toBeUndefined(); // 배치별 상이
+    expect(appletree.abv).toBe(15);
+    expect(appletree.volumeMl).toBe(700);
+  });
+
+  it('RTD·캔칵테일도 이름으로 찾는다', () => {
+    expect(top('호로요이')).toContain('호로요이');
+    expect(top('하이볼 캔')).toContain('하이볼 캔');
+    expect(top('엑스레이티드')).toBe('엑스레이티드 퓨전');
+    expect(top('장수막걸리')).toBe('장수 생막걸리');
+    expect(LIQUOR_MASTER.filter((i) => i.category === 'rtd').length).toBeGreaterThanOrEqual(8);
   });
 });
