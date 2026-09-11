@@ -110,11 +110,25 @@ export const cocktails: Cocktail[] = SEED.recipes.map((r) => {
     ingredients: ings,
     url: r.u,
     note: r.note,
+    sourceName: r.s,
     garnish: r.g,
+    variantOf: r.v ? slugId('ck', r.v[0]) : undefined,
+    variantNote: r.v?.[1],
+    variants: [],
     flavor,
   };
 });
 export const cocktailById = new Map<string, Cocktail>(cocktails.map((c) => [c.id, c]));
+
+/**
+ * 변형 역인덱스 — "이 레시피에는 이런 변형이 있다"를 원형 쪽에서도 보여주기 위해 채운다.
+ * 원형이 실제로 존재할 때만 연결한다(이름이 어긋나면 조용히 끊는다).
+ */
+for (const c of cocktails) {
+  const parent = c.variantOf ? cocktailById.get(c.variantOf) : undefined;
+  if (parent) parent.variants.push(c.id);
+  else if (c.variantOf) { c.variantOf = undefined; c.variantNote = undefined; }
+}
 
 /* ── 보유병 (id 원본 유지) ── */
 function isWhiskyBottle(b: { g: string }): boolean {

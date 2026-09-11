@@ -50,6 +50,8 @@ data(시드·파생)  →  models(타입)  →  db(Dexie)  →  repositories  �
 
 1. **`src/data/seed.ts` 를 손으로 고치지 않는다.** 원본 V54 데이터의 무손실 추출본이다.
    변환이 필요하면 `app/scripts/` 에 스크립트를 쓰고 일괄 적용한다(예: `cleanRecipeNotes.mjs`).
+   스크립트는 **두 번 돌려도 결과가 같아야 한다**(멱등). 적용 전후로 판정 데이터(재료·비율·가니시·URL)
+   해시를 비교해 바뀌지 않았음을 확인하고 커밋한다.
 2. **기존 이름·ID를 바꾸지 않는다.** 재료 ID는 이름 해시 기반이라 이름을 바꾸면 사용자 재고가 끊긴다.
 3. **판정에 텍스트를 쓰지 않는다.** `note.includes('보유')` 같은 코드는 금지. 구조화된 `ingredientId × 재고`로만 판단한다.
 4. **UI에서 DB를 직접 부르지 않는다.** 반드시 `repositories/` 를 거친다(나중에 Supabase 등으로 갈아끼우기 위한 격리).
@@ -81,6 +83,10 @@ git push -u origin feat/무엇을-하는지
 
 **검색이 안 되는 제품** → `src/data/liquorAliases.ts` 에 별칭만 추가한다.
 
+**레시피 설명란** → 한 칸에 여러 성격의 글을 넣지 않는다. 출처는 `s`, 변형 관계는 `v: [원형 이름, 무엇을 바꿨는지]`,
+설명은 `note` 에 **한 문장**. IBA 등재 연혁은 적지 않는다(화면의 IBA 배지가 이미 말한다).
+일괄 정리는 `scripts/structureRecipeNotes.mjs` 가 한다.
+
 **새 판정/추천 로직** → `services/` 에 순수 함수로 짜고 `src/__tests__/` 에 테스트를 붙인다. UI에 로직을 넣지 않는다.
 
 **저장 항목 추가** → `models/types.ts` 에 타입 → `db/schema.ts` 에 버전 하나 올려 `.upgrade()` 로 기존 행 보정 → `repositories/` 에 접근 함수. 기존 스토어는 지우지 않는다.
@@ -98,6 +104,9 @@ git push -u origin feat/무엇을-하는지
 | 음용 기록 카드 | `<LogCard log>` |
 
 여백은 인라인 `style` 대신 `styles.css` 의 `.sechead.in` · `.hint.lbl` · `.hint.sub` · `.full` 을 쓴다.
+
+목록 화면의 잔손질은 `ui/listUtils.ts` 에 있다 — 검색어 대조 `normalize`/`hits`, 제조 가능순 정렬
+`byReadyThenName`, 그룹 칩 `useGroupChips`, 다중 선택 `toggleValue`, 서브탭 `useSubTab`.
 
 ## 6. 테스트 기준
 

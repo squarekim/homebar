@@ -206,13 +206,13 @@ describe('레시피 note 위생 — 재고 서술 분리', () => {
     expect(bad).toHaveLength(0);
   });
 
-  it('레시피 본문(맛·기법·역사·가니시·대체 안내)은 보존된다', () => {
+  it('레시피 본문(맛·기법·가니시·대체 안내)은 보존된다', () => {
     const byName = (n: string) => cocktails.find((c) => c.name === n)!;
     expect(byName('카이피리냐').note).toContain('럼으로 대체되지 않습니다');   // 일반 대체 안내
     expect(byName('피나 콜라다').garnish).toContain('체리');                   // 가니시는 별도 필드로
-    expect(byName('비외 카레').note).toContain('뉴올리언스');                  // 유래
+    expect(byName('비외 카레').note).toContain('베네딕틴 1바스푼');            // 만들 때 필요한 스펙
     expect(byName('갓파더').note).toContain('3.5cl : 3.5cl');                  // 레시피 스펙 설명
-    expect(cocktails.filter((c) => c.note && c.note.length > 0).length).toBeGreaterThan(180);
+    expect(cocktails.filter((c) => c.note && c.note.length > 0).length).toBeGreaterThan(140);
   });
 
   it('판정은 note 가 아니라 재고 변화에만 반응한다', () => {
@@ -244,8 +244,8 @@ describe('가니시 분리 · 개정 이력 제거 · 조주법', () => {
     for (const c of cocktails) if (REV.test(c.note ?? '')) bad.push(`레시피 ${c.name}`);
     for (const b of bottles) if (REV.test(b.note ?? '')) bad.push(`병 ${b.name}`);
     expect(bad, bad.join(', ')).toHaveLength(0);
-    // 실제 칵테일 역사는 남는다
-    expect(cocktails.find((c) => c.name === '갓파더')!.note).toContain('2020년 IBA 목록에서 제외');
+    // 스프레드시트 행 번호를 가리키던 내부 참조도 남지 않는다
+    expect(cocktails.filter((c) => /\bid\s*\d+/i.test(c.note ?? ''))).toHaveLength(0);
   });
 
   it('조주법이 아이콘용 키로 파싱된다', () => {
@@ -338,5 +338,44 @@ describe('보유 병 ↔ 표준 재료 연결', () => {
     const b = userBottleToDomain({ ...draft, id: 'ub_t', createdAt: Date.now(), ingredientId: ing.id });
     expect(b.ingredientIds).toEqual([ing.id]);
     expect(ing.name).toBe('100% 아가베 데킬라');
+  });
+});
+
+describe('설명란 구조화 — 변형 레시피 · 출처 · 코멘터리', () => {
+  it('변형은 실제로 존재하는 원형만 가리킨다', () => {
+    const withParent = cocktails.filter((c) => c.variantOf);
+    expect(withParent.length).toBeGreaterThanOrEqual(40);
+    for (const c of withParent) {
+      const parent = cocktails.find((p) => p.id === c.variantOf);
+      expect(parent, `${c.name} 의 원형이 없다`).toBeTruthy();
+      expect(parent!.id).not.toBe(c.id);          // 자기 자신을 원형으로 삼지 않는다
+      expect(parent!.variantOf).not.toBe(c.id);   // 서로를 원형이라 부르지 않는다
+      expect(parent!.variants).toContain(c.id);   // 원형 쪽에서도 되짚을 수 있다
+    }
+  });
+
+  it('원형에서 변형 목록을 볼 수 있다', () => {
+    const byName = (n: string) => cocktails.find((c) => c.name === n)!;
+    const names = (n: string) => byName(n).variants.map((id) => cocktails.find((c) => c.id === id)!.name);
+    expect(names('올드 패션드')).toContain('몬테 카를로');
+    expect(names('마르가리타')).toContain('블루 마르가리타');
+    expect(names('위스키 사워')).toContain('싱글몰트 사워');
+    expect(byName('갓마더').variantNote).toContain('갓파더');
+  });
+
+  it('설명란은 한 문장이고, 출처는 별도 필드로 빠져 있다', () => {
+    // 문장 부호 기준 2문장을 넘지 않는다 (숫자 소수점은 문장 끝이 아니다)
+    const tooLong = cocktails.filter((c) => (c.note ?? '').split(/(?<!\d)\.\s+/).length > 1);
+    expect(tooLong.map((c) => c.name), '여러 문장이 남은 설명란').toHaveLength(0);
+    // 출처 표기가 설명란에 섞여 있지 않다
+    const SOURCE_IN_NOTE = /사용자 제공|커뮤니티 표준|교차 확인|배합비 준용/;
+    expect(cocktails.filter((c) => SOURCE_IN_NOTE.test(c.note ?? ''))).toHaveLength(0);
+    expect(cocktails.filter((c) => c.sourceName).length).toBeGreaterThanOrEqual(40);
+  });
+
+  it('IBA 등재 연혁은 배지가 말하므로 설명란에서 빠진다', () => {
+    const HISTORY = /IBA.{0,12}(등재|제외|이탈)|코드화까지/;
+    expect(cocktails.filter((c) => HISTORY.test(c.note ?? '')).map((c) => c.name)).toHaveLength(0);
+    expect(cocktails.find((c) => c.name === '갓파더')!.iba).toBe('구IBA');
   });
 });

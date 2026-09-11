@@ -10,6 +10,7 @@ import { bottleNoteRepo } from '../../repositories/bottleNoteRepo';
 import { evaluateCocktail } from '../../services/availabilityService';
 import { simpleBuilds, evaluateSimpleBuild, pickMyBottles } from '../../services/simpleBuildService';
 import { StatusBadge, FlavorBars, MakerNoteView, WhiskyClassTags, MethodIcon, ChipRow, ChipToggle, SearchBox, allChips, type ChipOption } from './common';
+import { normalize, hits, byReadyThenName, useGroupChips } from '../listUtils';
 import { CLASS_FILTERS, classMatchesTerm, classTags } from '../../data/whiskyClass';
 import { type AvailabilityStatus, type Bottle } from '../../models/types';
 import { isUserBottle } from '../../data/userBottles';
@@ -31,8 +32,6 @@ function PersonalNote({ bottleId, initial, onSaved }: { bottleId: string; initia
     </div>
   );
 }
-
-function rank(s: AvailabilityStatus) { return { READY: 3, SUBSTITUTE: 2, MISSING: 1, UNAVAILABLE: 0 }[s]; }
 
 type StatusFilter = 'all' | AvailabilityStatus;
 const STATUS_FILTERS: ChipOption<StatusFilter>[] = [
@@ -58,20 +57,19 @@ export function CocktailBrowser() {
   const [iba, setIba] = useState('all');
   const [status, setStatus] = useState<StatusFilter>('all');
 
-  const bases = useMemo(() => allChips([...new Set(referenceRepo.cocktails().map((c) => c.base))], '기주 전체'), []);
+  const bases = useGroupChips(referenceRepo.cocktails(), (c) => c.base, '기주 전체');
 
   const rows = useMemo(() => {
-    const t = q.trim().toLowerCase();
+    const t = normalize(q);
     return referenceRepo.cocktails()
       .map((c) => ({ c, e: evaluateCocktail(c, heldIds, subMap) }))
       .filter(({ c, e }) => {
         if (base !== 'all' && c.base !== base) return false;
         if (iba !== 'all' && c.iba !== iba) return false;
         if (status !== 'all' && e.status !== status) return false;
-        if (t && !c.name.toLowerCase().includes(t) && !c.ingredients.some((i) => i.ingredientName.toLowerCase().includes(t))) return false;
-        return true;
+        return hits(t, c.name, ...c.ingredients.map((i) => i.ingredientName));
       })
-      .sort((a, b) => rank(b.e.status) - rank(a.e.status) || a.c.name.localeCompare(b.c.name, 'ko'));
+      .sort(byReadyThenName((x) => x.e.status, (x) => x.c.name));
   }, [q, base, iba, status, heldIds, subMap]);
 
   return (
@@ -92,6 +90,7 @@ export function CocktailBrowser() {
               <span className="mi">{c.base}</span>
               <span className="mi">재료 {c.ingredients.length}</span>
               {c.garnish && <span className="mi">가니시 {c.garnish}</span>}
+              {c.variants.length > 0 && <span className="mi">변형 {c.variants.length}</span>}
             </div>
             {e.lack.length > 0 && <div className="lack">{e.lack.slice(0, 4).map((n) => <span key={n}>{n}</span>)}{e.lack.length > 4 && <span>외 {e.lack.length - 4}</span>}</div>}
             {e.lack.length === 0 && e.sub.length > 0 && <div className="lack">{e.sub.map((n) => <span className="s" key={n}>{n} 대체</span>)}</div>}
@@ -152,7 +151,7 @@ export function SimpleBuildBrowser() {
   const [open, setOpen] = useState<string | null>(null);
 
   const all = useMemo(() => simpleBuilds(), []);
-  const groups = useMemo(() => allChips([...new Set(all.map((b) => b.group))]), [all]);
+  const groups = useGroupChips(all, (b) => b.group);
 
   /** 판정은 재고가 바뀔 때만 다시 한다 (검색어·필터가 바뀌어도 재계산하지 않는다) */
   const judged = useMemo(
@@ -162,15 +161,14 @@ export function SimpleBuildBrowser() {
   const readyCount = useMemo(() => judged.filter(({ e }) => e.status === 'READY').length, [judged]);
 
   const rows = useMemo(() => {
-    const t = q.trim().toLowerCase();
+    const t = normalize(q);
     return judged
       .filter(({ b, e }) => {
         if (grp !== 'all' && b.group !== grp) return false;
         if (readyOnly && e.status !== 'READY') return false;
-        if (!t) return true;
-        return (b.name + ' ' + b.parts.join(' ')).toLowerCase().includes(t);
+        return hits(t, b.name, b.parts.join(' '));
       })
-      .sort((x, y) => rank(y.e.status) - rank(x.e.status) || x.b.name.localeCompare(y.b.name, 'ko'));
+      .sort(byReadyThenName((x) => x.e.status, (x) => x.b.name));
   }, [judged, q, grp, readyOnly]);
 
   return (
@@ -298,14 +296,10 @@ export function MyBottlesBrowser() {
   const [grp, setGrp] = useState('all');
   const [detail, setDetail] = useState<string | null>(null);
 
-  const groups = useMemo(() => allChips([...new Set(bottles.map((b) => b.group))]), [bottles]);
+  const groups = useGroupChips(bottles, (b) => b.group);
   const rows = useMemo(() => {
-    const t = q.trim().toLowerCase();
-    return bottles.filter((b) => {
-      if (grp !== 'all' && b.group !== grp) return false;
-      if (!t) return true;
-      return (b.name + ' ' + b.group + ' ' + (b.abv ?? '')).toLowerCase().includes(t);
-    });
+    const t = normalize(q);
+    return bottles.filter((b) => (grp === 'all' || b.group === grp) && hits(t, b.name, b.group, b.abv));
   }, [bottles, q, grp]);
 
   const byGroup = useMemo(() => {
@@ -354,18 +348,15 @@ export function WhiskyBrowser() {
   const allBottles = useBottles();
 
   const rows = useMemo(() => {
-    const t = q.trim().toLowerCase();
+    const t = normalize(q);
     const base = scope === 'whisky'
       ? whiskies
       : scope === 'mine'
         ? allBottles.filter((b) => isUserBottle(b.id))
         : allBottles.filter((b) => b.makerNote);
-    return base.filter((w) => {
-      if (cls !== 'all' && !classMatchesTerm(w.whiskyClass, cls)) return false;
-      if (!t) return true;
-      const hay = (w.name + ' ' + w.node + ' ' + (w.whiskyClass ? classTags(w.whiskyClass).join(' ') : '')).toLowerCase();
-      return hay.includes(t);
-    });
+    return base.filter((w) =>
+      (cls === 'all' || classMatchesTerm(w.whiskyClass, cls))
+      && hits(t, w.name, w.node, w.whiskyClass ? classTags(w.whiskyClass).join(' ') : ''));
   }, [q, scope, cls, whiskies, allBottles]);
 
   return (
@@ -402,10 +393,10 @@ export function IngredientBrowser() {
   const cats = useMemo(() => allChips(referenceRepo.categories()), []);
 
   const rows = useMemo(() => {
-    const t = q.trim().toLowerCase();
+    const t = normalize(q);
     return referenceRepo.ingredients().filter((i) =>
       (cat === 'all' || i.category === cat)
-      && (!t || i.name.toLowerCase().includes(t))
+      && hits(t, i.name)
       && (!ownedOnly || heldIds.has(i.id)));
   }, [q, cat, ownedOnly, heldIds]);
 

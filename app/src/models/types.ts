@@ -63,8 +63,14 @@ export interface Cocktail {
   methodKeys: MethodKey[]; // 원문에서 파생한 정규화 키 (첫 번째가 주 기법)
   ingredients: CocktailIngredient[];
   url?: string | undefined;
-  note?: string | undefined;
+  note?: string | undefined;      // 코멘터리 한 문장 (없을 수도 있다)
+  sourceName?: string | undefined; // 출처 표기 — URL 이 없을 때도 근거를 밝힌다
   garnish?: string | undefined;  // 원본 note 끝에 붙어 있던 가니시 표기를 분리한 값
+  /** 이 레시피의 원형 (변형인 경우) */
+  variantOf?: string | undefined;      // 원형 칵테일 id
+  variantNote?: string | undefined;    // 무엇을 바꾼 변형인지 한 문장
+  /** 이 레시피를 원형으로 삼는 변형들 (adapters 에서 역인덱스로 채운다) */
+  variants: string[];
   flavor: FlavorVector; // 파생 향미 벡터
 }
 

@@ -10,6 +10,7 @@ import { referenceRepo } from '../../repositories/referenceRepo';
 import { resetInventoryToSeed } from '../../db/migrate';
 import { MyBottlesBrowser } from '../components/browsers';
 import { ChipRow, ChipToggle, type ChipOption } from '../components/common';
+import { useSubTab } from '../listUtils';
 import { IS_PUBLIC } from '../../config';
 
 export type CellarSub = 'bottles' | 'stock';
@@ -20,9 +21,7 @@ const SUBS: ChipOption<CellarSub>[] = [
 ];
 
 export function CellarPage({ sub: subProp, onSub }: { sub?: CellarSub; onSub?: (s: CellarSub) => void } = {}) {
-  const [local, setLocal] = useState<CellarSub>('bottles');
-  const sub = subProp ?? local;
-  const setSub = (s: CellarSub) => { setLocal(s); onSub?.(s); };
+  const [sub, setSub] = useSubTab<CellarSub>('bottles', subProp, onSub);
   return (
     <>
       <ChipRow value={sub} onChange={setSub} options={SUBS} />

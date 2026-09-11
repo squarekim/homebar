@@ -3,6 +3,44 @@ import { useHeldIds, useSubMap } from '../../hooks/useData';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { evaluateCocktail, STATUS_LABEL_KO } from '../../services/availabilityService';
 import { FlavorBars, MethodIcon, Modal } from './common';
+import { type Cocktail } from '../../models/types';
+
+/**
+ * 변형 레시피 — 이 잔이 어느 레시피를 비틀어 만든 것인지, 그리고
+ * 이 잔을 원형으로 하는 변형에는 뭐가 있는지. 눌러서 바로 넘어간다.
+ */
+function VariantLinks({ ck }: { ck: Cocktail }) {
+  const { openCocktail } = useUI();
+  const parent = ck.variantOf ? referenceRepo.cocktailById(ck.variantOf) : undefined;
+  const children = ck.variants
+    .map((id) => referenceRepo.cocktailById(id))
+    .filter((c): c is Cocktail => !!c)
+    .sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+  if (!parent && !children.length) return null;
+  return (
+    <div className="variants">
+      {parent && (
+        <div className="vrow">
+          <span className="vlabel">원형</span>
+          <div className="vlinks">
+            <button className="vchip" onClick={() => openCocktail(parent.id)}>{parent.name}</button>
+            {ck.variantNote && <p className="vnote">{ck.variantNote}</p>}
+          </div>
+        </div>
+      )}
+      {children.length > 0 && (
+        <div className="vrow">
+          <span className="vlabel">변형 {children.length}</span>
+          <div className="vlinks">
+            {children.map((c) => (
+              <button className="vchip" key={c.id} onClick={() => openCocktail(c.id)}>{c.name}</button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function CocktailModal() {
   const { cocktailId, closeCocktail, openLog } = useUI();
@@ -50,10 +88,17 @@ export function CocktailModal() {
           )}
           <div className="sechead">향미 프로파일</div>
           <FlavorBars vector={ck.flavor} compact />
-          {(ck.note || ck.url) && (
+          <VariantLinks ck={ck} />
+          {(ck.note || ck.url || ck.sourceName) && (
             <div className="blk">
               {ck.note}
-              {ck.url && <><br /><a href={ck.url} target="_blank" rel="noopener">출처 확인 →</a></>}
+              {(ck.url || ck.sourceName) && (
+                <div className="src">
+                  {ck.url
+                    ? <a href={ck.url} target="_blank" rel="noopener">출처: {ck.sourceName ?? '원문 확인'} ↗</a>
+                    : <span>출처: {ck.sourceName}</span>}
+                </div>
+              )}
             </div>
           )}
           <div className="btnrow">

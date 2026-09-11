@@ -13,6 +13,7 @@ import { CATEGORY_LABELS, CATEGORY_ORDER, CATEGORY_DEFAULT_INGREDIENT, SUBCATEGO
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { type LiquorCategory, type LiquorMasterItem, type UserBottle, type WhiskyClass } from '../../models/types';
 import { ChipRow, ChipMulti, Modal, chips, type ChipOption } from './common';
+import { toggleValue } from '../listUtils';
 
 const ORIGINS = chips(['스카치', '버번', '테네시', '아이리시', '재패니즈', '코리안', '기타']);
 const TYPES = chips(['싱글몰트', '블렌디드', '블렌디드 몰트', '스트레이트 버번', '휘티드 버번', '테네시 위스키', '싱글 팟 스틸']);
@@ -85,9 +86,6 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
   const hits = useMemo(() => (open ? searchLiquor(q, { limit: 8 }) : []), [q, open]);
 
   if (!open) return null;
-
-  const toggle = (arr: string[], set: (v: string[]) => void, v: string) =>
-    set(arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
 
   const choose = (item: LiquorMasterItem) => {
     const d = draftFromMaster(item);
@@ -257,9 +255,9 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
               <div className="hint lbl">지역</div>
               <ChipRow value={region} options={REGIONS} onChange={setRegion} wrap tight />
               <div className="hint lbl">캐스크</div>
-              <ChipMulti options={CASKS} values={casks} onToggle={(v) => toggle(casks, setCasks, v)} wrap tight />
+              <ChipMulti options={CASKS} values={casks} onToggle={(v) => setCasks(toggleValue(casks, v))} wrap tight />
               <div className="hint lbl">캐릭터</div>
-              <ChipMulti options={CHARACTERS} values={chars} onToggle={(v) => toggle(chars, setChars, v)} wrap tight />
+              <ChipMulti options={CHARACTERS} values={chars} onToggle={(v) => setChars(toggleValue(chars, v))} wrap tight />
             </>
           )}
 
