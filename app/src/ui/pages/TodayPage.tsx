@@ -100,7 +100,7 @@ export function TodayPage() {
         <>
           <section className="lead">
             <div className="inner">
-              <LeadArt base={lead.base} kind={lead.kind} />
+              <LeadArt base={lead.base} kind={lead.kind} cocktailId={lead.kind === 'cocktail' ? lead.id : undefined} />
               <div className="text">
                 <h3>{lead.name}</h3>
                 <p className="taste">{taste(lead)}</p>
@@ -120,7 +120,7 @@ export function TodayPage() {
               <div className="rowlist">
                 {alts.map((r) => (
                   <button className="rowitem" key={r.kind + r.id} onClick={() => open(r)}>
-                    <CocktailMark base={r.base} size="sm" />
+                    <CocktailMark base={r.base} cocktailId={r.kind === 'cocktail' ? r.id : undefined} size="sm" />
                     <div className="body">
                       <span className="nm">{r.name}</span>
                       <div className="taste">{taste(r)}</div>

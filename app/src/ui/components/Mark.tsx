@@ -6,6 +6,8 @@
  * 크기가 고정이라 이미지가 생기기 전에도 목록 높이가 흔들리지 않는다.
  */
 import { IconMartini, IconWhisky, IconBottle } from './icons';
+import { GlassArt } from './GlassArt';
+import { referenceRepo } from '../../repositories/referenceRepo';
 
 type Size = 'sm' | 'md' | 'lg';
 
@@ -20,11 +22,19 @@ function keyOf(label: string | undefined): string {
   return (label && BASE_KEY[label]) ?? 'other';
 }
 
-/** 칵테일 — 잔 */
-export function CocktailMark({ base, size = 'md' }: { base?: string | undefined; size?: Size }) {
+const PX: Record<Size, number> = { sm: 44, md: 56, lg: 96 };
+
+/**
+ * 칵테일 — 잔. id 가 있으면 그 레시피로 잔 모양·음료 색·가니시를 그리고,
+ * 없으면(위스키 추천 등) 종류 아이콘만 둔다.
+ */
+export function CocktailMark({ base, cocktailId, size = 'md' }: {
+  base?: string | undefined; cocktailId?: string | undefined; size?: Size;
+}) {
+  const ck = cocktailId ? referenceRepo.cocktailById(cocktailId) : undefined;
   return (
     <span className={`mark ${size} k-${keyOf(base)}`} aria-hidden="true">
-      {base === '위스키' ? <IconWhisky /> : <IconMartini />}
+      {ck ? <GlassArt cocktail={ck} size={PX[size]} /> : base === '위스키' ? <IconWhisky /> : <IconMartini />}
     </span>
   );
 }
@@ -37,10 +47,13 @@ export function BottleMark({ kind, size = 'md' }: { kind?: string | undefined; s
 }
 
 /** 대표 추천의 큰 자리 — 사진이 들어갈 영역을 같은 규칙으로 채운다 */
-export function LeadArt({ base, kind }: { base?: string | undefined; kind: 'cocktail' | 'whisky' }) {
+export function LeadArt({ base, kind, cocktailId, size = 124 }: {
+  base?: string | undefined; kind: 'cocktail' | 'whisky'; cocktailId?: string | undefined; size?: number;
+}) {
+  const ck = cocktailId ? referenceRepo.cocktailById(cocktailId) : undefined;
   return (
     <div className={`art k-${keyOf(base)}`} aria-hidden="true">
-      {kind === 'whisky' ? <IconWhisky /> : <IconMartini />}
+      {ck ? <GlassArt cocktail={ck} size={size} /> : kind === 'whisky' ? <IconWhisky /> : <IconMartini />}
     </div>
   );
 }

@@ -12,7 +12,7 @@ import { referenceRepo } from '../../repositories/referenceRepo';
 import { evaluateCocktail, STATUS_LEAD_KO } from '../../services/availabilityService';
 import { flavorWords } from '../../services/flavorService';
 import { FlavorBars, MethodIcon, Term } from './common';
-import { CocktailMark } from './Mark';
+import { GlassArt } from './GlassArt';
 import { type Cocktail, type RecommendationResult } from '../../models/types';
 
 /** "버번 45ml" 에서 재료명을 뺀 나머지 = 용량 표기 */
@@ -86,7 +86,7 @@ export function CocktailDetail({ id }: { id: string }) {
     <article className="detail">
       {/* ① 이름과 이미지 */}
       <h2 className="withmethod">{ck.name}<MethodIcon keys={ck.methodKeys} raw={ck.method} /></h2>
-      <div className="art">{<CocktailMark base={ck.base} size="lg" />}</div>
+      <div className="art"><GlassArt cocktail={ck} size={120} /></div>
 
       {/* ② 맛 설명과 제조 가능 상태 */}
       <p className="taste">{words.join(' · ')}{ck.note ? ` — ${ck.note}` : ''}</p>
@@ -108,7 +108,7 @@ export function CocktailDetail({ id }: { id: string }) {
             <div className={`ing ${off ? 'off' : ''}`.trim()} key={i}>
               <span>
                 {ing.ingredientName}
-                {(ing.substitute || bySub) && <span className="tag">대체 조주</span>}
+                {(ing.substitute || bySub) && <span className="tag">대체 재료로 가능</span>}
                 {ing.optional && <span className="opt">선택</span>}
               </span>
               <span className="amt">{amountOf(ing.raw, ing.ingredientName) || '적당량'}</span>
@@ -129,10 +129,10 @@ export function CocktailDetail({ id }: { id: string }) {
       {/* ⑤ 대체·부족 */}
       {(ev.lack.length > 0 || ev.sub.length > 0) && (
         <div className="shortage">
-          <h4>{ev.lack.length > 0 ? '지금 없는 재료' : '대체로 채우는 재료'}</h4>
+          <h4>{ev.lack.length > 0 ? '지금 없는 재료' : '대체 재료로 채우는 것'}</h4>
           <ul>
             {ev.lack.map((n) => <li key={n}>{n}</li>)}
-            {ev.sub.map((n) => <li className="s" key={n}>{n} — 대체 가능</li>)}
+            {ev.sub.map((n) => <li className="s" key={n}>{n} — 대체 재료로 가능</li>)}
           </ul>
         </div>
       )}

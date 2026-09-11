@@ -143,6 +143,8 @@ input::placeholder{color:var(--dim)}
 .mark{flex:none;display:flex;align-items:center;justify-content:center;
   background:var(--raise);border:1px solid var(--line);border-radius:var(--r);color:var(--accent)}
 .mark svg{width:52%;height:52%}
+.mark svg.glassart{width:86%;height:86%}
+.art svg.glassart{width:auto;height:auto}
 .mark.sm{width:56px;height:56px}
 .mark.md{width:72px;height:72px}
 .mark.lg{width:120px;height:120px}
@@ -207,7 +209,7 @@ input::placeholder{color:var(--dim)}
 .lead{border-top:2px solid color-mix(in srgb,var(--ink) 55%,transparent);padding-top:var(--s3);margin-top:var(--s2)}
 .lead .inner{display:flex;flex-direction:column;gap:var(--s2)}
 .lead .art{display:flex;align-items:center;justify-content:center;background:var(--raise);
-  border:1px solid var(--line);border-radius:var(--r);height:116px;color:var(--accent)}
+  border:1px solid var(--line);border-radius:var(--r);height:132px;color:var(--accent)}
 .lead .art svg{width:58px;height:58px}
 .lead h3{font-size:25px;font-weight:800;letter-spacing:-.03em}
 .lead .taste{font-size:16px;color:var(--ink);margin-top:6px;line-height:1.55}

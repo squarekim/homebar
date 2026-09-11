@@ -107,7 +107,7 @@ export function CocktailsPage() {
             {rows.map(({ c, e }) => (
               <button className="rowitem" key={c.id} aria-current={cocktailId === c.id}
                 onClick={() => openCocktail(c.id)}>
-                <CocktailMark base={c.base} size="sm" />
+                <CocktailMark base={c.base} cocktailId={c.id} size="sm" />
                 <div className="body">
                   <span className="nm withmethod">
                     <span className="nmwrap">{c.name}</span>
