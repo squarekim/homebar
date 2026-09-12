@@ -11,6 +11,19 @@ import { type Cocktail } from '../models/types';
 
 export type GlassKind = 'coupe' | 'martini' | 'highball' | 'rocks' | 'flute' | 'hurricane' | 'shot' | 'mug';
 
+/** Independent effects: a recipe may have both carbonation and foam. */
+export interface VisualEffect { bubbles: boolean; foam: boolean }
+
+export function visualEffectOf(cocktail: Cocktail): VisualEffect {
+  const names = cocktail.ingredients.filter((i) => !i.optional)
+    .map((i) => i.ingredientName.replace(/\s+/g, '').toLowerCase());
+  return {
+    bubbles: names.some((n) => /탄산|토닉워터|진저에일|진저비어|콜라|샴페인|프로세코|소다|sodawater|sparklingwater|tonicwater|gingerale|gingerbeer|cola|champagne|prosecco/.test(n)),
+    foam: names.some((n) => /계란흰자|계란흰자위|달걀흰자|생크림|eggwhite|heavycream|freshcream|whippingcream/.test(n))
+      || /dry[\s-]*shake|드라이\s*셰이크|드라이\s*쉐이크/i.test(cocktail.method),
+  };
+}
+
 const COLOR: Record<string, [string, number]> = {
   // 위스키·브랜디 계열 (호박)
   '버번': ['#B5651D', .55], '스카치': ['#C07A2B', .5], '라이 위스키': ['#B5651D', .5],
