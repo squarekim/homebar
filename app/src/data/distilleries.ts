@@ -138,12 +138,33 @@ const WEB: Record<string, string> = {
   auchentoshan: 'https://www.auchentoshan.com/where-we-make-it',
 };
 
+/** 투어 안내 — 각 공식 사이트에서 투어·방문 페이지를 확인한 곳만, 2026-09-28. 확인 못 한 곳은 운영하지 않는다는 뜻이 아니다(null) */
+const VISIT_CHECKED = '2026-09-28';
+const VISIT: Record<string, string> = {
+  bunnahabhain: 'https://bunnahabhain.com/pages/plan-your-visit',
+  glengyle: 'https://kilkerran.scot/visit-us/',
+  ardbeg: 'https://www.ardbeg.com/en-gb/pages/visit-ardbeg-distillery',
+  auchentoshan: 'https://www.auchentoshan.com/visit-our-distillery',
+  bowmore: 'https://www.bowmore.com/distillery-tours-and-experiences',
+  bruichladdich: 'https://www.bruichladdich.com/pages/tours',
+  glenmorangie: 'https://www.glenmorangie.com/en-us/pages/distillery-tours',
+  laphroaig: 'https://www.laphroaig.com/tours-and-experiences',
+  cardhu: 'https://www.malts.com/en-gb/cardhu/visit',
+  clynelish: 'https://www.malts.com/en-gb/clynelish/visit',
+  cragganmore: 'https://www.malts.com/en-gb/cragganmore/visit',
+  glenkinchie: 'https://www.malts.com/en-gb/articles/an-insiders-guide-to-visiting-glenkinchie',
+  talisker: 'https://www.malts.com/en/experiences/talisker-distillery-tour-and-tasting',
+  lochranza: 'https://www.arranwhisky.com/our-distillery/tours',
+  glendronach: 'https://www.glendronachdistillery.com/en-gb/',
+  glengoyne: 'https://www.glengoyne.com/',
+};
+
 export const DISTILLERIES: Distillery[] = ROWS.map(([id, nameKo, nameEn, country, legalRegion, subRegion, note]) => {
   const c = COORDS[id];
   return {
     id, nameKo, nameEn, country, legalRegion, subRegion,
-    lat: c ? c[1] : null, lng: c ? c[2] : null, visit: null, note, web: WEB[id],
-    sources: [...(c ? [`https://www.wikidata.org/wiki/${c[0]}`] : []), ...(WEB[id] ? [SWA_MAP] : [])],
+    lat: c ? c[1] : null, lng: c ? c[2] : null, visit: VISIT[id] ? { open: true, url: VISIT[id], checked: VISIT_CHECKED } : null, note, web: WEB[id],
+    sources: [...(c ? [`https://www.wikidata.org/wiki/${c[0]}`] : []), ...(WEB[id] ? [SWA_MAP] : []), ...(VISIT[id] ? [VISIT[id]!] : [])],
   };
 });
 
