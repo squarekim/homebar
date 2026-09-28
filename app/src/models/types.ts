@@ -93,6 +93,37 @@ export interface WhiskyClass {
   character: string[];  // 피티드 / 논피트 / 스모키 / 왁시 / 캐스크 스트렝스 / 휘티드 / 차콜 멜로잉 등
 }
 
+export type WhiskyBase = '몰트' | '그레인' | '몰트+그레인' | '팟 스틸' | '버번' | '라이';
+export type WhiskyPeat = '피티드' | '논피트' | '미상';
+
+/**
+ * 위스키 3층 분류. WhiskyClass 에서 계산하며 저장하지 않는다(whiskySpec.ts).
+ *  ① 법적 정체성: 생산국 → 법적 명칭 → 구성(single/blended) + 원료
+ *  ② 제품 속성: 연수 · 캐스크 · 병입 · 피트 · 향미 표현 · 공정
+ *  ③ 지역: 법적 지역 + 세부 지역
+ * 원본에 없는 값은 null 로 둔다. 추정해서 채우지 않는다.
+ */
+export interface WhiskySpec {
+  country: string;                        // 스코틀랜드 · 아일랜드 · 미국 · 캐나다 · 일본 · 한국
+  legal: string | null;                   // 스카치 위스키 · 버번 위스키 … null = 기준 충족 미확인
+  composition: 'single' | 'blended' | null;
+  base: WhiskyBase | null;
+  straight: boolean | null;               // 미국 위스키만. null = 미확인 또는 해당 없음
+  mashbill: string | null;                // 휘티드 · 하이 라이
+  legalRegion: string | null;             // 스카치 5개 지역 · 미국 주
+  subRegion: string | null;               // 섬 · 스카이, 해안 등 관행상 구분
+  age: number | null;                     // 라벨 표시 연수. null = 표시 없음 또는 미확인
+  casks: string[];                        // 주 숙성·피니시 구분 없음(원본에 순서 정보가 없다)
+  caskMethod: string[];                   // 솔레라 · 더블 에이징 · 프렌치 오크 스테이브
+  strength: '캐스크 스트렝스' | '하이 프루프' | null;
+  bottledInBond: boolean;
+  singleBarrel: boolean;
+  peat: WhiskyPeat;
+  peatNote: string | null;                // 제조사 표현 그대로(라이트 피티드)
+  flavorNotes: string[];                  // 스모키 · 해양성 · 왁시 — 법적 분류가 아니다
+  process: string[];                      // 차콜 멜로잉 · 3회 증류
+}
+
 /**
  * 병에 붙는 뱃지 — 자유 메모 대신 구조화해서 단다. 게임의 업적처럼 읽히는 게 목적이다.
  *  first  : 마일스톤. "첫 피트 싱글몰트" — 시드 병은 t 필드, 사용자 병은 추가 순서에서 계산한다.
