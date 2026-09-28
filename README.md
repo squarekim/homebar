@@ -15,7 +15,6 @@
 | | 주소 |
 |---|---|
 | 홈바 플랫폼 (베타) | https://squarekim.github.io/homebar/ |
-| 레거시 단일 파일 앱 | https://squarekim.github.io/homebar/legacy/ |
 
 > [!NOTE]
 > 아직 정식 공개 전이다. 지금 올라간 `beta` 빌드에는 **오너의 홈바(보유 주류 82종·재고 69건)** 가 들어 있다.
@@ -178,8 +177,6 @@ React 18 + TypeScript + Vite + Dexie(IndexedDB) + PWA. 런타임 의존성 4개.
 
 > Actions → `Deploy to GitHub Pages` → **Run workflow** → 프로필 선택
 
-레거시 단일 파일 앱은 같은 배포에서 `/legacy/` 로 함께 올라가 기존 링크가 유지된다.
-
 ### 배포 프로필
 
 | | `beta` (기본) | `public` |
@@ -206,7 +203,6 @@ React 18 + TypeScript + Vite + Dexie(IndexedDB) + PWA. 런타임 의존성 4개.
 │   │   └── ui/             # 화면 (하단 5탭 + 전역 추가 버튼)
 │   └── scripts/            # 시드 변환 스크립트 (손으로 고치지 않는다)
 ├── docs/screenshots/       # README 이미지
-├── index.html              # 레거시 단일 파일 앱
 └── .github/workflows/      # Pages 배포
 ```
 
@@ -237,7 +233,7 @@ React 18 + TypeScript + Vite + Dexie(IndexedDB) + PWA. 런타임 의존성 4개.
 ## 만든 배경과 출처
 
 개인 홈바를 정리하려고 쓰던 엑셀(`홈바_마스터_가이드_V54.xlsx`)에서 출발했다.
-그 데이터를 단일 HTML 앱(`index.html`)으로 옮겼고, 지금은 같은 데이터를 재사용하는 웹앱으로 확장하는 중이다.
+지금은 그 데이터를 재사용하는 웹앱으로 확장하는 중이다.
 
 - 레시피 스펙은 [IBA(International Bartenders Association)](https://iba-world.com/) 공식 등재 항목을 우선했고, 비IBA 항목은 클래식·커뮤니티 표준을 출처와 함께 표기했다
 - 제조사 테이스팅 노트는 공식 브랜드/증류소 페이지에서 수집하고 **출처 URL을 함께 저장**했다. 확인되지 않은 항목은 비워 두었다
