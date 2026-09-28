@@ -83,3 +83,41 @@ describe('분류 필터 — 옛 판정과 비교', () => {
     expect(diff('피티드').sort()).toEqual(['m_hakushu12+', 'm_kilkerran12+', 'm_springbank10+']);
   });
 });
+
+describe('싱글몰트 증류소', async () => {
+  const { DISTILLERIES, distilleryOfProduct } = await import('../data/distilleries');
+  const singleMalts = LIQUOR_MASTER.filter((i) => {
+    const s = i.whiskyClass && specOf(i.whiskyClass);
+    return s && s.composition === 'single' && s.base === '몰트';
+  });
+
+  it('기준 DB 싱글몰트는 전부 증류소가 정해진다', () => {
+    expect(singleMalts.filter((i) => !distilleryOfProduct(i.id)).map((i) => i.id)).toEqual([]);
+  });
+
+  it('증류소마다 제품이 하나 이상 있고, 지역이 제품 분류와 같다', () => {
+    for (const d of DISTILLERIES) {
+      const items = singleMalts.filter((i) => distilleryOfProduct(i.id)?.id === d.id);
+      expect(items.length, d.id).toBeGreaterThan(0);
+      for (const i of items) {
+        const s = specOf(i.whiskyClass!);
+        expect(s.country, i.id).toBe(d.country);
+        if (d.country === '스코틀랜드') expect([s.legalRegion, s.subRegion], i.id).toEqual([d.legalRegion, d.subRegion]);
+      }
+    }
+  });
+
+  it('보유 싱글몰트 병도 증류소로 이어지고, 블렌디드·싱글 팟 스틸은 이어지지 않는다', () => {
+    const own = whiskies.filter((w) => w.whiskyClass?.type === '싱글몰트');
+    expect(own.map((w) => distilleryOfProduct(w.productId)?.id)).not.toContain(undefined);
+    expect(distilleryOfProduct(whiskies.find((w) => w.id === 'ballantine_sm')!.productId)?.id).toBe('glenburgie');
+    expect(distilleryOfProduct('m_jw_black')).toBeNull();
+    expect(distilleryOfProduct('m_redbreast12')).toBeNull();
+  });
+
+  it('좌표·방문 정보는 출처가 있을 때만 들어간다', () => {
+    for (const d of DISTILLERIES) {
+      if (d.lat !== null || d.lng !== null || d.visit) expect(d.sources.length, d.id).toBeGreaterThan(0);
+    }
+  });
+});

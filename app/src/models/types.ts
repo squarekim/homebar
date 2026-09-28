@@ -124,6 +124,31 @@ export interface WhiskySpec {
   process: string[];                      // 차콜 멜로잉 · 3회 증류
 }
 
+/** 방문 정보. 가격·운영 시간은 자주 바뀌어 넣지 않는다 */
+export interface DistilleryVisit {
+  open: boolean;          // 방문자 센터(투어) 운영 여부
+  url?: string | undefined;  // 공식 예약·안내 페이지
+  checked: string;        // 확인한 날짜 YYYY-MM-DD
+}
+
+/** 싱글몰트 증류소. 위치 판의 점 하나 */
+export interface Distillery {
+  id: string;
+  nameKo: string;
+  nameEn: string;
+  country: string;
+  legalRegion: string | null;
+  subRegion: string | null;
+  /** 공식 주소 기준 좌표. 출처 확인 전에는 null */
+  lat: number | null;
+  lng: number | null;
+  /** null = 확인 전 */
+  visit: DistilleryVisit | null;
+  /** 브랜드와 증류소 이름이 다를 때 등 */
+  note?: string | undefined;
+  sources: string[];
+}
+
 /**
  * 병에 붙는 뱃지 — 자유 메모 대신 구조화해서 단다. 게임의 업적처럼 읽히는 게 목적이다.
  *  first  : 마일스톤. "첫 피트 싱글몰트" — 시드 병은 t 필드, 사용자 병은 추가 순서에서 계산한다.
