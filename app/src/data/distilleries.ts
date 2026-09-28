@@ -62,10 +62,90 @@ const ROWS: Row[] = [
   ['threesocieties', '쓰리소사이어티스', 'Three Societies', '한국', null, null, '제품 이름은 기원'],
 ];
 
-export const DISTILLERIES: Distillery[] = ROWS.map(([id, nameKo, nameEn, country, legalRegion, subRegion, note]) => ({
-  id, nameKo, nameEn, country, legalRegion, subRegion,
-  lat: null, lng: null, visit: null, note, sources: [],
-}));
+/** 좌표 — Wikidata 항목(P625), 2026-09-28 조회. 쿨리는 좌표가 등록돼 있지 않아 비운다 */
+const COORDS: Record<string, [qid: string, lat: number, lng: number]> = {
+  ardbeg: ['Q274', 55.6405, -6.10833],
+  talisker: ['Q278', 57.302778, -6.356111],
+  bushmills: ['Q268267', 55.201919, -6.519647],
+  glenlivet: ['Q301412', 57.3477, -3.33655],
+  aberlour: ['Q319639', 57.467222, -3.23],
+  lagavulin: ['Q280', 55.635489, -6.126169],
+  lochranza: ['Q699163', 55.699478, -5.280175],
+  laphroaig: ['Q51888', 55.629455, -6.151988],
+  bowmore: ['Q51905', 55.757139, -6.289844],
+  springbank: ['Q982719', 55.425, -5.609],
+  glenkinchie: ['Q982834', 55.8912, -2.89106],
+  highlandpark: ['Q982844', 58.968603, -2.95545],
+  glengoyne: ['Q982852', 56.014031, -4.363781],
+  macallan: ['Q982891', 57.484372, -3.207578],
+  auchentoshan: ['Q758604', 55.922, -4.439],
+  glenburgie: ['Q771766', 57.623829, -3.518213],
+  balvenie: ['Q805853', 57.457231, -3.129094],
+  threesocieties: ['Q131361534', 37.636938, 127.279517],
+  benriach: ['Q818147', 57.611944, -3.292778],
+  glengyle: ['Q827815', 55.4272, -5.61095],
+  pulteney: ['Q845140', 58.434444, -3.084722],
+  dalmore: ['Q893151', 57.688411, -4.239481],
+  cragganmore: ['Q893266', 57.410278, -3.395],
+  dufftown: ['Q1263993', 57.4364, -3.1301],
+  yamazaki: ['Q1417541', 34.893194, 135.674556],
+  hakushu: ['Q3125870', 35.826639, 138.300333],
+  cardhu: ['Q893272', 57.470828, -3.356925],
+  glenfiddich: ['Q911587', 57.455139, -3.130833],
+  yoichi: ['Q3572452', 43.1875, 140.791667],
+  miyagikyo: ['Q14338929', 38.308056, 140.650556],
+  bruichladdich: ['Q51908', 55.766358, -6.3625],
+  bunnahabhain: ['Q51910', 55.882682, -6.126079],
+  caolila: ['Q51913', 55.8544, -6.1093],
+  tamdhu: ['Q982676', 57.459, -3.35361],
+  clynelish: ['Q124932', 58.023919, -3.870622],
+  glenmorangie: ['Q157974', 57.825, -4.075],
+  glenallachie: ['Q185904', 57.455931, -3.227531],
+  glendronach: ['Q240163', 57.4849, -2.62527],
+  oban: ['Q982708', 56.4147, -5.4728],
+};
+
+/** 공식 사이트 — SWA 증류소 지도(scotch-whisky.org.uk/discover-scotch/distillery-map) 등재 URL, 2026-09-28 조회 */
+const SWA_MAP = 'https://www.scotch-whisky.org.uk/discover-scotch/distillery-map/';
+const WEB: Record<string, string> = {
+  macallan: 'https://www.themacallan.com/en/distillery',
+  glenfiddich: 'https://www.glenfiddich.com/',
+  glenlivet: 'https://www.theglenlivet.com/en-UK',
+  balvenie: 'https://www.thebalvenie.com/',
+  glenallachie: 'https://www.theglenallachie.com/',
+  tamdhu: 'https://www.tamdhu.com/',
+  cragganmore: 'https://www.malts.com/en-gb/distilleries/cragganmore',
+  benriach: 'https://www.benriachdistillery.com/en-gb/',
+  cardhu: 'https://www.malts.com/en-gb/distilleries/cardhu',
+  glenmorangie: 'https://www.glenmorangie.com/en-us',
+  glendronach: 'https://www.glendronachdistillery.com/en-gb/',
+  glengoyne: 'https://www.glengoyne.com/',
+  oban: 'https://www.malts.com/en-row/distilleries/oban/',
+  clynelish: 'https://www.malts.com/en-gb/distilleries/clynelish/',
+  pulteney: 'https://www.oldpulteney.com/',
+  talisker: 'https://www.malts.com/en-row/distilleries/talisker/',
+  highlandpark: 'https://www.highlandparkwhisky.com/distillery/',
+  lagavulin: 'https://www.malts.com/en-row/distilleries/lagavulin/',
+  laphroaig: 'https://www.laphroaig.com/',
+  ardbeg: 'https://www.ardbeg.com/en-gb',
+  bowmore: 'https://www.bowmore.com/',
+  caolila: 'https://www.malts.com/en-row/distilleries/caol-ila/',
+  bunnahabhain: 'https://bunnahabhain.com/',
+  bruichladdich: 'https://www.bruichladdich.com/',
+  springbank: 'http://springbank.scot/',
+  glengyle: 'https://kilkerran.scot/',
+  glenkinchie: 'https://www.malts.com/en-gb/distilleries/glenkinchie/',
+  auchentoshan: 'https://www.auchentoshan.com/where-we-make-it',
+};
+
+export const DISTILLERIES: Distillery[] = ROWS.map(([id, nameKo, nameEn, country, legalRegion, subRegion, note]) => {
+  const c = COORDS[id];
+  return {
+    id, nameKo, nameEn, country, legalRegion, subRegion,
+    lat: c ? c[1] : null, lng: c ? c[2] : null, visit: null, note, web: WEB[id],
+    sources: [...(c ? [`https://www.wikidata.org/wiki/${c[0]}`] : []), ...(WEB[id] ? [SWA_MAP] : [])],
+  };
+});
 
 export const distilleryById = new Map<string, Distillery>(DISTILLERIES.map((d) => [d.id, d]));
 

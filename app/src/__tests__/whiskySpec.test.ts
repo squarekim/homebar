@@ -121,3 +121,19 @@ describe('싱글몰트 증류소', async () => {
     }
   });
 });
+
+describe('증류소 좌표', async () => {
+  const { DISTILLERIES } = await import('../data/distilleries');
+  it('스코틀랜드 증류소는 스코틀랜드 범위 안에 있다', () => {
+    for (const d of DISTILLERIES.filter((x) => x.country === '스코틀랜드')) {
+      expect(d.lat, d.id).toBeGreaterThan(54.6); expect(d.lat!, d.id).toBeLessThan(60.9);
+      expect(d.lng, d.id).toBeGreaterThan(-7.7); expect(d.lng!, d.id).toBeLessThan(-0.7);
+    }
+  });
+  it('아일라 증류소는 아일라 섬 안에 있다', () => {
+    for (const d of DISTILLERIES.filter((x) => x.legalRegion === '아일라')) {
+      expect(d.lat!, d.id).toBeGreaterThan(55.55); expect(d.lat!, d.id).toBeLessThan(55.95);
+      expect(d.lng!, d.id).toBeLessThan(-6.0);
+    }
+  });
+});

@@ -142,6 +142,8 @@ export interface Distillery {
   /** 공식 주소 기준 좌표. 출처 확인 전에는 null */
   lat: number | null;
   lng: number | null;
+  /** 공식 사이트 */
+  web?: string | undefined;
   /** null = 확인 전 */
   visit: DistilleryVisit | null;
   /** 브랜드와 증류소 이름이 다를 때 등 */
