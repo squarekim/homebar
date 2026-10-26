@@ -38,8 +38,8 @@ export function CellarPage() {
       <div className="statline">
         <div className="cell"><b>{bottles.length}</b><small>보유 제품(병)</small></div>
         <div className="cell"><b>{heldIds.size}<small style={{ fontSize: 14 }}> / {totalIngredients}</small></b><small>표준 재료</small></div>
-        <div className="cell ok"><b>{tally.READY}</b><small>그대로 만들 수 있는 레시피</small></div>
-        <div className="cell alt"><b>{tally.SUBSTITUTE}</b><small>대체로 가능</small></div>
+        <div className={tally.READY ? 'cell ok' : 'cell'}><b>{tally.READY}</b><small>그대로 만들 수 있는 레시피</small></div>
+        <div className={tally.SUBSTITUTE ? 'cell alt' : 'cell'}><b>{tally.SUBSTITUTE}</b><small>대체로 가능</small></div>
         <div className="cell"><b>{tally.MISSING + tally.UNAVAILABLE}</b><small>재료 부족</small></div>
       </div>
 

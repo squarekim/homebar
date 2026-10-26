@@ -47,7 +47,7 @@ function Shell() {
         <div className="wrap">
           <button className="brand" onClick={() => goTab('today')}>
             <span className="logomark"><IconLogo /></span>
-            <h1>홈바{IS_BETA && <i className="betatag">BETA</i>}</h1>
+            <h1>홈바{IS_BETA && <i className="betatag">베타</i>}</h1>
           </button>
           <nav className="topnav">
             {TABS.map((t) => (
