@@ -412,7 +412,7 @@ const CRAFT_BEER: Row[] = [
   ['m_duvel', '듀벨', 'Duvel', '듀벨모르트가트', '벨지안 스트롱 에일', 0, 330, '벨기에', '', '듀벨 duvel'],
   ['m_leffe_brune', '레페 브라운', 'Leffe Brune', '레페', '벨지안 다크 에일', 0, 330, '벨기에', '', '레페 브라운 leffe'],
   ['m_delirium_tremens', '델리리움 트레멘스', 'Delirium Tremens', '휘헤', '벨지안 스트롱 에일', 0, 330, '벨기에', '', '델리리움 트레멘스 delirium'],
-  ['m_chimay_blue', '시메이 블루', 'Chimay Bleue', '시메이', '트라피스트 에일', 0, 330, '벨기에', '', '시메이 블루 chimay'],
+  ['m_chimay_blue', '시메이 블루', 'Chimay Bleue', '시메이', '트라피스트 에일', 9, 330, '벨기에', '', '시메이 블루 chimay'],
 ];
 
 /* ── 사케 · 소주 ── */
