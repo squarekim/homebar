@@ -8,6 +8,10 @@
  *  - 용량은 국내 유통 대표 용량이며 사용자가 수정할 수 있다.
  *  - ing 는 기존 재료 마스터(128종)의 "표준 재료명"이다. 제품 → 표준 재료 → 칵테일 레시피로 연결된다.
  *  - 기존 seed 데이터는 손대지 않는다. 이 파일은 순수 추가 레이어다.
+ *
+ * 라벨 확인 대기 (2026-10-27): 국내 판매처 표기를 찾지 못해 값을 두었다.
+ *  - 올메카 블랑코 도수 — 시장마다 35·38·40% 로 다르다(제조사 페이지 40%).
+ *  - 올레스모키 피넛버터(750ml) · 플랜테이션 3 스타(700ml) 용량 — 해외 표준 용량이다.
  */
 import { type LiquorCategory, type LiquorMasterItem, type WhiskyClass } from '../models/types';
 import { normalizeQuery, initials } from './textMatch';
@@ -185,7 +189,7 @@ const WHISKY_WORLD: Row[] = [
   ['m_nikka_coffey', '닛카 카페 그레인', 'Nikka Coffey Grain', '닛카', '싱글 그레인 재패니즈', 45, 700, '일본', '', '카페그레인 코페이', jp('싱글 그레인', ['버번'])],
   ['m_yoichi', '닛카 요이치', 'Yoichi Single Malt', '닛카', '싱글몰트 재패니즈', 45, 700, '일본', '', '요이치 yoichi', jp('싱글몰트', [], ['피티드', '해양성'])],
   ['m_miyagikyo', '닛카 미야기쿄', 'Miyagikyo Single Malt', '닛카', '싱글몰트 재패니즈', 45, 700, '일본', '', '미야기쿄 miyagikyo', jp('싱글몰트', ['셰리'])],
-  ['m_kiwon_tiger', '기원 호랑이', 'Ki One Tiger Edition', '쓰리소사이어티스', '싱글몰트 코리안', 56.2, 700, '한국', '한국 싱글몰트', '기원 호랑이 kione', { origin: '코리안', type: '싱글몰트', cask: ['와인', '셰리'], character: ['캐스크 스트렝스'] }],
+  ['m_kiwon_tiger', '기원 호랑이', 'Ki One Tiger Edition', '쓰리소사이어티스', '싱글몰트 코리안', 46, 700, '한국', '한국 싱글몰트', '기원 호랑이 kione', { origin: '코리안', type: '싱글몰트', cask: ['와인', '셰리'], character: [] }],
   ['m_kiwon_eagle', '기원 독수리', 'Ki One Eagle Edition', '쓰리소사이어티스', '싱글몰트 코리안', 0, 700, '한국', '한국 싱글몰트', '기원독수리', { origin: '코리안', type: '싱글몰트', cask: ['버번', '버진오크'], character: [] }],
   ['m_kimchangsoo', '김창수 위스키', 'Kim Chang Soo Whisky', '김창수위스키증류소', '싱글몰트 코리안', 0, 500, '한국', '한국 싱글몰트', '김창수 kcs'],
 ];
@@ -339,7 +343,7 @@ const LIQUEUR: Row[] = [
   ['m_sheridans', '셰리던스', "Sheridan's", '셰리던스', '크림 리큐르', 0, 700, '아일랜드', '기타 리큐르', '셰리던스 sheridans'],
   ['m_licor43', '리코르 43', 'Licor 43', '리코르43', '바닐라 리큐르', 31, 700, '스페인', '기타 리큐르', '리코르43 licor43 콰렌타이트레스'],
   ['m_pimms', '핌스 No.1', "Pimm's No.1 Cup", '핌스', '아페리티프 비터', 25, 700, '영국', '기타 리큐르', '핌스 pimms 핌스컵'],
-  ['m_choya_umeshu', '초야 우메슈', 'Choya Umeshu', '초야', '매실 리큐르', 0, 720, '일본', '기타 리큐르', '초야 우메슈 매실주 choya'],
+  ['m_choya_umeshu', '초야 우메슈', 'Choya Umeshu', '초야', '매실 리큐르', 15, 700, '일본', '기타 리큐르', '초야 우메슈 매실주 choya'],
   ['m_jd_fire', '잭 다니엘스 테네시 파이어', "Jack Daniel's Tennessee Fire", '잭다니엘스', '가향 위스키 리큐르', 35, 700, '미국', '플레이버드 위스키', '잭파이어 테네시파이어'],
   ['m_jd_apple', '잭 다니엘스 테네시 애플', "Jack Daniel's Tennessee Apple", '잭다니엘스', '가향 위스키 리큐르', 35, 700, '미국', '플레이버드 위스키', '잭애플 테네시애플'],
 ];

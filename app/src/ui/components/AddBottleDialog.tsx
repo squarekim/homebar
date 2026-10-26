@@ -15,6 +15,16 @@ import { type LiquorCategory, type LiquorMasterItem, type UserBottle, type Whisk
 import { ChipRow, ChipMulti, Modal, MakerNoteView, chips, type ChipOption } from './common';
 import { MASTER_MAKER_NOTES } from '../../data/makerNotesMaster';
 import { toggleValue } from '../listUtils';
+import { specOf, specTitle } from '../../data/whiskySpec';
+import { distilleryOfProduct } from '../../data/distilleries';
+
+/** 분류 · 지역 · 캐스크 · 증류소 한 줄 */
+function autoClass(item: LiquorMasterItem): string {
+  const s = specOf(item.whiskyClass!, item.nameKo);
+  const d = distilleryOfProduct(item.id);
+  return [specTitle(s), s.legalRegion, s.subRegion, ...s.casks, s.peat === '피티드' && '피티드', s.strength,
+    d && `증류소 ${d.nameKo}`].filter(Boolean).join(' · ');
+}
 
 const ORIGINS = chips(['스카치', '버번', '테네시', '아이리시', '재패니즈', '코리안', '기타']);
 const TYPES = chips(['싱글몰트', '블렌디드', '블렌디드 몰트', '스트레이트 버번', '휘티드 버번', '테네시 위스키', '싱글 팟 스틸']);
@@ -205,8 +215,7 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
               </div>
               {picked.whiskyClass && (
                 <div className="hint sub">
-                  자동 분류: {[picked.whiskyClass.origin, picked.whiskyClass.type, picked.whiskyClass.region,
-                    ...picked.whiskyClass.cask.map((c) => `${c} 캐스크`), ...picked.whiskyClass.character].filter(Boolean).join(' · ')}
+                  자동 분류: {autoClass(picked)}
                 </div>
               )}
               <div className="sechead in">제조사 공식 노트</div>

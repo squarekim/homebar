@@ -10,12 +10,14 @@ import { bottleNoteRepo } from '../../repositories/bottleNoteRepo';
 import { flavorWords } from '../../services/flavorService';
 import { computeCoverage, computeRegionMaturityMatrix, simulateAdd, MATRIX_TIERS } from '../../services/whiskyDiversityService';
 import { CANDIDATE_WHISKIES } from '../../data/candidateWhiskies';
-import { CLASS_FILTERS, classMatchesTerm, classTags } from '../../data/whiskyClass';
+import { CLASS_FILTERS, classTags } from '../../data/whiskyClass';
+import { specOf, specTitle, specMatchesTerm } from '../../data/whiskySpec';
+import { distilleryOfProduct } from '../../data/distilleries';
 import { bottleKindLabel } from '../../data/bottleIngredients';
-import { FlavorBars, MakerNoteView, WhiskyClassTags, BottleBadges, Term, ChipRow, SearchBox, allChips } from '../components/common';
+import { FlavorBars, MakerNoteView, BottleBadges, Term, ChipRow, SearchBox, allChips } from '../components/common';
 import { BottleMark } from '../components/Mark';
 import { normalize, hits } from '../listUtils';
-import { type Bottle } from '../../models/types';
+import { type Bottle, type Distillery, type WhiskySpec } from '../../models/types';
 
 const CLASS_CHIPS = allChips(CLASS_FILTERS, '분류 전체');
 
@@ -24,6 +26,56 @@ function character(w: Bottle): string {
   const words = flavorWords(w.flavor);
   const chars = w.whiskyClass?.character.filter((c) => c !== '논피트') ?? [];
   return [...chars, ...words].slice(0, 3).join(' · ');
+}
+
+const specFor = (w: Bottle): WhiskySpec | null => (w.whiskyClass ? specOf(w.whiskyClass, w.name) : null);
+const joinDot = (xs: (string | false | null | undefined)[]) => xs.filter(Boolean).join(' · ');
+
+function RegionTag({ w }: { w: Bottle }) {
+  const s = specFor(w);
+  const r = s && joinDot([s.legalRegion, s.subRegion]);
+  return r ? <span className="mi">{r}</span> : null;
+}
+
+/** 3층 분류 — 법적 정체성 · 속성 · 지역. 모르는 칸은 비운다 */
+function SpecView({ s }: { s: WhiskySpec }) {
+  const rows: [string, string][] = [
+    ['분류', specTitle(s)],
+    ['법적 명칭', s.legal ?? '기준 충족 미확인'],
+    ['나라 · 지역', joinDot([s.country, s.legalRegion, s.subRegion])],
+    ['숙성', s.age ? `${s.age}년` : ''],
+    ['캐스크', joinDot([...s.casks, ...s.caskMethod])],
+    ['피트', s.peat === '미상' ? '' : s.peatNote ?? s.peat],
+    ['병입', joinDot([s.strength, s.bottledInBond && '보틀드 인 본드', s.singleBarrel && '싱글 배럴'])],
+    ['원료 · 공정', joinDot([s.mashbill, ...s.process])],
+    ['향 특징', joinDot(s.flavorNotes)],
+  ];
+  return (
+    <div className="makernote">
+      {rows.filter(([, v]) => v).map(([k, v]) => <p className="mn-line" key={k}><b>{k}</b> {v}</p>)}
+    </div>
+  );
+}
+
+/** 증류소 — 출처를 확인한 정보만. 투어는 확인 못 했으면 '없음'이 아니라 '미확인' */
+function DistilleryView({ d }: { d: Distillery }) {
+  return (
+    <div className="makernote">
+      <p className="mn-line"><b>{d.nameKo}</b> {d.nameEn}</p>
+      <p className="mn-line">{joinDot([d.country, d.legalRegion, d.subRegion])}</p>
+      {d.note && <p className="mn-line">{d.note}</p>}
+      <p className="mn-line">
+        {d.visit?.url
+          ? <a href={d.visit.url} target="_blank" rel="noopener">투어 안내 ↗</a>
+          : <span className="sub">투어 정보 미확인</span>}
+        {d.visit && <small className="sub"> ({d.visit.checked} 공식 사이트 확인)</small>}
+      </p>
+      {d.web && <a className="mn-src" href={d.web} target="_blank" rel="noopener">공식 사이트 ↗</a>}
+      {d.lat !== null && d.lng !== null && (
+        <> · <a className="mn-src" href={`https://www.openstreetmap.org/?mlat=${d.lat}&mlon=${d.lng}#map=11/${d.lat}/${d.lng}`} target="_blank" rel="noopener">지도에서 보기 ↗</a></>
+      )}
+    </div>
+  );
 }
 
 function PersonalNote({ bottleId, initial, onSaved }: { bottleId: string; initial: string; onSaved: () => void }) {
@@ -43,6 +95,8 @@ function WhiskyDetail({ bottle: w }: { bottle: Bottle }) {
   const { openLog, toast } = useUI();
   const notes = useBottleNotes();
   const [more, setMore] = useState(false);
+  const spec = specFor(w);
+  const distillery = distilleryOfProduct(w.productId);
   return (
     <article className="detail">
       <h2>{w.name}</h2>
@@ -51,7 +105,7 @@ function WhiskyDetail({ bottle: w }: { bottle: Bottle }) {
       <div className="meta">
         {w.abv && <span className="mi">{w.abv}</span>}
         {w.volumeMl ? <span className="mi">{w.volumeMl}ml</span> : null}
-        <span className="mi">{w.whiskyClass?.type ?? bottleKindLabel(w)}</span>
+        <span className="mi">{spec ? specTitle(spec) : bottleKindLabel(w)}</span>
         {w.qty > 1 && <span className="mi">{w.qty}병 보유</span>}
       </div>
       <BottleBadges badges={w.badges} />
@@ -70,11 +124,12 @@ function WhiskyDetail({ bottle: w }: { bottle: Bottle }) {
 
       <div className="more">
         <button onClick={() => setMore((v) => !v)} aria-expanded={more}>
-          {more ? '분류 · 향미 수치 접기' : '생산 지역 · 캐스크 · 분류 · 향미 수치 보기'}
+          {more ? '증류소 · 분류 · 향미 수치 접기' : '증류소 · 생산 지역 · 캐스크 · 분류 · 향미 수치 보기'}
         </button>
         {more && (
           <div className="inner">
-            {w.whiskyClass && <WhiskyClassTags cls={w.whiskyClass} />}
+            {distillery && <><div className="sechead in">증류소</div><DistilleryView d={distillery} /></>}
+            {spec && <><div className="sechead in">분류</div><SpecView s={spec} /></>}
             {w.note && <p className="hint">{w.note}</p>}
             <div className="sechead in">향미 프로파일</div>
             <FlavorBars vector={w.flavor} compact />
@@ -95,9 +150,11 @@ export function WhiskyPage() {
 
   const rows = useMemo(() => {
     const t = normalize(q);
-    return whiskies.filter((w) =>
-      (cls === 'all' || classMatchesTerm(w.whiskyClass, cls))
-      && hits(t, w.name, w.whiskyClass ? classTags(w.whiskyClass).join(' ') : ''));
+    return whiskies.filter((w) => {
+      const s = specFor(w);
+      return (cls === 'all' || (!!s && specMatchesTerm(s, cls)))
+        && hits(t, w.name, w.whiskyClass ? classTags(w.whiskyClass).join(' ') : '', s ? specTitle(s) : '', distilleryOfProduct(w.productId)?.nameKo ?? '');
+    });
   }, [whiskies, q, cls]);
 
   const selected = allBottles.find((b) => b.id === bottleId);
@@ -123,7 +180,7 @@ export function WhiskyPage() {
                   <div className="taste">{character(w)}</div>
                   <div className="foot">
                     {w.abv && <span className="mi">{w.abv}</span>}
-                    {w.whiskyClass?.region && <span className="mi">{w.whiskyClass.region}</span>}
+                    <RegionTag w={w} />
                     {w.makerNote && <span className="mi note">공식 노트</span>}
                   </div>
                 </div>
