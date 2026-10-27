@@ -13,11 +13,13 @@ import { CANDIDATE_WHISKIES } from '../../data/candidateWhiskies';
 import { CLASS_FILTERS, classTags } from '../../data/whiskyClass';
 import { specOf, specTitle, specMatchesTerm, displayRegionLabel } from '../../data/whiskySpec';
 import { distilleryOfProduct } from '../../data/distilleries';
+import { DistilleryCard } from '../components/DistilleryCard';
+import { DistilleryMapView } from '../components/DistilleryMap';
 import { bottleKindLabel } from '../../data/bottleIngredients';
 import { FlavorBars, MakerNoteView, BottleBadges, Term, ChipRow, SearchBox, allChips } from '../components/common';
 import { BottleMark } from '../components/Mark';
 import { normalize, hits } from '../listUtils';
-import { type Bottle, type Distillery, type WhiskySpec } from '../../models/types';
+import { type Bottle, type WhiskySpec } from '../../models/types';
 
 const CLASS_CHIPS = allChips(CLASS_FILTERS, '분류 전체');
 
@@ -53,27 +55,6 @@ function SpecView({ s }: { s: WhiskySpec }) {
   return (
     <div className="makernote">
       {rows.filter(([, v]) => v).map(([k, v]) => <p className="mn-line" key={k}><b>{k}</b> {v}</p>)}
-    </div>
-  );
-}
-
-/** 증류소 — 출처를 확인한 정보만. 투어는 확인 못 했으면 '없음'이 아니라 '미확인' */
-function DistilleryView({ d }: { d: Distillery }) {
-  return (
-    <div className="makernote">
-      <p className="mn-line"><b>{d.nameKo}</b> {d.nameEn}</p>
-      <p className="mn-line">{joinDot([d.country, displayRegionLabel(d.legalRegion, d.subRegion, true)])}</p>
-      {d.note && <p className="mn-line">{d.note}</p>}
-      <p className="mn-line">
-        {d.visit?.url
-          ? <a href={d.visit.url} target="_blank" rel="noopener">투어 안내 ↗</a>
-          : <span className="sub">투어 정보 미확인</span>}
-        {d.visit && <small className="sub"> ({d.visit.checked} 공식 사이트 확인)</small>}
-      </p>
-      {d.web && <a className="mn-src" href={d.web} target="_blank" rel="noopener">공식 사이트 ↗</a>}
-      {d.lat !== null && d.lng !== null && (
-        <> · <a className="mn-src" href={`https://www.openstreetmap.org/?mlat=${d.lat}&mlon=${d.lng}#map=11/${d.lat}/${d.lng}`} target="_blank" rel="noopener">지도에서 보기 ↗</a></>
-      )}
     </div>
   );
 }
@@ -128,7 +109,7 @@ function WhiskyDetail({ bottle: w }: { bottle: Bottle }) {
         </button>
         {more && (
           <div className="inner">
-            {distillery && <><div className="sechead in">증류소</div><DistilleryView d={distillery} /></>}
+            {distillery && <><div className="sechead in">증류소</div><DistilleryCard d={distillery} /></>}
             {spec && <><div className="sechead in">분류</div><SpecView s={spec} /></>}
             {w.note && <p className="hint">{w.note}</p>}
             <div className="sechead in">향미 프로파일</div>
@@ -147,6 +128,7 @@ export function WhiskyPage() {
   const [q, setQ] = useState('');
   const [cls, setCls] = useState('all');
   const [gapView, setGapView] = useState(false);
+  const [mapView, setMapView] = useState(false);
 
   const rows = useMemo(() => {
     const t = normalize(q);
@@ -160,6 +142,7 @@ export function WhiskyPage() {
   const selected = allBottles.find((b) => b.id === bottleId);
 
   if (gapView) return <GapView onBack={() => setGapView(false)} />;
+  if (mapView) return <DistilleryMapView onBack={() => setMapView(false)} />;
 
   return (
     <>
@@ -169,7 +152,7 @@ export function WhiskyPage() {
 
       <div className="split">
         <div className="listpane">
-          <div className="hint">{rows.length}종 · <button className="lnk" onClick={() => setGapView(true)}>축별 결손 보기</button></div>
+          <div className="hint">{rows.length}종 · <button className="lnk" onClick={() => setMapView(true)}>증류소 지도</button> · <button className="lnk" onClick={() => setGapView(true)}>축별 결손 보기</button></div>
           {rows.length === 0 && <div className="empty">조건에 맞는 위스키가 없습니다.</div>}
           <div className="rowlist">
             {rows.map((w) => (

@@ -442,3 +442,23 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 
 /* 마지막 요소가 하단 메뉴에 가리지 않도록 */
 .tailspace{height:var(--s4)}
+
+/* 증류소 지도 — 바다·땅은 토큰, 지역 점은 색각 차이에도 구분되는 Okabe–Ito 팔레트 */
+.distmap{display:block;width:100%;max-width:720px;height:auto;max-height:70vh;margin:var(--s2) 0;border-radius:var(--r);background:var(--accent-bg)}
+.distmap .sea{fill:var(--accent-bg)}
+.distmap .land{fill:var(--bg);stroke:var(--control);stroke-linejoin:round}
+.distmap .dot{cursor:pointer;outline:none}
+.distmap .dot circle{stroke:var(--bg)}
+.distmap .dot .hit{fill:transparent;stroke:none}
+.distmap .dot text{pointer-events:none}
+.distmap .dot text{fill:var(--ink);stroke:var(--bg);paint-order:stroke;font-weight:600}
+.distmap .dot.off{opacity:.25;pointer-events:none}
+.distmap .dot.picked circle:not(.hit){stroke:var(--ink)}
+.distmap .dot:focus-visible circle:not(.hit){stroke:var(--ink)}
+.distmap .g-spey circle:not(.hit){fill:#D55E00}
+.distmap .g-high circle:not(.hit){fill:#0072B2}
+.distmap .g-isle circle:not(.hit){fill:#CC79A7}
+.distmap .g-islay circle:not(.hit){fill:#009E73}
+.distmap .g-camp circle:not(.hit){fill:#E69F00}
+.distmap .g-low circle:not(.hit){fill:#56B4E9}
+.distmap .g-ire circle:not(.hit){fill:#7F7F7F}

@@ -4,10 +4,12 @@
  * 범위: 기준 DB 의 싱글몰트(구성 single + 원료 몰트)를 만드는 증류소만. 블렌디드·싱글 그레인·싱글 팟 스틸은 넣지 않는다.
  * 지역: 스카치는 해당 증류소 제품의 분류(whiskySpec)에서 가져오고, 테스트가 둘이 같은지 확인한다.
  * 좌표·방문 정보: 공식 출처를 확인한 것만 넣는다. 확인 전에는 null 이고 sources 가 비어 있다.
+ * 설립·소유·위치·투어: 2026-10-27 GPT·제미나이 조사를 병합했다(드라이브 '증류소 소개_gpt', '증류소 소개_gemini').
+ *   두 조사가 같은 값만 그대로 쓰고, 설립 연도의 기준이 갈린 곳은 foundedNote 로 밝혔다.
  */
-import { type Distillery } from '../models/types';
-import { liquorMasterById } from './liquorMaster';
-import { specOf } from './whiskySpec';
+import { type Distillery, type DistilleryTour, type LiquorMasterItem } from '../models/types';
+import { LIQUOR_MASTER, liquorMasterById } from './liquorMaster';
+import { specOf, displayRegion } from './whiskySpec';
 
 type Row = [id: string, nameKo: string, nameEn: string, country: string, legalRegion: string | null, subRegion: string | null, note?: string];
 
@@ -62,7 +64,7 @@ const ROWS: Row[] = [
   ['threesocieties', '쓰리소사이어티스', 'Three Societies', '한국', null, null, '제품 이름은 기원'],
 ];
 
-/** 좌표 — Wikidata 항목(P625), 2026-09-28 조회. 쿨리는 좌표가 등록돼 있지 않아 비운다 */
+/** 좌표 — Wikidata 항목(P625). 2026-09-28 조회, 쿨리는 2026-10-27 두 조사가 같은 항목을 찾았다 */
 const COORDS: Record<string, [qid: string, lat: number, lng: number]> = {
   ardbeg: ['Q274', 55.6405, -6.10833],
   talisker: ['Q278', 57.302778, -6.356111],
@@ -103,6 +105,7 @@ const COORDS: Record<string, [qid: string, lat: number, lng: number]> = {
   glenallachie: ['Q185904', 57.455931, -3.227531],
   glendronach: ['Q240163', 57.4849, -2.62527],
   oban: ['Q982708', 56.4147, -5.4728],
+  cooley: ['Q502578', 53.997269, -6.2059],
 };
 
 /** 공식 사이트 — SWA 증류소 지도(scotch-whisky.org.uk/discover-scotch/distillery-map) 등재 URL, 2026-09-28 조회 */
@@ -138,33 +141,70 @@ const WEB: Record<string, string> = {
   auchentoshan: 'https://www.auchentoshan.com/where-we-make-it',
 };
 
-/** 투어 안내 — 각 공식 사이트에서 투어·방문 페이지를 확인한 곳만, 2026-09-28. 확인 못 한 곳은 운영하지 않는다는 뜻이 아니다(null) */
-const VISIT_CHECKED = '2026-09-28';
-const VISIT: Record<string, string> = {
-  bunnahabhain: 'https://bunnahabhain.com/pages/plan-your-visit',
-  glengyle: 'https://kilkerran.scot/visit-us/',
-  ardbeg: 'https://www.ardbeg.com/en-gb/pages/visit-ardbeg-distillery',
-  auchentoshan: 'https://www.auchentoshan.com/visit-our-distillery',
-  bowmore: 'https://www.bowmore.com/distillery-tours-and-experiences',
-  bruichladdich: 'https://www.bruichladdich.com/pages/tours',
-  glenmorangie: 'https://www.glenmorangie.com/en-us/pages/distillery-tours',
-  laphroaig: 'https://www.laphroaig.com/tours-and-experiences',
-  cardhu: 'https://www.malts.com/en-gb/cardhu/visit',
-  clynelish: 'https://www.malts.com/en-gb/clynelish/visit',
-  cragganmore: 'https://www.malts.com/en-gb/cragganmore/visit',
-  glenkinchie: 'https://www.malts.com/en-gb/articles/an-insiders-guide-to-visiting-glenkinchie',
-  talisker: 'https://www.malts.com/en/experiences/talisker-distillery-tour-and-tasting',
-  lochranza: 'https://www.arranwhisky.com/our-distillery/tours',
-  glendronach: 'https://www.glendronachdistillery.com/en-gb/',
-  glengoyne: 'https://www.glengoyne.com/',
+type Info = {
+  founded: number | null; foundedNote?: string; owner: string | null; place: string;
+  /** null = 두 조사 모두 공식 투어 안내를 찾지 못함 */
+  tour: DistilleryTour | null; tourUrl?: string; web?: string; sources: string[];
+};
+
+/**
+ * 설립·소유·위치·투어 — 2026-10-27 조사 병합.
+ * 더프타운 설립 연도는 1895·1896 으로 갈려 비운다. 기원 소유 법인은 이름이 바뀌었는지 확인 전이라 비운다.
+ */
+const INFO_CHECKED = '2026-10-27';
+const INFO: Record<string, Info> = {
+  macallan: { founded: 1824, owner: 'Edrington', place: '모레이 크레이겔라키', tour: '운영', tourUrl: 'https://www.themacallan.com/en-us/experience-the-macallan/distillery', web: 'https://www.themacallan.com/', sources: ['https://www.themacallan.com/en/about', 'https://www.edrington.com/en/brands', 'https://www.themacallan.com/en-us/experience-the-macallan/distillery'] },
+  glenfiddich: { founded: 1887, owner: 'William Grant & Sons', place: '모레이 더프타운', tour: '운영', tourUrl: 'https://www.glenfiddich.com/en-gb/book-tour/', web: 'https://www.glenfiddich.com/', sources: ['https://www.glenfiddich.com/assets/Uploads/Shared/News-Releases/Goodwood-1979/Glenfiddich-Goodwood-1979-Press-ReleaseFINAL.pdf', 'https://www.williamgrant.com/gb/we', 'https://www.glenfiddich.com/assets/AiR/CANADIAN-AiR-WEB-COPY-2024.pdf', 'https://www.glenfiddich.com/themes/gf-main-v2/terms/Online_booking_TCs.pdf', 'https://www.spiritofspeyside.com/visit/distilleries/glenfiddich-distillery'] },
+  glenlivet: { founded: 1824, owner: 'Chivas Brothers', place: '모레이 발린달로크', tour: '운영', tourUrl: 'https://www.maltwhiskydistilleries.com/theglenlivet/', web: 'https://www.theglenlivet.com/', sources: ['https://www.theglenlivet.com/en/our-history/', 'https://www.chivasbrothers.com/our-brands/brand-homes/', 'https://www.theglenlivet.com/en-us/faqs/'] },
+  balvenie: { founded: 1892, owner: 'William Grant & Sons', place: '모레이 더프타운', tour: '운영', tourUrl: 'https://www.thebalvenie.com/welcome-to-the-distillery/', web: 'https://www.thebalvenie.com/', sources: ['https://www.spiritofspeyside.com/about/partners/balvenie', 'https://www.thebalvenie.com/en-gb/terms-and-conditions/', 'https://www.williamgrant.com/gb/stories/the-balvenie-the-most-handcrafted-of-single-malts', 'https://www.distillerytours.scot/distilleries/balvenie-distillery-visitor-centre', 'https://www.thebalvenie.com/welcome-to-the-distillery/'] },
+  aberlour: { founded: 1879, owner: 'Chivas Brothers', place: '모레이 아벨라워', tour: '운영', tourUrl: 'https://www.aberlour.com/en/our-distillery/', web: 'https://www.aberlour.com/', sources: ['https://www.aberlour.com/en/our-whisky/', 'https://www.chivasbrothers.com/our-brands/brand-homes/', 'https://www.aberlour.com/en/our-distillery/'] },
+  glenallachie: { founded: 1967, owner: 'The GlenAllachie Distillers Co. Limited', place: '모레이 아벨라워', tour: '운영', tourUrl: 'https://theglenallachie.com/visit-us/', web: 'https://theglenallachie.com/', sources: ['https://theglenallachie.com/our-story/our-history/', 'https://theglenallachie.com/contact/', 'https://theglenallachie.com/visit-us/'] },
+  tamdhu: { founded: 1897, owner: 'Ian Macleod Distillers', place: '모레이 노칸도', tour: '없음', tourUrl: 'https://www.tamdhu.com/website-faqs', web: 'https://www.tamdhu.com/', sources: ['https://www.tamdhu.com/website-faqs', 'https://www.tamdhu.com/'] },
+  cragganmore: { founded: 1869, owner: 'Diageo', place: '모레이 발린달로크', tour: '중단', tourUrl: 'https://www.malts.com/en/cragganmore/visit', web: 'https://www.malts.com/en/cragganmore', sources: ['https://www.malts.com/en/cragganmore', 'https://www.scotch-whisky.org.uk/join-us/members-directory/', 'https://morayspeyside.com/inspiration/whisky-country/speyside-distillery-guide/', 'https://www.malts.com/en/cragganmore/visit'] },
+  benriach: { founded: 1898, owner: 'Brown-Forman', place: '모레이 엘긴', tour: '운영', tourUrl: 'https://www.benriachdistillery.com/en-us/distillery-tours/', web: 'https://www.benriachdistillery.com/', sources: ['https://www.benriachdistillery.com/our-history/', 'https://www.scotch-whisky.org.uk/join-us/members-directory/', 'https://www.benriachdistillery.com/contact-us/', 'https://www.benriachdistillery.com/en-us/distillery-tours/'] },
+  dufftown: { founded: null, owner: 'Diageo', place: '모레이 더프타운', tour: null, sources: ['https://en.wikipedia.org/wiki/Dufftown_distillery', 'https://www.scotch-whisky.org.uk/join-us/members-directory/'] },
+  cardhu: { founded: 1824, owner: 'Diageo', place: '모레이 노칸도', tour: '운영', tourUrl: 'https://www.malts.com/en/cardhu/visit', web: 'https://www.malts.com/en/cardhu/visit', sources: ['https://www.malts.com/en/cardhu/visit', 'https://www.scotch-whisky.org.uk/join-us/members-directory/'] },
+  glenburgie: { founded: 1829, owner: 'Chivas Brothers', place: '모레이 포레스', tour: null, web: 'https://history.chivasbrothersarchive.com/timeline/', sources: ['https://history.chivasbrothersarchive.com/timeline/', 'https://www.scotch-whisky.org.uk/join-us/members-directory/', 'https://en.wikipedia.org/wiki/Glenburgie_distillery'] },
+  glenmorangie: { founded: 1843, owner: 'The Glenmorangie Company (LVMH 그룹)', place: '하이랜드 테인', tour: '운영', tourUrl: 'https://www.glenmorangie.com/pages/visit-us', web: 'https://www.glenmorangie.com/', sources: ['https://www.glenmorangie.com/pages/about-us', 'https://www.scotch-whisky.org.uk/join-us/members-directory/', 'https://www.lvmh.com/en/our-maisons/wines-spirits/glenmorangie', 'https://www.moethennessyjapan.com/en/brands/glenmorangie/history', 'https://www.glenmorangie.com/pages/visit-us'] },
+  glendronach: { founded: 1826, owner: 'Brown-Forman', place: '애버딘셔 헌틀리 포그', tour: '운영', tourUrl: 'https://www.glendronachdistillery.com/our-distillery/', web: 'https://www.glendronachdistillery.com/', sources: ['https://www.glendronachdistillery.com/our-story/', 'https://www.glendronachdistillery.com/our-distillery/'] },
+  dalmore: { founded: 1839, owner: 'Whyte & Mackay', place: '하이랜드 알네스', tour: '운영', tourUrl: 'https://www.thedalmore.com/en-gb/our-home/', web: 'https://www.thedalmore.com/', sources: ['https://www.thedalmore.com/en-us/our-world/history-of-the-dalmore/', 'https://www.whyteandmackayltd.com/our-locations/the-dalmore/', 'https://www.thedalmore.com/en-gb/our-home/'] },
+  glengoyne: { founded: 1833, owner: 'Ian Macleod Distillers', place: '스털링 킬런 덤고인', tour: '운영', tourUrl: 'https://www.glengoyne.com/visit-us', web: 'https://www.glengoyne.com/', sources: ['https://www.glengoyne.com/', 'https://www.tamdhu.com/website-faqs', 'https://www.glengoyne.com/visit-us'] },
+  oban: { founded: 1794, owner: 'Diageo', place: '아가일 뷰트 오반', tour: '운영', tourUrl: 'https://www.malts.com/en/oban/visit', web: 'https://www.malts.com/en/oban/visit', sources: ['https://www.malts.com/en/oban/visit', 'https://www.scotch-whisky.org.uk/join-us/members-directory/'] },
+  clynelish: { founded: 1819, foundedNote: '지금 증류소는 1967년에 지었어요', owner: 'Diageo', place: '하이랜드 서덜랜드 브로라', tour: '중단', tourUrl: 'https://www.malts.com/en/clynelish/visit', web: 'https://www.malts.com/en/clynelish/visit', sources: ['https://scotchwhisky.com/whiskypedia/1831/clynelish/', 'https://www.malts.com/en/clynelish/visit'] },
+  pulteney: { founded: 1826, owner: 'International Beverage (그룹)', place: '하이랜드 케이스네스 위크', tour: '운영', tourUrl: 'https://oldpulteney.com/pages/visit-us', web: 'https://oldpulteney.com/', sources: ['https://oldpulteney.com/pages/faqs', 'https://www.interbevgroup.com/our-brands/78-old-pulteney', 'https://oldpulteney.com/pages/visit-us'] },
+  talisker: { founded: 1830, owner: 'Diageo', place: '하이랜드 스카이섬 카보스트', tour: '운영', tourUrl: 'https://www.malts.com/en-gb/distilleries/talisker', web: 'https://www.diageo.com/en/our-brands/scotch-whisky/talisker', sources: ['https://www.malts.com/en-gb/distilleries/talisker?type=redirect', 'https://www.scotch-whisky.org.uk/join-us/members-directory/', 'https://www.malts.com/en-gb/distilleries/talisker'] },
+  highlandpark: { founded: 1798, owner: 'Edrington', place: '오크니 제도 커크월', tour: '운영', tourUrl: 'https://www.highlandparkwhisky.com/en/distillery-experiences', web: 'https://www.highlandparkwhisky.com/', sources: ['https://www.highlandparkwhisky.com/en/brand-story/distillery', 'https://www.edrington.com/en/brands', 'https://www.highlandparkwhisky.com/en/distillery-experiences'] },
+  lochranza: { founded: 1995, owner: 'Isle of Arran Distillers Ltd', place: '노스에어셔 아란섬 로크란자', tour: '운영', tourUrl: 'https://www.arranwhisky.com/our-distillery/tours', web: 'https://www.arranwhisky.com/', sources: ['https://www.arranwhisky.com/', 'https://www.arranwhisky.com/assets/000/001/533/IOAD_Cask_Purchase_2026_original.pdf?1769598630=', 'https://www.arranwhisky.com/our-distillery/visit-us', 'https://www.arranwhisky.com/our-distillery/tours'] },
+  lagavulin: { founded: 1816, owner: 'Diageo', place: '아가일 뷰트 아일라섬 포트 엘렌', tour: '운영', tourUrl: 'https://www.malts.com/en/lagavulin/visit', web: 'https://www.malts.com/en/lagavulin/visit', sources: ['https://www.malts.com/en/lagavulin/visit', 'https://www.scotch-whisky.org.uk/join-us/members-directory/'] },
+  laphroaig: { founded: 1815, owner: 'Suntory Global Spirits', place: '아가일 뷰트 아일라섬 포트 엘렌', tour: '운영', tourUrl: 'https://www.laphroaig.com/distillery', web: 'https://www.laphroaig.com/', sources: ['https://www.laphroaig.com/distillery', 'https://www.suntoryglobalspirits.com/about-us/our-locations'] },
+  ardbeg: { founded: 1815, owner: 'The Glenmorangie Company (LVMH 그룹)', place: '아가일 뷰트 아일라섬 포트 엘렌', tour: '운영', tourUrl: 'https://www.ardbeg.com/en-gb/pages/visit-ardbeg-distillery', web: 'https://www.ardbeg.com/', sources: ['https://www.ardbeg.com/en-gb/pages/history', 'https://www.lvmh.com/our-maisons/wines-spirits/ardbeg', 'https://www.ardbeg.com/en-gb/pages/visit-ardbeg-distillery'] },
+  bowmore: { founded: 1779, owner: 'Suntory Global Spirits', place: '아가일 뷰트 아일라섬 보모어', tour: '운영', tourUrl: 'https://www.bowmore.com/distillery-tours-and-experiences', web: 'https://www.bowmore.com/', sources: ['https://www.bowmore.com/about-us', 'https://www.suntoryglobalspirits.com/about-us/our-locations', 'https://www.bowmore.com/distillery-tours-and-experiences'] },
+  caolila: { founded: 1846, owner: 'Diageo', place: '아가일 뷰트 아일라섬 포트 아스케이그', tour: '운영', tourUrl: 'https://www.malts.com/en/caol-ila/visit', web: 'https://www.malts.com/en/caol-ila/visit', sources: ['https://www.malts.com/en/caol-ila/visit', 'https://www.scotch-whisky.org.uk/join-us/members-directory/'] },
+  bunnahabhain: { founded: 1881, owner: 'CVH Spirits Limited', place: '아가일 뷰트 아일라섬 포트 아스케이그', tour: '운영', tourUrl: 'https://bunnahabhain.com/pages/plan-your-visit', web: 'https://bunnahabhain.com/', sources: ['https://bunnahabhain.com/pages/about-us', 'https://bunnahabhain.com/pages/terms-conditions', 'https://bunnahabhain.com/pages/plan-your-visit'] },
+  bruichladdich: { founded: 1881, owner: 'Rémy Cointreau (그룹)', place: '아가일 뷰트 아일라섬 브룩라디', tour: '운영', tourUrl: 'https://uk.bruichladdich.com/pages/tours', web: 'https://www.bruichladdich.com/', sources: ['https://uk.bruichladdich.com/pages/faqs', 'https://www.bruichladdich.com/pages/faqs', 'https://uk.bruichladdich.com/pages/tours'] },
+  springbank: { founded: 1828, owner: 'J&A Mitchell and Co.', place: '아가일 뷰트 캠벨타운', tour: '운영', tourUrl: 'https://www.springbank.scot/product/springbank-tour/', web: 'https://www.springbank.scot/', sources: ['https://www.springbank.scot/about/introduction/', 'https://www.springbank.scot/about/place/', 'https://www.springbank.scot/product/springbank-tour/'] },
+  glengyle: { founded: 1872, foundedNote: '2004년에 다시 가동했어요', owner: 'Mitchell’s Glengyle Ltd (J&A Mitchell 계열)', place: '아가일 뷰트 캠벨타운', tour: '운영', tourUrl: 'https://kilkerran.scot/product/kilkerran-tour/', web: 'https://kilkerran.scot/', sources: ['https://kilkerran.scot/the-glengyle-distillery/', 'https://www.springbank.scot/about/place/', 'https://kilkerran.scot/product/kilkerran-tour/'] },
+  glenkinchie: { founded: 1825, foundedNote: '1837년에 글렌킨치로 이름을 바꿨어요', owner: 'Diageo', place: '이스트로디언 펜케이틀랜드', tour: '운영', tourUrl: 'https://www.malts.com/en-us/glenkinchie/visit', web: 'https://www.malts.com/en-us/glenkinchie/visit', sources: ['https://www.malts.com/en-us/glenkinchie/visit', 'https://www.scotch-whisky.org.uk/join-us/members-directory/'] },
+  auchentoshan: { founded: 1823, owner: 'Suntory Global Spirits', place: '웨스트던바턴셔 클라이드뱅크 달뮤어', tour: '운영', tourUrl: 'https://www.auchentoshan.com/visit-our-distillery', web: 'https://www.auchentoshan.com/', sources: ['https://www.auchentoshan.com/our-history', 'https://www.suntoryglobalspirits.com/about-us/our-locations', 'https://www.auchentoshan.com/visit-our-distillery'] },
+  bushmills: { founded: 1784, foundedNote: '1608년은 이 지역의 증류 면허 연도예요', owner: 'Proximo Spirits', place: '앤트림주 부시밀즈', tour: '운영', tourUrl: 'https://www.bushmills.eu/distillery/', web: 'https://www.bushmills.eu/', sources: ['https://www.asahibeer.co.jp/brand/bushmills/', 'https://proximospirits.com/brands/bushmills/', 'https://www.bushmills.eu/distillery/'] },
+  cooley: { founded: 1987, owner: 'Suntory Global Spirits', place: '라우스주 쿨리반도 리버스타운', tour: null, web: 'https://www.suntoryglobalspirits.com/about-us/our-locations', sources: ['https://www.wikidata.org/wiki/Q502578', 'https://www.suntoryglobalspirits.com/about-us/our-locations'] },
+  yamazaki: { founded: 1923, owner: 'Suntory', place: '오사카부 미시마군 시마모토초', tour: '운영', tourUrl: 'https://house.suntory.com/yamazaki-whisky/yamazaki-distillery', web: 'https://www.suntory.com/factory/yamazaki/', sources: ['https://house.suntory.com/yamazaki-whisky/yamazaki-distillery', 'https://www.suntoryglobalspirits.com/about-us/our-locations', 'https://www.suntory.com/factory/yamazaki/'] },
+  hakushu: { founded: 1973, owner: 'Suntory', place: '야마나시현 호쿠토시 하쿠슈초', tour: '운영', tourUrl: 'https://house.suntory.com/hakushu-whisky/hakushu-distillery', web: 'https://www.suntory.com/factory/hakushu/', sources: ['https://house.suntory.com/hakushu-whisky/hakushu-distillery', 'https://www.suntoryglobalspirits.com/about-us/our-locations', 'https://www.suntory.com/factory/hakushu/'] },
+  yoichi: { founded: 1934, owner: 'Nikka Whisky', place: '홋카이도 요이치군 요이치정', tour: '운영', tourUrl: 'https://www.nikka.com/en/distilleries/yoichi/visit/', web: 'https://www.nikka.com/en/distilleries/yoichi/', sources: ['https://www.nikka.com/en/distilleries/yoichi/', 'https://www.nikka.com/en/about/', 'https://www.nikka.com/en/distilleries/yoichi/visit/'] },
+  miyagikyo: { founded: 1969, owner: 'Nikka Whisky', place: '미야기현 센다이시 아오바구', tour: '운영', tourUrl: 'https://www.nikka.com/en/distilleries/miyagikyo/visit/', web: 'https://www.nikka.com/en/distilleries/miyagikyo/visit/', sources: ['https://www.nikka.com/en/story/founder/', 'https://www.nikka.com/en/about/', 'https://www.nikka.com/en/distilleries/miyagikyo/visit/'] },
+  threesocieties: { founded: 2020, owner: null, place: '경기도 남양주시 화도읍', tour: '운영', tourUrl: 'https://threesocieties.co.kr/tours.html', web: 'https://threesocieties.co.kr/kor', sources: ['https://threesocieties.co.kr/kor', 'https://threesocieties.co.kr/tours.html'] },
 };
 
 export const DISTILLERIES: Distillery[] = ROWS.map(([id, nameKo, nameEn, country, legalRegion, subRegion, note]) => {
   const c = COORDS[id];
+  const i = INFO[id];
   return {
     id, nameKo, nameEn, country, legalRegion, subRegion,
-    lat: c ? c[1] : null, lng: c ? c[2] : null, visit: VISIT[id] ? { open: true, url: VISIT[id], checked: VISIT_CHECKED } : null, note, web: WEB[id],
-    sources: [...(c ? [`https://www.wikidata.org/wiki/${c[0]}`] : []), ...(WEB[id] ? [SWA_MAP] : []), ...(VISIT[id] ? [VISIT[id]!] : [])],
+    lat: c ? c[1] : null, lng: c ? c[2] : null,
+    visit: i?.tour ? { status: i.tour, url: i.tourUrl, checked: INFO_CHECKED } : null,
+    note, web: WEB[id] ?? i?.web,
+    founded: i?.founded ?? undefined, foundedNote: i?.foundedNote, owner: i?.owner ?? undefined, place: i?.place,
+    sources: [...new Set([...(c ? [`https://www.wikidata.org/wiki/${c[0]}`] : []), ...(WEB[id] ? [SWA_MAP] : []), ...(i?.sources ?? [])])],
   };
 });
 
@@ -200,4 +240,15 @@ export function distilleryOfProduct(productId: string | undefined): Distillery |
   if (s.composition !== 'single' || s.base !== '몰트') return null;
   const id = BY_PRODUCT[item.id] ?? BY_BRAND[item.brand];
   return id ? distilleryById.get(id) ?? null : null;
+}
+
+/** 지도에서 묶는 이름. 스코틀랜드는 화면용 지역(섬 포함), 그 밖은 나라 이름(부시밀즈의 북아일랜드도 아일랜드섬으로 묶는다) */
+export function mapGroupOf(d: Distillery): string {
+  if (d.country !== '스코틀랜드') return d.country;
+  return displayRegion(d.legalRegion, d.subRegion).group ?? '스코틀랜드';
+}
+
+/** 이 증류소에서 만든 기준 DB 싱글몰트 */
+export function productsOfDistillery(id: string): LiquorMasterItem[] {
+  return LIQUOR_MASTER.filter((m) => distilleryOfProduct(m.id)?.id === id);
 }

@@ -124,10 +124,13 @@ export interface WhiskySpec {
   process: string[];                      // 차콜 멜로잉 · 3회 증류
 }
 
+/** 방문자 투어. 확인하지 못한 곳은 이 값 대신 visit 을 null 로 둔다 */
+export type DistilleryTour = '운영' | '중단' | '없음';
+
 /** 방문 정보. 가격·운영 시간은 자주 바뀌어 넣지 않는다 */
 export interface DistilleryVisit {
-  open: boolean;          // 방문자 센터(투어) 운영 여부
-  url?: string | undefined;  // 공식 예약·안내 페이지
+  status: DistilleryTour;
+  url?: string | undefined;  // 공식 예약·안내 페이지 (중단·없음이면 그 사실을 적은 페이지)
   checked: string;        // 확인한 날짜 YYYY-MM-DD
 }
 
@@ -148,6 +151,13 @@ export interface Distillery {
   visit: DistilleryVisit | null;
   /** 브랜드와 증류소 이름이 다를 때 등 */
   note?: string | undefined;
+  /** 설립 연도. 기준이 갈리는 곳은 foundedNote 에 다른 연도를 밝힌다 */
+  founded?: number | undefined;
+  foundedNote?: string | undefined;
+  /** 현재 소유 회사 */
+  owner?: string | undefined;
+  /** 세부 위치(지역·마을) */
+  place?: string | undefined;
   sources: string[];
 }
 
