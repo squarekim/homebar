@@ -11,7 +11,7 @@ import { flavorWords } from '../../services/flavorService';
 import { computeCoverage, computeRegionMaturityMatrix, simulateAdd, MATRIX_TIERS } from '../../services/whiskyDiversityService';
 import { CANDIDATE_WHISKIES } from '../../data/candidateWhiskies';
 import { CLASS_FILTERS, classTags } from '../../data/whiskyClass';
-import { specOf, specTitle, specMatchesTerm } from '../../data/whiskySpec';
+import { specOf, specTitle, specMatchesTerm, displayRegionLabel } from '../../data/whiskySpec';
 import { distilleryOfProduct } from '../../data/distilleries';
 import { bottleKindLabel } from '../../data/bottleIngredients';
 import { FlavorBars, MakerNoteView, BottleBadges, Term, ChipRow, SearchBox, allChips } from '../components/common';
@@ -33,7 +33,7 @@ const joinDot = (xs: (string | false | null | undefined)[]) => xs.filter(Boolean
 
 function RegionTag({ w }: { w: Bottle }) {
   const s = specFor(w);
-  const r = s && joinDot([s.legalRegion, s.subRegion]);
+  const r = s && displayRegionLabel(s.legalRegion, s.subRegion);
   return r ? <span className="mi">{r}</span> : null;
 }
 
@@ -42,7 +42,7 @@ function SpecView({ s }: { s: WhiskySpec }) {
   const rows: [string, string][] = [
     ['분류', specTitle(s)],
     ['법적 명칭', s.legal ?? '기준 충족 미확인'],
-    ['나라 · 지역', joinDot([s.country, s.legalRegion, s.subRegion])],
+    ['나라 · 지역', joinDot([s.country, displayRegionLabel(s.legalRegion, s.subRegion, true)])],
     ['숙성', s.age ? `${s.age}년` : ''],
     ['캐스크', joinDot([...s.casks, ...s.caskMethod])],
     ['피트', s.peat === '미상' ? '' : s.peatNote ?? s.peat],
@@ -62,7 +62,7 @@ function DistilleryView({ d }: { d: Distillery }) {
   return (
     <div className="makernote">
       <p className="mn-line"><b>{d.nameKo}</b> {d.nameEn}</p>
-      <p className="mn-line">{joinDot([d.country, d.legalRegion, d.subRegion])}</p>
+      <p className="mn-line">{joinDot([d.country, displayRegionLabel(d.legalRegion, d.subRegion, true)])}</p>
       {d.note && <p className="mn-line">{d.note}</p>}
       <p className="mn-line">
         {d.visit?.url

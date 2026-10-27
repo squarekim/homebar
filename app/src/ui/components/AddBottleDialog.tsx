@@ -15,14 +15,14 @@ import { type LiquorCategory, type LiquorMasterItem, type UserBottle, type Whisk
 import { ChipRow, ChipMulti, Modal, MakerNoteView, chips, type ChipOption } from './common';
 import { MASTER_MAKER_NOTES } from '../../data/makerNotesMaster';
 import { toggleValue } from '../listUtils';
-import { specOf, specTitle } from '../../data/whiskySpec';
+import { specOf, specTitle, displayRegionLabel } from '../../data/whiskySpec';
 import { distilleryOfProduct } from '../../data/distilleries';
 
 /** 분류 · 지역 · 캐스크 · 증류소 한 줄 */
 function autoClass(item: LiquorMasterItem): string {
   const s = specOf(item.whiskyClass!, item.nameKo);
   const d = distilleryOfProduct(item.id);
-  return [specTitle(s), s.legalRegion, s.subRegion, ...s.casks, s.peat === '피티드' && '피티드', s.strength,
+  return [specTitle(s), displayRegionLabel(s.legalRegion, s.subRegion), ...s.casks, s.peat === '피티드' && '피티드', s.strength,
     d && `증류소 ${d.nameKo}`].filter(Boolean).join(' · ');
 }
 

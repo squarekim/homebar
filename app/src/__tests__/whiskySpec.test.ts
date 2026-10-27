@@ -3,7 +3,7 @@ import { WHISKY_CLASS, CLASS_FILTERS, classMatchesTerm } from '../data/whiskyCla
 import { LIQUOR_MASTER } from '../data/liquorMaster';
 import { CANDIDATE_WHISKIES } from '../data/candidateWhiskies';
 import { whiskies } from '../data/adapters';
-import { specOf, specTitle, specMatchesTerm, CHARACTER_AXIS, CASK_LABEL, SCOTCH_REGIONS, ageFromName } from '../data/whiskySpec';
+import { specOf, specTitle, specMatchesTerm, CHARACTER_AXIS, CASK_LABEL, SCOTCH_REGIONS, ageFromName, displayRegion, displayRegionLabel, SCOTCH_DISPLAY_REGIONS } from '../data/whiskySpec';
 
 const records = [
   ...Object.entries(WHISKY_CLASS).map(([id, c]) => ({ id: `seed:${id}`, c })),
@@ -134,6 +134,28 @@ describe('증류소 좌표', async () => {
     for (const d of DISTILLERIES.filter((x) => x.legalRegion === '아일라')) {
       expect(d.lat!, d.id).toBeGreaterThan(55.55); expect(d.lat!, d.id).toBeLessThan(55.95);
       expect(d.lng!, d.id).toBeLessThan(-6.0);
+    }
+  });
+});
+
+describe('화면용 지역 (섬은 따로 묶는다)', () => {
+  it('섬 지역은 섬으로 묶고 법정 지역을 함께 밝힌다', () => {
+    expect(displayRegion('하이랜드', '섬 · 스카이')).toEqual({ group: '섬', place: '스카이', legalNote: '법정 지역은 하이랜드' });
+    expect(displayRegionLabel('하이랜드', '섬 · 오크니', true)).toBe('섬 · 오크니 (법정 지역은 하이랜드)');
+  });
+
+  it('섬이 아니면 법정 지역 그대로다', () => {
+    expect(displayRegionLabel('하이랜드', '해안', true)).toBe('하이랜드 · 해안');
+    expect(displayRegionLabel('아일라', null)).toBe('아일라');
+  });
+
+  it('섬 증류소 3곳은 모두 섬 묶음에 들어가고, 묶음 이름은 정해진 6개 안에 있다', async () => {
+    const { DISTILLERIES } = await import('../data/distilleries');
+    const scotch = DISTILLERIES.filter((d) => d.country === '스코틀랜드');
+    const islands = scotch.filter((d) => displayRegion(d.legalRegion, d.subRegion).group === '섬').map((d) => d.id);
+    expect(islands.sort()).toEqual(['highlandpark', 'lochranza', 'talisker']);
+    for (const d of scotch) {
+      expect(SCOTCH_DISPLAY_REGIONS as readonly string[]).toContain(displayRegion(d.legalRegion, d.subRegion).group);
     }
   });
 });

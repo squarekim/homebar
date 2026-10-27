@@ -13,6 +13,29 @@ import { type WhiskyBase, type WhiskyClass, type WhiskySpec } from '../models/ty
 
 export const SCOTCH_REGIONS = ['하이랜드', '로우랜드', '스페이사이드', '아일라', '캠벨타운'] as const;
 
+/** 화면에서 묶는 스카치 지역. 섬은 법정 지역이 아니라 하이랜드에서 따로 떼어 보여 주는 묶음이다 */
+export const SCOTCH_DISPLAY_REGIONS = ['스페이사이드', '하이랜드', '섬', '아일라', '캠벨타운', '로우랜드'] as const;
+
+/**
+ * 화면용 지역. 저장은 법정 지역(하이랜드 + 섬 · 스카이)대로 두고, 보여 줄 때만 섬을 따로 묶는다.
+ * 입문자에게는 '섬'이 익숙한 이름이라서다. 법정 지역은 legalNote 로 함께 밝힌다.
+ */
+export function displayRegion(legalRegion: string | null, subRegion: string | null): {
+  group: string | null; place: string | null; legalNote: string | null;
+} {
+  const island = subRegion?.startsWith('섬') ?? false;
+  if (!island) return { group: legalRegion, place: subRegion, legalNote: null };
+  const place = subRegion!.replace(/^섬\s*·?\s*/, '') || null;
+  return { group: '섬', place, legalNote: legalRegion ? `법정 지역은 ${legalRegion}` : null };
+}
+
+/** "섬 · 스카이 (법정 지역은 하이랜드)" 처럼 한 줄로 */
+export function displayRegionLabel(legalRegion: string | null, subRegion: string | null, withNote = false): string {
+  const r = displayRegion(legalRegion, subRegion);
+  const head = [r.group, r.place].filter(Boolean).join(' · ');
+  return withNote && r.legalNote ? `${head} (${r.legalNote})` : head;
+}
+
 const COUNTRY: Record<string, string> = {
   스카치: '스코틀랜드', 아이리시: '아일랜드', 버번: '미국', 테네시: '미국', 아메리칸: '미국',
   캐나디안: '캐나다', 재패니즈: '일본', 코리안: '한국',
