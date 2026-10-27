@@ -1,7 +1,7 @@
 /** Recipe-derived SVG artwork; visual rules live in drinkVisual.ts. */
 import { useId } from 'react';
 import { type Cocktail } from '../../models/types';
-import { drinkColor, glassOf, garnishOf, visualEffectOf, ICE, type GlassKind, type GarnishKind } from '../../data/drinkVisual';
+import { drinkColor, glassOf, garnishOf, visualEffectOf, ICE, type GlassKind, type GarnishKind, type VisualEffect } from '../../data/drinkVisual';
 
 type Ellipse = { cx: number; cy: number; rx: number; ry: number };
 interface Shape {
@@ -52,14 +52,14 @@ function garnishMark(kind: GarnishKind, x: number, y: number, shape: Shape) {
   return <g key={kind} transform={`translate(${x} ${y})`}>{local}</g>;
 }
 
-export function GlassArt({ cocktail, size = 56 }: { cocktail: Cocktail; size?: number }) {
+/** 잔 한 잔 — 칵테일이든 위스키든 색·효과만 받아 같은 그림을 그린다. */
+function Drink({ kind, fill, alpha, effects, garnish, size }: {
+  kind: GlassKind; fill: string; alpha: number; effects: VisualEffect; garnish: GarnishKind[]; size: number;
+}) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, ''); // useId 의 콜론은 url(#…) 참조에서 안전하지 않다
   const id = (name: string) => `glass-${uid}-${name}`;
   const url = (name: string) => `url(#${id(name)})`;
-  const kind = glassOf(cocktail);
   const g = GLASS[kind];
-  const { fill, alpha } = drinkColor(cocktail);
-  const effects = visualEffectOf(cocktail);
   const a = g.iceArea;
   const bubbles = effects.bubbles
     ? Array.from({length:16},(_,i)=>({ cx:g.surface.cx+((i*7)%13-6)*g.surface.rx/8, cy:g.surface.cy+5+(i*11)%38, r:.6+(i%3)*.35 }))
@@ -108,11 +108,26 @@ export function GlassArt({ cocktail, size = 56 }: { cocktail: Cocktail; size?: n
     <ellipse {...g.rim} fill="none" stroke="currentColor" strokeWidth="1" opacity=".5"/>
     <path d={`M${g.rim.cx-g.rim.rx+3} ${g.rim.cy-1} Q${g.rim.cx} ${g.rim.cy-g.rim.ry-1} ${g.rim.cx+g.rim.rx-3} ${g.rim.cy-1}`} fill="none" stroke="#FFF" strokeWidth="1" opacity=".8"/>
     {/* Tall leaves need headroom; separate paired garnishes even on a narrow flute. */}
-    {garnishOf(cocktail).map((k,i)=>garnishMark(
+    {garnish.map((k,i)=>garnishMark(
       k,
       g.rim.cx+(i===0 ? 1:-1)*Math.max(8,g.rim.rx-3),
       Math.max(14,g.rim.cy-2),
       g,
     ))}
   </svg>;
+}
+
+export function GlassArt({ cocktail, size = 56 }: { cocktail: Cocktail; size?: number }) {
+  const { fill, alpha } = drinkColor(cocktail);
+  return <Drink kind={glassOf(cocktail)} fill={fill} alpha={alpha}
+    effects={visualEffectOf(cocktail)} garnish={garnishOf(cocktail)} size={size}/>;
+}
+
+/**
+ * 위스키 한 잔 — 레시피가 아니라 병에서 색을 받는다(규칙은 bottleVisual.ts).
+ * 잔 모양은 잔대로 여기 한 곳에만 둔다.
+ */
+export function NeatPour({ fill, alpha, size = 56 }: { fill: string; alpha: number; size?: number }) {
+  return <Drink kind="rocks" fill={fill} alpha={alpha}
+    effects={{ bubbles:false, foam:false }} garnish={[]} size={size}/>;
 }

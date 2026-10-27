@@ -4,7 +4,7 @@
  */
 import {
   ingredients, ingredientById, ingredientIdOf, ingredientFlavor,
-  cocktails, cocktailById, bottles, whiskies, spirits,
+  cocktails, cocktailById, bottles, bottleById, whiskies, spirits,
   mixers, mixerPairings, purchaseSeeds, categories,
 } from '../data/adapters';
 import { type Ingredient, type Cocktail, type Bottle } from '../models/types';
@@ -20,6 +20,7 @@ export const referenceRepo = {
   cocktailById: (id: string): Cocktail | undefined => cocktailById.get(id),
 
   bottles: (): Bottle[] => bottles,
+  bottleById: (id: string): Bottle | undefined => bottleById.get(id),
   whiskies: (): Bottle[] => whiskies,
   spirits: (): Bottle[] => spirits,
 

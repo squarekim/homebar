@@ -9,3 +9,10 @@
 - Namespace every SVG clipPath, gradient, and filter ID with React useId() so multiple instances can coexist.
 - Do not change ingredient ownership or cocktail availability logic as part of visual work.
 - After changes, run `npm test` and `npm run build` from `app`.
+
+# Bottle visuals
+
+- Treat `app/src/data/bottleVisual.ts` and `app/src/ui/components/BottleArt.tsx` as the same feature for bottles, and follow every rule above: 80×80 viewBox, useId-namespaced IDs, no photos or randomness, representation only — never judgment.
+- Derive the bottle shape from `whiskyClass` origin and type, falling back to `bottleKind`. Derive the liquid color from the spirit kind, then pull it toward the cask (sherry/PX redder, virgin oak deeper).
+- The public build replaces `whiskyClassSeed` with an empty record because owning a bottle is personal data, so every bottle rule must still produce a sane result with `whiskyClass` undefined.
+- Bottles are drawn in lists and in the whisky detail sheet; a whisky recommended in Today's lead spot is served as a glass instead (`NeatPour`), because that spot invites you to drink it. Keep glass geometry in GlassArt.tsx only.
