@@ -7,7 +7,7 @@
 import { createContext, useContext, useState, type ReactNode, useCallback } from 'react';
 import { type DrinkType, type ServingStyle, type RecommendationResult } from '../models/types';
 
-export type Tab = 'today' | 'cocktails' | 'whisky' | 'cellar' | 'notes' | 'settings';
+export type Tab = 'today' | 'cocktails' | 'whisky' | 'cellar' | 'notes' | 'settings' | 'starter';
 
 export interface LogPrefill {
   drinkId: string;

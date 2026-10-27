@@ -66,7 +66,7 @@ function inventoryCoverage(ck: Cocktail, heldIds: Set<string>, subMap: Map<strin
 
 /** 칵테일 강도: 주정 재료 ml 비율 (0~1) */
 const SPIRIT_CATS = new Set(['위스키', '진', '보드카', '럼', '데킬라·아가베', '브랜디']);
-function cocktailStrength(ck: Cocktail): number {
+export function cocktailStrength(ck: Cocktail): number {
   let spirit = 0, total = 0;
   for (const i of ck.ingredients) {
     const ml = i.amountMl ?? 0;

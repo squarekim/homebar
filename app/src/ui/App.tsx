@@ -15,6 +15,7 @@ import { WhiskyPage } from './pages/WhiskyPage';
 import { CellarPage } from './pages/CellarPage';
 import { NotesPage } from './pages/NotesPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { StarterPage } from './pages/StarterPage';
 import { IconHome, IconMartini, IconWhisky, IconBottle, IconNote, IconGear, IconLogo } from './components/icons';
 import { IS_BETA } from '../config';
 
@@ -72,6 +73,7 @@ function Shell() {
         {tab === 'cellar' && <CellarPage />}
         {tab === 'notes' && <NotesPage />}
         {tab === 'settings' && <SettingsPage />}
+        {tab === 'starter' && <StarterPage />}
         <div className="tailspace" />
       </main>
 

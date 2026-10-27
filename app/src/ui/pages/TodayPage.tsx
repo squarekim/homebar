@@ -87,6 +87,13 @@ export function TodayPage() {
         </div>
       )}
 
+      {!ctx.hasTaste && (
+        <div className="sample">
+          <span><b>처음이라면</b> 평소 마시는 음료로 위스키와 칵테일을 골라 드려요.</span>
+          <button className="btn sm" onClick={() => goTab('starter')}>취향 찾기</button>
+        </div>
+      )}
+
       <h2 className="pagetitle">
         오늘의 한 잔
         <span className="sub">{ctx.hasTaste ? '취향과 보유 재료 기준' : '보유 재료 기준 (취향 설정 전)'}</span>
