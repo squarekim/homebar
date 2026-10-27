@@ -11,7 +11,7 @@ import { useLogs } from '../../hooks/useData';
 import { todayPicks, type RecommendMode } from '../../services/recommendationService';
 import { STATUS_LEAD_KO } from '../../services/availabilityService';
 import { ChipRow, LogCard } from '../components/common';
-import { CocktailMark, LeadArt } from '../components/Mark';
+import { BottleMark, CocktailMark, LeadArt } from '../components/Mark';
 import { MODES, GroupRec, PurchaseRec, ClearStockRec } from './RecommendPage';
 import { type RecommendationResult } from '../../models/types';
 import { IS_BETA } from '../../config';
@@ -100,7 +100,9 @@ export function TodayPage() {
         <>
           <section className="lead">
             <div className="inner">
-              <LeadArt base={lead.base} kind={lead.kind} cocktailId={lead.kind === 'cocktail' ? lead.id : undefined} />
+              <LeadArt base={lead.base} kind={lead.kind}
+                cocktailId={lead.kind === 'cocktail' ? lead.id : undefined}
+                bottleId={lead.kind === 'whisky' ? lead.id : undefined} />
               <div className="text">
                 <h3>{lead.name}</h3>
                 <p className="taste">{taste(lead)}</p>
@@ -120,7 +122,9 @@ export function TodayPage() {
               <div className="rowlist">
                 {alts.map((r) => (
                   <button className="rowitem" key={r.kind + r.id} onClick={() => open(r)}>
-                    <CocktailMark base={r.base} cocktailId={r.kind === 'cocktail' ? r.id : undefined} size="sm" />
+                    {r.kind === 'whisky'
+                      ? <BottleMark kind={r.base} bottleId={r.id} size="sm" />
+                      : <CocktailMark base={r.base} cocktailId={r.id} size="sm" />}
                     <div className="body">
                       <span className="nm">{r.name}</span>
                       <div className="taste">{taste(r)}</div>

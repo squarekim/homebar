@@ -6,7 +6,9 @@
  * 크기가 고정이라 이미지가 생기기 전에도 목록 높이가 흔들리지 않는다.
  */
 import { IconMartini, IconWhisky, IconBottle } from './icons';
-import { GlassArt } from './GlassArt';
+import { GlassArt, NeatPour } from './GlassArt';
+import { BottleArt } from './BottleArt';
+import { bottleColor } from '../../data/bottleVisual';
 import { referenceRepo } from '../../repositories/referenceRepo';
 
 type Size = 'sm' | 'md' | 'lg';
@@ -39,21 +41,37 @@ export function CocktailMark({ base, cocktailId, size = 'md' }: {
   );
 }
 
-/** 병 — 위스키·보유 술 */
-export function BottleMark({ kind, size = 'md' }: { kind?: string | undefined; size?: Size }) {
+/**
+ * 병 — 위스키·보유 술. bottleId 가 있으면 그 병의 분류로 모양·술 색을 그리고,
+ * 없으면(공개 빌드의 빈 분류, 아직 못 찾은 병) 종류 아이콘만 둔다.
+ */
+export function BottleMark({ kind, bottleId, size = 'md' }: {
+  kind?: string | undefined; bottleId?: string | undefined; size?: Size;
+}) {
+  const b = bottleId ? referenceRepo.bottleById(bottleId) : undefined;
   return (
-    <span className={`mark ${size} k-${keyOf(kind)}`} aria-hidden="true"><IconBottle /></span>
+    <span className={`mark ${size} k-${keyOf(kind)}`} aria-hidden="true">
+      {b ? <BottleArt bottle={b} size={PX[size]} /> : <IconBottle />}
+    </span>
   );
 }
 
-/** 대표 추천의 큰 자리 — 사진이 들어갈 영역을 같은 규칙으로 채운다 */
-export function LeadArt({ base, kind, cocktailId, size = 124 }: {
-  base?: string | undefined; kind: 'cocktail' | 'whisky'; cocktailId?: string | undefined; size?: number;
+/**
+ * 대표 추천의 큰 자리 — 사진이 들어갈 영역을 같은 규칙으로 채운다.
+ * 위스키는 병이 아니라 잔으로 낸다. 이 자리는 "지금 이걸 마셔라"는 권유라서다.
+ */
+export function LeadArt({ base, kind, cocktailId, bottleId, size = 124 }: {
+  base?: string | undefined; kind: 'cocktail' | 'whisky';
+  cocktailId?: string | undefined; bottleId?: string | undefined; size?: number;
 }) {
   const ck = cocktailId ? referenceRepo.cocktailById(cocktailId) : undefined;
+  const bt = bottleId ? referenceRepo.bottleById(bottleId) : undefined;
+  const pour = bt ? bottleColor(bt) : undefined;
   return (
     <div className={`art k-${keyOf(base)}`} aria-hidden="true">
-      {ck ? <GlassArt cocktail={ck} size={size} /> : kind === 'whisky' ? <IconWhisky /> : <IconMartini />}
+      {ck ? <GlassArt cocktail={ck} size={size} />
+        : pour ? <NeatPour fill={pour.fill} alpha={pour.alpha} size={size} />
+        : kind === 'whisky' ? <IconWhisky /> : <IconMartini />}
     </div>
   );
 }

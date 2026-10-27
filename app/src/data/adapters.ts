@@ -174,6 +174,7 @@ export const bottles: Bottle[] = SEED.bottles.map((b) => {
     whiskyClass: WHISKY_CLASS[b.id],
   };
 });
+export const bottleById = new Map<string, Bottle>(bottles.map((b) => [b.id, b]));
 export const whiskies: Bottle[] = bottles.filter((b) => b.isWhisky);
 export const spirits: Bottle[] = bottles.filter((b) => b.isSpirit);
 

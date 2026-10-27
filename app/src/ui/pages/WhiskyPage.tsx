@@ -46,7 +46,7 @@ function WhiskyDetail({ bottle: w }: { bottle: Bottle }) {
   return (
     <article className="detail">
       <h2>{w.name}</h2>
-      <div className="art"><BottleMark kind={bottleKindLabel(w)} size="lg" /></div>
+      <div className="art"><BottleMark kind={bottleKindLabel(w)} bottleId={w.id} size="lg" /></div>
       <p className="taste">{character(w)}</p>
       <div className="meta">
         {w.abv && <span className="mi">{w.abv}</span>}
@@ -117,7 +117,7 @@ export function WhiskyPage() {
           <div className="rowlist">
             {rows.map((w) => (
               <button className="rowitem" key={w.id} aria-current={bottleId === w.id} onClick={() => openBottle(w.id)}>
-                <BottleMark kind={bottleKindLabel(w)} size="sm" />
+                <BottleMark kind={bottleKindLabel(w)} bottleId={w.id} size="sm" />
                 <div className="body">
                   <span className="nm">{w.name}</span>
                   <div className="taste">{character(w)}</div>
