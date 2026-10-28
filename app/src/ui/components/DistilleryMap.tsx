@@ -227,7 +227,6 @@ export function DistilleryMapView({ onBack }: { onBack: () => void }) {
 /** 세계 지도에서 고른 증류소. 확인한 것만 적고, 투어를 확인하지 못했으면 '없음'으로 적지 않는다 */
 function WorldDistilleryCard({ d }: { d: WorldDistillery }) {
   const products = d.appId ? productsOfDistillery(d.appId) : [];
-  const tourBy = d.tourBy === '제미나이만' ? '제미나이 조사' : d.tourBy ? 'GPT 조사' : '';
   return (
     <div className="makernote">
       <p className="mn-line"><b>{d.ko}</b> {d.en}</p>
@@ -237,7 +236,7 @@ function WorldDistilleryCard({ d }: { d: WorldDistillery }) {
       {products.length > 0 && <p className="mn-line">이 앱의 제품 {products.map((p) => p.nameKo).join(', ')}</p>}
       <p className="mn-line">
         {d.tourUrl && d.tour ? <a href={d.tourUrl} target="_blank" rel="noopener">{tourLabel(d)} ↗</a> : <span>{tourLabel(d)}</span>}
-        {tourBy && <small className="sub"> ({tourBy}, 2026-10-28)</small>}
+        {d.tour && <small className="sub"> (2026-10-28 확인)</small>}
       </p>
       {d.coord === '마을' && <p className="mn-line"><small className="sub">점은 증류소가 있는 마을 위치예요(Wikidata)</small></p>}
       {d.src && <a className="mn-src" href={d.src} target="_blank" rel="noopener">출처 ↗</a>}

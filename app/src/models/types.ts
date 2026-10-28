@@ -177,7 +177,7 @@ export interface WorldDistillery {
   statusNote?: string;
   /** 없음 = 두 조사 모두 투어 안내를 찾지 못함 */
   tour?: DistilleryTour;
-  /** 투어 값을 어느 조사에서 가져왔는지 */
+  /** 투어 값을 어느 조사에서 가져왔는지. 화면에는 쓰지 않고 재확인할 곳을 고를 때만 쓴다 */
   tourBy?: 'GPT' | '제미나이만';
   tourUrl?: string;
   founded?: number;
