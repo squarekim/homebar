@@ -8,7 +8,9 @@
 import { IconMartini, IconWhisky, IconBottle } from './icons';
 import { GlassArt, NeatPour } from './GlassArt';
 import { BottleArt } from './BottleArt';
+import { CaskArt } from './CaskArt';
 import { bottleColor } from '../../data/bottleVisual';
+import { drawsAsCask } from '../../data/caskVisual';
 import { referenceRepo } from '../../repositories/referenceRepo';
 
 type Size = 'sm' | 'md' | 'lg';
@@ -42,8 +44,8 @@ export function CocktailMark({ base, cocktailId, size = 'md' }: {
 }
 
 /**
- * 병 — 위스키·보유 술. bottleId 가 있으면 그 병의 분류로 모양·술 색을 그리고,
- * 없으면(공개 빌드의 빈 분류, 아직 못 찾은 병) 종류 아이콘만 둔다.
+ * 병 — 위스키·보유 술. bottleId 가 있으면 위스키는 오크통(캐스크·피트·연수)으로,
+ * 그 밖의 술은 병(모양·술 색)으로 그리고, 못 찾은 병은 종류 아이콘만 둔다.
  */
 export function BottleMark({ kind, bottleId, size = 'md' }: {
   kind?: string | undefined; bottleId?: string | undefined; size?: Size;
@@ -51,7 +53,7 @@ export function BottleMark({ kind, bottleId, size = 'md' }: {
   const b = bottleId ? referenceRepo.bottleById(bottleId) : undefined;
   return (
     <span className={`mark ${size} k-${keyOf(kind)}`} aria-hidden="true">
-      {b ? <BottleArt bottle={b} size={PX[size]} /> : <IconBottle />}
+      {b ? (drawsAsCask(b) ? <CaskArt bottle={b} size={PX[size]} /> : <BottleArt bottle={b} size={PX[size]} />) : <IconBottle />}
     </span>
   );
 }
