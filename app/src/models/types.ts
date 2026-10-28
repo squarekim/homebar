@@ -161,6 +161,37 @@ export interface Distillery {
   sources: string[];
 }
 
+/** 증류소 운영 상태. '근거 약함'은 2차 자료로만 확인한 곳 */
+export type DistilleryStatus = '운영' | '운영 (근거 약함)' | '증류 중단' | '준공 (생산 시작 미확인)' | '법정관리 중' | '청산 중';
+
+/** 세계 증류소 지도의 점 하나. 2026-10-28 조사 병합본에서 생성한다(worldDistilleries.ts) */
+export interface WorldDistillery {
+  id: string;
+  ko: string;
+  en: string;
+  /** 영국은 스코틀랜드·잉글랜드·웨일스·북아일랜드로 나눠 적는다 */
+  country: string;
+  region?: string;
+  place?: string;
+  status: DistilleryStatus;
+  statusNote?: string;
+  /** 없음 = 두 조사 모두 투어 안내를 찾지 못함 */
+  tour?: DistilleryTour;
+  /** 투어 값을 어느 조사에서 가져왔는지 */
+  tourBy?: 'GPT' | '제미나이만';
+  tourUrl?: string;
+  founded?: number;
+  lat?: number;
+  lng?: number;
+  /** 증류소 = 증류소 자체 좌표, 마을 = 소재 마을 좌표(Wikidata) */
+  coord?: '증류소' | '마을';
+  src?: string;
+  /** 하이랜드 중 본섬 밖 섬에 있는 곳 */
+  isle?: true;
+  /** 기존 싱글몰트 40곳(distilleries.ts) 중 같은 곳 */
+  appId?: string;
+}
+
 /**
  * 병에 붙는 뱃지 — 자유 메모 대신 구조화해서 단다. 게임의 업적처럼 읽히는 게 목적이다.
  *  first  : 마일스톤. "첫 피트 싱글몰트" — 시드 병은 t 필드, 사용자 병은 추가 순서에서 계산한다.

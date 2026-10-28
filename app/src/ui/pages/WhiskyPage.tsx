@@ -3,7 +3,7 @@
  * 목록은 병 · 이름 · 도수 · 핵심 맛까지만 보여주고, 상세에서 맛 설명과 제조사 공식 노트를 먼저 읽힌다.
  * 지역·캐스크·분류·향미 수치는 그 뒤로 미룬다. 보유 수량·잔량 관리는 내 술장이 맡는다.
  */
-import { useMemo, useState } from 'react';
+import { lazy, Suspense, useMemo, useState } from 'react';
 import { useUI } from '../UIContext';
 import { useWhiskies, useBottles, useBottleNotes } from '../../hooks/useData';
 import { bottleNoteRepo } from '../../repositories/bottleNoteRepo';
@@ -14,7 +14,9 @@ import { CLASS_FILTERS, classTags } from '../../data/whiskyClass';
 import { specOf, specTitle, specMatchesTerm, displayRegionLabel } from '../../data/whiskySpec';
 import { distilleryOfProduct } from '../../data/distilleries';
 import { DistilleryCard } from '../components/DistilleryCard';
-import { DistilleryMapView } from '../components/DistilleryMap';
+
+/** 세계 지도는 데이터·윤곽이 커서(약 320KB) 열 때 불러온다 */
+const DistilleryMapView = lazy(() => import('../components/DistilleryMap').then((m) => ({ default: m.DistilleryMapView })));
 import { bottleKindLabel } from '../../data/bottleIngredients';
 import { FlavorBars, MakerNoteView, BottleBadges, Term, ChipRow, SearchBox, allChips } from '../components/common';
 import { BottleMark } from '../components/Mark';
@@ -142,7 +144,7 @@ export function WhiskyPage() {
   const selected = allBottles.find((b) => b.id === bottleId);
 
   if (gapView) return <GapView onBack={() => setGapView(false)} />;
-  if (mapView) return <DistilleryMapView onBack={() => setMapView(false)} />;
+  if (mapView) return <Suspense fallback={<div className="hint">지도를 불러오는 중이에요</div>}><DistilleryMapView onBack={() => setMapView(false)} /></Suspense>;
 
   return (
     <>

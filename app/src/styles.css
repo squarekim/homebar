@@ -455,10 +455,13 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 .distmap .dot.off{opacity:.25;pointer-events:none}
 .distmap .dot.picked circle:not(.hit){stroke:var(--ink)}
 .distmap .dot:focus-visible circle:not(.hit){stroke:var(--ink)}
-.distmap .g-spey circle:not(.hit){fill:#D55E00}
-.distmap .g-high circle:not(.hit){fill:#0072B2}
-.distmap .g-isle circle:not(.hit){fill:#CC79A7}
-.distmap .g-islay circle:not(.hit){fill:#009E73}
-.distmap .g-camp circle:not(.hit){fill:#E69F00}
-.distmap .g-low circle:not(.hit){fill:#56B4E9}
-.distmap .g-ire circle:not(.hit){fill:#7F7F7F}
+.distmap .t-on circle:not(.hit){fill:#009E73}
+.distmap .t-pause circle:not(.hit){fill:#E69F00}
+.distmap .t-none circle:not(.hit){fill:#7F7F7F}
+.distmap .t-unk circle:not(.hit){fill:var(--bg);stroke:var(--mute)}
+.distmap .stop circle:not(.hit){stroke:#D55E00}
+.maplegend{display:flex;flex-wrap:wrap;gap:var(--s1) var(--s2);font-size:13px;color:var(--mute);margin-bottom:var(--s1)}
+.maplegend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.maplegend .t-on{background:#009E73}.maplegend .t-pause{background:#E69F00}.maplegend .t-none{background:#7F7F7F}
+.maplegend .t-unk{background:var(--bg);border:1.5px solid var(--mute)}
+.maplegend .stop{background:var(--bg);border:1.5px dashed #D55E00}
