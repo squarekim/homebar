@@ -82,17 +82,21 @@ function Drink({ kind, fill, alpha, effects, garnish, size }: {
       <linearGradient id={id('depth')} x1="0" y1={g.surface.cy} x2="0" y2={g.surface.cy+40} gradientUnits="userSpaceOnUse">
         <stop stopColor="#1A0E06" stopOpacity="0"/><stop offset="1" stopColor="#1A0E06" stopOpacity=".32"/>
       </linearGradient>
-      <linearGradient id={id('glow')} x1={g.surface.cx-g.surface.rx} x2={g.surface.cx+g.surface.rx} gradientUnits="userSpaceOnUse">
-        <stop stopColor="#FFF" stopOpacity="0"/><stop offset=".3" stopColor="#FFF" stopOpacity=".2"/><stop offset=".55" stopColor="#FFF" stopOpacity="0"/>
-      </linearGradient>
+      {/* 왼쪽 위에서 넓게 들어온 빛이 술 안에서 부드럽게 번진다 */}
+      <radialGradient id={id('glow')} cx={g.surface.cx-g.surface.rx*.35} cy={g.surface.cy+5} r={Math.max(8, g.surface.rx*1.05)} gradientUnits="userSpaceOnUse">
+        <stop stopColor="#FFF" stopOpacity=".3"/><stop offset="1" stopColor="#FFF" stopOpacity="0"/>
+      </radialGradient>
       <linearGradient id={id('wall')} x1="0" y1="0" x2="0" y2="1">
         <stop stopColor="#E8F4F7" stopOpacity=".1"/><stop offset=".75" stopColor="#E8F4F7" stopOpacity=".16"/><stop offset="1" stopColor="#F4FBFD" stopOpacity=".42"/>
       </linearGradient>
       <linearGradient id={id('ice')} x2="1" y2="1"><stop stopColor="#FFFFFF" stopOpacity=".85"/><stop offset="1" stopColor="#D5EDF4" stopOpacity=".18"/></linearGradient>
-      <linearGradient id={id('glass')}><stop stopColor="#FFF" stopOpacity=".55"/><stop offset=".35" stopColor="#FFF" stopOpacity=".03"/><stop offset="1" stopColor="#CCE5EC" stopOpacity=".24"/></linearGradient>
-      <filter id={id('shadow')} x="-50%" y="-100%" width="200%" height="300%"><feGaussianBlur stdDeviation="1.5"/></filter>
+      {/* 유리 몸통: 빛 쪽은 맑고, 반대쪽은 옅은 청록으로 가라앉는다 */}
+      <linearGradient id={id('glass')} x2="1"><stop stopColor="#FFF" stopOpacity=".34"/><stop offset=".45" stopColor="#E6F2F5" stopOpacity=".07"/><stop offset="1" stopColor="#9FBFC8" stopOpacity=".24"/></linearGradient>
+      <filter id={id('shadow')} x="-50%" y="-100%" width="200%" height="300%"><feGaussianBlur stdDeviation="2"/></filter>
+      {/* 반사광 가장자리를 붓질처럼 풀어 준다 */}
+      <filter id={id('soft')} x="-50%" y="-20%" width="200%" height="140%"><feGaussianBlur stdDeviation=".55"/></filter>
     </defs>
-    <ellipse cx="40" cy="73" rx={kind === 'rocks' || kind === 'mug' ? 20:15} ry="2" fill="#263440" opacity=".2" filter={url('shadow')}/>
+    <ellipse cx="40" cy="73" rx={kind === 'rocks' || kind === 'mug' ? 21:16} ry="2.4" fill="#263440" opacity=".26" filter={url('shadow')}/>
     {/* 굽 없는 잔은 겉선과 안쪽 사이를 유리로 채워 벽 두께와 무거운 바닥을 보인다 */}
     {SOLID.has(kind) && <path d={g.outline} fill={url('wall')}/>}
     <path d={g.inner} fill={url('glass')}/>
@@ -106,7 +110,7 @@ function Drink({ kind, fill, alpha, effects, garnish, size }: {
           const x = a.x+(i%2)*(a.width-edge);
           const y = a.y+i*(a.height-edge)/Math.max(1,ICE[kind]-1);
           return <g key={i} transform={`translate(${x} ${y}) rotate(${i%2 ? 12:-9} ${edge/2} ${edge/2})`}>
-            <rect width={edge} height={edge} rx="1.5" fill={url('ice')} stroke="#F4FDFF" strokeOpacity=".65" strokeWidth=".7"/>
+            <rect width={edge} height={edge} rx="2" fill={url('ice')} stroke="#F4FDFF" strokeOpacity=".5" strokeWidth=".6"/>
             <path d={`M1.5 1.5 L${edge*.62} 1.5 L1.5 ${edge*.62}Z`} fill="#FFF" opacity=".35"/>
             <path d={`M1 2 L${edge-3} 2 L${edge-1} 0 M${edge-3} 2 V${edge-2} L${edge} ${edge}`} fill="none" stroke="#FFF" strokeOpacity=".85" strokeWidth=".75"/>
             <path d={`M1 ${edge-2} L${edge-3} ${edge-2} L${edge} ${edge} H2Z`} fill="#A9CFDB" opacity=".3"/>
@@ -120,17 +124,19 @@ function Drink({ kind, fill, alpha, effects, garnish, size }: {
       </g>
       <ellipse {...g.surface} fill={fill} opacity=".65" stroke="#FFF" strokeOpacity=".5" strokeWidth=".7"/>
       {effects.foam && <g fill="#FFF4DC"><rect x={g.surface.cx-g.surface.rx-1} y={g.surface.cy} width={g.surface.rx*2+2} height="3.5"/><ellipse {...g.surface} ry={g.surface.ry+1}/>{Array.from({length:9},(_,i)=><circle key={i} cx={g.surface.cx+(i-4)*g.surface.rx/5} cy={g.surface.cy+2.6+(i%2)*.5} r=".75" fill="#E4D6BB" opacity=".6"/>)}</g>}
-      <path d={`M${hx.toFixed(1)} ${g.surface.cy+3} Q${(hx-1).toFixed(1)} ${g.surface.cy+10} ${(hx+1.5).toFixed(1)} ${g.surface.cy+17}`} fill="none" stroke="#FFF" strokeWidth={hw} strokeLinecap="round" opacity=".6"/>
+      <path d={`M${hx.toFixed(1)} ${g.surface.cy+3} Q${(hx-1).toFixed(1)} ${g.surface.cy+10} ${(hx+1.5).toFixed(1)} ${g.surface.cy+17}`} fill="none" stroke="#FFF" strokeWidth={hw*1.2} strokeLinecap="round" opacity=".6" filter={url('soft')}/>
     </g>
     {/* 왼쪽 벽을 따라 긴 반사광, 오른쪽에 짧은 반짝임 */}
-    <g clipPath={url('inner')} fill="none" stroke="#FFF" strokeLinecap="round">
-      <path d={`M${(g.rim.cx-g.rim.rx*.72).toFixed(1)} ${g.rim.cy+3} L${(g.rim.cx-g.rim.rx*.62).toFixed(1)} ${g.rim.cy+3+(g.iceArea.y+g.iceArea.height-g.rim.cy)*.8}`} strokeWidth={hw*1.25} opacity=".42"/>
+    <g clipPath={url('inner')} fill="none" stroke="#FFF" strokeLinecap="round" filter={url('soft')}>
+      <path d={`M${(g.rim.cx-g.rim.rx*.72).toFixed(1)} ${g.rim.cy+3} L${(g.rim.cx-g.rim.rx*.62).toFixed(1)} ${g.rim.cy+3+(g.iceArea.y+g.iceArea.height-g.rim.cy)*.8}`} strokeWidth={hw*1.6} opacity=".55"/>
       <path d={`M${(g.rim.cx+g.rim.rx*.66).toFixed(1)} ${g.rim.cy+4} l-.6 ${Math.max(4,g.iceArea.height*.3).toFixed(1)}`} strokeWidth={hw*.8} opacity=".3"/>
     </g>
-    <path d={g.outline} fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" opacity=".6"/>
-    <path d={g.outline} fill="none" stroke="#FFFFFF" strokeWidth=".55" strokeLinecap="round" strokeLinejoin="round" opacity=".45"/>
-    <ellipse {...g.rim} fill="none" stroke="currentColor" strokeWidth="1" opacity=".5"/>
-    <path d={`M${g.rim.cx-g.rim.rx+3} ${g.rim.cy-1} Q${g.rim.cx} ${g.rim.cy-g.rim.ry-1} ${g.rim.cx+g.rim.rx-3} ${g.rim.cy-1}`} fill="none" stroke="#FFF" strokeWidth="1" opacity=".8"/>
+    {/* 진한 외곽선 대신 옅은 테로 형태를 잡는다 — 2D 일러스트처럼 면이 먼저 보이게 */}
+    <path d={g.outline} fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" opacity=".4"/>
+    <path d={g.outline} fill="none" stroke="#FFFFFF" strokeWidth=".7" strokeLinecap="round" strokeLinejoin="round" opacity=".38"/>
+    <ellipse {...g.rim} fill="none" stroke="currentColor" strokeWidth="1.1" opacity=".32"/>
+    <ellipse {...g.rim} fill="none" stroke="#FFF" strokeWidth=".8" opacity=".5"/>
+    <path d={`M${g.rim.cx-g.rim.rx+3} ${g.rim.cy-1} Q${g.rim.cx} ${g.rim.cy-g.rim.ry-1} ${g.rim.cx+g.rim.rx-3} ${g.rim.cy-1}`} fill="none" stroke="#FFF" strokeWidth="1.2" opacity=".75" filter={url('soft')}/>
     {/* Tall leaves need headroom; separate paired garnishes even on a narrow flute. */}
     {garnish.map((k,i)=>garnishMark(
       k,
