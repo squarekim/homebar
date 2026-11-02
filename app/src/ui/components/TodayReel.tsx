@@ -1,156 +1,122 @@
 /**
- * TodayReel — '오늘의 잔' 뽑기 레일.
- * 후보 잔이 놋쇠 레일 위를 천천히 흐르다가, 고르기를 누르면 빨라졌다 느려져서
- * 가운데 펜던트 조명 아래 한 잔에 멈춘다. 멈춘 잔은 커지고 술이 차오른다.
- * 그림은 LeadArt(GlassArt·NeatPour) 그대로다. 위치는 매 프레임 transform 으로만 바꾼다.
+ * TodayReel — '오늘의 잔' 카드 셔플.
+ * 후보 잔이 앞면 카드로 부채꼴로 펼쳐져 있다가, 고르기를 누르면 모여서 뒤집히고
+ * 세 번 섞인 뒤 맨 위 한 장이 펜던트 조명 아래로 나와 앞면으로 뒤집힌다.
+ * 카드 앞면 그림은 LeadArt(GlassArt·NeatPour) 그대로다. 움직임은 CSS transition 으로만 한다.
  */
-import { type ReactNode, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { LeadArt } from './Mark';
 import { weightedPick } from '../../services/pickService';
 import { type RecommendationResult } from '../../models/types';
 
-const W = 104;          // 잔 한 칸 너비(px)
-const IDLE = 16;        // 대기 중 흐르는 속도(px/s)
-const SPIN_MS = 2000;   // 빨라졌다 느려지는 데 걸리는 시간
-const MIN_RUN = W * 22; // 멈추기 전에 최소한 지나가는 거리
+const HAND = 7;  // 펼쳐 보이는 카드 수(후보가 더 많아도 덱은 7장)
 
-type Phase = 'idle' | 'spin' | 'done';
+type Phase = 'idle' | 'shuffle' | 'done';
+interface Pose { x: number; y: number; r: number; s: number; back: boolean; z: number; dim: boolean; ms: number; delay: number }
 
 const reduceMotion = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
-const easeInOut = (p: number) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
 
-function Art({ r }: { r: RecommendationResult }) {
-  return <LeadArt base={r.base} kind={r.kind} size={88}
-    cocktailId={r.kind === 'cocktail' ? r.id : undefined}
-    bottleId={r.kind === 'whisky' ? r.id : undefined} />;
+/** 부채꼴 — 가운데 카드가 가장 높다 */
+function fan(k: number): Pose[] {
+  const mid = (k - 1) / 2;
+  return Array.from({ length: k }, (_, i) => {
+    const o = i - mid;
+    return { x: o * 27, y: Math.abs(o) * 4, r: o * 6, s: 1, back: false, z: i, dim: false, ms: 420, delay: 0 };
+  });
+}
+
+/** 맨 위 카드가 앞으로 나와 앞면으로 뒤집힌 끝 모습 */
+function dealt(k: number, top: number, back: boolean): Pose[] {
+  return Array.from({ length: k }, (_, i) => i === top
+    ? { x: 0, y: 16, r: 0, s: 1.28, back, z: 100, dim: false, ms: back ? 380 : 460, delay: 0 }
+    : { x: (i % 2 ? 1 : -1) * 6, y: 26, r: (i % 3 - 1) * 2.5, s: .9, back: true, z: i, dim: true, ms: 380, delay: 0 });
+}
+
+function Face({ r }: { r: RecommendationResult }) {
+  return (
+    <>
+      <LeadArt base={r.base} kind={r.kind} size={72}
+        cocktailId={r.kind === 'cocktail' ? r.id : undefined}
+        bottleId={r.kind === 'whisky' ? r.id : undefined} />
+      <span className="cardname">{r.name}</span>
+    </>
+  );
 }
 
 export function TodayReel({ picks, onPicked, between, children }: {
   picks: RecommendationResult[];
-  /** 레일과 버튼 사이(맛 칩) */
-  between?: ReactNode;
-  /** 멈춘 잔(null 이면 아직 고르지 않음) */
+  /** 뒤집힌 카드(null 이면 아직 고르지 않음) */
   onPicked: (r: RecommendationResult | null) => void;
+  /** 카드와 버튼 사이(맛 칩) */
+  between?: ReactNode;
   /** 결과 영역 — 고른 뒤에만 보인다 */
   children?: (again: () => void) => ReactNode;
 }) {
-  const reelRef = useRef<HTMLDivElement>(null);
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const x = useRef(0);
-  const tween = useRef<{ t0: number; x0: number; d: number } | null>(null);
-  const last = useRef<number | null>(null);
-  const [sets, setSets] = useState(2);
+  const k = Math.min(HAND, picks.length);
+  const top = k - 1;
   const [phase, setPhase] = useState<Phase>('idle');
-  const [winner, setWinner] = useState<number | null>(null);
-  const [winSlot, setWinSlot] = useState<number | null>(null);
-  const phaseRef = useRef(phase); phaseRef.current = phase;
-  const winnerRef = useRef(winner); winnerRef.current = winner;
-  const n = picks.length;
-  const total = n * sets;
+  const [poses, setPoses] = useState<Pose[]>(() => fan(k));
+  /** 카드 j 의 앞면에 보일 후보 번호 */
+  const [faces, setFaces] = useState<number[]>(() => Array.from({ length: k }, (_, i) => i));
+  const timers = useRef<number[]>([]);
+  const last = useRef<number | null>(null);
+  const winner = useRef<number | null>(null);
 
-  const width = () => reelRef.current?.clientWidth ?? 360;
-  const center = () => width() / 2 - W / 2;
-  const span = () => total * W;
+  const clear = () => { timers.current.forEach((t) => clearTimeout(t)); timers.current = []; };
+  const at = (ms: number, fn: () => void) => { timers.current.push(window.setTimeout(fn, ms)); };
 
-  const place = useCallback(() => {
-    const L = total * W;
-    if (!L) return;
-    itemRefs.current.forEach((el, j) => {
-      if (!el) return;
-      let left = (((j * W - x.current) % L) + L) % L;
-      if (left > L - W * 1.5) left -= L;
-      el.style.transform = `translateX(${left}px)`;
-    });
-  }, [total]);
-
-  // 화면 너비를 채울 만큼 후보 묶음을 반복한다
-  useLayoutEffect(() => {
-    const el = reelRef.current;
-    if (!el || !n) return;
-    const fit = () => setSets(Math.max(2, Math.ceil((el.clientWidth + W * 3) / (n * W))));
-    fit();
-    const ro = new ResizeObserver(fit);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [n]);
-
-  // 후보가 바뀌면(칩 선택·술장 변경) 처음 상태로
+  // 후보가 바뀌면(칩 선택·술장 변경) 다시 부채꼴로
   useEffect(() => {
-    tween.current = null;
+    clear();
     last.current = null;
-    x.current = 0;
+    winner.current = null;
     setPhase('idle');
-    setWinner(null);
-    setWinSlot(null);
+    setPoses(fan(k));
+    setFaces(Array.from({ length: k }, (_, i) => i));
     onPicked(null);
+    return clear;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [picks]);
 
-  const land = useCallback((i: number) => {
-    const L = span(), c = center();
-    let slot: number | null = null;
-    itemRefs.current.forEach((_, j) => {
-      const left = (((j * W - x.current) % L) + L) % L;
-      if (j % n === i && Math.abs(left - c) < 2) slot = j;
-    });
-    setWinSlot(slot);
+  const finish = (i: number) => {
+    clear();
+    setFaces((f) => f.map((v, j) => (j === top ? i : v)));
+    setPoses(dealt(k, top, false));
     setPhase('done');
     onPicked(picks[i] ?? null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [n, total, picks, onPicked]);
-
-  useEffect(() => {
-    let raf = 0, prev = 0;
-    const frame = (t: number) => {
-      const dt = prev ? Math.min(0.05, (t - prev) / 1000) : 0;
-      prev = t;
-      const tw = tween.current;
-      if (tw) {
-        const p = Math.min(1, (t - tw.t0) / SPIN_MS);
-        x.current = tw.x0 + tw.d * easeInOut(p);
-        if (p >= 1) { tween.current = null; land(winnerRef.current!); }
-      } else if (phaseRef.current === 'idle' && !reduceMotion()) {
-        x.current += IDLE * dt;
-      }
-      place();
-      raf = requestAnimationFrame(frame);
-    };
-    raf = requestAnimationFrame(frame);
-    return () => cancelAnimationFrame(raf);
-  }, [place, land]);
-
-  /** 후보 i 의 잔 하나가 가운데 칸에 오는 x(최소 minRun 만큼 앞으로) */
-  const targetX = (i: number, minRun: number) => {
-    const L = span(), c = center();
-    let best = Infinity;
-    for (let j = i; j < total; j += n) {
-      const base = j * W - c;
-      best = Math.min(best, base + Math.ceil((x.current + minRun - base) / L) * L);
-    }
-    return best;
   };
 
   const pick = () => {
-    if (!n) return;
-    if (phase === 'spin') {               // 건너뛰기
-      const tw = tween.current;
-      if (tw) { x.current = tw.x0 + tw.d; tween.current = null; place(); land(winner!); }
-      return;
-    }
-    const i = weightedPick(n, last.current);
+    if (!k) return;
+    if (phase === 'shuffle') { finish(winner.current!); return; }   // 건너뛰기
+    const i = weightedPick(picks.length, last.current);
     last.current = i;
-    setWinner(i);
-    winnerRef.current = i;
-    setWinSlot(null);
+    winner.current = i;
     onPicked(null);
-    if (reduceMotion()) {
-      x.current = targetX(i, 0);
-      place();
-      land(i);
-      return;
+    if (reduceMotion()) { finish(i); return; }
+    setPhase('shuffle');
+
+    // 1) 모아서 뒤집기
+    setPoses(Array.from({ length: k }, (_, j) => ({ x: 0, y: 0, r: (j - top / 2) * .8, s: 1, back: true, z: j, dim: false, ms: 320, delay: j * 18 })));
+    // 2) 세 번 섞기 — 반으로 갈라 벌렸다가 엇갈려 끼운다
+    for (let round = 0; round < 3; round++) {
+      const t0 = 420 + round * 500;
+      at(t0, () => setPoses(Array.from({ length: k }, (_, j) => {
+        const left = (j + round) % 2 === 0;
+        return { x: left ? -62 : 62, y: -4, r: left ? -9 : 9, s: 1, back: true, z: j, dim: false, ms: 200, delay: 0 };
+      })));
+      at(t0 + 230, () => setPoses(Array.from({ length: k }, (_, j) => ({
+        x: 0, y: 0, r: ((j * 7 + round * 3) % 5 - 2) * .9, s: 1, back: true,
+        z: (j * 3 + round) % k, dim: false, ms: 210, delay: (j % 2 ? 1 : 0) * 30 + Math.floor(j / 2) * 22,
+      }))));
     }
-    tween.current = { t0: performance.now(), x0: x.current, d: targetX(i, MIN_RUN) - x.current };
-    setPhase('spin');
+    // 3) 맨 위 한 장을 앞으로 → 4) 앞면으로 뒤집기
+    at(1950, () => {
+      setFaces((f) => f.map((v, j) => (j === top ? i : v)));
+      setPoses(dealt(k, top, true));
+    });
+    at(2380, () => setPoses(dealt(k, top, false)));
+    at(2860, () => { setPhase('done'); onPicked(picks[i] ?? null); });
   };
 
   return (
@@ -158,30 +124,29 @@ export function TodayReel({ picks, onPicked, between, children }: {
       <div className={`stage${phase === 'done' ? ' lit' : ''}`} aria-hidden="true">
         <div className="lamp" />
         <div className="cone" />
-        <div className="reel" ref={reelRef}>
-          {Array.from({ length: total }, (_, j) => {
-            const r = picks[j % n]!;
-            const win = phase === 'done' && j === winSlot;
+        <div className="deck">
+          {poses.map((p, j) => {
+            const r = picks[faces[j] ?? j];
+            if (!r) return null;
             return (
-              <div key={j} className={`slot${win ? ' win' : ''}`} ref={(el) => { itemRefs.current[j] = el; }}>
-                <div className="glass">
-                  <div className="base"><Art r={r} /></div>
-                  {win && <div className="pour"><Art r={r} /></div>}
-                </div>
-                <div className="mirror"><Art r={r} /></div>
+              <div key={j} className={`card${p.dim ? ' dim' : ''}`} style={{
+                transform: `translate(${p.x}px, ${p.y}px) rotate(${p.r}deg) scale(${p.s}) rotateY(${p.back ? 180 : 0}deg)`,
+                transitionDuration: `${p.ms}ms`, transitionDelay: `${p.delay}ms`, zIndex: p.z,
+              }}>
+                <div className="face"><Face r={r} /></div>
+                <div className="back"><span>홈바</span></div>
               </div>
             );
           })}
         </div>
-        <div className="rail" />
       </div>
       {between}
       {phase === 'done' && children ? children(pick) : (
         <div className="reelact">
-          <button className="btn primary big" onClick={pick} disabled={!n}>
-            {phase === 'spin' ? '건너뛰기' : '한 잔 고르기'}
+          <button className="btn primary big" onClick={pick} disabled={!k}>
+            {phase === 'shuffle' ? '건너뛰기' : '한 잔 고르기'}
           </button>
-          <p className="hint">{phase === 'spin' ? '고르는 중이에요' : '취향에 가까운 잔일수록 자주 나와요'}</p>
+          <p className="hint">{phase === 'shuffle' ? '카드를 섞는 중이에요' : '취향에 가까운 잔일수록 자주 나와요'}</p>
         </div>
       )}
     </>
