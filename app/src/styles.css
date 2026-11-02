@@ -1,46 +1,36 @@
-/* 홈바 플랫폼 — 바 메뉴판과 시음 노트.
+/* 홈바 플랫폼 — 밤의 홈바 선반.
    토큰 → 기본 요소 → 셸(헤더·네비) → 레이아웃(목록/상세) → 화면별 블록 순서로 둔다.
-   :root = 종이색 팔레트(기본).  @media prefers-color-scheme:dark(단, data-theme=light 이면 무시).
-   :root[data-theme=dark] = 명시 토글 다크. 컴포넌트는 토큰만 사용한다. */
+   :root = 다크(기본). 기기 설정과 상관없이 다크로 시작하고, :root[data-theme=light] 는 설정에서 고른 라이트다.
+   컴포넌트는 토큰만 사용한다. */
 :root{
-  /* 색 — 흰 바탕, 돌빛 패널, 먹 한 가지와 병유리 청록 한 가지.
-     청록은 데이터(향미 막대·별점)와 첫 뱃지에만 쓰고, 버튼은 먹색으로 칠한다 */
-  --bg:#FFFFFF; --panel:#F5F4F1; --raise:#ECEBE7; --line:#E6E5E1; --control:#D6D5D0;
-  --ink:#1F201D; --mute:#5C5D59; --dim:#6B6B67;
-  --accent:#1B6E66;
-  --on-accent:#FFFFFF;
-  --primary:#1F201D; --on-primary:#FFFFFF;
-  --ok:#247B50;            /* 그대로 만들 수 있음 */
-  --sub:#92400E;           /* 대체해서 가능 */
-  --no:#B42318;            /* 파괴적 동작 */
-  --ok-bg:#E3F4E8; --sub-bg:#FFF6E0; --no-bg:#FDECEA; --accent-bg:#E2F0EE;
+  /* 색 — 청록빛 슬레이트 바탕에 놋쇠 하나. 놋쇠는 주 버튼·바 레일·조명·데이터 강조에만 쓴다 */
+  --bg:#1B2427; --panel:#212C30; --raise:#2A373C; --line:#34444A; --control:#4A5C62;
+  --ink:#ECE7DB; --mute:#A0ACAA; --dim:#8A9795;
+  --accent:#C8A35A; --on-accent:#1B2427;
+  --primary:#C8A35A; --on-primary:#1B2427;
+  --ok:#6CC38F;            /* 그대로 만들 수 있음 */
+  --sub:#E59A5B;           /* 대체해서 가능 */
+  --no:#E5726F;            /* 파괴적 동작 */
+  --ok-bg:#1E3329; --sub-bg:#36291C; --no-bg:#3A2224; --accent-bg:#1F3036;
+  --glow:255,226,170;      /* 펜던트 조명 */
+  /* 글꼴 — 이름·제목은 함렛, 본문은 IBM Plex Sans KR */
+  --display:'Hahmlet','Nanum Myeongjo',serif;
+  --body:'IBM Plex Sans KR','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
   /* 간격 8 / 12 / 16 / 24 / 32 */
   --s1:8px; --s2:12px; --s3:16px; --s4:24px; --s5:32px;
   --r:16px; --r-sm:8px;
   --surface:var(--bg);
+  color-scheme:dark;
+}
+:root[data-theme=light]{
+  --bg:#F3F5F3; --panel:#E8ECEA; --raise:#DDE3E1; --line:#D3DAD8; --control:#B8C2C0;
+  --ink:#1B2427; --mute:#4F5E5D; --dim:#5E6C6B;
+  --accent:#8A6A26; --on-accent:#FFFFFF;
+  --primary:#8A6A26; --on-primary:#FFFFFF;
+  --ok:#1F7A4A; --sub:#9A4A10; --no:#B42318;
+  --ok-bg:#DFF0E5; --sub-bg:#F8E8D8; --no-bg:#FBE5E3; --accent-bg:#E3ECEC;
+  --glow:255,214,140;
   color-scheme:light;
-}
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme=light]){
-    --bg:#111111; --panel:#1A1A1A; --raise:#242424; --line:#2E2E2E; --control:#444444;
-    --ink:#F2F2F2; --mute:#B4B4B4; --dim:#949494;
-    --accent:#5FB3A8; --on-accent:#0B1F1C;
-    --primary:#F2F2F2; --on-primary:#111111;
-    --ok:#3FC07A; --sub:#E0B062; --no:#E5566F;
-    --ok-bg:#172A1D; --sub-bg:#2A2214; --no-bg:#2C1A20; --accent-bg:#14262A;
-    --surface:var(--bg);
-    color-scheme:dark;
-  }
-}
-:root[data-theme=dark]{
-    --bg:#111111; --panel:#1A1A1A; --raise:#242424; --line:#2E2E2E; --control:#444444;
-    --ink:#F2F2F2; --mute:#B4B4B4; --dim:#949494;
-    --accent:#5FB3A8; --on-accent:#0B1F1C;
-    --primary:#F2F2F2; --on-primary:#111111;
-    --ok:#3FC07A; --sub:#E0B062; --no:#E5566F;
-    --ok-bg:#172A1D; --sub-bg:#2A2214; --no-bg:#2C1A20; --accent-bg:#14262A;
-    --surface:var(--bg);
-    color-scheme:dark;
 }
 
 /* ── 기본 요소 ── */
@@ -48,10 +38,11 @@
 html{-webkit-text-size-adjust:100%}
 body{
   background:var(--bg); color:var(--ink);
-  font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+  font-family:var(--body);
   font-size:16px; line-height:1.6; font-variant-numeric:tabular-nums;
   padding-bottom:calc(72px + env(safe-area-inset-bottom));
   -webkit-tap-highlight-color:transparent;
+  word-break:keep-all; overflow-wrap:break-word;
 }
 button,input,select,textarea{font:inherit;color:inherit}
 button{background:none;border:none;cursor:pointer}
@@ -60,6 +51,7 @@ a:hover{text-decoration-color:currentColor}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 h1,h2,h3,h4{letter-spacing:-.02em;line-height:1.25;font-weight:600}
+.brand h1,.pagetitle,.lead h3,.detail h2,.modal h2,.today .ask,.picked h3,.firstrun .lead1{font-family:var(--display);font-weight:700;letter-spacing:-.01em}
 
 .wrap{max-width:1180px;margin:0 auto;padding:0 16px}
 @media (min-width:900px){
@@ -142,7 +134,7 @@ input::placeholder{color:var(--dim)}
 .chip{background:transparent;border:1px solid var(--control);border-radius:999px;
   padding:8px 16px;font-size:14px;color:var(--ink);white-space:nowrap;font-weight:500;min-height:40px;transition:background-color .12s}
 .chip:hover{background:var(--panel)}
-.chip[aria-pressed=true]{color:var(--on-primary);background:var(--primary);border-color:var(--primary)}
+.chip[aria-pressed=true]{color:var(--bg);background:var(--ink);border-color:var(--ink)}
 .chip.ok[aria-pressed=true]{background:var(--ok);border-color:var(--ok);color:#fff}
 .chip.no[aria-pressed=true]{background:var(--no);border-color:var(--no);color:#fff}
 .controls{display:flex;flex-wrap:wrap;gap:var(--s1);padding:var(--s1) 0}
@@ -161,19 +153,13 @@ input::placeholder{color:var(--dim)}
 .mark.sm{width:56px;height:56px}
 .mark.md{width:72px;height:72px}
 .mark.lg{width:120px;height:120px}
-.k-gin{color:#4B6B57} .k-vodka{color:#54627A} .k-rum{color:#8A5A2B}
-.k-tequila{color:#6F7A35} .k-brandy{color:#8A4A2B} .k-liqueur{color:#7B4A6B}
-.k-whisky{color:#8A5A2B} .k-wine{color:#6E2F3E} .k-other{color:var(--mute)}
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme=light]) .k-gin{color:#8FBFA2} :root:not([data-theme=light]) .k-vodka{color:#9DB0CC}
-  :root:not([data-theme=light]) .k-rum{color:#D2A06A} :root:not([data-theme=light]) .k-tequila{color:#BCC77E}
-  :root:not([data-theme=light]) .k-brandy{color:#D79A72} :root:not([data-theme=light]) .k-liqueur{color:#C79BC0}
-  :root:not([data-theme=light]) .k-whisky{color:#D2A06A} :root:not([data-theme=light]) .k-wine{color:#D68E98}
-}
-:root[data-theme=dark] .k-gin{color:#8FBFA2} :root[data-theme=dark] .k-vodka{color:#9DB0CC}
-:root[data-theme=dark] .k-rum{color:#D2A06A} :root[data-theme=dark] .k-tequila{color:#BCC77E}
-:root[data-theme=dark] .k-brandy{color:#D79A72} :root[data-theme=dark] .k-liqueur{color:#C79BC0}
-:root[data-theme=dark] .k-whisky{color:#D2A06A} :root[data-theme=dark] .k-wine{color:#D68E98}
+.k-gin{color:#8FBFA2} .k-vodka{color:#9DB0CC} .k-rum{color:#D2A06A}
+.k-tequila{color:#BCC77E} .k-brandy{color:#D79A72} .k-liqueur{color:#C79BC0}
+.k-whisky{color:#D2A06A} .k-wine{color:#D68E98} .k-other{color:var(--mute)}
+:root[data-theme=light] .k-gin{color:#4B6B57} :root[data-theme=light] .k-vodka{color:#54627A}
+:root[data-theme=light] .k-rum{color:#8A5A2B} :root[data-theme=light] .k-tequila{color:#6F7A35}
+:root[data-theme=light] .k-brandy{color:#8A4A2B} :root[data-theme=light] .k-liqueur{color:#7B4A6B}
+:root[data-theme=light] .k-whisky{color:#8A5A2B} :root[data-theme=light] .k-wine{color:#6E2F3E}
 
 /* ── 목록: 얇은 구분선으로 정리한다(같은 카드 반복 금지) ── */
 .rowlist{border-top:1px solid var(--line)}
@@ -465,3 +451,63 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 .maplegend .t-on{background:#009E73}.maplegend .t-pause{background:#E69F00}.maplegend .t-none{background:#7F7F7F}
 .maplegend .t-unk{background:var(--bg);border:1.5px solid var(--mute)}
 .maplegend .stop{background:var(--bg);border:1.5px dashed #D55E00}
+
+/* ── 오늘: 잔 뽑기 레일 ── */
+.today{margin-top:var(--s3)}
+.today .ask{font-size:28px;line-height:1.25;text-wrap:balance}
+@media (min-width:900px){.today .ask{font-size:34px;margin-top:var(--s3)}}
+.today .asksub{font-size:15px;color:var(--mute);margin-top:6px}
+.stage{position:relative;height:214px;margin:6px -16px 0;overflow:hidden}
+@media (min-width:900px){.stage{margin:var(--s2) 0 0;border-radius:var(--r)}}
+.stage .lamp{position:absolute;left:50%;top:0;width:2px;height:20px;margin-left:-1px;background:var(--line)}
+.stage .lamp::after{content:"";position:absolute;left:-13px;top:18px;width:28px;height:9px;border-radius:14px 14px 3px 3px;background:var(--accent)}
+.stage .cone{position:absolute;left:50%;top:27px;width:190px;margin-left:-95px;height:170px;pointer-events:none;
+  background:linear-gradient(rgba(var(--glow),.16),rgba(var(--glow),0));clip-path:polygon(42% 0,58% 0,100% 100%,0 100%);
+  opacity:.55;transition:opacity .5s}
+.stage.lit .cone{opacity:1}
+.stage .reel{position:absolute;inset:44px 0 0 0}
+.stage .slot{position:absolute;top:0;left:0;width:104px;height:150px;display:flex;flex-direction:column;align-items:center;will-change:transform}
+.stage .glass{position:relative;width:88px;height:88px;margin-top:22px;transition:transform .45s cubic-bezier(.2,.9,.3,1.3)}
+.stage .art{display:block;line-height:0}
+.stage .art svg{width:88px;height:88px;display:block}
+.stage .pour{position:absolute;inset:0;clip-path:inset(100% 0 0 0);animation:pour .6s .15s ease-out forwards}
+.stage .slot.win .glass{transform:translateY(-10px) scale(1.32)}
+.stage .slot.win .base{opacity:.35}
+@keyframes pour{to{clip-path:inset(0 0 0 0)}}
+.stage .mirror{width:88px;height:40px;overflow:hidden;opacity:.18;transform:scaleY(-1);
+  -webkit-mask-image:linear-gradient(to top,#000,transparent 80%);mask-image:linear-gradient(to top,#000,transparent 80%)}
+.stage .mirror svg{margin-top:-48px}
+.stage .rail{position:absolute;left:0;right:0;top:154px;height:3px;background:linear-gradient(var(--accent),color-mix(in srgb,var(--accent) 55%,var(--bg)))}
+.btn.big{min-height:52px;border-radius:12px;font-size:16px;width:100%}
+.reelact{margin-top:var(--s2);max-width:480px}
+.reelact .hint{text-align:center}
+.picked{margin-top:var(--s3);max-width:480px}
+.picked h3{font-size:30px;line-height:1.2}
+.picked .taste{font-size:15px;color:var(--accent);font-weight:600;margin-top:4px}
+.picked .why{font-size:14px;color:var(--mute);margin-top:2px}
+.picked .state{margin-top:var(--s1)}
+.pickbtns{display:flex;flex-direction:column;gap:var(--s1);margin-top:var(--s3)}
+.btnrow.center{justify-content:center}
+/* PC — 조명이 화면 가운데에 있으니 질문·칩·버튼·결과도 가운데로 모은다 */
+@media (min-width:900px){
+  .today{text-align:center}
+  .today .controls{justify-content:center}
+  .reelact,.picked{margin-left:auto;margin-right:auto}
+}
+@media (prefers-reduced-motion:reduce){.stage .pour{animation:none;clip-path:none}.stage .glass{transition:none}}
+
+/* ── 설정: 건강한 음주 안내 ── */
+.guide p{font-size:15px;line-height:1.6;margin-bottom:var(--s2)}
+.guide a{display:block;font-size:13px;color:var(--mute);margin-top:2px}
+
+/* ── 첫 실행 안내 ── */
+.firstrun{position:fixed;inset:0;z-index:70;background:rgba(9,14,16,.62);display:flex;align-items:flex-end;justify-content:center}
+.firstrun .sheetcard{position:relative;width:min(520px,100%);background:var(--panel);border-radius:20px 20px 0 0;
+  padding:32px 24px calc(24px + env(safe-area-inset-bottom))}
+@media (min-width:600px){.firstrun{align-items:center}.firstrun .sheetcard{border-radius:20px}}
+.firstrun .lead1{font-size:24px;line-height:1.4;margin-bottom:var(--s4);text-wrap:balance}
+.firstrun .hint{margin:-12px 0 var(--s4)}
+.firstrun .duo{display:flex;gap:var(--s3);margin-bottom:var(--s3);color:var(--ink)}
+.firstrun .steps{display:block;text-align:center;font-size:13px;color:var(--mute);margin-top:var(--s2)}
+.firstrun .skip{position:absolute;right:12px;top:10px;min-height:44px;padding:0 10px;font-size:14px;color:var(--mute)}
+.firstrun .pickbtns{margin-top:0}

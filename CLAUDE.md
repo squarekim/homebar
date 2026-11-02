@@ -8,6 +8,7 @@
 - Use an 80×80 viewBox. Every glass definition must provide an outline, inner clip, surface ellipse, rim, and iceArea. Keep liquid gradients, glass highlights, ground shadows, and dimensional ice readable at small sizes.
 - Namespace every SVG clipPath, gradient, and filter ID with React useId() so multiple instances can coexist.
 - Do not change ingredient ownership or cocktail availability logic as part of visual work.
+- Today's pick reel (`app/src/ui/components/TodayReel.tsx` + `app/src/services/pickService.ts`) draws a random winner among the cocktails you can make right now. That randomness chooses which drink is offered; it is outside the visual rules, and the glasses themselves are still drawn deterministically from recipe data.
 - After changes, run `npm test` and `npm run build` from `app`.
 
 # Bottle visuals

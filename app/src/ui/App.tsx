@@ -9,6 +9,7 @@ import { UIProvider, useUI, type Tab } from './UIContext';
 import { LogDialog } from './components/LogDialog';
 import { AddBottleDialog } from './components/AddBottleDialog';
 import { Modal } from './components/common';
+import { FirstRun } from './components/FirstRun';
 import { TodayPage } from './pages/TodayPage';
 import { CocktailsPage } from './pages/CocktailsPage';
 import { WhiskyPage } from './pages/WhiskyPage';
@@ -94,6 +95,7 @@ function Shell() {
         <p>{termInfo?.body}</p>
       </Modal>
       {toastMsg && <div className="toast">{toastMsg}</div>}
+      <FirstRun />
     </>
   );
 }

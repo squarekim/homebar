@@ -1,17 +1,17 @@
 /**
  * TodayPage — '오늘'.
- * 샘플 안내 → 오늘의 한 잔(대표 1) → 다른 선택 둘 → 최근 기록 순서다.
+ * 샘플 안내 → 오늘의 잔 뽑기(레일) → 고른 잔 → 다르게 골라보기 → 최근 기록 순서다.
  * 첫 화면이 답해야 할 것은 넷뿐이다: 무엇을 마실까 · 무슨 맛인가 · 지금 만들 수 있나 · 뭘 누르면 되나.
- * 점수는 여기서 말하지 않는다. 상세의 '추천 이유'에 있다.
+ * 뽑기 후보는 지금 만들 수 있는 잔뿐이다(칩으로 좁혀도 같다). 점수는 여기서 말하지 않는다.
  */
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useUI } from '../UIContext';
 import { useRecommendContext } from '../../hooks/useRecommendContext';
 import { useLogs } from '../../hooks/useData';
-import { todayPicks, type RecommendMode } from '../../services/recommendationService';
+import { whatToDrink, type RecommendMode } from '../../services/recommendationService';
 import { STATUS_LEAD_KO } from '../../services/availabilityService';
 import { ChipRow, LogCard } from '../components/common';
-import { BottleMark, CocktailMark, LeadArt } from '../components/Mark';
+import { TodayReel } from '../components/TodayReel';
 import { MODES, GroupRec, PurchaseRec, ClearStockRec } from './RecommendPage';
 import { type RecommendationResult } from '../../models/types';
 import { IS_BETA } from '../../config';
@@ -27,9 +27,21 @@ function state(rec: RecommendationResult): { text: string; cls: string } | null 
   return { text: STATUS_LEAD_KO[rec.status], cls: rec.status };
 }
 
+/** 받침 따라 '와/과' */
+const wa = (w: string) => { const c = w.charCodeAt(w.length - 1) - 0xac00; return c >= 0 && c % 28 ? '과' : '와'; };
+const asTaste = (w: string) => (w.endsWith('맛') ? w : `${w} 맛`);
+
+/** '허브와 과일 맛' */
 function taste(rec: RecommendationResult): string {
-  const words = rec.flavorWords.join(' · ');
-  return rec.base ? [words, `${rec.base} 베이스`].filter(Boolean).join(' · ') : words;
+  const [a, b] = rec.flavorWords;
+  if (!a) return rec.base ? `${rec.base} 베이스` : '';
+  return b ? `${a}${wa(a)} ${asTaste(b)}` : asTaste(a);
+}
+
+/** 뽑기 후보 — 만들 수 있는 칵테일(대체 포함)과 가진 위스키, 추천 순서 상위 12개 */
+const POOL = 12;
+function reelPool(all: RecommendationResult[]): RecommendationResult[] {
+  return all.filter((r) => r.kind === 'whisky' || r.status === 'READY' || r.status === 'SUBSTITUTE').slice(0, POOL);
 }
 
 type Way = 'group' | 'purchase' | 'clearstock';
@@ -68,24 +80,69 @@ export function TodayPage() {
   const { openCocktail, openLog, goTab } = useUI();
   const logs = useLogs();
   const [mode, setMode] = useState<RecommendMode>('available');
-  const picks = useMemo(() => todayPicks(ctx, mode, 3), [ctx, mode]);
-  const [lead, ...alts] = picks;
-  const leadState = lead ? state(lead) : null;
+  const picks = useMemo(() => reelPool(whatToDrink(ctx, mode, 40)), [ctx, mode]);
+  const [picked, setPicked] = useState<RecommendationResult | null>(null);
+  const onPicked = useCallback((r: RecommendationResult | null) => setPicked(r), []);
   const recent = logs.slice(0, 3);
 
   const open = (r: RecommendationResult) => {
     if (r.kind === 'cocktail') openCocktail(r.id, r);
     else openLog({ drinkId: r.id, drinkType: 'whisky', drinkName: r.name, servingStyle: 'neat' });
   };
+  const made = (r: RecommendationResult) => openLog(r.kind === 'cocktail'
+    ? { drinkId: r.id, drinkType: 'cocktail', drinkName: r.name, servingStyle: 'cocktail' }
+    : { drinkId: r.id, drinkType: 'whisky', drinkName: r.name, servingStyle: 'neat' });
 
   return (
     <>
       {IS_BETA && (
         <div className="sample">
-          <span><b>샘플 술장</b>으로 둘러보는 중입니다. 바꾼 내용은 이 브라우저에만 저장됩니다.</span>
+          <span><b>샘플 술장</b>으로 둘러보는 중이에요. 바꾼 내용은 이 브라우저에만 저장돼요.</span>
           <button className="btn sm" onClick={() => goTab('cellar')}>내 술장 설정</button>
         </div>
       )}
+
+      <section className="today">
+        <h2 className="ask">오늘 뭐 마실까요?</h2>
+        <p className="asksub">
+          {picks.length ? `지금 술장으로 만들 수 있는 ${picks.length}잔 중에서 골라요` : '고를 수 있는 잔이 아직 없어요'}
+        </p>
+
+        {picks.length > 0 ? (
+          <TodayReel picks={picks} onPicked={onPicked}
+            between={<ChipRow value={mode} options={MODES} onChange={setMode} />}>
+            {(again) => picked && (
+              <div className="picked">
+                <h3>{picked.name}</h3>
+                <p className="taste">{taste(picked)}</p>
+                <p className="why">
+                  {ctx.hasTaste && picked.flavorWords[0]
+                    ? `취향에서 높은 ${asTaste(picked.flavorWords[0])}${wa(asTaste(picked.flavorWords[0]))} 가까워요`
+                    : picked.kind === 'whisky' ? '가지고 있는 병이에요' : '지금 술장으로 만들 수 있어요'}
+                </p>
+                {state(picked) && <div className={`state s-${state(picked)!.cls}`}>{state(picked)!.text}</div>}
+                <div className="pickbtns">
+                  <button className="btn primary big" onClick={() => made(picked)}>
+                    {picked.kind === 'cocktail' ? '만든 잔 남기기' : '마신 잔 남기기'}
+                  </button>
+                  {picked.kind === 'cocktail' && <button className="btn ghost big" onClick={() => open(picked)}>레시피 보기</button>}
+                  <button className="btn ghost big" onClick={again}>다시 고르기</button>
+                </div>
+              </div>
+            )}
+          </TodayReel>
+        ) : (
+          <>
+          <ChipRow value={mode} options={MODES} onChange={setMode} />
+          <div className="empty">
+            {mode === 'available'
+              ? <>지금 술장으로 만들 수 있는 잔이 없어요. 내 술장에서 가진 술과 재료를 넣으면 여기서 골라 드려요.</>
+              : <>이 맛으로 지금 만들 수 있는 잔이 없어요. 다른 칩을 골라 보세요.</>}
+            <div className="btnrow center"><button className="btn primary" onClick={() => goTab('cellar')}>술장에 술 넣기</button></div>
+          </div>
+          </>
+        )}
+      </section>
 
       {!ctx.hasTaste && (
         <div className="sample">
@@ -94,62 +151,11 @@ export function TodayPage() {
         </div>
       )}
 
-      <h2 className="pagetitle">
-        오늘의 한 잔
-        <span className="sub">{ctx.hasTaste ? '취향과 보유 재료 기준' : '보유 재료 기준 (취향 설정 전)'}</span>
-      </h2>
-
-      <ChipRow value={mode} options={MODES} onChange={setMode} />
-
-      {!lead && <div className="empty">추천할 항목이 없습니다. 내 술장에서 보유 재료를 등록해 주세요.</div>}
-
-      {lead && (
-        <>
-          <section className="lead">
-            <div className="inner">
-              <LeadArt base={lead.base} kind={lead.kind}
-                cocktailId={lead.kind === 'cocktail' ? lead.id : undefined}
-                bottleId={lead.kind === 'whisky' ? lead.id : undefined} />
-              <div className="text">
-                <h3>{lead.name}</h3>
-                <p className="taste">{taste(lead)}</p>
-                {leadState && <div className={`state s-${leadState.cls}`}>{leadState.text}</div>}
-                <div className="btnrow">
-                  <button className="btn primary" onClick={() => open(lead)}>
-                    {lead.kind === 'cocktail' ? '레시피 보기' : '기록하기'}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {alts.length > 0 && (
-            <>
-              <div className="sechead sm">다른 선택</div>
-              <div className="rowlist">
-                {alts.map((r) => (
-                  <button className="rowitem" key={r.kind + r.id} onClick={() => open(r)}>
-                    {r.kind === 'whisky'
-                      ? <BottleMark kind={r.base} bottleId={r.id} size="sm" />
-                      : <CocktailMark base={r.base} cocktailId={r.id} size="sm" />}
-                    <div className="body">
-                      <span className="nm">{r.name}</span>
-                      <div className="taste">{taste(r)}</div>
-                      {state(r) && <div className="foot"><span className={`state s-${state(r)!.cls}`}>{state(r)!.text}</span></div>}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-        </>
-      )}
-
       <OtherWays />
 
       <div className="sechead">최근 기록</div>
       {recent.length === 0
-        ? <div className="empty">아직 기록이 없습니다. 레시피 상세에서 <b>이 잔 기록하기</b>를 누르면 여기에 쌓입니다.</div>
+        ? <div className="empty">아직 기록이 없어요. 고른 잔을 만들고 <b>만든 잔 남기기</b>를 누르면 여기에 쌓여요.</div>
         : (
           <>
             {recent.map((l) => <LogCard key={l.id} log={l} />)}

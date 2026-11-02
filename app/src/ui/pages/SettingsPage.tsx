@@ -12,6 +12,7 @@ import { tasteProfileRepo } from '../../repositories/tasteProfileRepo';
 import { backupService } from '../../services/backupService';
 import { isNeutralTaste } from '../../services/flavorService';
 import { FlavorBars } from '../components/common';
+import { applyTheme, savedTheme, type Theme } from '../theme';
 import { FLAVOR_AXES, FLAVOR_LABELS_KO, type FlavorVector, type FlavorAxis } from '../../models/types';
 
 /** 시작점으로 고르기 좋은 맛 — 14축 중 사람들이 말로 쓰는 것들 */
@@ -23,6 +24,8 @@ export function SettingsPage() {
       <h2 className="pagetitle">설정</h2>
       <TasteSetup />
       <PeopleManager />
+      <ScreenSetup />
+      <DrinkingGuide />
       <BackupRestore />
     </>
   );
@@ -113,6 +116,45 @@ function PeopleManager() {
         }}>추가</button>
       </div>
     </>
+  );
+}
+
+const THEMES: { v: Theme; label: string }[] = [{ v: 'dark', label: '다크' }, { v: 'light', label: '라이트' }];
+
+function ScreenSetup() {
+  const [theme, setTheme] = useState<Theme>(savedTheme);
+  return (
+    <>
+      <div className="sechead">화면</div>
+      <div className="controls tight">
+        {THEMES.map((o) => (
+          <button key={o.v} className="chip" aria-pressed={theme === o.v}
+            onClick={() => { setTheme(o.v); applyTheme(o.v, true); }}>{o.label}</button>
+        ))}
+      </div>
+    </>
+  );
+}
+
+/** 건강한 음주 안내 — 찾아서 열 때만 보인다. 형량·g 단위 음주량은 법과 기준이 바뀌면 틀려서 넣지 않는다 */
+function DrinkingGuide() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="more">
+      <button onClick={() => setOpen(!open)} aria-expanded={open}>건강한 음주 안내</button>
+      {open && (
+        <div className="inner guide">
+          <p>마셨다면 운전하지 않아요. 도로교통법상 혈중알코올농도 0.03% 이상이면 운전할 수 없어요.
+            <a href="https://m.easylaw.go.kr/MOB/CsmInfoRetrieve.laf?ccfNo=1&cciNo=1&cnpClsNo=2&csmSeq=684" target="_blank" rel="noreferrer">찾기쉬운 생활법령정보</a></p>
+          <p>임신 중이거나 임신을 계획하고 있다면 마시지 않아요.
+            <a href="https://cancer.go.kr/download.do?uuid=d0b02241-3714-416c-b5bc-9979f8f74607.pdf" target="_blank" rel="noreferrer">국가암정보센터</a></p>
+          <p>약을 먹는 중이라면 설명서의 음주 관련 주의를 확인해요.
+            <a href="https://nedrug.mfds.go.kr/" target="_blank" rel="noreferrer">의약품안전나라</a></p>
+          <p>국립암센터는 암 예방을 위해 하루 한두 잔의 소량 음주도 피하라고 안내해요.
+            <a href="https://www.ncc.re.kr/main.ncc?uri=manage01_3" target="_blank" rel="noreferrer">국립암센터</a></p>
+        </div>
+      )}
+    </div>
   );
 }
 

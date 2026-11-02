@@ -4,7 +4,10 @@ import { registerSW } from 'virtual:pwa-register';
 import { ensureSeeded } from './db/migrate';
 import { App } from './ui/App';
 import { ErrorBoundary, StorageBlocked } from './ui/Boot';
+import { applyTheme, savedTheme } from './ui/theme';
 import './styles.css';
+
+applyTheme(savedTheme());
 
 try { registerSW({ immediate: true }); } catch { /* SW 미지원 환경(데모 등)에서는 무시 */ }
 
