@@ -3,15 +3,15 @@
  * 레시피에서 나온 색과 효과를 얹는다. 해석 규칙은 drinkVisual.ts 에 있다.
  *
  * 겹치는 순서(아래→위)
- *   그림자 → 액체(레시피 색) → 술 속 슬라이스 → 기포·거품·가루 → 픽·민트·셀러리
+ *   그림자 → 액체(레시피 색, 층이 있으면 위아래 색) → 술 속 슬라이스 → 기포·거품·가루 → 픽·민트·셀러리
  *   → 유리·얼음·액체 명암 → 가장자리 과일 → 소금·설탕 림
  * 픽과 줄기는 유리 뒤에 둬서 잔 안에 꽂힌 것처럼 보이게 한다.
  */
 import { useId } from 'react';
 import { type Cocktail } from '../../models/types';
 import {
-  drinkColor, glassOf, garnishItems, visualEffectOf,
-  type GlassKind, type GarnishItem, type VisualEffect,
+  drinkColor, glassOf, garnishItems, liquidLayers, visualEffectOf,
+  type GlassKind, type GarnishItem, type LiquidStop, type VisualEffect,
 } from '../../data/drinkVisual';
 import { GLASS_SPRITES, GARNISH_SPRITES, type GarnishSprite, type GlassSprite } from './glassAssets';
 
@@ -78,8 +78,9 @@ function place(items: GarnishItem[], s: GlassSprite): Placed[] {
 }
 
 /** 잔 한 잔 — 칵테일이든 위스키든 색·효과만 받아 같은 그림을 그린다. */
-function Drink({ kind, fill, alpha, effects, garnish, size }: {
-  kind: GlassKind; fill: string; alpha: number; effects: VisualEffect; garnish: GarnishItem[]; size: number;
+function Drink({ kind, fill, alpha, layers, effects, garnish, size }: {
+  kind: GlassKind; fill: string; alpha: number; layers?: LiquidStop[] | null;
+  effects: VisualEffect; garnish: GarnishItem[]; size: number;
 }) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, ''); // useId 의 콜론은 url(#…) 참조에서 안전하지 않다
   const id = (name: string) => `glass-${uid}-${name}`;
@@ -110,7 +111,9 @@ function Drink({ kind, fill, alpha, effects, garnish, size }: {
         <image href={s.liquid} x={box.x} y={box.y} width={box.w} height={box.h} preserveAspectRatio="none"/>
       </mask>
       <linearGradient id={id('liquid-color')} x1="0" y1={surface.cy} x2="0" y2={s.bottom} gradientUnits="userSpaceOnUse">
-        <stop stopColor={fill} stopOpacity={top}/><stop offset="1" stopColor={fill}/>
+        {/* 층이 있는 잔은 위아래 색을 따로 칠한다 — 불투명도는 위가 옅고 아래로 짙어지는 규칙을 그대로 따른다 */}
+        {(layers ?? [{ at: 0, color: fill }, { at: 1, color: fill }]).map((st, i) =>
+          <stop key={i} offset={st.at.toFixed(3)} stopColor={st.color} stopOpacity={(top + (1 - top) * st.at).toFixed(3)}/>)}
       </linearGradient>
       <filter id={id('shadow')} x="-50%" y="-100%" width="200%" height="300%"><feGaussianBlur stdDeviation="1.8"/></filter>
     </defs>
@@ -146,7 +149,7 @@ function Drink({ kind, fill, alpha, effects, garnish, size }: {
 
 export function GlassArt({ cocktail, size = 56 }: { cocktail: Cocktail; size?: number }) {
   const { fill, alpha } = drinkColor(cocktail);
-  return <Drink kind={glassOf(cocktail)} fill={fill} alpha={alpha}
+  return <Drink kind={glassOf(cocktail)} fill={fill} alpha={alpha} layers={liquidLayers(cocktail)}
     effects={visualEffectOf(cocktail)} garnish={garnishItems(cocktail)} size={size}/>;
 }
 

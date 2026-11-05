@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { cocktails } from '../data/adapters';
-import { garnishItems, GARNISH_MAX } from '../data/drinkVisual';
+import { garnishItems, GARNISH_MAX, liquidLayers } from '../data/drinkVisual';
 
 const byName = (n: string) => cocktails.find((c) => c.name === n)!;
 const brief = (n: string) => garnishItems(byName(n)).map((g) => `${g.kind}/${g.form ?? ''}/${g.place}`);
@@ -31,5 +31,32 @@ describe('가니시 자리', () => {
     }
     expect(cnt).toEqual({ edge: 37, pick: 17, top: 9, inside: 7, rim: 4, dust: 2 });
     expect(cocktails.filter((c) => !c.garnish).every((c) => garnishItems(c).length === 0)).toBe(true);
+  });
+});
+
+describe('층', () => {
+  const at = (n: string) => liquidLayers(byName(n));
+  it('층이 있는 레시피는 11종', () => {
+    expect(cocktails.filter((c) => liquidLayers(c)).map((c) => c.name).sort()).toEqual([
+      'B-52', 'B-52 (트리플섹 버전)', '다크 앤 스토미', '딥 블루 씨', '뉴욕 사워', '브램블',
+      '아이리시 커피', '젤리피시', '테킬라 선라이즈', '하비 월뱅어', '화이트 러시안',
+    ].sort());
+  });
+  it('테킬라 선라이즈 — 바닥이 그레나딘 색', () => {
+    const s = at('테킬라 선라이즈')!;
+    expect(s[s.length - 1]!.color).toBe('#b3122a');
+    expect(s[0]!.color).not.toBe('#b3122a');
+  });
+  it('뉴욕 사워·다크 앤 스토미 — IBA 원문대로 맨 위에 띄운 층', () => {
+    expect(at('뉴욕 사워')![0]!.color).toBe('#6b1220');
+    expect(at('다크 앤 스토미')![1]!.at).toBeGreaterThanOrEqual(0.2 - 0.012);
+  });
+  it('B-52 — 깔루아가 바닥, 경계가 또렷하다', () => {
+    const s = at('B-52')!;
+    expect(s[s.length - 1]!.color).toBe('#3b2012');
+    expect(s.filter((x, i) => i > 0 && x.at === s[i - 1]!.at).length).toBe(2);
+  });
+  it('흔들어 만든 생크림은 층이 아니다', () => {
+    expect(at('알렉산더')).toBeNull();
   });
 });

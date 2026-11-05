@@ -87,11 +87,10 @@ function volumeOf(raw: string, amountMl: number | null): number {
   return 20;
 }
 
-/** 음료 색 — 양×물들이는 힘으로 섞고, 나머지는 맑은 쪽으로 희석한다 */
-export function drinkColor(ck: Cocktail): { fill: string; alpha: number } {
+/** 재료 몇 가지를 섞은 색 — 양×물들이는 힘으로 섞고, 나머지는 맑은 쪽으로 희석한다 */
+function mixColor(ings: Cocktail['ingredients']): { fill: string; alpha: number } {
   let r = 0, g = 0, b = 0, den = 0, vol = 0;
-  for (const i of ck.ingredients) {
-    if (i.optional) continue;
+  for (const i of ings) {
     const v = volumeOf(i.raw, i.amountMl);
     vol += v;
     const e = COLOR[i.ingredientName];
@@ -110,6 +109,69 @@ export function drinkColor(ck: Cocktail): { fill: string; alpha: number } {
     235 + (b / den - 235) * k,
   ];
   return { fill: rgb2hex(mix), alpha: 0.45 + density * 0.5 };
+}
+
+/** 음료 색 — 선택 재료는 빼고 전부 섞은 색 */
+export function drinkColor(ck: Cocktail): { fill: string; alpha: number } {
+  return mixColor(ck.ingredients.filter((i) => !i.optional));
+}
+
+/**
+ * 층 — 섞지 않고 붓는 잔은 위아래 색이 다르다.
+ * at 은 액체 표면(0)에서 바닥(1)까지의 위치. 같은 at 에 두 색이 오면 경계가 또렷한 층이다.
+ *   Layer          재료 순서대로 바닥부터 쌓는다(B-52)
+ *   가라앉는 시럽   바닥이 진하고 위로 번진다(테킬라 선라이즈의 그레나딘)
+ *   위에서 번지는 리큐르 위가 진하고 아래로 옅어진다(브램블의 크렘 드 뮈르)
+ *   띄우는 재료     맨 위에 얇은 층(하비 월뱅어의 갈리아노, 뉴욕 사워의 레드 와인)
+ * 조주법에 Float 표시가 있을 때만 띄우는 재료를 찾는다. 표시가 없으면 젓지 않고 만드는 잔의 생크림만 띄운다.
+ */
+export interface LiquidStop { at: number; color: string }
+const SINKS = new Set(['그레나딘']);
+const BLEEDS = new Set(['크렘 드 뮈르', '크렘 드 카시스']);
+const FLOATERS = ['그레나딘', '크렘 드 뮈르', '크렘 드 카시스', '생크림', '갈리아노', '레드 와인(드라이)',
+  '자메이카 럼(앰버/블랙스트랩)', '스카치', '싱글몰트 스카치'];
+/** 44px 목록에서도 층이 보이도록 한 층은 액체 높이의 이만큼은 차지한다 */
+const LAYER_MIN = 0.15;
+/** 띄운 층은 얕은 잔(쿠페)에서 더 얇아 보인다 — 조금 더 두껍게 */
+const FLOAT_MIN = 0.2;
+
+export function liquidLayers(ck: Cocktail): LiquidStop[] | null {
+  const ings = ck.ingredients.filter((i) => !i.optional);
+  const vol = (list: typeof ings) => list.reduce((s, i) => s + volumeOf(i.raw, i.amountMl), 0);
+  const m = ck.method;
+  if (/layer/i.test(m)) {
+    if (ings.length < 2) return null;
+    // 바닥부터 붓는 순서 → 위에서부터 그리도록 뒤집는다
+    const raw = [...ings].reverse().map((i) => Math.max(LAYER_MIN, volumeOf(i.raw, i.amountMl) / vol(ings)));
+    const sum = raw.reduce((a, b) => a + b, 0);
+    const stops: LiquidStop[] = [];
+    let at = 0;
+    [...ings].reverse().forEach((i, k) => {
+      const color = mixColor([i]).fill;
+      stops.push({ at, color });
+      at += raw[k]! / sum;
+      stops.push({ at: Math.min(1, at), color });
+    });
+    return stops;
+  }
+  const floated = /float/i.test(m)
+    ? FLOATERS.map((n) => ings.find((i) => i.ingredientName === n)).find(Boolean)
+    : /shake|blend/i.test(m) ? undefined : ings.find((i) => i.ingredientName === '생크림');
+  if (!floated) return null;
+  const rest = ings.filter((i) => i !== floated);
+  if (!rest.length) return null;
+  const base = mixColor(rest).fill;
+  const layer = mixColor([floated]).fill;
+  const share = volumeOf(floated.raw, floated.amountMl) / vol(ings);
+  const sinksOrBleeds = SINKS.has(floated.ingredientName) || BLEEDS.has(floated.ingredientName);
+  const f = Math.min(0.45, Math.max(sinksOrBleeds ? LAYER_MIN : FLOAT_MIN, share));
+  if (SINKS.has(floated.ingredientName)) {
+    return [{ at: 0, color: base }, { at: Math.max(0, 1 - f - 0.45), color: base }, { at: 1 - f, color: layer }, { at: 1, color: layer }];
+  }
+  if (BLEEDS.has(floated.ingredientName)) {
+    return [{ at: 0, color: layer }, { at: f, color: layer }, { at: Math.min(1, f + 0.45), color: base }, { at: 1, color: base }];
+  }
+  return [{ at: 0, color: layer }, { at: f - 0.012, color: layer }, { at: f + 0.012, color: base }, { at: 1, color: base }];
 }
 
 const FIZZ = ['탄산수', '무향 탄산', '토닉워터', '진저에일', '진저비어', '콜라', '레몬라임 소다(스프라이트/세븐업)', '자몽 소다(스쿼트/프레스카)'];
