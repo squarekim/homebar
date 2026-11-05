@@ -29,7 +29,7 @@ describe('가니시 자리', () => {
       expect(g.length).toBeLessThanOrEqual(GARNISH_MAX);
       for (const x of g) cnt[x.place] = (cnt[x.place] ?? 0) + 1;
     }
-    expect(cnt).toEqual({ edge: 51, pick: 25, top: 9, inside: 12, rim: 5, dust: 2 }); // IBA 가니시 22종 보강 후
+    expect(cnt).toEqual({ edge: 56, pick: 27, top: 10, inside: 13, rim: 5, dust: 2 }); // IBA 가니시 보강 + 현행 IBA 8종 추가 후
     expect(cocktails.filter((c) => !c.garnish).every((c) => garnishItems(c).length === 0)).toBe(true);
   });
 });
