@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ingredients, cocktails, bottles, whiskies } from '../data/adapters';
+import { ingredients, cocktails, bottles, whiskies, substitutions } from '../data/adapters';
 import { evaluateAll, evaluateCocktail, tallyStatus, STATUS_LABEL_KO, STATUS_SENTENCE_KO, STATUS_LEAD_KO } from '../services/availabilityService';
 import { isNeutralTaste } from '../services/flavorService';
 import { recommendCocktails, recommendWhiskies, todayPicks, type RecommendContext } from '../services/recommendationService';
@@ -19,7 +19,7 @@ function seedHeld(): Set<string> {
 
 describe('seed adapters', () => {
   it('원본 건수 유지', () => {
-    expect(ingredients.length).toBe(128);
+    expect(ingredients.length).toBe(129); // 원본 128 + 오렌지 큐라소(마이 타이 IBA 교정)
     expect(cocktails.length).toBe(202);
     expect(bottles.length).toBe(82); // 원본 81 + 클라이넬리쉬 14년 추가
     expect(whiskies.length).toBeGreaterThan(0);
@@ -539,5 +539,22 @@ describe('홈 첫 화면 추천 — 대표 한 잔과 다른 성격', () => {
   it('중립 프로필은 취향 설정으로 치지 않는다 (부팅 때 자동 생성된다)', () => {
     expect(isNeutralTaste(vec({}))).toBe(true);
     expect(isNeutralTaste(vec({ smoke: 9 }))).toBe(false);
+  });
+});
+
+describe('마이 타이 — IBA 원문대로 오렌지 큐라소', () => {
+  const mt = cocktails.find((c) => c.name === '마이 타이')!;
+  it('블루 큐라소가 아니라 오렌지 큐라소 15ml', () => {
+    const names = mt.ingredients.map((i) => i.ingredientName);
+    expect(names).toContain('오렌지 큐라소');
+    expect(names).not.toContain('블루 큐라소');
+  });
+  it('트리플 섹이나 그랑 마르니에로 대체할 수 있다', () => {
+    const others = mt.ingredients.filter((i) => i.ingredientName !== '오렌지 큐라소').map((i) => i.ingredientId);
+    const subMap = new Map<string, string[]>();
+    for (const s of substitutions) subMap.set(s.ingredientId, [...(subMap.get(s.ingredientId) ?? []), s.substituteId]);
+    const triple = ingredients.find((i) => i.name === '트리플 섹')!.id;
+    expect(evaluateCocktail(mt, new Set([...others, triple]), subMap).status).toBe('SUBSTITUTE');
+    expect(evaluateCocktail(mt, new Set(others), subMap).status).toBe('MISSING');
   });
 });

@@ -15,7 +15,13 @@ function defaultOwned(ing: { name: string; seedOwned: boolean }): boolean {
   return IS_PUBLIC ? STARTER.has(ing.name) : ing.seedOwned;
 }
 
-const SEED_VERSION = 1;
+const SEED_VERSION = 2;
+/**
+ * 버전마다 새로 생긴 재료 — 이미 시드된 기기에도 재고 줄(미보유)과 그 재료의 대체 관계만 더한다.
+ * 사용자가 지운 대체 관계를 되살리지 않도록, 그 버전에 처음 생긴 재료의 것만 넣는다.
+ *   2: 마이 타이를 IBA 원문대로 고치며 생긴 '오렌지 큐라소'(scripts/fixIbaMaiTai.mjs)
+ */
+const ADDED_IN: Record<number, string[]> = { 2: ['오렌지 큐라소'] };
 const LEGACY_KEY = 'homebar.v54.held';
 
 function neutralVector(): FlavorVector {
@@ -69,6 +75,19 @@ export async function ensureSeeded(): Promise<void> {
     if (tpCount === 0) {
       const me: TasteProfile = { id: 'me', name: '나', vector: neutralVector(), updatedAt: now, source: 'manual' };
       await db.tasteProfiles.put(me);
+    }
+
+    // 이전 버전에서 올라온 기기: 그 뒤로 생긴 재료만 더한다
+    const from = typeof seeded?.value === 'number' ? seeded.value : SEED_VERSION;
+    for (let v = from + 1; v <= SEED_VERSION; v++) {
+      for (const name of ADDED_IN[v] ?? []) {
+        const id = ingredientIdOf(name);
+        if (!(await db.inventory.get(id))) {
+          await db.inventory.put({ ingredientId: id, ingredientName: name, owned: false, remaining: 0, updatedAt: now });
+        }
+        const subs = seedSubs.filter((x) => x.ingredientId === id);
+        for (const sub of subs) if (!(await db.substitutions.get(sub.id))) await db.substitutions.put(sub);
+      }
     }
 
     await db.meta.put({ key: 'seedVersion', value: SEED_VERSION });
