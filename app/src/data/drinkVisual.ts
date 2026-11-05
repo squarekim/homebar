@@ -118,16 +118,20 @@ export function drinkColor(ck: Cocktail): { fill: string; alpha: number } {
 
 /**
  * 층 — 섞지 않고 붓는 잔은 위아래 색이 다르다.
- * at 은 액체 표면(0)에서 바닥(1)까지의 위치. 같은 at 에 두 색이 오면 경계가 또렷한 층이다.
+ * at 은 액체 표면(0)에서 바닥(1)까지의 위치. 같은 at 에 두 색이 오면 경계가 또렷한 층이다
+ * (GlassArt 가 그 경계를 잔 원근에 맞는 곡선으로 그린다).
  *   Layer          재료 순서대로 바닥부터 쌓는다(B-52)
  *   가라앉는 시럽   바닥이 진하고 위로 번진다(테킬라 선라이즈의 그레나딘)
  *   위에서 번지는 리큐르 위가 진하고 아래로 옅어진다(브램블의 크렘 드 뮈르)
- *   띄우는 재료     맨 위가 그 색이고 아래로 번진다(하비 월뱅어의 갈리아노, 뉴욕 사워의 레드 와인)
+ *   띄우는 재료     맨 위가 그 색이고 아래로 번진다(하비 월뱅어의 갈리아노, 뉴욕 사워의 레드 와인).
+ *                   생크림만은 또렷한 층으로 얹힌다(아이리시 커피)
  * 조주법에 Float 표시가 있을 때만 띄우는 재료를 찾는다. 표시가 없으면 젓지 않고 만드는 잔의 생크림만 띄운다.
  */
 export interface LiquidStop { at: number; color: string }
 const SINKS = new Set(['그레나딘']);
 const BLEEDS = new Set(['크렘 드 뮈르', '크렘 드 카시스']);
+/** 띄워도 섞이지 않고 경계가 또렷한 재료 */
+const CRISP_FLOATS = new Set(['생크림']);
 const FLOATERS = ['그레나딘', '크렘 드 뮈르', '크렘 드 카시스', '생크림', '갈리아노', '레드 와인(드라이)',
   '자메이카 럼(앰버/블랙스트랩)', '스카치', '싱글몰트 스카치'];
 /** 44px 목록에서도 층이 보이도록 한 층은 액체 높이의 이만큼은 차지한다 */
@@ -171,7 +175,11 @@ export function liquidLayers(ck: Cocktail): LiquidStop[] | null {
   if (BLEEDS.has(floated.ingredientName)) {
     return [{ at: 0, color: layer }, { at: f, color: layer }, { at: Math.min(1, f + 0.45), color: base }, { at: 1, color: base }];
   }
-  // 띄운 층도 경계를 또렷하게 긋지 않고 아래로 번지게 한다(위쪽 일부는 그 색 그대로 남긴다)
+  // 생크림은 섞이지 않고 또렷하게 얹힌다(아이리시 커피·화이트 러시안)
+  if (CRISP_FLOATS.has(floated.ingredientName)) {
+    return [{ at: 0, color: layer }, { at: f, color: layer }, { at: f, color: base }, { at: 1, color: base }];
+  }
+  // 술·리큐르·와인은 아래로 번진다(위쪽 일부는 그 색 그대로 남긴다)
   return [{ at: 0, color: layer }, { at: f * 0.6, color: layer }, { at: Math.min(1, f + 0.3), color: base }, { at: 1, color: base }];
 }
 

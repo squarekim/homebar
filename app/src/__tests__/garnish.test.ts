@@ -58,6 +58,13 @@ describe('층', () => {
     expect(s[s.length - 1]!.color).toBe('#3b2012');
     expect(s.filter((x, i) => i > 0 && x.at === s[i - 1]!.at).length).toBe(2);
   });
+  it('생크림은 또렷한 층, 술은 번지는 층', () => {
+    const crisp = (n: string) => at(n)!.some((x, i, a) => i > 0 && x.at === a[i - 1]!.at && x.color !== a[i - 1]!.color);
+    expect(crisp('아이리시 커피')).toBe(true);
+    expect(crisp('화이트 러시안')).toBe(true);
+    expect(crisp('딥 블루 씨')).toBe(false);
+    expect(crisp('하비 월뱅어')).toBe(false);
+  });
   it('흔들어 만든 생크림은 층이 아니다', () => {
     expect(at('알렉산더')).toBeNull();
   });

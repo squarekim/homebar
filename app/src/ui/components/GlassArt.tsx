@@ -77,6 +77,34 @@ function place(items: GarnishItem[], s: GlassSprite): Placed[] {
   return out;
 }
 
+/** 경계가 또렷한 곳(같은 위치에 색 두 개)에서 층을 나눈다. 번지는 구간은 한 층 안의 그라데이션으로 남는다. */
+function splitLayers(stops: LiquidStop[]): Array<{ from: number; stops: LiquidStop[] }> {
+  const out: Array<{ from: number; stops: LiquidStop[] }> = [{ from: 0, stops: [] }];
+  stops.forEach((st, i) => {
+    const prev = stops[i - 1];
+    if (prev && Math.abs(prev.at - st.at) < 1e-3 && prev.color !== st.color) out.push({ from: st.at, stops: [] });
+    out[out.length - 1]!.stops.push(st);
+  });
+  return out;
+}
+
+/** 높이 y 에서 액체의 가운데와 반폭 */
+function widthAt(s: GlassSprite, y: number): { cx: number; rx: number } {
+  const p = s.profile;
+  const first = p[0]!;
+  const last = p[p.length - 1]!;
+  if (y <= first[0]) return { cx: first[1], rx: first[2] };
+  for (let i = 1; i < p.length; i++) {
+    const a = p[i - 1]!;
+    const b = p[i]!;
+    if (y <= b[0]) {
+      const t = (y - a[0]) / Math.max(1e-6, b[0] - a[0]);
+      return { cx: a[1] + (b[1] - a[1]) * t, rx: a[2] + (b[2] - a[2]) * t };
+    }
+  }
+  return { cx: last[1], rx: last[2] };
+}
+
 /** 잔 한 잔 — 칵테일이든 위스키든 색·효과만 받아 같은 그림을 그린다. */
 function Drink({ kind, fill, alpha, layers, effects, garnish, size }: {
   kind: GlassKind; fill: string; alpha: number; layers?: LiquidStop[] | null;
@@ -104,22 +132,35 @@ function Drink({ kind, fill, alpha, layers, effects, garnish, size }: {
   };
   // 어두운 바탕에서 옅은 술이 비어 보이지 않게 충분히 칠한다(밀도 차이는 위쪽에 남는다)
   const top = Math.min(1, .62 + alpha * .35);
+  // 층 — 또렷한 경계마다 아래층을 따로 칠하고, 그 윗변을 잔 입구와 같은 원근의 곡선(앞쪽 호)으로 깎는다
+  const bands = splitLayers(layers ?? [{ at: 0, color: fill }, { at: 1, color: fill }]);
+  const yAt = (at: number) => surface.cy + at * (s.bottom - surface.cy);
+  const flat = surface.ry / Math.max(1, surface.rx);
+  const bandPath = (from: number) => {
+    const y = yAt(from);
+    const { cx, rx } = widthAt(s, y);
+    const ry = rx * flat;
+    const l = box.x - 2, r = box.x + box.w + 2, b = box.y + box.h + 2;
+    return `M${l} ${y.toFixed(2)} H${(cx - rx).toFixed(2)} A${rx.toFixed(2)} ${ry.toFixed(2)} 0 0 0 ${(cx + rx).toFixed(2)} ${y.toFixed(2)} H${r} V${b} H${l}Z`;
+  };
 
   return <svg className="glassart" viewBox="0 0 80 80" width={size} height={size} aria-hidden="true">
     <defs>
       <mask id={id('liquid')} maskUnits="userSpaceOnUse" x="0" y="0" width="80" height="80">
         <image href={s.liquid} x={box.x} y={box.y} width={box.w} height={box.h} preserveAspectRatio="none"/>
       </mask>
-      <linearGradient id={id('liquid-color')} x1="0" y1={surface.cy} x2="0" y2={s.bottom} gradientUnits="userSpaceOnUse">
-        {/* 층이 있는 잔은 위아래 색을 따로 칠한다 — 불투명도는 위가 옅고 아래로 짙어지는 규칙을 그대로 따른다 */}
-        {(layers ?? [{ at: 0, color: fill }, { at: 1, color: fill }]).map((st, i) =>
+      {/* 층마다 그라데이션 하나 — 불투명도는 위가 옅고 아래로 짙어지는 규칙을 그대로 따른다 */}
+      {bands.map((band, k) => <linearGradient key={k} id={id(`liquid-${k}`)} x1="0" y1={surface.cy} x2="0" y2={s.bottom} gradientUnits="userSpaceOnUse">
+        {band.stops.map((st, i) =>
           <stop key={i} offset={st.at.toFixed(3)} stopColor={st.color} stopOpacity={(top + (1 - top) * st.at).toFixed(3)}/>)}
-      </linearGradient>
+      </linearGradient>)}
       <filter id={id('shadow')} x="-50%" y="-100%" width="200%" height="300%"><feGaussianBlur stdDeviation="1.8"/></filter>
     </defs>
     <ellipse cx="40" cy={box.y + box.h + 1} rx={Math.min(24, box.w * .42)} ry="2.2" fill="#0E1416" opacity=".3" filter={url('shadow')}/>
     <g mask={url('liquid')}>
-      <rect x={box.x} y={box.y} width={box.w} height={box.h} fill={url('liquid-color')}/>
+      {bands.map((band, k) => k === 0
+        ? <rect key={k} x={box.x} y={box.y} width={box.w} height={box.h} fill={url(`liquid-${k}`)}/>
+        : <path key={k} d={bandPath(band.from)} fill={url(`liquid-${k}`)}/>)}
       {placed.filter((p) => p.layer === 'inside').map((p) => <g key={p.name} opacity=".88">{img(p)}</g>)}
       {effects.bubbles && <g fill="none">
         {/* 옅은 음료 위에서는 흰 기포가 사라진다 — 어두운 밑테를 한 겹 깔아 형태를 남긴다. */}

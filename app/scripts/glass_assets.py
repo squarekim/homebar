@@ -132,8 +132,21 @@ def split_glass(path, kind):
         rim=dict(cx=round((u(rx0, 'x') + u(rx1, 'x')) / 2, 2), cy=u(rim_top + rim_band.shape[0] / 2, 'y'),
                  rx=round((rx1 - rx0) * s / 2, 2), ry=round(max(1.5, (rx1 - rx0) * s * .08), 2)),
         bottom=u(ry_.max(), 'y'),
+        # 높이별 액체 폭 — 층 경계를 잔 원근에 맞는 곡선으로 그릴 때 쓴다 [y, cx, rx]
+        profile=profile(region, top, ry_.max(), u, s),
     )
     return meta
+
+
+def profile(region, top, bottom, u, s, n=24):
+    out = []
+    for k in range(n + 1):
+        y = int(round(top + (bottom - top) * k / n))
+        cols = np.nonzero(region[y])[0]
+        if not len(cols):
+            continue
+        out.append([u(y, 'y'), round((u(cols.min(), 'x') + u(cols.max(), 'x')) / 2, 2), round((cols.max() - cols.min()) * s / 2, 2)])
+    return out
 
 
 def components(alpha, min_area):
@@ -226,12 +239,17 @@ def main():
         '',
         'type Box = { x: number; y: number; w: number; h: number };',
         'type Ellipse = { cx: number; cy: number; rx: number; ry: number };',
-        'export interface GlassSprite { glass: string; liquid: string; box: Box; surface: Ellipse; rim: Ellipse; bottom: number }',
+        'export interface GlassSprite {',
+        '  glass: string; liquid: string; box: Box; surface: Ellipse; rim: Ellipse; bottom: number;',
+        '  /** 높이별 액체 폭 [y, cx, rx] — 위에서 아래로 */',
+        '  profile: Array<[number, number, number]>;',
+        '}',
         'export const GLASS_SPRITES: Record<GlassKind, GlassSprite> = {',
     ]
     for k, m in glasses.items():
         lines.append(f"  {k}: {{ glass: {k}Glass, liquid: {k}Liquid, box: {json.dumps(m['box'])}, "
-                     f"surface: {json.dumps(m['surface'])}, rim: {json.dumps(m['rim'])}, bottom: {m['bottom']} }},")
+                     f"surface: {json.dumps(m['surface'])}, rim: {json.dumps(m['rim'])}, bottom: {m['bottom']},\n"
+                     f"    profile: {json.dumps(m['profile'])} }},")
     lines += ['};', '', 'export const GARNISH_SPRITES = {']
     for n, m in garnish.items():
         lines.append(f"  '{n}': {{ src: {gname[n]}, w: {m['w']}, h: {m['h']} }},")
