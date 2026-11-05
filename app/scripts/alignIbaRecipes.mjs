@@ -83,6 +83,9 @@ export const FIXES = {
   '뉴욕 사워': { swap: { '버번': ['버번 또는 라이', '버번 또는 라이 60ml'] }, required: ['계란흰자'] },
   // IBA: Tequila 100% agave 60
   '토미스 마르가리타': { swap: { '레포사도 데킬라(100% 아가베)': ['100% 아가베 데킬라', '100% 아가베 데킬라 60ml'] } },
+  // IBA: Crème de Cacao (Brown) / Grasshopper 은 (White) — 재료는 하나, 색만 표기로 가른다(drinkVisual.colorOf)
+  '알렉산더': { amounts: { '크렘 드 카카오': '30ml (브라운)' } },
+  '그래스호퍼': { amounts: { '크렘 드 카카오': '20ml (화이트)' } },
   // IBA: "Float the single malt whisky on top."
   '페니실린': { m: 'Shake (Float)' },
 };

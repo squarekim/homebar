@@ -76,3 +76,13 @@ describe('IBA 원문의 잔', () => {
     expect([g('뉴욕 사워'), g('싱가포르 슬링'), g('라모스 피즈'), g('올드 쿠반')]).toEqual(['rocks', 'hurricane', 'highball', 'coupe']);
   });
 });
+
+describe('크렘 드 카카오 색', () => {
+  it('알렉산더는 브라운 카카오라 갈색, 그래스호퍼는 화이트라 초록이 남는다', async () => {
+    const { drinkColor } = await import('../data/drinkVisual');
+    const lum = (h: string) => [1, 3, 5].reduce((s, i) => s + parseInt(h.slice(i, i + 2), 16), 0) / 3;
+    expect(lum(drinkColor(byName('알렉산더')).fill)).toBeLessThan(200);
+    const g = drinkColor(byName('그래스호퍼')).fill;
+    expect(parseInt(g.slice(3, 5), 16)).toBeGreaterThan(parseInt(g.slice(1, 3), 16));
+  });
+});

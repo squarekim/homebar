@@ -101,6 +101,16 @@ const MILKY: [number, number, number] = [250, 244, 228];
 const OPAQUE = new Set(['생크림', '우유', '코코넛 크림', '계란흰자']);
 const GAIN = 1.15;
 
+/**
+ * 재료 색 — 같은 재료라도 표기에 색이 적혀 있으면 그 색을 쓴다.
+ * 크렘 드 카카오는 화이트(무색)와 브라운(갈색)이 있다. 재고는 하나로 보되, 레시피 표기의 '(브라운)'으로 색을 가른다.
+ */
+const BROWN_CACAO: [string, number] = ['#5A2E14', .9];
+function colorOf(i: Cocktail['ingredients'][number]): [string, number] | undefined {
+  if (i.ingredientName === '크렘 드 카카오' && /브라운|다크|brown|dark/i.test(i.raw)) return BROWN_CACAO;
+  return COLOR[i.ingredientName];
+}
+
 function mixColor(ings: Cocktail['ingredients']): { fill: string; alpha: number } {
   const absorb = [0, 0, 0];
   let den = 0, vol = 0, milk = 0, dyed = false;
@@ -108,7 +118,7 @@ function mixColor(ings: Cocktail['ingredients']): { fill: string; alpha: number 
   if (vol === 0) return { fill: '#EFE6D2', alpha: 0.5 };
   for (const i of ings) {
     const v = volumeOf(i.raw, i.amountMl);
-    const e = COLOR[i.ingredientName];
+    const e = colorOf(i);
     if (!e) continue;
     const w = e[1] * (e[1] >= 0.85 ? 1.9 : 1);
     den += v * w;
@@ -157,7 +167,7 @@ const FLOAT_MIN = 0.2;
 
 /** 층 하나는 그 재료 자체다 — 섞이지 않았으니 표의 색을 그대로 쓴다 */
 function soloColor(i: Cocktail['ingredients'][number]): string {
-  const e = COLOR[i.ingredientName];
+  const e = colorOf(i);
   return e ? rgb2hex(hex2rgb(e[0])) : mixColor([i]).fill;
 }
 
