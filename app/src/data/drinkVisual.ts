@@ -41,7 +41,7 @@ const COLOR: Record<string, [string, number]> = {
   '데메라라 럼': ['#8A4E1E', .6], '마르티니크 럼 아그리콜': ['#FFF6DC', .1], '코코넛 럼': ['#FFF8EC', .15],
   // 리큐르
   '트리플 섹': ['#FFFFFF', .03], '코앵트로': ['#FFFFFF', .03], '그랑 마르니에': ['#C97B2A', .5],
-  '블루 큐라소': ['#1B79C8', 1], '미도리': ['#5BA630', 1], '그린 크렘 드 멘트': ['#3E9B54', 1],
+  '블루 큐라소': ['#0B55B0', 1], '미도리': ['#5BA630', 1], '그린 크렘 드 멘트': ['#3E9B54', 1],
   '크렘 드 멘트': ['#3E9B54', .9], '화이트 크렘 드 멘트': ['#FFFFFF', .03],
   '아마레토': ['#A8571F', .6], '깔루아(커피 리큐르)': ['#3B2012', .95], '아이리시 크림(베일리스)': ['#D9C1A0', .85],
   '피치 슈납스': ['#F2C46B', .45], '마라스키노': ['#FFFFFF', .05], '크렘 드 카시스': ['#4A1030', 1],
@@ -60,7 +60,7 @@ const COLOR: Record<string, [string, number]> = {
   '레드 와인(드라이)': ['#6B1220', .9], '루비 포트': ['#5E0F20', .95],
   // 주스·과즙
   '레몬즙': ['#F2E27A', .3], '라임즙': ['#D7E27A', .3], '오렌지 주스': ['#F09422', .75],
-  '파인애플 주스': ['#F2C63C', .6], '크랜베리 주스': ['#B3172F', .85], '사과 주스': ['#E8D98A', .35],
+  '파인애플 주스': ['#F5DC7A', .35], '크랜베리 주스': ['#B3172F', .85], '사과 주스': ['#E8D98A', .35],
   '자몽 주스': ['#F0A38C', .6], '토마토 주스': ['#B8341C', .9], '코코넛 크림': ['#FFFDF7', .7],
   '패션프루트 퓨레': ['#E8A32B', .7], '복숭아 퓨레': ['#F0B678', .6], '사탕수수 주스 또는 시럽': ['#E8D9A8', .2],
   // 탄산·음료
@@ -87,27 +87,41 @@ function volumeOf(raw: string, amountMl: number | null): number {
   return 20;
 }
 
-/** 재료 몇 가지를 섞은 색 — 양×물들이는 힘으로 섞고, 나머지는 맑은 쪽으로 희석한다 */
+/**
+ * 재료 몇 가지를 섞은 색.
+ * 술 속 색소는 빛을 흡수하는 양이 더해지는 방식으로 섞인다(Beer–Lambert). 그래서 RGB 를 평균하지 않고
+ * 채널별 흡광도(-ln 투과율)를 양×물들이는 힘으로 더한 뒤 다시 색으로 돌린다. 파랑(블루 큐라소)과
+ * 노랑(파인애플)을 섞으면 평균처럼 회색이 되지 않고 청록이 된다.
+ * 크림·우유처럼 빛을 흩뜨리는 재료는 색소가 아니라 탁하게 만드는 쪽이라, 흡광도에 넣지 않고 마지막에 희게 덮는다.
+ */
+const CLEAR: [number, number, number] = [252, 247, 235]; // 색소가 없을 때의 바탕(옅은 크림빛)
+const MILKY: [number, number, number] = [250, 244, 228];
+const OPAQUE = new Set(['생크림', '우유', '코코넛 크림', '계란흰자']);
+const GAIN = 1.15;
+
 function mixColor(ings: Cocktail['ingredients']): { fill: string; alpha: number } {
-  let r = 0, g = 0, b = 0, den = 0, vol = 0;
+  const absorb = [0, 0, 0];
+  let den = 0, vol = 0, milk = 0, dyed = false;
+  for (const i of ings) vol += volumeOf(i.raw, i.amountMl);
+  if (vol === 0) return { fill: '#EFE6D2', alpha: 0.5 };
   for (const i of ings) {
     const v = volumeOf(i.raw, i.amountMl);
-    vol += v;
     const e = COLOR[i.ingredientName];
     if (!e) continue;
-    const w = v * e[1] * (e[1] >= 0.85 ? 1.9 : 1);
-    const c = hex2rgb(e[0]);
-    r += c[0] * w; g += c[1] * w; b += c[2] * w;
-    den += w;
+    const w = e[1] * (e[1] >= 0.85 ? 1.9 : 1);
+    den += v * w;
+    if (OPAQUE.has(i.ingredientName)) { milk += v * e[1]; continue; }
+    if (e[1] <= 0) continue;
+    dyed = true;
+    hex2rgb(e[0]).forEach((c, k) => { absorb[k]! += (v / vol) * w * GAIN * -Math.log(Math.max(10, c) / 255); });
   }
-  if (den === 0 || vol === 0) return { fill: '#EFE6D2', alpha: 0.5 };
+  if (!dyed && milk === 0) return { fill: '#EFE6D2', alpha: 0.5 };
+  const cover = 1 - Math.exp(-2.5 * milk / vol);
+  const mix = CLEAR.map((base, k) => {
+    const t = base * Math.exp(-absorb[k]!);
+    return t * (1 - cover) + MILKY[k]! * cover;
+  }) as [number, number, number];
   const density = Math.min(1, den / vol);
-  const k = Math.pow(density, 0.34);
-  const mix: [number, number, number] = [
-    252 + (r / den - 252) * k,
-    247 + (g / den - 247) * k,
-    235 + (b / den - 235) * k,
-  ];
   return { fill: rgb2hex(mix), alpha: 0.45 + density * 0.5 };
 }
 
@@ -139,6 +153,12 @@ const LAYER_MIN = 0.15;
 /** 띄운 층은 얕은 잔(쿠페)에서 더 얇아 보인다 — 조금 더 두껍게 */
 const FLOAT_MIN = 0.2;
 
+/** 층 하나는 그 재료 자체다 — 섞이지 않았으니 표의 색을 그대로 쓴다 */
+function soloColor(i: Cocktail['ingredients'][number]): string {
+  const e = COLOR[i.ingredientName];
+  return e ? rgb2hex(hex2rgb(e[0])) : mixColor([i]).fill;
+}
+
 export function liquidLayers(ck: Cocktail): LiquidStop[] | null {
   const ings = ck.ingredients.filter((i) => !i.optional);
   const vol = (list: typeof ings) => list.reduce((s, i) => s + volumeOf(i.raw, i.amountMl), 0);
@@ -151,7 +171,7 @@ export function liquidLayers(ck: Cocktail): LiquidStop[] | null {
     const stops: LiquidStop[] = [];
     let at = 0;
     [...ings].reverse().forEach((i, k) => {
-      const color = mixColor([i]).fill;
+      const color = soloColor(i);
       stops.push({ at, color });
       at += raw[k]! / sum;
       stops.push({ at: Math.min(1, at), color });
@@ -165,7 +185,7 @@ export function liquidLayers(ck: Cocktail): LiquidStop[] | null {
   const rest = ings.filter((i) => i !== floated);
   if (!rest.length) return null;
   const base = mixColor(rest).fill;
-  const layer = mixColor([floated]).fill;
+  const layer = soloColor(floated);
   const share = volumeOf(floated.raw, floated.amountMl) / vol(ings);
   const sinksOrBleeds = SINKS.has(floated.ingredientName) || BLEEDS.has(floated.ingredientName);
   const f = Math.min(0.45, Math.max(sinksOrBleeds ? LAYER_MIN : FLOAT_MIN, share));
