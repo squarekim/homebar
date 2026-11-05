@@ -32,8 +32,8 @@ export const RECIPES = [
       L('패션프루트 퓨레', '패션프루트 퓨레 50ml'), L('정제 설탕', '정제 설탕 2바스푼 (원문: 바닐라 설탕)'),
       L('샴페인', '샴페인 50ml (곁들임, 선택)', 1)] },
   { n: '셰리 코블러', b: '멀티', iba: '현행IBA', m: 'Shake', gl: 'rocks', u: U('sherry-cobbler'), g: '베리·오렌지 슬라이스·레몬 슬라이스',
-    note: '원문은 아몬티야도 45ml와 팔로 코르타도 45ml 두 셰리를 쓰는데, 재료 목록에 셰리가 없어 드라이 화이트 와인으로 맞췄습니다.',
-    i: [L('드라이 화이트 와인', '드라이 화이트 와인 90ml (원문: 아몬티야도·팔로 코르타도 셰리)'), L('정제 설탕', '정제 설탕 1tsp')] },
+    note: '원문은 아몬티야도 45ml와 팔로 코르타도 45ml를 섞어 씁니다.',
+    i: [L('셰리(아몬티야도)', '셰리(아몬티야도) 90ml (원문: 아몬티야도 45ml + 팔로 코르타도 45ml)'), L('정제 설탕', '정제 설탕 1tsp')] },
   { n: '서퍼링 바스터드', b: '멀티', iba: '현행IBA', m: 'Shake + Build', gl: 'highball', u: U('suffering-bastard'), g: '민트 스프링·오렌지 슬라이스 (선택)',
     i: [L('코냑', '코냑 30ml'), L('런던 드라이 진', '런던 드라이 진 30ml'), L('라임즙', '라임즙 15ml'),
       L('앙고스투라 비터', '앙고스투라 비터 2dash'), L('진저비어', '진저비어 Top')] },
@@ -46,6 +46,9 @@ export const RECIPES = [
       L('그린 샤르트뢰즈', '그린 샤르트뢰즈 15ml'), L('앙고스투라 비터', '앙고스투라 비터 2dash')] },
 ];
 
+/** 셰리 코블러는 셰리가 술의 전부라 대체 재료로 맞추지 않고 셰리를 재료로 넣는다(개인 재고 플래그 own 은 0) */
+const NEW_INGS = [{ n: '셰리(아몬티야도)', c: '베르무트·와인', q: 0, own: 0 }];
+
 export function addRecipes({ dry = false } = {}) {
   const text = readFileSync(SEED, 'utf8');
   const marker = 'export const SEED: RawData = ';
@@ -54,6 +57,7 @@ export function addRecipes({ dry = false } = {}) {
   const tail = text.slice(start).match(/(\s*as\s+RawData\s*;?\s*)$/)?.[1] ?? ' as RawData;\n';
   const data = JSON.parse(text.slice(start).replace(/\s*as\s+RawData\s*;?\s*$/, ''));
   const added = [];
+  for (const ing of NEW_INGS) if (!data.ings.some((x) => x.n === ing.n)) { data.ings.push({ ...ing }); added.push(ing.n); }
   for (const r of RECIPES) {
     const at = data.recipes.findIndex((x) => x.n === r.n);
     const copy = JSON.parse(JSON.stringify(r));
