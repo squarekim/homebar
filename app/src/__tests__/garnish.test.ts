@@ -49,7 +49,9 @@ describe('층', () => {
   });
   it('뉴욕 사워·다크 앤 스토미 — IBA 원문대로 맨 위에 띄운 층', () => {
     expect(at('뉴욕 사워')![0]!.color).toBe('#6b1220');
-    expect(at('다크 앤 스토미')![1]!.at).toBeGreaterThanOrEqual(0.2 - 0.012);
+    const d = at('다크 앤 스토미')!;
+    expect(d[0]!.color).toBe(d[1]!.color);                   // 위쪽은 럼 색 그대로
+    expect(d[2]!.at - d[1]!.at).toBeGreaterThanOrEqual(0.3); // 경계는 번진다
   });
   it('B-52 — 깔루아가 바닥, 경계가 또렷하다', () => {
     const s = at('B-52')!;

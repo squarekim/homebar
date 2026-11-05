@@ -122,7 +122,7 @@ export function drinkColor(ck: Cocktail): { fill: string; alpha: number } {
  *   Layer          재료 순서대로 바닥부터 쌓는다(B-52)
  *   가라앉는 시럽   바닥이 진하고 위로 번진다(테킬라 선라이즈의 그레나딘)
  *   위에서 번지는 리큐르 위가 진하고 아래로 옅어진다(브램블의 크렘 드 뮈르)
- *   띄우는 재료     맨 위에 얇은 층(하비 월뱅어의 갈리아노, 뉴욕 사워의 레드 와인)
+ *   띄우는 재료     맨 위가 그 색이고 아래로 번진다(하비 월뱅어의 갈리아노, 뉴욕 사워의 레드 와인)
  * 조주법에 Float 표시가 있을 때만 띄우는 재료를 찾는다. 표시가 없으면 젓지 않고 만드는 잔의 생크림만 띄운다.
  */
 export interface LiquidStop { at: number; color: string }
@@ -171,7 +171,8 @@ export function liquidLayers(ck: Cocktail): LiquidStop[] | null {
   if (BLEEDS.has(floated.ingredientName)) {
     return [{ at: 0, color: layer }, { at: f, color: layer }, { at: Math.min(1, f + 0.45), color: base }, { at: 1, color: base }];
   }
-  return [{ at: 0, color: layer }, { at: f - 0.012, color: layer }, { at: f + 0.012, color: base }, { at: 1, color: base }];
+  // 띄운 층도 경계를 또렷하게 긋지 않고 아래로 번지게 한다(위쪽 일부는 그 색 그대로 남긴다)
+  return [{ at: 0, color: layer }, { at: f * 0.6, color: layer }, { at: Math.min(1, f + 0.3), color: base }, { at: 1, color: base }];
 }
 
 const FIZZ = ['탄산수', '무향 탄산', '토닉워터', '진저에일', '진저비어', '콜라', '레몬라임 소다(스프라이트/세븐업)', '자몽 소다(스쿼트/프레스카)'];
