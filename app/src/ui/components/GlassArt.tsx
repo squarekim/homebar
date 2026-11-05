@@ -36,8 +36,11 @@ const garnishScale = (s: GlassSprite) => Math.min(1, Math.max(.62, s.rim.rx / 12
 interface Placed { name: GarnishSprite; x: number; y: number; w: number; h: number; layer: 'under' | 'over' | 'inside' }
 
 /** 가니시마다 자리를 잡는다 — 같은 입력이면 항상 같은 자리 */
-function place(items: GarnishItem[], s: GlassSprite): Placed[] {
-  const k = garnishScale(s);
+/** 작은 그림(목록 44px)에서는 가니시가 점처럼 보인다 — 크기에 따라 키운다 */
+const smallBoost = (size: number) => size <= 48 ? 1.4 : size <= 64 ? 1.2 : 1;
+
+function place(items: GarnishItem[], s: GlassSprite, size: number): Placed[] {
+  const k = garnishScale(s) * smallBoost(size);
   const { rim, surface } = s;
   let edges = 0;
   const out: Placed[] = [];
@@ -115,7 +118,8 @@ function Drink({ kind, fill, alpha, layers, effects, garnish, size }: {
   const url = (name: string) => `url(#${id(name)})`;
   const s = GLASS_SPRITES[kind];
   const { box, surface, rim } = s;
-  const placed = place(garnish, s);
+  // 키운 가니시가 그림 밖으로 잘리지 않게 80×80 안에 붙잡는다
+  const placed = place(garnish, s, size).map((p) => ({ ...p, x: Math.min(80 - p.w, Math.max(0, p.x)), y: Math.max(0, p.y) }));
   const rimCrust = garnish.some((g) => g.place === 'rim');
   const dust = garnish.some((g) => g.place === 'dust');
   const depth = Math.max(4, s.bottom - surface.cy);
