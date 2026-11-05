@@ -15,13 +15,18 @@ function defaultOwned(ing: { name: string; seedOwned: boolean }): boolean {
   return IS_PUBLIC ? STARTER.has(ing.name) : ing.seedOwned;
 }
 
-const SEED_VERSION = 2;
+const SEED_VERSION = 3;
 /**
  * 버전마다 새로 생긴 재료 — 이미 시드된 기기에도 재고 줄(미보유)과 그 재료의 대체 관계만 더한다.
  * 사용자가 지운 대체 관계를 되살리지 않도록, 그 버전에 처음 생긴 재료의 것만 넣는다.
+ *   3: 한 레시피에만 쓰이던 병의 대체 관계
  *   2: 마이 타이를 IBA 원문대로 고치며 생긴 '오렌지 큐라소'(scripts/fixIbaMaiTai.mjs)
  */
-const ADDED_IN: Record<number, string[]> = { 2: ['오렌지 큐라소'] };
+const ADDED_IN: Record<number, string[]> = {
+  2: ['오렌지 큐라소'],
+  // 3: 한 레시피에만 쓰이던 병에 대체 관계를 더했다(이미 있는 재료라 재고 줄은 그대로, 대체 관계만 들어간다)
+  3: ['그린 크렘 드 멘트', '화이트 크렘 드 멘트', '크렘 드 멘트', '크렘 드 뮈르', '보드카 시트론', '블렌디드 스카치', 'XO 브랜디(코냑 외)'],
+};
 const LEGACY_KEY = 'homebar.v54.held';
 
 function neutralVector(): FlavorVector {

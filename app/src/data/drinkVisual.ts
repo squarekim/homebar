@@ -209,7 +209,10 @@ const CREAMY = ['생크림', '우유', '코코넛 크림', '아이리시 크림(
 const HOT = ['뜨거운 커피'];
 
 /** 잔 — 조주법과 구성에서 고른다 */
+const GLASS_KINDS = new Set<GlassKind>(['coupe', 'martini', 'highball', 'rocks', 'flute', 'hurricane', 'shot', 'mug']);
 export function glassOf(ck: Cocktail): GlassKind {
+  // IBA 원문이 잔을 정해 둔 레시피는 그 잔을 쓴다
+  if (ck.glass && GLASS_KINDS.has(ck.glass as GlassKind)) return ck.glass as GlassKind;
   const names = ck.ingredients.map((i) => i.ingredientName);
   const total = ck.ingredients.reduce((s, i) => s + (i.optional ? 0 : volumeOf(i.raw, i.amountMl)), 0);
   const m = ck.method.toLowerCase();

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { cocktails } from '../data/adapters';
-import { garnishItems, GARNISH_MAX, liquidLayers } from '../data/drinkVisual';
+import { garnishItems, GARNISH_MAX, glassOf, liquidLayers } from '../data/drinkVisual';
 
 const byName = (n: string) => cocktails.find((c) => c.name === n)!;
 const brief = (n: string) => garnishItems(byName(n)).map((g) => `${g.kind}/${g.form ?? ''}/${g.place}`);
@@ -29,7 +29,7 @@ describe('가니시 자리', () => {
       expect(g.length).toBeLessThanOrEqual(GARNISH_MAX);
       for (const x of g) cnt[x.place] = (cnt[x.place] ?? 0) + 1;
     }
-    expect(cnt).toEqual({ edge: 37, pick: 17, top: 9, inside: 7, rim: 4, dust: 2 });
+    expect(cnt).toEqual({ edge: 51, pick: 25, top: 9, inside: 12, rim: 5, dust: 2 }); // IBA 가니시 22종 보강 후
     expect(cocktails.filter((c) => !c.garnish).every((c) => garnishItems(c).length === 0)).toBe(true);
   });
 });
@@ -67,5 +67,12 @@ describe('층', () => {
   });
   it('흔들어 만든 생크림은 층이 아니다', () => {
     expect(at('알렉산더')).toBeNull();
+  });
+});
+
+describe('IBA 원문의 잔', () => {
+  it('데이터에 적힌 잔이 잔 규칙보다 먼저다', () => {
+    const g = (n: string) => glassOf(cocktails.find((c) => c.name === n)!);
+    expect([g('뉴욕 사워'), g('싱가포르 슬링'), g('라모스 피즈'), g('올드 쿠반')]).toEqual(['rocks', 'hurricane', 'highball', 'coupe']);
   });
 });

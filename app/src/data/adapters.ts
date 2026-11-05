@@ -113,6 +113,7 @@ export const cocktails: Cocktail[] = SEED.recipes.map((r) => {
     note: r.note,
     sourceName: r.s,
     garnish: r.g,
+    glass: r.gl,
     variantOf: r.v ? slugId('ck', r.v[0]) : undefined,
     variantNote: r.v?.[1],
     variants: [],
@@ -218,6 +219,18 @@ const SUBSTITUTION_PAIRS: Array<[from: string, to: string, note?: string]> = [
   ['라임즙', '레몬즙', '시트러스 대체(산미 유사)'],
   ['포도 브랜디', '코냑', '코냑은 포도 브랜디의 한 종류(원산지 한정)'],
   ['포도 브랜디', 'XO 브랜디(코냑 외)', '같은 포도 브랜디 계열'],
+  // 한 레시피에만 쓰이던 병 — 같은 계열 안에서만 잇는다(맛을 정하는 메즈칼·치나르·아마로·비올렛·피스코는 잇지 않는다)
+  ['그린 크렘 드 멘트', '크렘 드 멘트', '같은 민트 리큐르(색만 다름)'],
+  ['그린 크렘 드 멘트', '화이트 크렘 드 멘트', '같은 민트 리큐르(색만 다름)'],
+  ['화이트 크렘 드 멘트', '크렘 드 멘트', '같은 민트 리큐르'],
+  ['화이트 크렘 드 멘트', '그린 크렘 드 멘트', '같은 민트 리큐르(색만 다름)'],
+  ['크렘 드 멘트', '그린 크렘 드 멘트', '같은 민트 리큐르'],
+  ['크렘 드 멘트', '화이트 크렘 드 멘트', '같은 민트 리큐르'],
+  ['크렘 드 뮈르', '크렘 드 카시스', '같은 베리 크렘 리큐르(블랙베리 → 블랙커런트)'],
+  ['보드카 시트론', '플레인 보드카', '시트러스 향만 빠짐'],
+  ['블렌디드 스카치', '스카치', '같은 스카치 위스키'],
+  ['XO 브랜디(코냑 외)', '포도 브랜디', '같은 포도 브랜디 계열'],
+  ['XO 브랜디(코냑 외)', '코냑', '같은 포도 브랜디 계열'],
 ];
 export const substitutions: IngredientSubstitution[] = SUBSTITUTION_PAIRS
   .filter(([f, t]) => ingIdByName.has(f) || ingIdByName.has(t))

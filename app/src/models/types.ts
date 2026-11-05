@@ -65,7 +65,9 @@ export interface Cocktail {
   url?: string | undefined;
   note?: string | undefined;      // 코멘터리 한 문장 (없을 수도 있다)
   sourceName?: string | undefined; // 출처 표기 — URL 이 없을 때도 근거를 밝힌다
-  garnish?: string | undefined;  // 원본 note 끝에 붙어 있던 가니시 표기를 분리한 값
+  garnish?: string | undefined;
+  /** IBA 원문이 정한 잔(있으면 잔 규칙보다 먼저 쓴다): coupe·martini·highball·rocks·flute·hurricane·shot·mug */
+  glass?: string | undefined;  // 원본 note 끝에 붙어 있던 가니시 표기를 분리한 값
   /** 이 레시피의 원형 (변형인 경우) */
   variantOf?: string | undefined;      // 원형 칵테일 id
   variantNote?: string | undefined;    // 무엇을 바꾼 변형인지 한 문장
