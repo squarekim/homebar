@@ -136,25 +136,63 @@ export function glassOf(ck: Cocktail): GlassKind {
 export type GarnishKind = 'lemon' | 'lime' | 'orange' | 'cherry' | 'olive' | 'mint'
   | 'pineapple' | 'berry' | 'celery' | 'onion' | 'ginger' | 'dust' | 'rim';
 
+/** 한 조각에서 먼저 맞는 것을 쓴다 — '캔디드 진저'가 진저, '라즈베리'가 베리로 읽히도록 순서가 중요하다. */
 const GARNISH: Array<[RegExp, GarnishKind]> = [
-  [/레몬/, 'lemon'], [/라임/, 'lime'], [/오렌지|자몽/, 'orange'],
-  [/체리/, 'cherry'], [/올리브/, 'olive'], [/민트|바질/, 'mint'], [/파인애플/, 'pineapple'],
-  [/넛맥|시나몬|계피/, 'dust'], [/소금|설탕|림|리밍|크러스타/, 'rim'], [/셀러리/, 'celery'],
-  [/어니언/, 'onion'], [/베리|라즈베리|포도/, 'berry'], [/진저/, 'ginger'],
+  [/베리|포도/, 'berry'], [/체리/, 'cherry'], [/올리브/, 'olive'], [/어니언/, 'onion'], [/진저/, 'ginger'],
+  [/셀러리/, 'celery'], [/넛맥|시나몬|계피/, 'dust'], [/소금|설탕|리밍|크러스타|(^|\s)림/, 'rim'],
+  [/민트|바질/, 'mint'], [/파인애플/, 'pineapple'],
+  [/라임/, 'lime'], [/레몬/, 'lemon'], [/오렌지|자몽/, 'orange'],
 ];
 
-/** 가니시 — 데이터에 적힌 것만. 못 알아보면 아무것도 그리지 않는다. */
-export function garnishOf(ck: Cocktail): GarnishKind[] {
-  if (!ck.garnish) return [];
-  const out: GarnishKind[] = [];
-  for (const [re, key] of GARNISH) if (re.test(ck.garnish) && !out.includes(key)) out.push(key);
-  return out.slice(0, 2);
-}
+/** 과일 조각의 모양 — 껍질, 반달(웨지), 둥근 단면(휠·슬라이스) */
+export type GarnishForm = 'peel' | 'wedge' | 'wheel';
+/**
+ * 가니시가 놓이는 자리.
+ *   edge   잔 가장자리에 끼우거나 껍질을 걸친다
+ *   pick   칵테일 픽에 꽂는다(체리·올리브·양파·베리·캔디드 진저)
+ *   top    잔 위로 솟는다(민트·셀러리)
+ *   inside 술 속 — 하이볼의 레몬·라임·오렌지 슬라이스만
+ *   rim    잔 입구의 소금·설탕
+ *   dust   술 표면에 뿌린 가루
+ */
+export type GarnishPlace = 'edge' | 'pick' | 'top' | 'inside' | 'rim' | 'dust';
+export interface GarnishItem { kind: GarnishKind; form: GarnishForm | null; place: GarnishPlace }
 
-/** 잔에 넣는 얼음 개수 */
-export const ICE: Record<GlassKind, number> = {
-  highball: 3, rocks: 2, hurricane: 2, mug: 0, flute: 0, shot: 0, coupe: 0, martini: 0,
-};
+const PICKED = new Set<GarnishKind>(['cherry', 'olive', 'onion', 'berry', 'ginger']);
+const CITRUS = new Set<GarnishKind>(['lemon', 'lime', 'orange']);
+/** 한 잔에 그리는 가니시 수 — 뉴욕 사워(제스트+체리), 마이 타이(라임+민트+파인애플)까지 담는다 */
+export const GARNISH_MAX = 3;
+
+/** 가니시 — 데이터에 적힌 것만, 적힌 순서대로. 못 알아보면 아무것도 그리지 않는다. */
+export function garnishItems(ck: Cocktail): GarnishItem[] {
+  if (!ck.garnish) return [];
+  const glass = glassOf(ck);
+  // '레몬/오렌지 제스트'는 둘 다 제스트다
+  const parts = ck.garnish.replace(/\s*\(선택\)/g, '')
+    .split(/[+·,]|와 |과 /).map((p) => p.trim()).filter(Boolean)
+    .flatMap((p) => p.includes('/') && /제스트|필/.test(p)
+      ? p.split('/').map((s) => (/제스트|필/.test(s) ? s : `${s} 제스트`))
+      : [p]);
+  const out: GarnishItem[] = [];
+  for (const t of parts) {
+    const kind = GARNISH.find(([re]) => re.test(t))?.[1];
+    if (!kind) continue;
+    const fruit = CITRUS.has(kind) || kind === 'pineapple';
+    const form: GarnishForm | null = !fruit ? null
+      : /제스트|필|트위스트|껍질/.test(t) ? 'peel'
+      : /슬라이스|휠|둥근/.test(t) ? 'wheel'
+      : 'wedge';
+    const place: GarnishPlace = kind === 'rim' ? 'rim'
+      : kind === 'dust' ? 'dust'
+      : PICKED.has(kind) ? 'pick'
+      : kind === 'mint' || kind === 'celery' ? 'top'
+      : CITRUS.has(kind) && glass === 'highball' && /슬라이스/.test(t) ? 'inside'
+      : 'edge';
+    if (out.some((g) => g.kind === kind && g.form === form)) continue;
+    out.push({ kind, form, place });
+  }
+  return out.slice(0, GARNISH_MAX);
+}
 
 function hex2rgb(h: string): [number, number, number] {
   return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
