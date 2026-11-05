@@ -558,3 +558,23 @@ describe('마이 타이 — IBA 원문대로 오렌지 큐라소', () => {
     expect(evaluateCocktail(mt, new Set(others), subMap).status).toBe('MISSING');
   });
 });
+
+describe('IBA 원문 대조 (alignIbaRecipes)', () => {
+  const ml = (n: string, ing: string) => cocktails.find((c) => c.name === n)!.ingredients.find((i) => i.ingredientName === ing)?.amountMl;
+  it('용량이 원문과 같다', () => {
+    expect([ml('그랜드 마르가리타', '100% 아가베 데킬라'), ml('그랜드 마르가리타', '그랑 마르니에')]).toEqual([45, 30]);
+    expect(ml('앤젤 페이스', '애프리콧 브랜디')).toBe(30);
+    expect([ml('좀비', '자메이카 럼(앰버/블랙스트랩)'), ml('좀비', '골드 럼'), ml('좀비', '데메라라 럼')]).toEqual([45, 45, 30]);
+    expect([ml('칸찬차라', '쿠바산 화이트 럼'), ml('칸찬차라', '물')]).toEqual([60, 50]);
+  });
+  it('없는 재료는 가까운 기존 재료로 맞추고 원문 이름을 남긴다', () => {
+    const raw = cocktails.find((c) => c.name === '마이 타이')!.ingredients.map((i) => i.raw).join(' ');
+    expect(raw).toContain('원문: 마르티니크 몰라세스 럼');
+    expect(cocktails.find((c) => c.name === '브랜디 크러스타')!.method).toBe('Stir');
+  });
+  it('재료 사용 수는 실제 레시피 수와 같다', () => {
+    for (const ing of ingredients) {
+      expect(cocktails.filter((c) => c.ingredients.some((i) => i.ingredientId === ing.id)).length, ing.name).toBe(ing.usageCount);
+    }
+  });
+});
