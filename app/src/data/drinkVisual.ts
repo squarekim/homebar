@@ -9,7 +9,9 @@
  */
 import { type Cocktail } from '../models/types';
 
-export type GlassKind = 'coupe' | 'martini' | 'highball' | 'rocks' | 'flute' | 'hurricane' | 'shot' | 'mug';
+export type GlassKind = 'coupe' | 'martini' | 'highball' | 'rocks' | 'flute' | 'hurricane' | 'shot' | 'mug'
+  /** 와인잔 — 얼음 없음(키르) / 얼음 있음(스프리츠). 얼음이 그림에 들어 있어 두 종류로 나눈다 */
+  | 'wine' | 'wineice';
 
 /** Independent effects: a recipe may have both carbonation and foam. */
 export interface VisualEffect { bubbles: boolean; foam: boolean }
@@ -209,7 +211,7 @@ const CREAMY = ['생크림', '우유', '코코넛 크림', '아이리시 크림(
 const HOT = ['뜨거운 커피'];
 
 /** 잔 — 조주법과 구성에서 고른다 */
-const GLASS_KINDS = new Set<GlassKind>(['coupe', 'martini', 'highball', 'rocks', 'flute', 'hurricane', 'shot', 'mug']);
+const GLASS_KINDS = new Set<GlassKind>(['coupe', 'martini', 'highball', 'rocks', 'flute', 'hurricane', 'shot', 'mug', 'wine', 'wineice']);
 export function glassOf(ck: Cocktail): GlassKind {
   // IBA 원문이 잔을 정해 둔 레시피는 그 잔을 쓴다
   if (ck.glass && GLASS_KINDS.has(ck.glass as GlassKind)) return ck.glass as GlassKind;

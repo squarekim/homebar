@@ -2,8 +2,7 @@
  * alignIbaGlassGarnish.mjs — IBA 원문의 잔·가니시와 IBA 등재 표시를 맞춘다 (정제 8단계).
  *
  * 2026-11-05 IBA 공식 목록(https://iba-world.com/cocktails/all-cocktails/, 102종) 대조 결과.
- *   gl  잔 규칙(drinkVisual.glassOf)이 원문과 다른 21종에 원문의 잔을 적는다. 스프리츠의 와인잔은
- *       잔 8종에 없어 그대로 둔다.
+ *   gl  잔 규칙(drinkVisual.glassOf)이 원문과 다른 21종에 원문의 잔을 적는다. 키르·스프리츠는 와인잔(얼음 없음/있음).
  *   g   원문에는 가니시가 있는데 비어 있던 22종을 채운다(원문을 우리 표기로 옮김).
  *   iba 공식 목록에서 빠진 5종은 '구IBA'로 바꾸고, 404가 된 링크를 지운다.
  *       화이트 레이디는 위키백과 대신 IBA 페이지를 출처로 단다.
@@ -24,6 +23,8 @@ export const GLASS = {
   highball: ['라모스 피즈', '섹스 온 더 비치', '러시안 스프링 펀치', '샤르트뢰즈 스위즐'],
   hurricane: ['싱가포르 슬링'],
   coupe: ['올드 쿠반'],
+  wine: ['키르'],
+  wineice: ['스프리츠'],
 };
 
 export const GARNISH = {

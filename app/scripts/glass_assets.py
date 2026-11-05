@@ -27,6 +27,7 @@ BASE = 72         # 잔 바닥이 닿는 y
 FIT = {
     'coupe': (58, 54), 'martini': (60, 56), 'flute': (64, 30), 'hurricane': (64, 40),
     'highball': (62, 34), 'rocks': (44, 52), 'shot': (36, 32), 'mug': (52, 58),
+    'wine': (60, 40), 'wineice': (60, 40),
 }
 # 시트 안 순서(위→아래, 왼→오른)대로 붙이는 이름
 SHEETS = {
