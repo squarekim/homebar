@@ -2,10 +2,14 @@
 
 - Treat `app/src/data/drinkVisual.ts` and `app/src/ui/components/GlassArt.tsx` as one cocktail visual feature. Review both when changing visual rules or rendering.
 - Keep GlassArt's public props limited to `cocktail: Cocktail` and optional `size: number`.
-- Derive visuals deterministically from recipe data; never use photos, external image URLs, randomness, or time-dependent decoration.
-- Keep recipe interpretation in drinkVisual.ts and SVG rendering in GlassArt.tsx. Exclude optional ingredients from texture calculations. Render the bubbles and foam returned by visualEffectOf.
+- Derive visuals deterministically from recipe data; never use photos, external image URLs, randomness, or time-dependent decoration. Illustrations bundled with the app (imported from `app/src/assets/glass/`, never fetched from a URL) are allowed.
+- Glasses, ice and garnishes may be drawn from those bundled illustrations. Each glass kind has two layers made from one source image: the glass with its ice, and a liquid mask. The source images are generated with the liquid painted in pure magenta `#FF00FF`; keep the step that splits them into layers as a script in the repo so the assets can be rebuilt.
+- The liquid colour always comes from `drinkColor`; never bake a drink colour into an illustration. GlassArt tints the liquid mask with it, so two cocktails in the same glass differ only by their data.
+- Stack the layers in this order: liquid, in-drink garnish (highball slices only), glass and ice, then the other garnishes. Foam, bubbles, salt or sugar rims, nutmeg dust and the ground shadow stay drawn in code over or under these layers.
+- Garnish placement follows the recipe text: peel, wedge and wheel sit on the rim edge; cherry, olive, onion, berry and candied ginger go on a pick; mint and celery stand up above the glass; only lemon, lime or orange slices in a highball go inside the drink; salt and sugar are a rim crust; nutmeg is surface dust.
+- Keep recipe interpretation in drinkVisual.ts and rendering in GlassArt.tsx. Exclude optional ingredients from texture calculations. Render the bubbles and foam returned by visualEffectOf.
 - Preserve all eight glass kinds (coupe, martini, highball, rocks, flute, hurricane, shot, mug) and thirteen garnish kinds (lemon, lime, orange, cherry, olive, mint, pineapple, berry, celery, onion, ginger, dust, rim).
-- Use an 80×80 viewBox. Every glass definition must provide an outline, inner clip, surface ellipse, rim, and iceArea. Keep liquid gradients, glass highlights, ground shadows, and dimensional ice readable at small sizes.
+- Use an 80×80 viewBox. Every glass kind must still provide a surface ellipse, rim and iceArea (as anchors for foam, bubbles and garnish), plus its liquid mask. A glass kind without an illustration yet falls back to the SVG drawing, which keeps its outline and inner clip. Keep the liquid, glass highlights, ground shadow and ice readable at 44px.
 - Namespace every SVG clipPath, gradient, and filter ID with React useId() so multiple instances can coexist.
 - Do not change ingredient ownership or cocktail availability logic as part of visual work.
 - Today's pick card shuffle (`app/src/ui/components/TodayReel.tsx` + `app/src/services/pickService.ts`) draws a random winner among the cocktails you can make right now. That randomness chooses which drink is offered; it is outside the visual rules, and the glasses themselves are still drawn deterministically from recipe data.
