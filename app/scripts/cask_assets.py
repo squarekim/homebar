@@ -17,10 +17,10 @@ import os
 import sys
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageFilter
 
 PX = 4          # viewBox 1단위당 픽셀
-FIT_W = 70      # 통 너비(단위)
+FIT_W = 60      # 통 너비(단위) — 잔과 같은 여백이 남도록
 BASE = 72       # 통 바닥 y
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -46,8 +46,9 @@ def main():
     def shade(mask, bright):
         full = mask > .9
         m = float(np.percentile(bright[full], 70)) if full.any() else .8
-        dark = np.clip((m - bright) / m, 0, 1) * .8
-        light = np.clip((bright - m) / max(1e-3, 1 - m), 0, 1) * .55
+        # 잔처럼 낮은 대비로 — 원본의 강한 명암을 그대로 쓰면 통만 무겁게 보인다
+        dark = np.clip((m - bright) / m, 0, 1) * .55
+        light = np.clip((bright - m) / max(1e-3, 1 - m), 0, 1) * .35
         return np.where(bright < m, dark, light), np.where(bright < m, 0.0, 255.0)
 
     bm, cm = np.maximum(r, b) / 255, np.maximum(g, b) / 255
@@ -55,11 +56,16 @@ def main():
     sd_c, s_c = shade(cya, cm)
     wood = np.maximum(mag, cya)
     sd = np.where(mag >= cya, sd_m, sd_c) * wood
+    # 원본 나뭇결의 잔 점무늬를 흐려 큰 명암만 남긴다(잔의 매끈한 그라데이션과 맞춘다)
+    blur = lambda a, r: np.asarray(Image.fromarray((np.clip(a, 0, 1) * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(r))).astype(np.float64) / 255
+    sd = blur(sd, 6) * wood
     sc = np.where(mag >= cya, s_m, s_c)
 
     # 쇠테·마개 등 나머지: 원래 색. 가장자리 초록 번짐은 초록을 빨강·파랑 수준으로 누른다
     rest = np.clip(alpha - wood, 0, 1)
     gg = np.minimum(g, np.maximum(r, b))
+    # 쇠테를 한 단계 밝게 — 검은 띠 대신 잔 테두리 같은 회색 금속으로
+    r, gg, b = (ch + (205 - ch) * .28 for ch in (r, gg, b))
     out = np.zeros(src.shape[:2] + (4,))
     a_out = rest + sd * (1 - rest)
     for k, ch in enumerate((r, gg, b)):
