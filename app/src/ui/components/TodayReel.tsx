@@ -1,6 +1,6 @@
 /**
  * TodayReel — '오늘의 잔' 카드 셔플.
- * 후보 잔이 앞면 카드로 부채꼴로 펼쳐져 있다가, 고르기를 누르면 모여서 뒤집히고
+ * 후보 잔이 뒷면 카드로 부채꼴로 펼쳐져 있다가, 고르기를 누르면 모여서
  * 세 번 섞인 뒤 맨 위 한 장이 펜던트 조명 아래로 나와 앞면으로 뒤집힌다.
  * 카드 앞면 그림은 LeadArt(GlassArt·NeatPour) 그대로다. 움직임은 CSS transition 으로만 한다.
  */
@@ -16,12 +16,12 @@ interface Pose { x: number; y: number; r: number; s: number; back: boolean; z: n
 
 const reduceMotion = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/** 부채꼴 — 가운데 카드가 가장 높다 */
+/** 부채꼴 — 가운데 카드가 가장 높다. 겹친 앞면은 이름이 잘려 보여서 뒷면으로 펼친다 */
 function fan(k: number): Pose[] {
   const mid = (k - 1) / 2;
   return Array.from({ length: k }, (_, i) => {
     const o = i - mid;
-    return { x: o * 27, y: Math.abs(o) * 4, r: o * 6, s: 1, back: false, z: i, dim: false, ms: 420, delay: 0 };
+    return { x: o * 27, y: Math.abs(o) * 4, r: o * 6, s: 1, back: true, z: i, dim: false, ms: 420, delay: 0 };
   });
 }
 
