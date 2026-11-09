@@ -1,7 +1,7 @@
 /**
  * TodayReel — '오늘의 잔' 카드 셔플.
  * 후보 잔이 뒷면 카드로 부채꼴로 펼쳐져 있다가, 고르기를 누르면 모여서
- * 세 번 섞인 뒤 맨 위 한 장이 펜던트 조명 아래로 나와 앞면으로 뒤집힌다.
+ * 세 번 섞인 뒤 딜러가 맨 위 한 장을 집어 내 앞으로 밀어 주고, 그 카드가 앞면으로 뒤집힌다.
  * 카드 앞면 그림은 LeadArt(GlassArt·NeatPour) 그대로다. 움직임은 CSS transition 으로만 한다.
  */
 import { type ReactNode, useEffect, useRef, useState } from 'react';
@@ -27,9 +27,17 @@ function fan(k: number): Pose[] {
 
 /** 맨 위 카드가 앞으로 나와 앞면으로 뒤집힌 끝 모습 */
 function dealt(k: number, top: number, back: boolean): Pose[] {
+  // 딜러가 덱에서 한 장을 밀어 내 앞에 놓아 준다: 비스듬히 미끄러져 와서 멈춘 뒤 뒤집힌다
   return Array.from({ length: k }, (_, i) => i === top
-    ? { x: 0, y: 16, r: 0, s: 1.28, back, z: 100, dim: false, ms: back ? 380 : 460, delay: 0 }
-    : { x: (i % 2 ? 1 : -1) * 6, y: 26, r: (i % 3 - 1) * 2.5, s: .9, back: true, z: i, dim: true, ms: 380, delay: 0 });
+    ? { x: back ? 10 : 0, y: 30, r: back ? 7 : 0, s: 1.28, back, z: 100, dim: false, ms: back ? 560 : 460, delay: 0 }
+    : { x: (i % 2 ? 1 : -1) * 4, y: -18, r: (i % 3 - 1) * 2.5, s: .78, back: true, z: i, dim: true, ms: 420, delay: 0 });
+}
+
+/** 딜러가 덱 맨 위 한 장을 집어 드는 순간 — 나머지 덱은 딜러 쪽(위)으로 물러난다 */
+function lift(k: number, top: number): Pose[] {
+  return Array.from({ length: k }, (_, i) => i === top
+    ? { x: -14, y: -22, r: -14, s: .86, back: true, z: 100, dim: false, ms: 220, delay: 0 }
+    : { x: (i % 2 ? 1 : -1) * 4, y: -18, r: (i % 3 - 1) * 2.5, s: .78, back: true, z: i, dim: true, ms: 260, delay: 0 });
 }
 
 function Face({ r }: { r: RecommendationResult }) {
@@ -110,13 +118,14 @@ export function TodayReel({ picks, onPicked, between, children }: {
         z: (j * 3 + round) % k, dim: false, ms: 210, delay: (j % 2 ? 1 : 0) * 30 + Math.floor(j / 2) * 22,
       }))));
     }
-    // 3) 맨 위 한 장을 앞으로 → 4) 앞면으로 뒤집기
+    // 3) 딜러가 맨 위 한 장을 집어 → 4) 내 앞으로 밀어 주고 → 5) 앞면으로 뒤집기
     at(1950, () => {
       setFaces((f) => f.map((v, j) => (j === top ? i : v)));
-      setPoses(dealt(k, top, true));
+      setPoses(lift(k, top));
     });
-    at(2380, () => setPoses(dealt(k, top, false)));
-    at(2860, () => { setPhase('done'); onPicked(picks[i] ?? null); });
+    at(2200, () => setPoses(dealt(k, top, true)));
+    at(2850, () => setPoses(dealt(k, top, false)));
+    at(3330, () => { setPhase('done'); onPicked(picks[i] ?? null); });
   };
 
   return (
@@ -134,7 +143,7 @@ export function TodayReel({ picks, onPicked, between, children }: {
                 transitionDuration: `${p.ms}ms`, transitionDelay: `${p.delay}ms`, zIndex: p.z,
               }}>
                 <div className="face"><Face r={r} /></div>
-                <div className="back"><span>홈바</span></div>
+                <div className="back"><span>Homebar<small>made</small></span></div>
               </div>
             );
           })}
