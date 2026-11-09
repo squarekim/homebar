@@ -16,12 +16,13 @@ interface Pose { x: number; y: number; r: number; s: number; back: boolean; z: n
 
 const reduceMotion = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/** 부채꼴 — 가운데 카드가 가장 높다. 겹친 앞면은 이름이 잘려 보여서 뒷면으로 펼친다 */
+/** 리본 스프레드 — 뒷면으로 내 앞 펠트 위에 호를 그리며 펼친다(겹친 앞면은 이름이 잘려 보여서 뒷면) */
 function fan(k: number): Pose[] {
   const mid = (k - 1) / 2;
   return Array.from({ length: k }, (_, i) => {
     const o = i - mid;
-    return { x: o * 27, y: Math.abs(o) * 4, r: o * 6, s: 1, back: true, z: i, dim: false, ms: 420, delay: 0 };
+    // 딜러가 펠트 위에 내 쪽으로 펼친 리본 스프레드: 가운데가 가장 가깝고(아래), 양끝은 호를 따라 올라간다
+    return { x: o * 30, y: 34 - o * o * 2.2, r: -o * 5, s: .92, back: true, z: i, dim: false, ms: 420, delay: i * 40 };
   });
 }
 
@@ -143,7 +144,7 @@ export function TodayReel({ picks, onPicked, between, children }: {
                 transitionDuration: `${p.ms}ms`, transitionDelay: `${p.delay}ms`, zIndex: p.z,
               }}>
                 <div className="face"><Face r={r} /></div>
-                <div className="back"><span>Homebar<small>made</small></span></div>
+                <div className="back"><span>Homebar</span></div>
               </div>
             );
           })}
