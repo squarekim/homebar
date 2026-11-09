@@ -3,15 +3,17 @@
  * 위스키 데이터에서 나온 나무색·연수·연기를 얹는다. 해석 규칙은 caskVisual.ts 에 있다.
  *
  * 겹치는 순서(아래→위): 그림자 → 몸통(첫 캐스크 색) → 마구리(캐스크 수만큼 세로로 나눔)
- *   → 쇠테·마개·나무 명암 → 연기 → 연수·CS 글자
+ *   → 쇠테·마개·나무 명암 → 연기 → 연수·CS 글자 → (상세 크기에서만) 통 앞의 맛 물건
  */
 import { useId } from 'react';
 import { type Bottle } from '../../models/types';
-import { caskVisualOf } from '../../data/caskVisual';
-import { CASK_SPRITE } from './caskAssets';
+import { caskVisualOf, flavorsOf } from '../../data/caskVisual';
+import { CASK_SPRITE, FLAVOR_SPRITES } from './caskAssets';
 
 /** 앞면 글자는 이 크기부터 쓴다. 목록 썸네일(44px)에서는 색과 연기만 남긴다 */
 const TEXT_MIN = 56;
+/** 맛 물건은 상세 크기부터 놓는다. 목록에서는 통만 그린다 */
+const FLAVOR_MIN = 96;
 
 export function CaskArt({ bottle, size = 56 }: { bottle: Bottle; size?: number }) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, ''); // useId 의 콜론은 url(#…) 참조에서 안전하지 않다
@@ -24,6 +26,18 @@ export function CaskArt({ bottle, size = 56 }: { bottle: Bottle; size?: number }
   const cy = (h.y0 + h.y1) / 2;
   const hw = h.x1 - h.x0;
   const text = size >= TEXT_MIN;
+  // 통 앞 바닥, 마구리를 가리지 않게 왼쪽부터 놓는다. 크기는 통에 맞춰 줄인다
+  const flavors = size >= FLAVOR_MIN ? flavorsOf(bottle) : [];
+  const fk = .95;
+  let fx = box.x - 4;
+  const bottom = box.y + box.h + 3;
+  const placed = flavors.map((k) => {
+    const f = FLAVOR_SPRITES[k];
+    const w = f.w * fk, hh = f.h * fk;
+    const p = { k, src: f.src, x: fx, y: bottom - hh, w, h: hh };
+    fx += w * .78;
+    return p;
+  });
   const img = (href: string) => <image href={href} x={box.x} y={box.y} width={box.w} height={box.h} preserveAspectRatio="none"/>;
   return <svg className="glassart" viewBox="0 0 80 80" width={size} height={size} aria-hidden="true">
     <defs>
@@ -54,5 +68,6 @@ export function CaskArt({ bottle, size = 56 }: { bottle: Bottle; size?: number }
         {v.age !== null && <text x={cx} y={cy + (v.caskStrength ? 1 : 5)} fontSize={Math.min(16, hw * .5)}>{v.age}</text>}
         {v.caskStrength && <text x={cx} y={cy + (v.age !== null ? 11 : 4)} fontSize={v.age !== null ? 7.5 : 11} letterSpacing=".6">CS</text>}
       </g>}
+    {placed.map((p) => <image key={p.k} href={p.src} x={p.x.toFixed(2)} y={p.y.toFixed(2)} width={p.w.toFixed(2)} height={p.h.toFixed(2)} preserveAspectRatio="none"/>)}
   </svg>;
 }

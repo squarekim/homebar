@@ -10,7 +10,9 @@ cask_assets.py — Gemini로 그린 오크통 원본을 앱용 그림 조각으�
   shade.webp  쇠테·마개(원래 색)와 나무 명암(검정/흰색 반투명). 나무색 위에 겹친다
   app/src/ui/components/caskAssets.ts  위 그림의 자리(80×80 viewBox 기준)
 
-실행: python3 scripts/cask_assets.py <cask.png>   (Pillow, NumPy 필요)
+  f-<name>.webp  맛 물건 17종(flavor_sheet_01~04.png 를 칸별로 잘라 초록 배경을 지운 것)
+
+실행: python3 scripts/cask_assets.py <cask.png> <flavor_sheet_01.png> … <flavor_sheet_04.png>   (Pillow, NumPy 필요)
 """
 import json
 import os
@@ -31,6 +33,48 @@ META = os.path.join(ROOT, 'src', 'ui', 'components', 'caskAssets.ts')
 def smooth(e0, e1, x):
     t = np.clip((x - e0) / (e1 - e0), 0, 1)
     return t * t * (3 - 2 * t)
+
+
+# 시트 칸 순서(위→아래, 왼→오른). 1~3장은 2×2, 4장은 위 3칸 + 아래 2칸
+SHEETS = [
+    [['vanilla', 'honey'], ['apple', 'dried']],
+    [['citrus', 'chocolate'], ['nut', 'flower']],
+    [['spice', 'sea'], ['caramel', 'tropical']],
+    [['berry', 'coffee', 'grain'], ['herb', 'peat']],
+]
+FLAVOR_UNITS = 17   # 사과·배 그림 너비(단위) — 모든 물건이 같은 비율
+
+
+def key_green(path):
+    src = np.asarray(Image.open(path).convert('RGB')).astype(np.float64)
+    r, g, b = src[..., 0], src[..., 1], src[..., 2]
+    hi = np.maximum(np.maximum(r, np.maximum(g, b)), 1)
+    a = 1 - smooth(.25, .6, np.clip((g - np.maximum(r, b)) / hi, 0, 1))
+    out = np.zeros(src.shape[:2] + (4,))
+    out[..., 0], out[..., 1], out[..., 2] = r, np.minimum(g, np.maximum(r, b)), b
+    out[..., 3] = a * 255
+    return out
+
+
+def split_flavors(paths):
+    pieces = {}
+    for path, rows in zip(paths, SHEETS):
+        im = key_green(path)
+        h, w = im.shape[:2]
+        for ri, row in enumerate(rows):
+            for ci, name in enumerate(row):
+                cell = im[ri * h // len(rows):(ri + 1) * h // len(rows), ci * w // len(row):(ci + 1) * w // len(row)]
+                ys, xs = np.nonzero(cell[..., 3] > 40)
+                pieces[name] = cell[max(0, ys.min() - 4):ys.max() + 5, max(0, xs.min() - 4):xs.max() + 5]
+    s = FLAVOR_UNITS / pieces['apple'].shape[1]
+    meta = {}
+    for name, piece in pieces.items():
+        ph, pw = piece.shape[:2]
+        size = (max(1, round(pw * s * PX)), max(1, round(ph * s * PX)))
+        Image.fromarray(np.clip(piece, 0, 255).astype(np.uint8), 'RGBA').resize(size, Image.LANCZOS) \
+            .save(os.path.join(OUT, f'f-{name}.webp'), 'WEBP', quality=86, method=6)
+        meta[name] = (round(pw * s, 2), round(ph * s, 2))
+    return meta
 
 
 def main():
@@ -102,6 +146,7 @@ def main():
     # 마개: 몸통 위쪽에서 나무가 아닌(회색) 덩어리의 꼭대기
     ty, tx = np.nonzero((rest > .5) & (np.arange(src.shape[0])[:, None] < y0 + (y1 - y0) * .2))
     plug = dict(x=u(float(np.median(tx)), 'x'), y=u(ty.min(), 'y')) if len(tx) else dict(x=box['x'] + bw * .45, y=box['y'])
+    flavors = split_flavors(sys.argv[2:6]) if len(sys.argv) >= 6 else {}
     lines = [
         '// 자동 생성 — scripts/cask_assets.py. 직접 고치지 말 것.',
         "import body from '../../assets/cask/body.webp';",
@@ -112,6 +157,11 @@ def main():
         f'export const CASK_SPRITE = {{ body, head, shade, box: {json.dumps(box)}, headBox: {json.dumps(head)}, plug: {json.dumps(plug)} }} as const;',
         '',
     ]
+    if flavors:
+        lines[4:4] = [f"import f_{n} from '../../assets/cask/f-{n}.webp';" for n in flavors]
+        lines += ['/** 맛 물건(단위 크기). 사과·배 너비 기준으로 같은 비율 */', 'export const FLAVOR_SPRITES = {']
+        lines += [f"  {n}: {{ src: f_{n}, w: {w}, h: {h} }}," for n, (w, h) in flavors.items()]
+        lines += ['} as const;', 'export type FlavorObject = keyof typeof FLAVOR_SPRITES;', '']
     txt = '\n'.join(lines)
     for k in ('x', 'y', 'w', 'h', 'x0', 'x1', 'y0', 'y1'):
         txt = txt.replace(f'"{k}"', k)

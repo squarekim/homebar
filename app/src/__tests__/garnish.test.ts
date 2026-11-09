@@ -86,3 +86,15 @@ describe('크렘 드 카카오 색', () => {
     expect(parseInt(g.slice(3, 5), 16)).toBeGreaterThan(parseInt(g.slice(1, 3), 16));
   });
 });
+
+describe('오크통 맛 물건', () => {
+  it('공식 노트가 있는 병만, 노트에 먼저 나온 맛부터 3개까지', async () => {
+    const { bottles } = await import('../data/adapters');
+    const { flavorsOf } = await import('../data/caskVisual');
+    for (const b of bottles) {
+      const f = flavorsOf(b);
+      expect(f.length).toBeLessThanOrEqual(3);
+      if (!b.makerNote) expect(f).toEqual([]);
+    }
+  });
+});

@@ -51,3 +51,34 @@ export function caskVisualOf(b: Bottle): CaskVisual {
     caskStrength: s.strength === '캐스크 스트렝스',
   };
 }
+
+/**
+ * 통 앞에 놓을 맛 물건 — 제조사·공식 테이스팅 노트에 적힌 단어로만 고른다(추정한 맛 수치는 쓰지 않는다).
+ * 노트가 없으면 아무것도 놓지 않는다. 노트에 먼저 나온 맛부터 최대 3개.
+ * 오크·셰리는 통 자체(나무색)가 이미 보여 주므로 물건으로 만들지 않는다.
+ */
+export type FlavorKey = 'vanilla' | 'honey' | 'apple' | 'dried' | 'citrus' | 'chocolate' | 'nut' | 'flower'
+  | 'spice' | 'sea' | 'caramel' | 'tropical' | 'berry' | 'coffee' | 'grain' | 'herb' | 'peat';
+const FLAVOR_WORDS: Array<[RegExp, FlavorKey]> = [
+  [/바닐라|vanilla/i, 'vanilla'], [/꿀|honey/i, 'honey'], [/사과|서양배|(^|[^가-힣])배([^가-힣]|$)|apple|pear/i, 'apple'],
+  [/건포도|말린 과일|건과일|무화과|대추|raisin|fig|date/i, 'dried'], [/시트러스|오렌지|레몬|자몽|귤|citrus|orange|lemon|grapefruit/i, 'citrus'],
+  [/초콜릿|코코아|카카오|chocolate|cocoa/i, 'chocolate'], [/견과|아몬드|호두|헤이즐넛|nut|almond|walnut|hazelnut/i, 'nut'],
+  [/꽃|플로럴|헤더|floral|heather/i, 'flower'], [/스파이스|후추|계피|시나몬|정향|생강|육두구|spice|pepper|cinnamon|clove|ginger/i, 'spice'],
+  [/바다|소금|짠|해초|요오드|brine|salt|sea|iodine/i, 'sea'], [/토피|캐러멜|카라멜|버터스카치|toffee|caramel|butterscotch/i, 'caramel'],
+  [/복숭아|살구|열대|파인애플|바나나|망고|peach|apricot|tropical|pineapple|banana|mango/i, 'tropical'],
+  [/베리|체리|딸기|블랙커런트|berry|cherry|strawberr/i, 'berry'], [/커피|에스프레소|coffee/i, 'coffee'],
+  [/곡물|몰트|맥아|비스킷|빵|시리얼|grain|malt|biscuit|cereal/i, 'grain'], [/허브|풀|민트|herb|grass|mint/i, 'herb'],
+  [/피트|스모크|훈연|연기|이탄|peat|smoke/i, 'peat'],
+];
+
+export function flavorsOf(b: Bottle): FlavorKey[] {
+  const n = b.makerNote;
+  if (!n) return [];
+  const text = [n.nose, n.palate, n.finish, n.text].filter(Boolean).join(' ');
+  return FLAVOR_WORDS
+    .map(([re, key]) => ({ key, at: text.search(re) }))
+    .filter((x) => x.at >= 0)
+    .sort((a, b2) => a.at - b2.at)
+    .slice(0, 3)
+    .map((x) => x.key);
+}
