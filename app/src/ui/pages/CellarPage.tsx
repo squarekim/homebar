@@ -15,7 +15,7 @@ import { bottleService } from '../../services/bottleService';
 import { resetInventoryToSeed } from '../../db/migrate';
 import { isUserBottle } from '../../data/userBottles';
 import { bottleKindLabel, groupLabel } from '../../data/bottleIngredients';
-import { ChipRow, ChipToggle, SearchBox, BottleBadges, type ChipOption, StarterNotice } from '../components/common';
+import { ChipRow, ChipToggle, SearchBox, BottleBadges, type ChipOption, StarterNotice, notifyExample } from '../components/common';
 import { normalize, hits, useGroupChips } from '../listUtils';
 import { IS_PUBLIC } from '../../config';
 import { type Bottle } from '../../models/types';
@@ -180,8 +180,8 @@ function StockManager() {
       ) : (
         <div className="btnrow">
           <button className="btn sm" onClick={() => setConfirmReset(true)}>재료 체크 모두 끄기</button>
-          <button className="btn sm" onClick={async () => { await resetInventoryToSeed(); toast(IS_PUBLIC ? '기본 홈바 세트로 되돌림' : '기본 컬렉션으로 되돌림'); }}>
-            {IS_PUBLIC ? '기본 홈바 세트' : '기본 컬렉션'}
+          <button className="btn sm" onClick={async () => { await resetInventoryToSeed(); notifyExample(); toast(IS_PUBLIC ? '예시로 기본 홈바 세트를 켰어요' : '기본 컬렉션으로 되돌렸어요'); }}>
+            {IS_PUBLIC ? '예시: 기본 홈바 세트' : '기본 컬렉션'}
           </button>
           <button className="btn sm" onClick={async () => { await inventoryRepo.setAll(true, allIngredients.map((i) => ({ id: i.id, name: i.name }))); toast('모두 켰어요'); }}>모두 켜기</button>
         </div>

@@ -16,7 +16,8 @@ export const PROFILE: 'beta' | 'public' = IS_PUBLIC ? 'public' : 'beta';
 export const IS_BETA = PROFILE === 'beta';
 
 /**
- * 공개 배포 초기 재고 — 특정 개인의 술장이 아니라, 입문자 홈바에 흔한 기본 구성.
+ * 공개 배포의 예시 재고 — 특정 개인의 술장이 아니라, 입문자 홈바에 흔한 기본 구성.
+ * 처음에는 켜지 않는다. 사용자가 "예시로 둘러보기"를 골랐을 때만 켠다.
  * 이 세트로 202종 중 정규 79 · 근사 6이 열린다(빈 화면 방지). 재고 탭에서 전부 수정 가능.
  */
 export const STARTER_INVENTORY: string[] = [

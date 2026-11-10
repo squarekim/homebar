@@ -4,6 +4,7 @@ import { STATUS_LABEL_KO, STATUS_SENTENCE_KO } from '../../services/availability
 import { GLOSSARY, lookupTerm, normalizeTerm } from '../../data/glossary';
 import { useUI } from '../UIContext';
 import { IS_PUBLIC, STARTER_INVENTORY } from '../../config';
+import { isExampleOn, turnOffExample, keepExampleAsMine, resetInventoryToSeed } from '../../db/migrate';
 import { IconBuild, IconShake, IconStir, IconMuddle, IconBlend, IconLayer, IconSwizzle, IconFloat } from './icons';
 
 /**
@@ -316,25 +317,46 @@ export function SearchBox({ value, onChange, placeholder }: { value: string; onC
 }
 
 /**
- * 새 사용자 안내 — 공개 빌드는 빈 화면을 피하려고 기본 홈바 세트를 가진 것으로 해 둔다.
- * 실제로 가진 것이 아니므로 그 사실과 바꾸는 길을 처음 한 번 알려 준다. 닫으면 다시 나오지 않는다.
+ * 예시 재고 안내 — 사용자가 "예시로 둘러보기"를 골라 기본 홈바 세트를 켜 둔 동안만 나온다.
+ * 실제로 가진 것이 아니라는 점과, 끄거나 내 것으로 고치는 길을 알려 준다.
  */
-const STARTER_NOTICE_KEY = 'homebar.starterNoticeSeen';
 export function StarterNotice() {
-  const { goTab, setCellarSub } = useUI();
-  const [seen, setSeen] = useState(() => { try { return localStorage.getItem(STARTER_NOTICE_KEY) === '1'; } catch { return false; } });
-  if (!IS_PUBLIC || seen) return null;
-  const close = () => { try { localStorage.setItem(STARTER_NOTICE_KEY, '1'); } catch { /* 저장이 막혀도 닫는다 */ } setSeen(true); };
+  const { goTab, setCellarSub, toast } = useUI();
+  const [on, setOn] = useState(isExampleOn);
+  useEffect(() => {
+    const sync = () => setOn(isExampleOn());
+    window.addEventListener(EXAMPLE_EVENT, sync);
+    return () => window.removeEventListener(EXAMPLE_EVENT, sync);
+  }, []);
+  if (!on) return null;
   return (
     <div className="notice" role="note">
       <p>
-        처음이라 <b>기본 홈바 세트 {STARTER_INVENTORY.length}가지</b>를 가진 것으로 해 두었어요.
-        지금 보이는 "만들 수 있는 잔"은 이 예시 기준이에요. 실제로 가진 것만 남기면 내 술장에 맞게 바뀌어요.
+        지금은 <b>예시로 기본 홈바 세트 {STARTER_INVENTORY.length}가지</b>를 가진 것으로 해 두었어요.
+        "만들 수 있는 잔"은 이 예시 기준이에요.
       </p>
       <div className="btnrow">
-        <button className="btn sm primary" onClick={() => { close(); setCellarSub('stock'); goTab('cellar'); }}>내 재료로 바꾸기</button>
-        <button className="btn sm" onClick={close}>이대로 둘러보기</button>
+        <button className="btn sm primary" onClick={async () => { await turnOffExample(); notifyExample(); toast('예시를 껐어요'); }}>예시 끄기</button>
+        <button className="btn sm" onClick={() => { keepExampleAsMine(); notifyExample(); setCellarSub('stock'); goTab('cellar'); }}>내 재료로 고쳐 쓰기</button>
       </div>
+    </div>
+  );
+}
+
+/** 예시 재고가 켜지거나 꺼졌음을 화면에 알린다 */
+const EXAMPLE_EVENT = 'homebar:example';
+export function notifyExample(): void { window.dispatchEvent(new Event(EXAMPLE_EVENT)); }
+
+/** 아직 아무것도 넣지 않은 사람에게 보여 주는 시작 버튼 */
+export function StartButtons() {
+  const { goTab, setCellarSub, openAdd, toast } = useUI();
+  return (
+    <div className="btnrow center">
+      <button className="btn primary" onClick={() => { goTab('cellar'); openAdd(); }}>집에 있는 술 넣기</button>
+      <button className="btn" onClick={() => { setCellarSub('stock'); goTab('cellar'); }}>가진 재료 체크하기</button>
+      {IS_PUBLIC && (
+        <button className="btn" onClick={async () => { await resetInventoryToSeed(); notifyExample(); toast('예시 재고를 켰어요'); }}>예시로 둘러보기</button>
+      )}
     </div>
   );
 }

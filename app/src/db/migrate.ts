@@ -9,13 +9,25 @@ import { ingredients, ingredientIdOf, substitutions as seedSubs } from '../data/
 import { type InventoryItem, type TasteProfile, FLAVOR_AXES, type FlavorVector } from '../models/types';
 import { IS_PUBLIC, STARTER_INVENTORY } from '../config';
 
-/** 기본 재고 = 공개 배포면 '기본 홈바 세트', 개인 빌드면 원본 own 플래그 */
 const STARTER = new Set(STARTER_INVENTORY);
+/**
+ * 처음 설치했을 때의 재고. 공개 배포는 아무것도 가진 것으로 두지 않는다 —
+ * 넣지도 않은 술로 "지금 만들 수 있어요"라고 말하면 거짓이 된다. 개인 빌드는 원본 own 플래그를 따른다.
+ */
 function defaultOwned(ing: { name: string; seedOwned: boolean }): boolean {
+  return IS_PUBLIC ? false : ing.seedOwned;
+}
+/** 사용자가 "예시로 둘러보기"를 직접 골랐을 때만 쓰는 기본 홈바 세트 */
+function exampleOwned(ing: { name: string; seedOwned: boolean }): boolean {
   return IS_PUBLIC ? STARTER.has(ing.name) : ing.seedOwned;
 }
 
-const SEED_VERSION = 5;
+/** 예시 세트를 켜 둔 상태인지 — 화면이 "예시로 보는 중"이라고 알려 주는 데 쓴다 */
+const EXAMPLE_KEY = 'homebar.exampleInventory';
+export function isExampleOn(): boolean { try { return localStorage.getItem(EXAMPLE_KEY) === '1'; } catch { return false; } }
+function setExample(on: boolean): void { try { if (on) localStorage.setItem(EXAMPLE_KEY, '1'); else localStorage.removeItem(EXAMPLE_KEY); } catch { /* 저장이 막혀도 계속 */ } }
+
+const SEED_VERSION = 6;
 /**
  * 버전마다 새로 생긴 재료 — 이미 시드된 기기에도 재고 줄(미보유)과 그 재료의 대체 관계만 더한다.
  * 사용자가 지운 대체 관계를 되살리지 않도록, 그 버전에 처음 생긴 재료의 것만 넣는다.
@@ -54,6 +66,7 @@ export async function ensureSeeded(): Promise<void> {
 
   const legacy = readLegacyHeld();
   const now = Date.now();
+  const untouchedElsewhere = (await db.userBottles.count()) === 0 && (await db.drinkLogs.count()) === 0;
 
   await db.transaction('rw', db.inventory, db.tasteProfiles, db.substitutions, db.meta, async () => {
     // 재고 시드 (기존 레코드가 없을 때만)
@@ -98,20 +111,42 @@ export async function ensureSeeded(): Promise<void> {
       }
     }
 
+    // 6: 공개 배포가 예전에 미리 켜 두던 기본 홈바 세트를 끈다 — 손대지 않은 기기에서만
+    //    (재고가 세트와 똑같고, 넣은 술도 기록도 없을 때). 하나라도 바꿨다면 사용자의 것으로 보고 그대로 둔다.
+    if (IS_PUBLIC && typeof seeded?.value === 'number' && seeded.value < 6) {
+      const inv = await db.inventory.toArray();
+      const owned = inv.filter((r) => r.owned).map((r) => r.ingredientName);
+      const untouched = owned.length === STARTER.size && owned.every((n) => STARTER.has(n));
+      if (untouched && untouchedElsewhere) {
+        await db.inventory.bulkPut(inv.map((r) => ({ ...r, owned: false, remaining: 0, updatedAt: now })));
+      }
+    }
+
     await db.meta.put({ key: 'seedVersion', value: SEED_VERSION });
     if (legacy) await db.meta.put({ key: 'legacyImported', value: now });
   });
 }
 
-/** 재고를 기본 구성으로 리셋(레거시의 '기본 컬렉션' 버튼 대응) */
+/** 예시 재고 켜기 — 공개 배포는 기본 홈바 세트, 개인 빌드는 원본 컬렉션 */
 export async function resetInventoryToSeed(): Promise<void> {
   const now = Date.now();
   const rows: InventoryItem[] = ingredients.map((ing) => {
-    const owned = defaultOwned(ing);
+    const owned = exampleOwned(ing);
     return { ingredientId: ing.id, ingredientName: ing.name, owned, remaining: owned ? 100 : 0, updatedAt: now };
   });
   await db.inventory.bulkPut(rows);
+  if (IS_PUBLIC) setExample(true);
 }
+
+/** 예시 재고 끄기 — 예시 세트에 든 재료만 끈다. 그 사이 사용자가 따로 켠 재료는 남긴다 */
+export async function turnOffExample(): Promise<void> {
+  const now = Date.now();
+  const rows = (await db.inventory.toArray()).filter((r) => r.owned && STARTER.has(r.ingredientName));
+  await db.inventory.bulkPut(rows.map((r) => ({ ...r, owned: false, remaining: 0, updatedAt: now })));
+  setExample(false);
+}
+/** 예시 표시만 내린다 — 재고는 그대로 두고 사용자가 직접 고쳐 쓰기로 했을 때 */
+export function keepExampleAsMine(): void { setExample(false); }
 
 /** ingredientId 매핑 재노출(마이그레이션 유틸) */
 export { ingredientIdOf };

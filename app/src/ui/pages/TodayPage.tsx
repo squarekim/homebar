@@ -10,7 +10,7 @@ import { useRecommendContext } from '../../hooks/useRecommendContext';
 import { useLogs } from '../../hooks/useData';
 import { whatToDrink, type RecommendMode, diversePool } from '../../services/recommendationService';
 import { STATUS_LEAD_KO } from '../../services/availabilityService';
-import { ChipRow, LogCard, StarterNotice } from '../components/common';
+import { ChipRow, LogCard, StarterNotice, StartButtons } from '../components/common';
 import { TodayReel } from '../components/TodayReel';
 import { MODES, GroupRec, PurchaseRec, ClearStockRec } from './RecommendPage';
 import { type RecommendationResult } from '../../models/types';
@@ -139,9 +139,9 @@ export function TodayPage() {
           <ChipRow value={mode} options={MODES} onChange={setMode} />
           <div className="empty">
             {mode === 'available'
-              ? <>지금 술장으로 만들 수 있는 잔이 없어요. 술장에서 가진 술과 재료를 넣으면 여기서 골라 드려요.</>
+              ? <>아직 넣은 술과 재료로는 만들 수 있는 잔이 없어요. 가진 것을 넣으면 여기서 골라 드려요.</>
               : <>이 맛으로 지금 만들 수 있는 잔이 없어요. 다른 칩을 골라 보세요.</>}
-            <div className="btnrow center"><button className="btn primary" onClick={() => goTab('cellar')}>술장에 술 넣기</button></div>
+            {mode === 'available' && <StartButtons />}
           </div>
           </>
         )}
