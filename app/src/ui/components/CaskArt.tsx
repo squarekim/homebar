@@ -28,18 +28,18 @@ export function CaskArt({ bottle, size = 56 }: { bottle: Bottle; size?: number }
   const text = size >= TEXT_MIN;
   // 통 앞 바닥, 마구리를 가리지 않게 왼쪽부터 놓는다. 크기는 통에 맞춰 줄인다
   const flavors = size >= FLAVOR_MIN ? flavorsOf(bottle) : [];
-  const fk = .95;
-  let fx = box.x - 4;
-  const bottom = box.y + box.h + 3;
+  const fk = 1.25;
+  let fx = 1;
+  const bottom = box.y + box.h + 6;
   const placed = flavors.map((k) => {
     const f = FLAVOR_SPRITES[k];
     const w = f.w * fk, hh = f.h * fk;
     const p = { k, src: f.src, x: fx, y: bottom - hh, w, h: hh };
-    fx += w * .78;
+    fx += w * .8;
     return p;
   });
   const img = (href: string) => <image href={href} x={box.x} y={box.y} width={box.w} height={box.h} preserveAspectRatio="none"/>;
-  return <svg className="glassart" viewBox="0 0 80 80" width={size} height={size} aria-hidden="true">
+  return <svg className="glassart cask" viewBox="0 0 80 80" width={size} height={size} aria-hidden="true">
     <defs>
       <mask id={id('body')} maskUnits="userSpaceOnUse" x="0" y="0" width="80" height="80">{img(CASK_SPRITE.body)}</mask>
       <mask id={id('head')} maskUnits="userSpaceOnUse" x="0" y="0" width="80" height="80">{img(CASK_SPRITE.head)}</mask>

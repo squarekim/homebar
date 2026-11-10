@@ -235,6 +235,8 @@ input::placeholder{color:var(--dim)}
 .detail .art{display:flex;align-items:center;justify-content:center;background:var(--panel);
   border-radius:var(--r);height:220px;color:var(--ink);margin-top:var(--s3)}
 .detail .art svg{width:132px;height:132px}
+.detail .art .mark.lg{width:auto;height:auto}
+.detail .art svg.cask{width:184px;height:184px;flex:none}
 .detail .taste{font-size:16px;margin-top:var(--s2);line-height:1.6}
 .detail .state{margin-top:var(--s2)}
 .detail .meta{margin-top:var(--s1)}
