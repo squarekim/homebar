@@ -26,6 +26,10 @@ export function CaskArt({ bottle, size = 56 }: { bottle: Bottle; size?: number }
   const cy = (h.y0 + h.y1) / 2;
   const hw = h.x1 - h.x0;
   const text = size >= TEXT_MIN;
+  // 글자는 나무에 찍은 낙인처럼: 밝은 판자에는 태운 갈색, 어두운 판자에는 분필색
+  const lums = v.woods.map((c) => parseInt(c.slice(1, 3), 16) * .3 + parseInt(c.slice(3, 5), 16) * .59 + parseInt(c.slice(5, 7), 16) * .11);
+  const light = lums.every((l) => l > 105), mixed = !light && lums.some((l) => l > 105);
+  const ink = light ? '#3A2012' : '#F4E8CC';
   // 통 앞 바닥, 마구리를 가리지 않게 왼쪽부터 놓는다. 크기는 통에 맞춰 줄인다
   const flavors = size >= FLAVOR_MIN ? flavorsOf(bottle) : [];
   const fk = 1.25;
@@ -64,9 +68,9 @@ export function CaskArt({ bottle, size = 56 }: { bottle: Bottle; size?: number }
     </g>}
     {/* 앞면 — 라벨 표시 연수, 캐스크 스트렝스 */}
     {text && (v.age !== null || v.caskStrength) &&
-      <g textAnchor="middle" fontWeight="800" fill="#F6E9CC" stroke="#2A1A10" strokeWidth="1.3" paintOrder="stroke" style={{ fontFamily: 'inherit' }}>
-        {v.age !== null && <text x={cx} y={cy + (v.caskStrength ? 1 : 5)} fontSize={Math.min(16, hw * .5)}>{v.age}</text>}
-        {v.caskStrength && <text x={cx} y={cy + (v.age !== null ? 11 : 4)} fontSize={v.age !== null ? 7.5 : 11} letterSpacing=".6">CS</text>}
+      <g textAnchor="middle" fontWeight="700" fill={ink} opacity=".94" stroke={mixed ? '#2A1A10' : 'none'} strokeWidth=".7" paintOrder="stroke" style={{ fontFamily: "'Hahmlet', 'Gowun Batang', serif" }}>
+        {v.age !== null && <text x={cx} y={cy + (v.caskStrength ? 1 : 4.5)} fontSize={Math.min(13, hw * .46)} letterSpacing="-.3">{v.age}</text>}
+        {v.caskStrength && <text x={cx} y={cy + (v.age !== null ? 9.5 : 3.5)} fontSize={v.age !== null ? 6 : 10} letterSpacing=".8">CS</text>}
       </g>}
     {placed.map((p) => <image key={p.k} href={p.src} x={p.x.toFixed(2)} y={p.y.toFixed(2)} width={p.w.toFixed(2)} height={p.h.toFixed(2)} preserveAspectRatio="none"/>)}
   </svg>;
