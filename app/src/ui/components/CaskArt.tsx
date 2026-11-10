@@ -24,7 +24,6 @@ export function CaskArt({ bottle, size = 56 }: { bottle: Bottle; size?: number }
   const board = (h.x1 - h.x0) / v.woods.length;
   const cx = (h.x0 + h.x1) / 2;
   const cy = (h.y0 + h.y1) / 2;
-  const hw = h.x1 - h.x0;
   const text = size >= TEXT_MIN;
   // 글자는 나무에 찍은 낙인처럼: 밝은 판자에는 태운 갈색, 어두운 판자에는 분필색
   const lums = v.woods.map((c) => parseInt(c.slice(1, 3), 16) * .3 + parseInt(c.slice(3, 5), 16) * .59 + parseInt(c.slice(5, 7), 16) * .11);
@@ -59,6 +58,13 @@ export function CaskArt({ bottle, size = 56 }: { bottle: Bottle; size?: number }
     <g mask={url('head')}>
       {v.woods.map((c, i) => <rect key={i} x={h.x0 + i * board} y={h.y0} width={board + .05} height={h.y1 - h.y0} fill={c}/>)}
     </g>
+    {/* 앞면 — 라벨 표시 연수, 캐스크 스트렝스. 마구리의 기울기에 맞춰 눕히고 나뭇결 아래에 깔아 판자에 찍힌 낙인처럼 보이게 한다 */}
+    {text && (v.age !== null || v.caskStrength) &&
+      <g transform={`translate(${cx.toFixed(2)} ${cy.toFixed(2)}) skewY(-7) scale(.74 1)`} textAnchor="middle" fontWeight="700" fill={ink}
+        opacity={light ? .82 : .9} stroke={mixed ? '#2A1A10' : 'none'} strokeWidth=".8" paintOrder="stroke" style={{ fontFamily: "'Hahmlet', 'Gowun Batang', serif" }}>
+        {v.age !== null && <text x="0" y={v.caskStrength ? 2 : 6} fontSize="17" letterSpacing="-.2">{v.age}</text>}
+        {v.caskStrength && <text x="0" y={v.age !== null ? 11.5 : 4.5} fontSize={v.age !== null ? 7 : 12} letterSpacing="1">CS</text>}
+      </g>}
     {img(CASK_SPRITE.shade)}
     {/* 피티드 — 마개에서 오르는 연기 두 줄 */}
     {v.smoke && <g fill="none" stroke={url('smoke')} strokeWidth="2.4" strokeLinecap="round"
@@ -66,12 +72,6 @@ export function CaskArt({ bottle, size = 56 }: { bottle: Bottle; size?: number }
       <path d="M33 13 C29 9.5 36 7.5 32.5 4 C31.5 3 32 2 33 1.2"/>
       <path d="M37.5 13 C41 10 35.5 7 39 3.5"/>
     </g>}
-    {/* 앞면 — 라벨 표시 연수, 캐스크 스트렝스 */}
-    {text && (v.age !== null || v.caskStrength) &&
-      <g textAnchor="middle" fontWeight="700" fill={ink} opacity=".94" stroke={mixed ? '#2A1A10' : 'none'} strokeWidth=".7" paintOrder="stroke" style={{ fontFamily: "'Hahmlet', 'Gowun Batang', serif" }}>
-        {v.age !== null && <text x={cx} y={cy + (v.caskStrength ? 1 : 4.5)} fontSize={Math.min(13, hw * .46)} letterSpacing="-.3">{v.age}</text>}
-        {v.caskStrength && <text x={cx} y={cy + (v.age !== null ? 9.5 : 3.5)} fontSize={v.age !== null ? 6 : 10} letterSpacing=".8">CS</text>}
-      </g>}
     {placed.map((p) => <image key={p.k} href={p.src} x={p.x.toFixed(2)} y={p.y.toFixed(2)} width={p.w.toFixed(2)} height={p.h.toFixed(2)} preserveAspectRatio="none"/>)}
   </svg>;
 }
