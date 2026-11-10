@@ -550,3 +550,25 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 /* 새 사용자 안내 띠 */
 .notice{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:var(--s3);margin:var(--s3) 0;text-align:left}
 .notice p{margin:0 0 var(--s2);font-size:14px;line-height:1.6;color:var(--ink)}
+
+/* 입문 안내 팝업 */
+.guide{position:fixed;inset:0;z-index:65;background:rgba(9,14,16,.62);display:flex;align-items:flex-end;justify-content:center}
+.guidecard{position:relative;width:min(520px,100%);max-height:86vh;overflow:auto;background:var(--panel);border-radius:20px 20px 0 0;
+  padding:var(--s5) var(--s4) calc(var(--s4) + env(safe-area-inset-bottom))}
+@media (min-width:600px){.guide{align-items:center}.guidecard{border-radius:20px}}
+.guidecard h2{font-family:var(--display);font-weight:700;font-size:22px;line-height:1.4;margin:0 0 var(--s3);text-wrap:balance}
+.guidecard .gkicker{font-size:13px;color:var(--mute);margin:0 0 var(--s2);padding-right:44px}
+.guidecard .gbody{font-size:16px;line-height:1.7;margin:0 0 var(--s2);color:var(--ink)}
+.guidecard .gtag{display:inline-block;font-size:12px;font-weight:600;border-radius:999px;padding:2px 10px;margin:0 0 var(--s2)}
+.guidecard .gtag.myth{background:var(--raise);color:var(--sub)}
+.guidecard .gtag.fact{background:var(--accent);color:var(--on-accent,#1B2427);margin-top:var(--s2)}
+.guidecard .gsrc{font-size:12px;line-height:1.6;color:var(--mute);margin:var(--s3) 0 0}
+.guidecard .gsrc a{display:inline;color:inherit;text-decoration:underline}
+.guidecard .gsrc span{display:inline}
+.guidecard .gnav{display:flex;gap:var(--s2);margin-top:var(--s4)}
+.guidecard .gnav .btn{flex:1;min-height:48px}
+.guidecard .gx{position:absolute;right:8px;top:8px;width:44px;height:44px;font-size:24px;color:var(--mute)}
+.guidecard .gmenu{display:grid;gap:var(--s2)}
+.guidecard .gmenu button{display:flex;justify-content:space-between;align-items:center;gap:var(--s3);text-align:left;
+  background:var(--raise);border-radius:var(--r);padding:var(--s3);min-height:52px}
+.guidecard .gmenu span{font-size:13px;color:var(--mute);flex:none}

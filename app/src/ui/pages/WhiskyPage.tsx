@@ -152,7 +152,7 @@ function WhiskyDetail({ bottle: w }: { bottle: Bottle }) {
 }
 
 export function WhiskyPage() {
-  const { bottleId, openBottle, closeBottle } = useUI();
+  const { bottleId, openBottle, closeBottle, openGuide, goTab, openAdd } = useUI();
   const whiskies = useWhiskies();
   const allBottles = useBottles();
   const [q, setQ] = useState('');
@@ -175,7 +175,7 @@ export function WhiskyPage() {
 
   return (
     <>
-      <h2 className="pagetitle">위스키<span className="sub">보유 {whiskies.length}종 · 맛과 공식 노트로 비교</span></h2>
+      <h2 className="pagetitle">위스키<span className="sub">보유 {whiskies.length}종 · 맛과 공식 노트를 볼 수 있어요</span></h2>
       <ChipRow value={view} options={VIEWS} onChange={setView} />
       <SearchBox value={q} onChange={setQ} placeholder="이름·분류(셰리/피트/싱글몰트…) 검색" />
       <ChipRow value={cls} options={CLASS_CHIPS} onChange={setCls} />
@@ -183,7 +183,18 @@ export function WhiskyPage() {
       <div className="split">
         <div className="listpane">
           <div className="hint">{rows.length}종</div>
-          {rows.length === 0 && <div className="empty">조건에 맞는 위스키가 없어요.</div>}
+          {rows.length === 0 && whiskies.length > 0 && <div className="empty">조건에 맞는 위스키가 없어요.</div>}
+          {whiskies.length === 0 && (
+            <div className="empty">
+              아직 넣은 위스키가 없어요. 처음이라면 아래에서 시작해 보세요.
+              <div className="btnrow center">
+                <button className="btn primary" onClick={() => goTab('starter')}>내 입맛에 맞는 위스키 찾기</button>
+                <button className="btn" onClick={() => openGuide('drink')}>위스키 마시는 법</button>
+                <button className="btn" onClick={() => openGuide('myths-whisky')}>흔한 오해 10가지</button>
+                <button className="btn" onClick={() => openAdd()}>가진 위스키 넣기</button>
+              </div>
+            </div>
+          )}
           <div className="rowlist">
             {rows.map((w) => (
               <button className="rowitem" key={w.id} aria-current={bottleId === w.id} onClick={() => openBottle(w.id)}>

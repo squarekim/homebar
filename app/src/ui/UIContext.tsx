@@ -6,6 +6,7 @@
  */
 import { createContext, useContext, useState, type ReactNode, useCallback } from 'react';
 import { type DrinkType, type ServingStyle, type RecommendationResult } from '../models/types';
+import { type GuideId } from '../data/beginnerGuide';
 
 export type Tab = 'today' | 'cocktails' | 'whisky' | 'cellar' | 'taste' | 'settings' | 'starter';
 
@@ -49,6 +50,10 @@ interface UIState {
   showTerm: (title: string, body: string) => void;
   closeTerm: () => void;
   termInfo: TermInfo | null;
+  /** 입문 안내 팝업 — 'menu' 는 안내 목록 */
+  guide: GuideId | 'menu' | null;
+  openGuide: (id: GuideId | 'menu') => void;
+  closeGuide: () => void;
   openAdd: (query?: string) => void;
   closeAdd: () => void;
   addOpen: boolean;
@@ -67,6 +72,7 @@ export function UIProvider({ children }: { children: ReactNode }) {
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [termInfo, setTermInfo] = useState<TermInfo | null>(null);
   const [addOpen, setAddOpen] = useState(false);
+  const [guide, setGuide] = useState<GuideId | 'menu' | null>(null);
   const [addQuery, setAddQuery] = useState('');
 
   const [tabTick, setTabTick] = useState(0);
@@ -98,6 +104,7 @@ export function UIProvider({ children }: { children: ReactNode }) {
       toastMsg, toast,
       termInfo, showTerm, closeTerm: () => setTermInfo(null),
       addOpen, addQuery, openAdd, closeAdd,
+      guide, openGuide: setGuide, closeGuide: () => setGuide(null),
     }}>
       {children}
     </Ctx.Provider>

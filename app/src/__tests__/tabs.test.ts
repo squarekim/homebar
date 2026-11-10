@@ -72,3 +72,21 @@ describe('분류 표의 타입 칸', () => {
     expect(n('블렌디드 몰트')).toBe(1);
   });
 });
+
+import { GUIDE_CHAPTERS, GUIDE_FOR_TAB } from '../data/beginnerGuide';
+describe('입문 안내 카드', () => {
+  it('모든 카드에 본문과 출처 주소가 있다', () => {
+    for (const ch of GUIDE_CHAPTERS) {
+      expect(ch.cards.length).toBeGreaterThan(0);
+      for (const c of ch.cards) {
+        expect(c.body.join('').length).toBeGreaterThan(10);
+        expect(c.sources.length).toBeGreaterThan(0);
+        for (const s of c.sources) expect(s.url).toMatch(/^https:\/\//);
+      }
+    }
+  });
+  it('오해는 모두 12개이고 탭 안내는 있는 장을 가리킨다', () => {
+    expect(GUIDE_CHAPTERS.flatMap((c) => c.cards).filter((c) => c.myth).length).toBe(12);
+    for (const id of Object.values(GUIDE_FOR_TAB)) expect(GUIDE_CHAPTERS.some((c) => c.id === id)).toBe(true);
+  });
+});
