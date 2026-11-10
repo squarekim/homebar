@@ -215,7 +215,8 @@ describe('레시피 note 위생 — 재고 서술 분리', () => {
     expect(byName('피나 콜라다').garnish).toContain('체리');                   // 가니시는 별도 필드로
     expect(byName('비외 카레').note).toContain('베네딕틴 1바스푼');            // 만들 때 필요한 스펙
     expect(byName('갓파더').note).toContain('3.5cl : 3.5cl');                  // 레시피 스펙 설명
-    expect(cocktails.filter((c) => c.note && c.note.length > 0).length).toBeGreaterThan(140);
+    // 출처 이름만 적혀 있던 메모 11건은 출처 칸으로 옮겼다
+    expect(cocktails.filter((c) => c.note && c.note.length > 0).length).toBeGreaterThanOrEqual(138);
   });
 
   it('판정은 note 가 아니라 재고 변화에만 반응한다', () => {
