@@ -157,8 +157,8 @@ export function TodayPage() {
           <span>가진 술과 재료를 넣으면 지금 만들 수 있는 잔이 나와요</span>
         </button>
         <button onClick={() => openGuide('menu')}>
-          <b>입문 안내</b>
-          <span>마시는 법, 첫 병, 도구, 보관, 흔한 오해를 카드로 알려 드려요</span>
+          <b>입문 안내서</b>
+          <span>위스키와 칵테일로 나눠 마시는 법, 첫 병, 도구, 보관, 흔한 오해를 알려 드려요</span>
         </button>
         <button onClick={() => goTab('settings')}>
           <b>건강한 음주 안내</b>

@@ -17,7 +17,12 @@ export interface GuideCard {
   sources: GuideSource[];
 }
 export type GuideId = 'drink' | 'firstbottle' | 'tools' | 'storage' | 'myths-whisky' | 'myths-cocktail';
-export interface GuideChapter { id: GuideId; title: string; intro: string; cards: GuideCard[]; }
+export type GuideGroup = 'whisky' | 'cocktail';
+export const GUIDE_GROUPS: ReadonlyArray<{ key: GuideGroup; title: string }> = [
+  { key: 'whisky', title: '위스키 안내서' },
+  { key: 'cocktail', title: '칵테일 안내서' },
+];
+export interface GuideChapter { id: GuideId; group: GuideGroup; title: string; intro: string; cards: GuideCard[]; }
 
 const SUNTORY_FAQ: GuideSource = { label: 'Suntory 위스키 음용 FAQ', url: 'https://www.suntory.co.jp/customer/faq/005510.html' };
 const THE_BAR: GuideSource = { label: 'The Bar(디아지오) 도구 대체 안내', url: 'https://www.thebar.com/en-in/articles/creative-bar-tools-alternatives-to-save-the-day' };
@@ -28,7 +33,7 @@ const iba = (name: string, slug: string): GuideSource => ({ label: `IBA ${name}`
 
 export const GUIDE_CHAPTERS: readonly GuideChapter[] = [
   {
-    id: 'drink', title: '위스키 마시는 법',
+    id: 'drink', group: 'whisky', title: '위스키 마시는 법',
     intro: '같은 위스키도 마시는 방법에 따라 느낌이 달라요. 제조사가 안내하는 네 가지예요.',
     cards: [
       { title: '니트 (스트레이트)', body: ['잔에 위스키만 따라요. 물과 얼음을 섞지 않아요.', '위스키 자체의 향과 여운을 살펴보는 방법이에요. 마실 물을 옆에 따로 준비해요.'],
@@ -42,7 +47,7 @@ export const GUIDE_CHAPTERS: readonly GuideChapter[] = [
     ],
   },
   {
-    id: 'firstbottle', title: '첫 병 고르기',
+    id: 'firstbottle', group: 'cocktail', title: '첫 병 고르기',
     intro: '칵테일을 만들어 보려면 베이스가 되는 술이 한 병 필요해요. 국제바텐더협회(IBA) 공식 칵테일에 쓰이는 다섯 가지예요. 주스나 시럽 같은 다른 재료도 함께 필요해요.',
     cards: [
       { title: '드라이 진', body: ['드라이 마티니, 네그로니, 비즈 니즈에 써요.', '베르무트, 쓴맛 나는 술, 감귤 주스와 잘 섞여요.'], sources: [iba('Dry Martini', 'dry-martini'), iba('Negroni', 'negroni'), iba("Bee's Knees", 'bees-knees')] },
@@ -53,7 +58,7 @@ export const GUIDE_CHAPTERS: readonly GuideChapter[] = [
     ],
   },
   {
-    id: 'tools', title: '도구가 없을 때',
+    id: 'tools', group: 'cocktail', title: '도구가 없을 때',
     intro: '바 도구를 사기 전에 집에 있는 물건으로 먼저 해 볼 수 있어요.',
     cards: [
       { title: '셰이커 대신', body: ['뚜껑이 단단히 잠기는 유리병(메이슨 자)이나 뚜껑 있는 텀블러를 써요.', '뚜껑이 새지 않는지 먼저 확인하고, 얼음과 액체가 움직일 공간을 남겨요.'], sources: [THE_BAR] },
@@ -65,7 +70,7 @@ export const GUIDE_CHAPTERS: readonly GuideChapter[] = [
     ],
   },
   {
-    id: 'storage', title: '개봉한 술 보관',
+    id: 'storage', group: 'cocktail', title: '개봉한 술 보관',
     intro: '종류에 따라 보관하는 곳과 기간이 달라요. 병에 적힌 표시가 있으면 그것을 먼저 따라요.',
     cards: [
       { title: '위스키, 진, 보드카 같은 증류주', body: ['실온의 서늘한 곳에 세워 둬요.', '직사광선, 더운 곳, 냄새가 강한 곳을 피해요. 냉장고에 넣지 않아도 돼요.'], sources: [{ label: 'Suntory 주류 보관 FAQ', url: 'https://www.suntory.co.jp/customer/faq/005587.html' }] },
@@ -76,7 +81,7 @@ export const GUIDE_CHAPTERS: readonly GuideChapter[] = [
     ],
   },
   {
-    id: 'myths-whisky', title: '위스키에 대한 오해 10가지',
+    id: 'myths-whisky', group: 'whisky', title: '위스키에 대한 오해 10가지',
     intro: '위스키를 처음 볼 때 흔히 듣는 말 가운데 사실과 다른 것들이에요.',
     cards: [
       { title: '블렌디드', myth: '블렌디드는 저급 위스키예요', body: ['블렌디드는 원액을 어떻게 구성했는지 나타내는 이름이에요. 스카치 법령은 싱글몰트와 블렌디드를 같은 무게의 법적 분류로 정해요. 품질 등급을 뜻하지 않아요.'],
@@ -98,7 +103,7 @@ export const GUIDE_CHAPTERS: readonly GuideChapter[] = [
     ],
   },
   {
-    id: 'myths-cocktail', title: '칵테일에 대한 오해 2가지',
+    id: 'myths-cocktail', group: 'cocktail', title: '칵테일에 대한 오해 2가지',
     intro: '칵테일을 처음 만들 때 놓치기 쉬운 두 가지예요.',
     cards: [
       { title: '셰이크와 스터', myth: '셰이크와 스터는 결과가 같아요', body: ['셰이크는 얼음과 재료를 세게 흔들어 공기를 넣어요. 빨리 차가워지고 질감이 가벼워지며 색이 흐려져요. 스터는 베이스 술과 베르무트처럼 맑은 재료를 투명하고 매끄럽게 섞을 때 써요.'],

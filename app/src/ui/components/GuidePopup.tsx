@@ -6,7 +6,7 @@
  */
 import { useEffect, useState } from 'react';
 import { useUI } from '../UIContext';
-import { GUIDE_CHAPTERS, GUIDE_FOR_TAB, guideById, type GuideId } from '../../data/beginnerGuide';
+import { GUIDE_CHAPTERS, GUIDE_GROUPS, GUIDE_FOR_TAB, guideById, type GuideId } from '../../data/beginnerGuide';
 
 const SEEN_PREFIX = 'homebar.guideSeen.';
 const FIRST_RUN_KEY = 'homebar.firstRunSeen';
@@ -42,14 +42,19 @@ export function GuidePopup() {
           <button className="gx" onClick={closeGuide} aria-label="닫기">×</button>
           <p className="gkicker">입문 안내</p>
           <h2>무엇이 궁금하세요?</h2>
-          <div className="gmenu">
-            {GUIDE_CHAPTERS.map((c) => (
-              <button key={c.id} onClick={() => openGuide(c.id)}>
-                <b>{c.title}</b>
-                <span>카드 {c.cards.length}장</span>
-              </button>
-            ))}
-          </div>
+          {GUIDE_GROUPS.map((g) => (
+            <div key={g.key}>
+              <div className="sechead in">{g.title}</div>
+              <div className="gmenu">
+                {GUIDE_CHAPTERS.filter((c) => c.group === g.key).map((c) => (
+                  <button key={c.id} onClick={() => openGuide(c.id)}>
+                    <b>{c.title}</b>
+                    <span>카드 {c.cards.length}장</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     );
