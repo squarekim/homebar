@@ -39,7 +39,7 @@ export const GUIDE_CHAPTERS: readonly GuideChapter[] = [
     cards: [
       { title: '니트 (스트레이트)', body: ['잔에 위스키만 따라요. 물과 얼음을 섞지 않아요.', '위스키 자체의 향과 여운을 살펴보는 방법이에요. 마실 물을 옆에 따로 준비해요.'],
         sources: [SUNTORY_FAQ, { label: 'Suntory 스트레이트 안내', url: 'https://www.suntory.co.jp/whisky/beginner/drink/straight.html?fromid=faq_thumb' }] },
-      { title: '워터 드롭', body: ['니트로 따른 위스키에 물을 조금 떨어뜨려요.', '알코올 자극이 부드러워지고 숨어 있던 향과 맛이 드러나요. 도수 46% 이상이거나 캐스크 스트렝스인 위스키에서 차이가 커요.'],
+      { title: '워터드롭', body: ['니트로 따른 위스키에 물을 조금 떨어뜨려요.', '알코올 자극이 부드러워지고 숨어 있던 향과 맛이 드러나요. 도수 46% 이상이거나 캐스크 스트렝스인 위스키에서 차이가 커요.'],
         sources: [{ label: 'Douglas Laing, Should You Add Water to Whisky?', url: 'https://www.douglaslaing.com/blogs/news/should-you-add-water-to-whisky-a-beginner-s-guide-to-tasting-water-and-glassware' },
           { label: 'Karlsson & Friedman, Scientific Reports 7, 6489 (2017)', url: 'https://www.nature.com/articles/s41598-017-06423-5' }] },
       { title: '온더록', body: ['잔에 큰 얼음 하나를 넣고 위스키를 따른 뒤 바 스푼으로 가볍게 저어요.', '차갑게 마시는 방법이에요. 얼음이 녹으면서 조금씩 묽어져요.'],
