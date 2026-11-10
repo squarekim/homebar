@@ -459,12 +459,14 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 .today .asksub{font-size:15px;color:var(--mute);margin-top:6px}
 .stage{position:relative;height:250px;margin:6px -16px 0;overflow:hidden}
 @media (min-width:900px){.stage{margin:var(--s2) 0 0;border-radius:var(--r)}}
-.stage .lamp{position:absolute;left:50%;top:0;width:2px;height:20px;margin-left:-1px;background:var(--line)}
-.stage .lamp::after{content:"";position:absolute;left:-13px;top:18px;width:28px;height:9px;border-radius:14px 14px 3px 3px;background:var(--accent)}
-.stage .cone{position:absolute;left:50%;top:27px;width:190px;margin-left:-95px;height:170px;pointer-events:none;
-  background:linear-gradient(rgba(var(--glow),.16),rgba(var(--glow),0));clip-path:polygon(42% 0,58% 0,100% 100%,0 100%);
-  opacity:.55;transition:opacity .5s}
-.stage.lit .cone{opacity:1}
+/* 조명은 화면 밖 위에 있다 — 등 기구는 그리지 않고, 테이블에 떨어진 빛과 둘레의 어둠만 그린다 */
+.stage::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 62% 78% at 50% -6%,rgba(var(--glow),.2),rgba(var(--glow),.06) 55%,rgba(var(--glow),0) 78%)}
+.stage::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:3;
+  background:radial-gradient(ellipse 58% 70% at 50% 56%,rgba(8,12,14,0) 55%,rgba(8,12,14,.5) 100%);transition:background .5s}
+.stage.lit::after{background:radial-gradient(ellipse 40% 62% at 50% 52%,rgba(8,12,14,0) 50%,rgba(8,12,14,.66) 100%)}
+:root[data-theme=light] .stage::after{background:radial-gradient(ellipse 58% 70% at 50% 56%,rgba(27,36,39,0) 55%,rgba(27,36,39,.16) 100%)}
+:root[data-theme=light] .stage.lit::after{background:radial-gradient(ellipse 40% 62% at 50% 52%,rgba(27,36,39,0) 50%,rgba(27,36,39,.26) 100%)}
 .stage .deck{position:absolute;inset:0;perspective:900px}
 .stage .card{position:absolute;left:50%;top:56px;width:104px;height:144px;margin-left:-52px;
   transform-style:preserve-3d;transform-origin:50% 90%;transition-property:transform,opacity;transition-timing-function:cubic-bezier(.3,.7,.2,1)}
@@ -490,7 +492,7 @@ th{color:var(--mute);font-size:12px;font-weight:500}
   transform:rotate(-8deg);text-shadow:0 0 6px #5E1A26,0 0 3px #5E1A26,0 1px 0 rgba(0,0,0,.4)}
 /* 딜러가 카드를 펼치는 펠트 */
 .stage .deck::before{content:'';position:absolute;left:2%;right:2%;top:96px;height:170px;border-radius:50%;
-  background:radial-gradient(ellipse at 50% 40%,#25503F 0%,#1A3B30 55%,rgba(26,59,48,0) 72%);opacity:.9}
+  background:radial-gradient(ellipse at 50% 36%,#3C7059 0%,#25503F 30%,#173529 58%,rgba(23,53,41,0) 72%);opacity:.95}
 :root[data-theme=light] .stage .face,:root[data-theme=light] .stage .back{box-shadow:0 6px 14px rgba(27,36,39,.14)}
 :root[data-theme=light] .stage .back{box-shadow:inset 0 0 0 6px var(--panel),inset 0 0 0 7px var(--accent),0 6px 14px rgba(27,36,39,.14)}
 .btn.big{min-height:52px;border-radius:12px;font-size:16px;width:100%}

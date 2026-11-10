@@ -132,8 +132,6 @@ export function TodayReel({ picks, onPicked, between, children }: {
   return (
     <>
       <div className={`stage${phase === 'done' ? ' lit' : ''}`} aria-hidden="true">
-        <div className="lamp" />
-        <div className="cone" />
         <div className="deck">
           {poses.map((p, j) => {
             const r = picks[faces[j] ?? j];
