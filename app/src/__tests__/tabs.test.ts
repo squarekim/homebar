@@ -136,3 +136,13 @@ describe('뽑기 후보와 맛 설명', () => {
     expect(whiskyWords(t)).toEqual(['피트', '바다']);
   });
 });
+
+describe('레시피 메모', () => {
+  it('모두 해요체 문장이고 기주·합니다체가 없다', () => {
+    for (const c of allCocktails) {
+      if (!c.note) continue;
+      expect(c.note, c.name).toMatch(/요\.$/);
+      expect(c.note, c.name).not.toMatch(/니다|기주/);
+    }
+  });
+});

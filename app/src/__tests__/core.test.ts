@@ -211,7 +211,7 @@ describe('레시피 note 위생 — 재고 서술 분리', () => {
 
   it('레시피 본문(맛·기법·가니시·대체 안내)은 보존된다', () => {
     const byName = (n: string) => cocktails.find((c) => c.name === n)!;
-    expect(byName('카이피리냐').note).toContain('럼으로 대체되지 않습니다');   // 일반 대체 안내
+    expect(byName('카이피리냐').note).toContain('럼으로 대신할 수 없어요');   // 일반 대체 안내
     expect(byName('피나 콜라다').garnish).toContain('체리');                   // 가니시는 별도 필드로
     expect(byName('비외 카레').note).toContain('베네딕틴 1바스푼');            // 만들 때 필요한 스펙
     expect(byName('갓파더').note).toContain('3.5cl : 3.5cl');                  // 레시피 스펙 설명
