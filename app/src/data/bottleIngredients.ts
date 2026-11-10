@@ -83,5 +83,10 @@ const KIND_LABELS: Record<string, string> = {
 
 /** 카드 우측에 적는 술 종류 (럼·데킬라·브랜디 묶음 대신 '데킬라'처럼 실제 종류로) */
 export function bottleKindLabel(b: { node: string; group: string }): string {
-  return KIND_LABELS[bottleKind(b)] ?? b.group;
+  return groupLabel(KIND_LABELS[bottleKind(b)] ?? b.group);
+}
+
+/** 데이터의 묶음 이름을 화면에 적는 말로 — 칵테일에 안 쓰는 술 묶음은 '그 밖의 술' */
+export function groupLabel(group: string): string {
+  return group === '기타 (칵테일 미활용)' ? '그 밖의 술' : group;
 }

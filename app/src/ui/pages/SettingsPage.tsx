@@ -40,7 +40,7 @@ export function TasteSetup() {
   const liked = QUICK_AXES.filter((a) => vector[a] >= 7);
   const toggleLike = (a: FlavorAxis) => setDraft({ ...vector, [a]: vector[a] >= 7 ? 5 : 8 });
   const set = (a: FlavorAxis, v: number) => setDraft({ ...vector, [a]: v });
-  const save = async () => { if (draft) { await tasteService.setManual(draft); setDraft(null); toast('취향 저장'); } };
+  const save = async () => { if (draft) { await tasteService.setManual(draft); setDraft(null); toast('취향을 저장했어요'); } };
 
   return (
     <>
@@ -59,7 +59,7 @@ export function TasteSetup() {
       </div>
       <div className="btnrow">
         <button className="btn primary" disabled={!draft} onClick={save}>저장</button>
-        <button className="btn" onClick={async () => { await tasteService.recomputeMe(); setDraft(null); toast('기록으로 재계산'); }}>기록으로 재계산</button>
+        <button className="btn" onClick={async () => { await tasteService.recomputeMe(); setDraft(null); toast('기록으로 다시 계산했어요'); }}>기록으로 다시 계산</button>
         {draft && <button className="btn ghost" onClick={() => setDraft(null)}>되돌리기</button>}
       </div>
 
@@ -92,25 +92,25 @@ export function PeopleManager() {
   return (
     <>
       <div className="sechead">함께 마시는 사람</div>
-      <p className="hint">그룹 추천에 쓰입니다. 한 명이라도 싫어하는 향미가 강한 술은 감점됩니다.</p>
+      <p className="hint">여럿이 마실 잔을 고를 때 써요. 한 명이라도 싫어하는 맛이 강한 잔은 뒤로 미뤄요.</p>
       <div className="people">
         {others.map((p) => (
           <div className="person" key={p.id}>
             <div className="ph">
               <b>{p.name}</b>
-              <button className="btn sm ghost" onClick={async () => { await tasteProfileRepo.remove(p.id); toast('삭제됨'); }}>삭제</button>
+              <button className="btn sm ghost" onClick={async () => { await tasteProfileRepo.remove(p.id); toast('지웠어요'); }}>삭제</button>
             </div>
             <FlavorBars vector={p.vector} compact />
           </div>
         ))}
-        {others.length === 0 && <p className="hint">등록된 사람이 없습니다.</p>}
+        {others.length === 0 && <p className="hint">아직 추가한 사람이 없어요.</p>}
       </div>
       <div className="controls">
         <input type="text" placeholder="이름" value={name} onChange={(e) => setName(e.target.value)} style={{ flex: 1 }} />
         <button className="btn primary" onClick={async () => {
           if (!name.trim()) return;
           const neutral = FLAVOR_AXES.reduce((v, a) => { v[a] = 5; return v; }, {} as FlavorVector);
-          await tasteProfileRepo.create(name.trim(), neutral); setName(''); toast('추가됨');
+          await tasteProfileRepo.create(name.trim(), neutral); setName(''); toast('추가했어요');
         }}>추가</button>
       </div>
     </>
@@ -182,7 +182,7 @@ function BackupRestore() {
   return (
     <>
       <div className="sechead">백업 · 복원</div>
-      <p className="hint">재고·기록·취향·대체재를 JSON 파일로 내보내고 복원합니다. 서버 없이 이 브라우저에만 저장됩니다.</p>
+      <p className="hint">술장, 기록, 취향을 파일로 내보내고 다시 불러올 수 있어요. 데이터는 이 브라우저에만 저장돼요.</p>
       <div className="btnrow">
         <button className="btn primary" onClick={doExport}>JSON 내보내기</button>
         <button className="btn" onClick={() => fileRef.current?.click()}>JSON 복원</button>

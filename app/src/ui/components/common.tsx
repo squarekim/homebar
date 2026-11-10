@@ -102,7 +102,7 @@ export function BottleBadges({ badges }: { badges: BottleBadge[] }) {
 /** 제조사/공식 테이스팅 노트 표시 (출처 링크 포함) */
 export function MakerNoteView({ note, empty }: { note?: MakerNote | undefined; empty?: string | undefined }) {
   if (!note) {
-    return <div className="hint" style={{ margin: '6px 0 0' }}>{empty ?? '제조사 공식 노트가 아직 없는 술입니다. 아래에 직접 기록해 두세요.'}</div>;
+    return <div className="hint" style={{ margin: '6px 0 0' }}>{empty ?? '제조사 공식 노트가 아직 없는 술이에요. 아래에 직접 적어 두세요.'}</div>;
   }
   return (
     <div className="makernote">

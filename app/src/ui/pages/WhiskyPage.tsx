@@ -104,7 +104,7 @@ function WhiskyDetail({ bottle: w }: { bottle: Bottle }) {
       <BottleBadges badges={w.badges} />
 
       <div className="sechead in">제조사 공식 노트</div>
-      <MakerNoteView note={w.makerNote} empty="이 제품은 확인된 제조사 공식 노트가 없습니다." />
+      <MakerNoteView note={w.makerNote} empty="이 술은 확인된 제조사 공식 노트가 없어요." />
 
       {pairs.length > 0 && (
         <>
@@ -124,8 +124,8 @@ function WhiskyDetail({ bottle: w }: { bottle: Bottle }) {
         </>
       )}
 
-      <div className="sechead in">내 메모 <small className="sub">공식 노트와 별개로 저장됩니다</small></div>
-      <PersonalNote bottleId={w.id} initial={notes.get(w.id) ?? ''} onSaved={() => toast('메모 저장')} />
+      <div className="sechead in">내 메모 <small className="sub">공식 노트와 따로 저장돼요</small></div>
+      <PersonalNote bottleId={w.id} initial={notes.get(w.id) ?? ''} onSaved={() => toast('메모를 저장했어요')} />
 
       <div className="btnrow">
         <button className="btn primary" onClick={() => openLog({ drinkId: w.id, drinkType: w.isWhisky ? 'whisky' : 'spirit', drinkName: w.name, servingStyle: 'neat' })}>
@@ -183,7 +183,7 @@ export function WhiskyPage() {
       <div className="split">
         <div className="listpane">
           <div className="hint">{rows.length}종</div>
-          {rows.length === 0 && <div className="empty">조건에 맞는 위스키가 없습니다.</div>}
+          {rows.length === 0 && <div className="empty">조건에 맞는 위스키가 없어요.</div>}
           <div className="rowlist">
             {rows.map((w) => (
               <button className="rowitem" key={w.id} aria-current={bottleId === w.id} onClick={() => openBottle(w.id)}>
@@ -212,7 +212,7 @@ export function WhiskyPage() {
                 <WhiskyDetail bottle={selected} />
               </div>
             )
-            : <div className="placeholder">목록에서 한 병을 고르면 맛 설명과 공식 노트가 열립니다.</div>}
+            : <div className="placeholder">목록에서 한 병을 고르면 맛 설명과 공식 노트가 열려요.</div>}
         </div>
       </div>
     </>
@@ -251,7 +251,7 @@ function GapView({ onBack }: { onBack: () => void }) {
           </tbody>
         </table>
       </div>
-      <p className="hint">숙성: 엔트리 ≤11년 · 스탠다드 12–17년 · 고숙성 18년+ (병 이름의 연수로 판정, NAS 제외).</p>
+      <p className="hint">숙성 칸은 병 이름에 적힌 연수로 나눠요. 엔트리는 11년 이하, 스탠다드는 12~17년, 고숙성은 18년 이상이에요. 연수 표시가 없는 병은 빠져요.</p>
 
       <div className="sechead">분류별 보유</div>
       {coverage.map((fam) => (
@@ -265,7 +265,7 @@ function GapView({ onBack }: { onBack: () => void }) {
         </div>
       ))}
 
-      <div className="sechead">구매 시뮬레이터</div>
+      <div className="sechead">이 병을 더하면</div>
       <div className="hint">후보를 더했을 때 새로 채워지는 칸을 계산해요.</div>
       <div className="rowlist">
         {sims.map(({ c, sim }) => (
@@ -274,7 +274,7 @@ function GapView({ onBack }: { onBack: () => void }) {
               <span className="nm">{c.name}</span>
               <div className="taste">{c.note}</div>
               <div className="foot">
-                <span className={sim.gain > 0 ? 'state s-READY' : 'mi'}>{sim.gain > 0 ? `새 칸 ${sim.gain}개` : '겹침만'}</span>
+                <span className={sim.gain > 0 ? 'state s-READY' : 'mi'}>{sim.gain > 0 ? `새 칸 ${sim.gain}개` : '이미 가진 칸이에요'}</span>
                 {sim.newlyFilled.slice(0, 3).map((h, i) => <span className="mi" key={i}>{h.value}</span>)}
               </div>
             </div>

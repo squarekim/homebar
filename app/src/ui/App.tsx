@@ -29,7 +29,7 @@ const TABS: { id: Tab; label: string; ic: ReactNode }[] = [
 ];
 
 function Shell() {
-  const { tab, goTab, toastMsg, termInfo, closeTerm, addOpen, addQuery, closeAdd } = useUI();
+  const { tab, goTab, tabTick, toastMsg, termInfo, closeTerm, addOpen, addQuery, closeAdd } = useUI();
 
   // 데스크톱: 가로 칩 줄을 마우스 휠로도 넘긴다(넘치는 경우)
   useEffect(() => {
@@ -69,8 +69,8 @@ function Shell() {
 
       <main className="wrap">
         {tab === 'today' && <TodayPage />}
-        {tab === 'cocktails' && <CocktailsPage />}
-        {tab === 'whisky' && <WhiskyPage />}
+        {tab === 'cocktails' && <CocktailsPage key={tabTick} />}
+        {tab === 'whisky' && <WhiskyPage key={tabTick} />}
         {tab === 'cellar' && <CellarPage />}
         {tab === 'taste' && <TastePage />}
         {tab === 'settings' && <SettingsPage />}

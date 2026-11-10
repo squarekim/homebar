@@ -22,14 +22,14 @@ import { type AvailabilityStatus } from '../../models/types';
 type StatusFilter = 'all' | AvailabilityStatus;
 const STATUS_FILTERS: ChipOption<StatusFilter>[] = [
   { v: 'all', label: '전체' },
-  { v: 'READY', label: '그대로 가능', cls: 'ok' },
-  { v: 'SUBSTITUTE', label: '대체로 가능' },
-  { v: 'MISSING', label: '일부 부족' },
-  { v: 'UNAVAILABLE', label: '재료 없음' },
+  { v: 'READY', label: '바로 만들 수 있음', cls: 'ok' },
+  { v: 'SUBSTITUTE', label: '대체 재료로 가능' },
+  { v: 'MISSING', label: '재료 일부 없음' },
+  { v: 'UNAVAILABLE', label: '재료 대부분 없음' },
 ];
 const IBA_FILTERS: ChipOption<string>[] = [
-  { v: 'all', label: 'IBA 전체' }, { v: '현행IBA', label: '현행IBA' },
-  { v: '구IBA', label: '구IBA' }, { v: '비IBA', label: '비IBA' },
+  { v: 'all', label: '전체' }, { v: '현행IBA', label: '지금 공식' },
+  { v: '구IBA', label: '예전 공식' }, { v: '비IBA', label: '그 밖' },
 ];
 
 type View = 'recipe' | 'simple' | 'ingredient';
@@ -46,7 +46,7 @@ export function CocktailsPage() {
   const [iba, setIba] = useState('all');
   const [status, setStatus] = useState<StatusFilter>('all');
 
-  const bases = useGroupChips(referenceRepo.cocktails(), (c) => c.base, '기주 전체');
+  const bases = useGroupChips(referenceRepo.cocktails(), (c) => c.base, '베이스 술 전체');
   const filtered = base !== 'all' || iba !== 'all' || status !== 'all';
 
   const rows = useMemo(() => {
@@ -96,11 +96,11 @@ export function CocktailsPage() {
 
       {openFilter && (
         <div className="filterpanel">
-          <div className="hint lbl">기주</div>
+          <div className="hint lbl">베이스 술</div>
           <ChipRow value={base} options={bases} onChange={setBase} wrap tight />
-          <div className="hint lbl">IBA 분류</div>
+          <div className="hint lbl">공식 칵테일 (국제바텐더협회 IBA)</div>
           <ChipRow value={iba} options={IBA_FILTERS} onChange={setIba} wrap tight />
-          <div className="hint lbl">제조 가능 상태</div>
+          <div className="hint lbl">만들 수 있는지</div>
           <ChipRow value={status} options={STATUS_FILTERS} onChange={setStatus} wrap tight />
           <div className="btnrow">
             <button className="btn sm ghost" onClick={() => { setBase('all'); setIba('all'); setStatus('all'); }}>필터 비우기</button>
@@ -111,7 +111,7 @@ export function CocktailsPage() {
       <div className="split">
         <div className="listpane">
           <div className="hint">{rows.length}종 · <button className="lnk" onClick={() => setView('simple')}>간단 조합</button> · <button className="lnk" onClick={() => setView('ingredient')}>재료 목록</button></div>
-          {rows.length === 0 && <div className="empty">조건에 맞는 레시피가 없습니다. 검색어나 필터를 지워보세요.</div>}
+          {rows.length === 0 && <div className="empty">조건에 맞는 레시피가 없어요. 검색어나 필터를 지워 보세요.</div>}
           {groups.map((g) => g.rows.length > 0 && (
             <div key={g.title}>
               <div className="sechead sm">{g.title} <small className="sub">{g.rows.length}</small></div>
@@ -126,7 +126,8 @@ export function CocktailsPage() {
                     <MethodIcon keys={c.methodKeys} raw={c.method} />
                   </span>
                   <div className="taste">{flavorWords(c.flavor).join(' · ')} · {c.base}</div>
-                  <div className="foot"><StateLine status={e.status} lack={e.lack} /></div>
+                  {/* 묶음 제목이 이미 '지금 만들 수 있어요'라서, 그대로 만들 수 있는 잔에는 상태를 다시 적지 않는다 */}
+                  {e.status !== 'READY' && <div className="foot"><StateLine status={e.status} lack={e.lack} /></div>}
                 </div>
               </button>
                 ))}
@@ -146,7 +147,7 @@ export function CocktailsPage() {
                 <CocktailDetail id={selected.id} />
               </div>
             )
-            : <div className="placeholder">목록에서 한 잔을 고르면 여기에 레시피가 열립니다.</div>}
+            : <div className="placeholder">목록에서 한 잔을 고르면 여기에 레시피가 열려요.</div>}
         </div>
       </div>
     </>

@@ -9,7 +9,7 @@ import {
 import { ChipRow, Modal, type ChipOption } from './common';
 
 const SERVING_CHIPS: ChipOption<ServingStyle>[] = SERVING_STYLES.map((s) => ({ v: s, label: SERVING_LABELS_KO[s] }));
-const RETRY_CHIPS: ChipOption<'y' | 'n'>[] = [{ v: 'y', label: '또 마실래' }, { v: 'n', label: '재음용 X' }];
+const RETRY_CHIPS: ChipOption<'y' | 'n'>[] = [{ v: 'y', label: '또 마실래' }, { v: 'n', label: '다음엔 안 마실래' }];
 
 export function LogDialog() {
   const { logPrefill, closeLog, toast } = useUI();
@@ -52,7 +52,7 @@ export function LogDialog() {
     <Modal open onClose={closeLog}>
       <h2>기록: {logPrefill.drinkName}</h2>
 
-      <div className="sechead">서빙 스타일</div>
+      <div className="sechead">어떻게 마셨나요?</div>
       <ChipRow value={style} options={SERVING_CHIPS} onChange={setStyle} />
 
       <div className="slider">

@@ -48,7 +48,7 @@ export function LogList() {
           {rows.map((l) => (
             <LogCard key={l.id} log={l}>
               <div className="btnrow">
-                <button className="btn sm ghost" onClick={async () => { await drinkLogRepo.remove(l.id); toast('삭제됨'); }}>삭제</button>
+                <button className="btn sm ghost" onClick={async () => { await drinkLogRepo.remove(l.id); toast('지웠어요'); }}>삭제</button>
               </div>
             </LogCard>
           ))}

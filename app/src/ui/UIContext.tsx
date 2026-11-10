@@ -23,6 +23,8 @@ export interface TermInfo { title: string; body: string; }
 interface UIState {
   tab: Tab;
   goTab: (tab: Tab) => void;
+  /** 탭을 누를 때마다 오른다 — 같은 탭을 다시 누르면 그 탭의 첫 화면으로 돌아가게 하는 데 쓴다 */
+  tabTick: number;
   /** 술장 안에서 보고 있는 화면 — 보유 술 · 재료 재고 · 마신 기록 */
   cellarSub: CellarSub;
   setCellarSub: (s: CellarSub) => void;
@@ -67,7 +69,8 @@ export function UIProvider({ children }: { children: ReactNode }) {
   const [addOpen, setAddOpen] = useState(false);
   const [addQuery, setAddQuery] = useState('');
 
-  const goTab = useCallback((t: Tab) => { setTab(t); window.scrollTo(0, 0); }, []);
+  const [tabTick, setTabTick] = useState(0);
+  const goTab = useCallback((t: Tab) => { setTab(t); setTabTick((n) => n + 1); window.scrollTo(0, 0); }, []);
   const goLogs = useCallback(() => { setCellarSub('logs'); setTab('cellar'); window.scrollTo(0, 0); }, []);
   const openCocktail = useCallback((id: string, rec?: RecommendationResult) => {
     setCocktailId(id);
@@ -88,7 +91,7 @@ export function UIProvider({ children }: { children: ReactNode }) {
 
   return (
     <Ctx.Provider value={{
-      tab, goTab, cellarSub, setCellarSub, goLogs,
+      tab, goTab, tabTick, cellarSub, setCellarSub, goLogs,
       cocktailId, lastRec, openCocktail, closeCocktail: () => setCocktailId(null),
       bottleId, openBottle, closeBottle: () => setBottleId(null),
       logPrefill, openLog: setLogPrefill, closeLog: () => setLogPrefill(null),

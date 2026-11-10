@@ -53,6 +53,12 @@ export const METHOD_LABELS_KO: Record<MethodKey, string> = {
   blend: '블렌드', layer: '레이어', swizzle: '스위즐', float: '플로트',
 };
 
+/** 조주법을 처음 보는 사람도 알 수 있는 말로 — 상세의 '만드는 법'에 쓴다 */
+export const METHOD_PLAIN_KO: Record<MethodKey, string> = {
+  build: '잔에 바로 붓기', shake: '셰이커로 흔들기', stir: '저어서 섞기', muddle: '으깨기',
+  blend: '블렌더로 갈기', layer: '층층이 쌓기', swizzle: '막대로 휘젓기', float: '위에 띄우기',
+};
+
 /** 칵테일 (기존 recipes) */
 export interface Cocktail {
   id: string;

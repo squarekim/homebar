@@ -173,7 +173,7 @@ export function DistilleryMapView({ onBack }: { onBack: () => void }) {
         <span><i className="t-none" />정규 투어 없음</span><span><i className="t-unk" />확인 안 됨</span>
         <span><i className="stop" />생산 중단 등</span>
       </div>
-      <div className="hint">{view} {shown.length}곳 · 투어 운영 {tourCount}곳. 투어 정보는 2026-10-28 조사 기준이라 방문 전에 공식 안내를 확인하세요.</div>
+      <div className="hint">{view} {shown.length}곳 · 투어 운영 {tourCount}곳. 투어 정보는 2026-10-28 조사 기준이라 가기 전에 공식 안내를 확인해 주세요.</div>
 
       {picked && <><div className="sechead in">증류소</div><WorldDistilleryCard d={picked} /></>}
 

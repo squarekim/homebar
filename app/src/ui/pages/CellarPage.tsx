@@ -13,7 +13,7 @@ import { evaluateAll, tallyStatus } from '../../services/availabilityService';
 import { bottleService } from '../../services/bottleService';
 import { resetInventoryToSeed } from '../../db/migrate';
 import { isUserBottle } from '../../data/userBottles';
-import { bottleKindLabel } from '../../data/bottleIngredients';
+import { bottleKindLabel, groupLabel } from '../../data/bottleIngredients';
 import { ChipRow, ChipToggle, SearchBox, BottleBadges, type ChipOption } from '../components/common';
 import { normalize, hits, useGroupChips } from '../listUtils';
 import { IS_PUBLIC } from '../../config';
@@ -36,11 +36,11 @@ export function CellarPage() {
 
       {/* 두 가지 집계를 나눠 적는다 — 병 수와 재료 수는 다른 것이다 */}
       <div className="statline">
-        <div className="cell"><b>{bottles.length}</b><small>보유 제품(병)</small></div>
-        <div className="cell"><b>{heldIds.size}<small style={{ fontSize: 14 }}> / {totalIngredients}</small></b><small>표준 재료</small></div>
-        <div className={tally.READY ? 'cell ok' : 'cell'}><b>{tally.READY}</b><small>그대로 만들 수 있는 레시피</small></div>
-        <div className={tally.SUBSTITUTE ? 'cell alt' : 'cell'}><b>{tally.SUBSTITUTE}</b><small>대체로 가능</small></div>
-        <div className="cell"><b>{tally.MISSING + tally.UNAVAILABLE}</b><small>재료 부족</small></div>
+        <div className="cell"><b>{bottles.length}</b><small>가진 술(병)</small></div>
+        <div className="cell"><b>{heldIds.size}<small style={{ fontSize: 14 }}> / {totalIngredients}</small></b><small>가진 재료</small></div>
+        <div className={tally.READY ? 'cell ok' : 'cell'}><b>{tally.READY}</b><small>지금 만들 수 있는 잔</small></div>
+        <div className={tally.SUBSTITUTE ? 'cell alt' : 'cell'}><b>{tally.SUBSTITUTE}</b><small>대체 재료로 가능</small></div>
+        <div className="cell"><b>{tally.MISSING + tally.UNAVAILABLE}</b><small>재료가 모자란 잔</small></div>
       </div>
 
       <ChipRow value={sub} onChange={setSub} options={SUBS} />
@@ -55,7 +55,8 @@ function BottleList({ bottles }: { bottles: Bottle[] }) {
   const heldIds = useHeldIds();
   const [q, setQ] = useState('');
   const [grp, setGrp] = useState('all');
-  const groups = useGroupChips(bottles, (b) => b.group);
+  const rawGroups = useGroupChips(bottles, (b) => b.group);
+  const groups = useMemo(() => rawGroups.map((g) => ({ ...g, label: groupLabel(g.label) })), [rawGroups]);
 
   const rows = useMemo(() => {
     const t = normalize(q);
@@ -73,7 +74,7 @@ function BottleList({ bottles }: { bottles: Bottle[] }) {
       <ChipRow value={grp} options={groups} onChange={setGrp} wrap />
       {rows.length === 0 && (
         <div className="empty">
-          {q.trim() ? '검색 결과가 없습니다.' : '아직 등록한 술이 없습니다. 위의 술 추가로 시작하세요.'}
+          {q.trim() ? '찾는 술이 없어요.' : '아직 넣은 술이 없어요. 위의 술 추가로 시작해 보세요.'}
         </div>
       )}
       <div className="rowlist">
@@ -100,14 +101,14 @@ function BottleList({ bottles }: { bottles: Bottle[] }) {
               <div className="num">
                 {b.qty > 1 ? `${b.qty}병` : '1병'}
                 {isUserBottle(b.id) && (
-                  <div><button className="btn sm ghost" onClick={async () => { await bottleService.remove(b.id); toast('삭제됨'); }}>삭제</button></div>
+                  <div><button className="btn sm ghost" onClick={async () => { await bottleService.remove(b.id); toast('지웠어요'); }}>삭제</button></div>
                 )}
               </div>
             </div>
           );
         })}
       </div>
-      <p className="hint">항목을 누르면 위스키 화면의 상세(맛·공식 노트)로 갑니다. 수량·용량은 저장된 값이며, 없는 항목은 비워 둡니다.</p>
+      <p className="hint">술을 누르면 맛과 공식 노트를 볼 수 있어요. 도수와 용량은 확인된 것만 적어요.</p>
     </>
   );
 }
@@ -118,7 +119,7 @@ const MIXER_CATS = ['주스·과즙', '탄산·음료', '시럽·감미', '신�
 type View = 'all' | 'spirit' | 'mixer';
 type Own = 'all' | 'owned' | 'missing';
 const OWN_FILTERS: ChipOption<Own>[] = [
-  { v: 'all', label: '전체' }, { v: 'owned', label: '보유만', cls: 'ok' }, { v: 'missing', label: '미보유만' },
+  { v: 'all', label: '전체' }, { v: 'owned', label: '가진 것만', cls: 'ok' }, { v: 'missing', label: '없는 것만' },
 ];
 
 /** 재료 재고 — 레시피 판정에 직접 쓰이는 표준 재료의 보유·잔량 */
@@ -151,8 +152,8 @@ function StockManager() {
   return (
     <>
       <p className="hint">
-        레시피 판정은 <b>표준 재료</b>로 합니다. 체크한 재료만 보유로 계산되고, 위 숫자가 즉시 바뀝니다.
-        현재 {ownedCount}/{allIngredients.length}종.
+        만들 수 있는 잔은 <b>체크한 재료</b>로 계산해요. 체크를 바꾸면 위 숫자도 바로 바뀌어요.
+        지금 {ownedCount}/{allIngredients.length}종을 가지고 있어요.
       </p>
       <ChipRow value={own} onChange={setOwn} options={OWN_FILTERS} wrap />
       <div className="controls tight">
@@ -163,23 +164,23 @@ function StockManager() {
 
       {confirmReset ? (
         <div className="confirm">
-          <p>보유 재료를 <b>전부 해제</b>합니다. 지금 켜져 있는 {ownedCount}종이 모두 꺼집니다.</p>
-          <p className="sub">음용 기록·취향·추가한 술은 지워지지 않습니다.</p>
+          <p>재료 체크를 <b>전부 꺼요</b>. 지금 켜져 있는 {ownedCount}종이 모두 꺼져요.</p>
+          <p className="sub">마신 기록, 취향, 추가한 술은 지워지지 않아요.</p>
           <div className="btnrow">
             <button className="btn danger" onClick={async () => {
               await inventoryRepo.setAll(false, allIngredients.map((i) => ({ id: i.id, name: i.name })));
-              setConfirmReset(false); setOwn('all'); toast('보유재료를 비웠습니다');
+              setConfirmReset(false); setOwn('all'); toast('재료 체크를 모두 껐어요');
             }}>비우기</button>
             <button className="btn" onClick={() => setConfirmReset(false)}>취소</button>
           </div>
         </div>
       ) : (
         <div className="btnrow">
-          <button className="btn sm" onClick={() => setConfirmReset(true)}>보유재료 초기화</button>
+          <button className="btn sm" onClick={() => setConfirmReset(true)}>재료 체크 모두 끄기</button>
           <button className="btn sm" onClick={async () => { await resetInventoryToSeed(); toast(IS_PUBLIC ? '기본 홈바 세트로 되돌림' : '기본 컬렉션으로 되돌림'); }}>
             {IS_PUBLIC ? '기본 홈바 세트' : '기본 컬렉션'}
           </button>
-          <button className="btn sm" onClick={async () => { await inventoryRepo.setAll(true, allIngredients.map((i) => ({ id: i.id, name: i.name }))); toast('전부 보유'); }}>전부 보유</button>
+          <button className="btn sm" onClick={async () => { await inventoryRepo.setAll(true, allIngredients.map((i) => ({ id: i.id, name: i.name }))); toast('모두 켰어요'); }}>모두 켜기</button>
         </div>
       )}
 

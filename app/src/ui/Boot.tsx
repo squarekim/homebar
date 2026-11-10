@@ -24,10 +24,10 @@ function Failure({ title, detail, hint }: { title: string; detail?: string | und
 export function StorageBlocked({ detail }: { detail?: string | undefined }) {
   return (
     <Failure
-      title="이 브라우저에서는 저장소를 쓸 수 없습니다"
+      title="이 브라우저에서는 저장소를 쓸 수 없어요"
       detail={detail}
       hint={<>
-        재고·기록을 브라우저에 저장해야 동작하는데, 지금 저장소가 막혀 있습니다.
+        재고·기록을 브라우저에 저장해야 동작하는데, 지금 저장소가 막혀 있어요.
         <b> 카카오톡·인스타그램 등 앱 안에서 열었거나 시크릿 모드</b>일 때 자주 생깁니다.
         우측 상단 메뉴에서 <b>다른 브라우저로 열기</b>(사파리·크롬)를 눌러 주세요.
       </>}
@@ -47,9 +47,9 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, { error: E
     if (!this.state.error) return this.props.children;
     return (
       <Failure
-        title="화면을 그리는 중 문제가 생겼습니다"
+        title="화면을 그리는 중에 문제가 생겼어요"
         detail={this.state.error.message}
-        hint={<>저장된 데이터는 그대로 있습니다. 다시 시도해도 같은 화면이면 알려주세요.</>}
+        hint={<>저장된 데이터는 그대로 있어요. 다시 시도해도 같은 화면이면 알려주세요.</>}
       />
     );
   }

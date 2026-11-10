@@ -138,7 +138,7 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
 
   const save = async () => {
     const n = name.trim();
-    if (!n) { toast('이름을 입력하세요'); return; }
+    if (!n) { toast('이름을 넣어 주세요'); return; }
     setSaving(true);
     const over: Partial<UserBottle> = {
       qty, use,
@@ -158,7 +158,7 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
     }
     await bottleService.add(draft, { linkIngredient: link });
     const ing = link ? resolveIngredient(ingName) : undefined;
-    toast(ing ? `${n} 추가됨 · 재료 '${ing.name}' 보유 ON` : `${n} 추가됨`);
+    toast(ing ? `${n} 추가했어요 · 재료 '${ing.name}'도 켰어요` : `${n} 추가했어요`);
     onClose();
   };
 
@@ -168,10 +168,10 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
         <>
           <h2>술 추가</h2>
           <p className="hint sub">
-            제품명만 입력하면 분류·도수·용량·원산지·칵테일 재료가 자동으로 채워집니다.
+            이름만 넣으면 도수와 용량, 칵테일 재료는 알아서 채워 드려요.
           </p>
           <input type="search" autoFocus value={q} placeholder="예: 발베니 12 / 조니블랙 / Absolut" onChange={(e) => setQ(e.target.value)} />
-          {q.trim() === '' && <div className="hint">한글·영문·줄임말 모두 검색됩니다.</div>}
+          {q.trim() === '' && <div className="hint">한글, 영문, 줄임말로 모두 찾을 수 있어요.</div>}
           {q.trim() !== '' && (
             <div className="list" style={{ marginTop: 10 }}>
               {hits.map(({ item, matched }) => (
@@ -187,7 +187,7 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
                   </div>
                 </button>
               ))}
-              {hits.length === 0 && <div className="hint">검색 결과가 없습니다. 아래 <b>직접 추가</b>로 등록하세요.</div>}
+              {hits.length === 0 && <div className="hint">찾는 술이 없어요. 아래 <b>직접 추가</b>로 넣어 주세요.</div>}
             </div>
           )}
           <div className="btnrow">
@@ -221,7 +221,7 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
               <div className="sechead in">제조사 공식 노트</div>
               <MakerNoteView
                 note={MASTER_MAKER_NOTES[picked.id]}
-                empty="이 제품은 확인된 제조사 공식 노트가 없습니다. 추가한 뒤 술장에서 직접 기록할 수 있습니다."
+                empty="이 술은 확인된 제조사 공식 노트가 없어요. 추가한 뒤 직접 적어 둘 수 있어요."
               />
             </div>
           )}
@@ -238,7 +238,7 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
           <div className="sechead in">칵테일 재료 연결</div>
           <label className="it" style={{ marginBottom: 6 }}>
             <input type="checkbox" checked={link} onChange={(e) => setLink(e.target.checked)} />
-            <span>이 술을 표준 재료로 재고에 반영 (레시피 판정에 즉시 적용)</span>
+            <span>이 술을 칵테일 재료로도 쓸게요</span>
           </label>
           <IngredientLink value={ingName} onChange={(v) => { setIngName(v); setLink(!!v); }} />
 
@@ -263,7 +263,7 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
 
           {step === 'manual' && category === 'whisky' && (
             <>
-              <div className="sechead in">위스키 세부 분류 <small className="sub">선택 — 축별 결손 계산에 쓰입니다</small></div>
+              <div className="sechead in">위스키 세부 분류 <small className="sub">선택 · 위스키 분류 표에 쓰여요</small></div>
               <div className="hint lbl">원산지</div>
               <ChipRow value={origin} options={ORIGINS} onChange={setOrigin} wrap tight />
               <div className="hint lbl">타입</div>

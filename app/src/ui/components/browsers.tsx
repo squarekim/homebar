@@ -46,7 +46,7 @@ export function SimpleBuildBrowser() {
       <ChipRow value={grp} options={groups} onChange={setGrp}>
         <ChipToggle label="바로 가능" cls="ok" on={readyOnly} onToggle={() => setReadyOnly((v) => !v)} />
       </ChipRow>
-      <p className="hint">셰이커 없이 <b>잔에 바로 붓는</b> 조합 {all.length}종 중 지금 <b>{readyCount}종</b> 가능합니다.</p>
+      <p className="hint">셰이커 없이 <b>잔에 바로 붓는</b> 조합 {all.length}종 중 지금 <b>{readyCount}종</b>을 만들 수 있어요.</p>
       <div className="rowlist">
         {rows.map(({ b, e }) => {
           const mine = pickMyBottles(b, bottles);
@@ -69,7 +69,7 @@ export function SimpleBuildBrowser() {
                   <div className="sechead in">내 술로 만들기</div>
                   {mine.length > 0
                     ? <div className="parts">{mine.map((x) => <span key={x.id}>{x.name}{x.abv ? ` ${x.abv}` : ''}</span>)}</div>
-                    : <p className="hint">보유한 {b.group}이(가) 없습니다. 내 술장에서 추가하면 여기에 뜹니다.</p>}
+                    : <p className="hint">가진 {b.group} 술이 없어요. 술장에서 추가하면 여기에 나와요.</p>}
                   {b.note && <p className="hint">{b.note}</p>}
                   {b.recipeId && (
                     <div className="btnrow">
@@ -108,10 +108,10 @@ export function IngredientBrowser() {
     const subs = (subMap.get(id) ?? []).map((sid) => referenceRepo.ingredientById(sid)?.name).filter(Boolean) as string[];
     const mine = bottles.filter((b) => b.ingredientIds.includes(id));
     const lines = [
-      `${category} · 레시피 ${usage}회 사용 · ${heldIds.has(id) ? '보유 중' : '미보유'}`,
+      `${category} · 레시피 ${usage}회 사용 · ${heldIds.has(id) ? '가지고 있어요' : '없어요'}`,
       mine.length ? `내 술: ${mine.map((b) => `${b.name}${b.abv ? ` (${b.abv})` : ''}`).join(', ')}` : '',
       subs.length ? `대체 가능: ${subs.join(', ')}` : '',
-      uses.length ? `쓰이는 레시피: ${uses.slice(0, 12).join(', ')}${uses.length > 12 ? ` 외 ${uses.length - 12}종` : ''}` : '이 재료를 쓰는 레시피가 없습니다.',
+      uses.length ? `쓰이는 레시피: ${uses.slice(0, 12).join(', ')}${uses.length > 12 ? ` 외 ${uses.length - 12}종` : ''}` : '이 재료를 쓰는 레시피가 없어요.',
     ].filter(Boolean);
     showTerm(name, lines.join('\n\n'));
   };
