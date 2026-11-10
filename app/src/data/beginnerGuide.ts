@@ -5,6 +5,7 @@
  *  - 마시는 법 · 첫 병 · 도구 · 보관: '첫 단계_GPT.docx'(2026-10-30 조사)와
  *    '첫 단계 가이드 검토 2차 v2'(2026-11-02)의 "앱에 들어갈 최종 목록".
  *    검토에서 근거가 부족하다고 정한 것(도수 범위, 니트 분량, "먼저 갖출 도구 3개")은 넣지 않았다.
+ *  - '물 몇 방울'은 2026-11-10 에 따로 찾아 넣었다(Douglas Laing 원문 확인. 논문은 오해 10번 검토본의 인용을 따랐다).
  *  - 오해 12선: '위스키·칵테일 입문자가 자주 믿는 오해 12선 (검토 반영 v2)'.
  * 건강 안내는 설정의 '건강한 음주 안내'에 따로 있어 여기에는 두지 않는다.
  */
@@ -34,10 +35,13 @@ const iba = (name: string, slug: string): GuideSource => ({ label: `IBA ${name}`
 export const GUIDE_CHAPTERS: readonly GuideChapter[] = [
   {
     id: 'drink', group: 'whisky', title: '위스키 마시는 법',
-    intro: '같은 위스키도 마시는 방법에 따라 느낌이 달라요. 제조사가 안내하는 네 가지예요.',
+    intro: '같은 위스키도 마시는 방법에 따라 느낌이 달라요. 많이 쓰는 다섯 가지예요.',
     cards: [
       { title: '니트 (스트레이트)', body: ['잔에 위스키만 따라요. 물과 얼음을 섞지 않아요.', '위스키 자체의 향과 여운을 살펴보는 방법이에요. 마실 물을 옆에 따로 준비해요.'],
         sources: [SUNTORY_FAQ, { label: 'Suntory 스트레이트 안내', url: 'https://www.suntory.co.jp/whisky/beginner/drink/straight.html?fromid=faq_thumb' }] },
+      { title: '물 몇 방울 (워터드롭)', body: ['니트로 따른 위스키에 물을 몇 방울만 넣어요.', '알코올 자극이 부드러워지고 숨어 있던 향과 맛이 드러나요. 도수 46% 이상이거나 캐스크 스트렝스인 위스키에서 차이가 커요.'],
+        sources: [{ label: 'Douglas Laing, Should You Add Water to Whisky?', url: 'https://www.douglaslaing.com/blogs/news/should-you-add-water-to-whisky-a-beginner-s-guide-to-tasting-water-and-glassware' },
+          { label: 'Karlsson & Friedman, Scientific Reports 7, 6489 (2017)', url: 'https://www.nature.com/articles/s41598-017-06423-5' }] },
       { title: '온더록', body: ['잔에 큰 얼음 하나를 넣고 위스키를 따른 뒤 바 스푼으로 가볍게 저어요.', '차갑게 마시는 방법이에요. 얼음이 녹으면서 조금씩 묽어져요.'],
         sources: [SUNTORY_FAQ, { label: 'Suntory 온더록 안내', url: 'https://www.suntory.co.jp/whisky/beginner/drink/rocks.html?fromid=faq_thumb' }] },
       { title: '미즈와리 (물 타기)', body: ['위스키 1에 물 2~2.5를 섞어요.'],
