@@ -46,6 +46,16 @@ function reelPool(all: RecommendationResult[], mode: RecommendMode): Recommendat
   return mode === 'whisky' ? ok.slice(0, POOL) : diversePool(ok, POOL);
 }
 
+/** 한 잔 고르기의 종류 필터 */
+type Kind = 'all' | 'cocktail' | 'whisky';
+const KINDS: { v: Kind; label: string }[] = [
+  { v: 'all', label: '전체' },
+  { v: 'cocktail', label: '칵테일' },
+  { v: 'whisky', label: '위스키 한 잔' },
+];
+/** 맛 필터 — 칵테일에만 적용된다. 위스키는 종류 필터로 옮겼다 */
+const TASTES = MODES.filter((m) => m.v !== 'whisky').map((m) => (m.v === 'available' ? { ...m, label: '맛 전체' } : m));
+
 type Way = 'group' | 'purchase' | 'clearstock';
 const WAYS: { v: Way; label: string; hint: string }[] = [
   { v: 'group', label: '함께 마실 사람', hint: '여러 명의 취향을 함께 봐요.' },
@@ -82,7 +92,18 @@ export function TodayPage() {
   const { openCocktail, openLog, goTab, goLogs, openGuide } = useUI();
   const logs = useLogs();
   const [mode, setMode] = useState<RecommendMode>('available');
-  const picks = useMemo(() => reelPool(whatToDrink(ctx, mode, 80), mode), [ctx, mode]);
+  const [kind, setKind] = useState<Kind>('all');
+  const picks = useMemo(() => {
+    if (kind === 'whisky') return reelPool(whatToDrink(ctx, 'whisky', 80), 'whisky');
+    const all = whatToDrink(ctx, mode, 80);
+    return reelPool(kind === 'cocktail' ? all.filter((r) => r.kind === 'cocktail') : all, mode);
+  }, [ctx, mode, kind]);
+  const filters = (
+    <div className="pickfilters">
+      <ChipRow value={kind} options={KINDS} onChange={setKind} />
+      {kind !== 'whisky' && <ChipRow value={mode} options={TASTES} onChange={setMode} />}
+    </div>
+  );
   const [picked, setPicked] = useState<RecommendationResult | null>(null);
   const onPicked = useCallback((r: RecommendationResult | null) => setPicked(r), []);
   const recent = logs.slice(0, 3);
@@ -107,13 +128,13 @@ export function TodayPage() {
       <section className="today">
         <h2 className="ask">오늘 뭐 마실까요?</h2>
         <p className="asksub">
-          {picks.length ? `지금 술장으로 만들 수 있는 ${picks.length}잔 중에서 골라요` : '고를 수 있는 잔이 아직 없어요'}
+          {picks.length ? `${kind === 'whisky' ? '가진 위스키' : '지금 술장으로 만들 수 있는'} ${picks.length}잔 중에서 골라요` : '고를 수 있는 잔이 아직 없어요'}
         </p>
         <StarterNotice />
 
         {picks.length > 0 ? (
           <TodayReel picks={picks} onPicked={onPicked}
-            between={<ChipRow value={mode} options={MODES} onChange={setMode} />}>
+            between={filters}>
             {(again) => picked && (
               <div className="picked">
                 <h3>{picked.name}</h3>
@@ -136,12 +157,14 @@ export function TodayPage() {
           </TodayReel>
         ) : (
           <>
-          <ChipRow value={mode} options={MODES} onChange={setMode} />
+          {filters}
           <div className="empty">
-            {mode === 'available'
-              ? <>아직 넣은 술과 재료로는 만들 수 있는 잔이 없어요. 가진 것을 넣으면 여기서 골라 드려요.</>
-              : <>이 맛으로 지금 만들 수 있는 잔이 없어요. 다른 칩을 골라 보세요.</>}
-            {mode === 'available' && <StartButtons />}
+            {kind === 'whisky'
+              ? <>아직 넣은 위스키가 없어요. 가진 위스키를 넣으면 여기서 골라 드려요.</>
+              : mode === 'available'
+                ? <>아직 넣은 술과 재료로는 만들 수 있는 잔이 없어요. 가진 것을 넣으면 여기서 골라 드려요.</>
+                : <>이 맛으로 지금 만들 수 있는 잔이 없어요. 다른 칩을 골라 보세요.</>}
+            {(kind === 'whisky' || mode === 'available') && <StartButtons />}
           </div>
           </>
         )}

@@ -586,3 +586,6 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 .guidehint{display:flex;align-items:center;gap:var(--s1);background:var(--panel);border-radius:var(--r);margin:0 0 var(--s3);padding:0 var(--s1) 0 var(--s3)}
 .guidehint .go{flex:1;text-align:left;min-height:44px;font-size:14px;color:var(--ink)}
 .guidehint .x{width:44px;height:44px;font-size:20px;color:var(--mute)}
+
+/* 한 잔 고르기 필터: 종류 줄과 맛 줄 */
+.pickfilters{display:grid;gap:var(--s1)}
