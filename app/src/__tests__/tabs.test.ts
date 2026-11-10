@@ -90,3 +90,21 @@ describe('입문 안내 카드', () => {
     for (const id of Object.values(GUIDE_FOR_TAB)) expect(GUIDE_CHAPTERS.some((c) => c.id === id)).toBe(true);
   });
 });
+
+import { GLOSSARY } from '../data/glossary';
+import { CLASS_FILTERS } from '../data/whiskyClass';
+describe('용어 풀이', () => {
+  it('모두 해요체 문장이고 화살표나 줄임 표기가 없다', () => {
+    for (const [k, v] of Object.entries(GLOSSARY)) {
+      expect(v, k).toMatch(/요\.$/);
+      expect(v, k).not.toMatch(/→|\+|니다/);
+    }
+  });
+  it('위스키 목록의 분류 칩에는 모두 풀이가 있다', () => {
+    for (const c of CLASS_FILTERS) expect(GLOSSARY[c], c).toBeTruthy();
+  });
+  it('지역 풀이는 맛을 정하지 않는다', () => {
+    expect(GLOSSARY['아일라']).toContain('피트를 쓰지 않는 증류소도');
+    expect(GLOSSARY['블렌디드']).toContain('품질 등급을 뜻하지 않아요');
+  });
+});

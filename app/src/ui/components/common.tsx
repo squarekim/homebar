@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode, type SyntheticEvent } from 'react';
 import { type MethodKey, METHOD_LABELS_KO, type AvailabilityStatus, type FlavorVector, FLAVOR_AXES, FLAVOR_LABELS_KO, type RecommendationResult, type MakerNote, type BottleBadge, type WhiskyClass, type DrinkLog, SERVING_LABELS_KO } from '../../models/types';
 import { STATUS_LABEL_KO, STATUS_SENTENCE_KO } from '../../services/availabilityService';
-import { lookupTerm, normalizeTerm } from '../../data/glossary';
+import { GLOSSARY, lookupTerm, normalizeTerm } from '../../data/glossary';
 import { useUI } from '../UIContext';
 import { IS_PUBLIC, STARTER_INVENTORY } from '../../config';
 import { IconBuild, IconShake, IconStir, IconMuddle, IconBlend, IconLayer, IconSwizzle, IconFloat } from './icons';
@@ -77,7 +77,7 @@ export function WhiskyClassTags({ cls }: { cls?: WhiskyClass }) {
       <Term label={cls.origin} className="or" />
       <Term label={cls.type} />
       {cls.region && <Term label={cls.region} term={stripParen(cls.region)} />}
-      {cls.cask.map((c, i) => <Term key={'k' + i} label={`${c} 캐스크`} term={c} />)}
+      {cls.cask.map((c, i) => <Term key={'k' + i} label={`${c} 캐스크`} term={GLOSSARY[`${c} 캐스크`] ? `${c} 캐스크` : c} />)}
       {cls.character.map((c, i) => <Term key={'c' + i} label={c} className="ch" />)}
     </div>
   );

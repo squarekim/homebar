@@ -25,6 +25,7 @@ import { FlavorBars, MakerNoteView, BottleBadges, Term, ChipRow, SearchBox, allC
 import { BottleMark } from '../components/Mark';
 import { normalize, hits } from '../listUtils';
 import { type Bottle, type WhiskySpec } from '../../models/types';
+import { lookupTerm } from '../../data/glossary';
 
 const CLASS_CHIPS = allChips(CLASS_FILTERS, '분류 전체');
 
@@ -179,6 +180,7 @@ export function WhiskyPage() {
       <ChipRow value={view} options={VIEWS} onChange={setView} />
       <SearchBox value={q} onChange={setQ} placeholder="이름·분류(셰리/피트/싱글몰트…) 검색" />
       <ChipRow value={cls} options={CLASS_CHIPS} onChange={setCls} />
+      {cls !== 'all' && lookupTerm(cls) && <p className="hint"><b>{cls}</b> {lookupTerm(cls)}</p>}
 
       <div className="split">
         <div className="listpane">

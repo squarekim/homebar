@@ -13,7 +13,7 @@ import { evaluateCocktail, STATUS_LEAD_KO } from '../../services/availabilitySer
 import { flavorWords } from '../../services/flavorService';
 import { FlavorBars, MethodIcon, Term } from './common';
 import { GlassArt } from './GlassArt';
-import { METHOD_PLAIN_KO, type Cocktail, type RecommendationResult } from '../../models/types';
+import { METHOD_PLAIN_KO, METHOD_LABELS_KO, type Cocktail, type RecommendationResult } from '../../models/types';
 
 /** IBA 분류를 풀어 쓴 말. 공식 목록에 없는 잔은 적지 않는다 */
 const IBA_PLAIN: Record<string, string> = { 현행IBA: 'IBA 공식 칵테일', 구IBA: '예전 IBA 공식 칵테일' };
@@ -165,7 +165,7 @@ export function CocktailDetail({ id }: { id: string }) {
             <div className="clstags">
               <Term label={ck.base} />
               <Term label={ck.iba} />
-              {ck.methodKeys.map((k) => <Term key={k} label={k} />)}
+              {ck.methodKeys.map((k) => <Term key={k} label={METHOD_LABELS_KO[k]} />)}
             </div>
             {(ck.sourceName || ck.url) && (
               <>
