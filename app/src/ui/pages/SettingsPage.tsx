@@ -1,5 +1,5 @@
 /**
- * SettingsPage — '설정'. 취향·그룹 인원·백업을 모았다.
+ * SettingsPage — '설정'. 화면·음주 안내·백업을 모았다. 취향과 함께 마시는 사람은 취향 화면이 가져다 쓴다.
  * 취향은 좋아하는 맛 몇 개를 고르는 것으로 시작하고, 14축 슬라이더는 '세부 취향 조정'으로 접어 둔다.
  * 새 학습 알고리즘은 넣지 않는다 — 기존 값 편집과 기록 기반 재계산 그대로다.
  */
@@ -22,8 +22,6 @@ export function SettingsPage() {
   return (
     <>
       <h2 className="pagetitle">설정</h2>
-      <TasteSetup />
-      <PeopleManager />
       <ScreenSetup />
       <DrinkingGuide />
       <BackupRestore />
@@ -31,7 +29,7 @@ export function SettingsPage() {
   );
 }
 
-function TasteSetup() {
+export function TasteSetup() {
   const me = useMe();
   const { toast } = useUI();
   const [draft, setDraft] = useState<FlavorVector | null>(null);
@@ -49,7 +47,7 @@ function TasteSetup() {
       <div className="sechead">좋아하는 맛</div>
       <p className="hint">
         {isNeutralTaste(vector)
-          ? '아직 고르지 않았습니다. 고르기 전에는 보유 재료만 보고 추천합니다.'
+          ? '아직 고르지 않았어요. 고르기 전에는 가진 재료만 보고 골라 드려요.'
           : `지금 기준: ${liked.map((a) => FLAVOR_LABELS_KO[a]).join(' · ') || '세부 조정으로 설정됨'}`}
       </p>
       <div className="controls">
@@ -85,7 +83,7 @@ function TasteSetup() {
   );
 }
 
-function PeopleManager() {
+export function PeopleManager() {
   const profiles = useTasteProfiles();
   const { toast } = useUI();
   const [name, setName] = useState('');

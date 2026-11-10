@@ -102,7 +102,9 @@ export function CocktailDetail({ id }: { id: string }) {
         <span className="mi">{ck.method}</span>
         <span className="mi">{ck.iba}</span>
       </div>
-      <div className={`state s-${ev.status}`}>{STATUS_LEAD_KO[ev.status]}</div>
+      <div className={`state s-${ev.status}`}>
+        {STATUS_LEAD_KO[ev.status]}{ev.lack.length > 0 && ` · 없는 재료: ${ev.lack.join(', ')}`}
+      </div>
 
       {/* ③ 필요한 재료와 용량 */}
       <div className="sechead in">재료</div>
@@ -119,6 +121,7 @@ export function CocktailDetail({ id }: { id: string }) {
                 {swap ? <s>{ing.ingredientName}</s> : ing.ingredientName}
                 {swap && <span className="swap">→ {swap}{ro(swap)} 대체</span>}
                 {!swap && ing.substitute && <span className="tag">대체 조주</span>}
+                {off && <span className="lackmark">없음</span>}
                 {ing.optional && <span className="opt">선택</span>}
               </span>
               <span className="amt">{amountOf(ing.raw, ing.ingredientName) || '적당량'}</span>

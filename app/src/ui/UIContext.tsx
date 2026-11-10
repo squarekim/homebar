@@ -1,13 +1,15 @@
 /**
  * UIContext — 화면 전환과 겹쳐 뜨는 것(기록·술 추가·용어)을 한곳에서 관리한다.
- * 주요 메뉴는 오늘 / 칵테일 / 위스키 / 내 술장 / 기록이고, 설정은 헤더에서 들어간다.
+ * 주요 메뉴는 메인 / 칵테일 / 위스키 / 술장 / 취향이고, 설정은 헤더와 취향 화면에서 들어간다.
  * 칵테일·병 상세는 '어느 탭의 무엇이 선택됐는가'로 표현한다 —
  * 그래야 PC 에서 목록 옆에 상세를 붙이고, 모바일에서 전체 화면으로 띄우는 걸 같은 상태로 처리할 수 있다.
  */
 import { createContext, useContext, useState, type ReactNode, useCallback } from 'react';
 import { type DrinkType, type ServingStyle, type RecommendationResult } from '../models/types';
 
-export type Tab = 'today' | 'cocktails' | 'whisky' | 'cellar' | 'notes' | 'settings' | 'starter';
+export type Tab = 'today' | 'cocktails' | 'whisky' | 'cellar' | 'taste' | 'settings' | 'starter';
+
+export type CellarSub = 'bottles' | 'stock' | 'logs';
 
 export interface LogPrefill {
   drinkId: string;
@@ -21,6 +23,11 @@ export interface TermInfo { title: string; body: string; }
 interface UIState {
   tab: Tab;
   goTab: (tab: Tab) => void;
+  /** 술장 안에서 보고 있는 화면 — 보유 술 · 재료 재고 · 마신 기록 */
+  cellarSub: CellarSub;
+  setCellarSub: (s: CellarSub) => void;
+  /** 술장의 마신 기록으로 바로 간다 */
+  goLogs: () => void;
   /** 칵테일 상세 열기 — 어느 화면에서 눌러도 칵테일 탭의 상세로 간다.
    *  추천에서 들어왔다면 그 추천 결과를 함께 넘겨 상세의 '추천 이유'에 쓴다. */
   openCocktail: (id: string, rec?: RecommendationResult) => void;
@@ -50,6 +57,7 @@ const Ctx = createContext<UIState | null>(null);
 
 export function UIProvider({ children }: { children: ReactNode }) {
   const [tab, setTab] = useState<Tab>('today');
+  const [cellarSub, setCellarSub] = useState<CellarSub>('bottles');
   const [cocktailId, setCocktailId] = useState<string | null>(null);
   const [lastRec, setLastRec] = useState<RecommendationResult | null>(null);
   const [bottleId, setBottleId] = useState<string | null>(null);
@@ -60,6 +68,7 @@ export function UIProvider({ children }: { children: ReactNode }) {
   const [addQuery, setAddQuery] = useState('');
 
   const goTab = useCallback((t: Tab) => { setTab(t); window.scrollTo(0, 0); }, []);
+  const goLogs = useCallback(() => { setCellarSub('logs'); setTab('cellar'); window.scrollTo(0, 0); }, []);
   const openCocktail = useCallback((id: string, rec?: RecommendationResult) => {
     setCocktailId(id);
     setLastRec(rec ?? null);
@@ -79,7 +88,7 @@ export function UIProvider({ children }: { children: ReactNode }) {
 
   return (
     <Ctx.Provider value={{
-      tab, goTab,
+      tab, goTab, cellarSub, setCellarSub, goLogs,
       cocktailId, lastRec, openCocktail, closeCocktail: () => setCocktailId(null),
       bottleId, openBottle, closeBottle: () => setBottleId(null),
       logPrefill, openLog: setLogPrefill, closeLog: () => setLogPrefill(null),

@@ -1,6 +1,6 @@
 /**
- * TodayPage — '오늘'.
- * 샘플 안내 → 오늘의 잔 뽑기(레일) → 고른 잔 → 다르게 골라보기 → 최근 기록 순서다.
+ * TodayPage — '메인'. 오늘의 잔과 입문을 한 화면에 둔다.
+ * 샘플 안내 → 오늘의 잔 뽑기 → 고른 잔 → 처음이라면(입문) → 다르게 골라보기 → 최근 기록 순서다.
  * 첫 화면이 답해야 할 것은 넷뿐이다: 무엇을 마실까 · 무슨 맛인가 · 지금 만들 수 있나 · 뭘 누르면 되나.
  * 뽑기 후보는 지금 만들 수 있는 잔뿐이다(칩으로 좁혀도 같다). 점수는 여기서 말하지 않는다.
  */
@@ -77,7 +77,7 @@ function OtherWays() {
 
 export function TodayPage() {
   const ctx = useRecommendContext();
-  const { openCocktail, openLog, goTab } = useUI();
+  const { openCocktail, openLog, goTab, goLogs } = useUI();
   const logs = useLogs();
   const [mode, setMode] = useState<RecommendMode>('available');
   const picks = useMemo(() => reelPool(whatToDrink(ctx, mode, 40)), [ctx, mode]);
@@ -98,7 +98,7 @@ export function TodayPage() {
       {IS_BETA && (
         <div className="sample">
           <span><b>샘플 술장</b>으로 둘러보는 중이에요. 바꾼 내용은 이 브라우저에만 저장돼요.</span>
-          <button className="btn sm" onClick={() => goTab('cellar')}>내 술장 설정</button>
+          <button className="btn sm" onClick={() => goTab('cellar')}>술장 채우기</button>
         </div>
       )}
 
@@ -136,7 +136,7 @@ export function TodayPage() {
           <ChipRow value={mode} options={MODES} onChange={setMode} />
           <div className="empty">
             {mode === 'available'
-              ? <>지금 술장으로 만들 수 있는 잔이 없어요. 내 술장에서 가진 술과 재료를 넣으면 여기서 골라 드려요.</>
+              ? <>지금 술장으로 만들 수 있는 잔이 없어요. 술장에서 가진 술과 재료를 넣으면 여기서 골라 드려요.</>
               : <>이 맛으로 지금 만들 수 있는 잔이 없어요. 다른 칩을 골라 보세요.</>}
             <div className="btnrow center"><button className="btn primary" onClick={() => goTab('cellar')}>술장에 술 넣기</button></div>
           </div>
@@ -144,12 +144,22 @@ export function TodayPage() {
         )}
       </section>
 
-      {!ctx.hasTaste && (
-        <div className="sample">
-          <span><b>처음이라면</b> 평소 마시는 음료로 위스키와 칵테일을 골라 드려요.</span>
-          <button className="btn sm" onClick={() => goTab('starter')}>취향 찾기</button>
-        </div>
-      )}
+      {/* 입문 — 처음 온 사람이 할 수 있는 세 가지. 취향을 이미 정했으면 문구만 바꾼다 */}
+      <div className="sechead">처음이라면</div>
+      <div className="starts">
+        <button onClick={() => goTab('starter')}>
+          <b>{ctx.hasTaste ? '취향 다시 찾기' : '취향 찾기'}</b>
+          <span>평소 마시는 음료를 고르면 맞는 위스키와 칵테일을 골라 드려요</span>
+        </button>
+        <button onClick={() => goTab('cellar')}>
+          <b>집에 있는 술 넣기</b>
+          <span>가진 술과 재료를 넣으면 지금 만들 수 있는 잔이 나와요</span>
+        </button>
+        <button onClick={() => goTab('settings')}>
+          <b>건강한 음주 안내</b>
+          <span>마시기 전에 알아 둘 것을 설정에 모아 두었어요</span>
+        </button>
+      </div>
 
       <OtherWays />
 
@@ -159,7 +169,7 @@ export function TodayPage() {
         : (
           <>
             {recent.map((l) => <LogCard key={l.id} log={l} />)}
-            <div className="btnrow"><button className="btn ghost" onClick={() => goTab('notes')}>기록 전체 보기</button></div>
+            <div className="btnrow"><button className="btn ghost" onClick={goLogs}>기록 전체 보기</button></div>
           </>
         )}
     </>

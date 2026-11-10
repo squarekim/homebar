@@ -1,12 +1,12 @@
 /**
- * CellarPage — '내 술장'. 무엇을 얼마나 갖고 있는지 관리하는 곳이다.
+ * CellarPage — '술장'. 무엇을 얼마나 갖고 있고 무엇을 마셨는지 보는 곳이다.
  *
  * 모든 화면 위에 붙어 있던 통계('정규·근사·불가·보유재료')를 여기로 옮겼다.
  * 개별 제품(병)과 표준 재료는 서로 다른 집계라 한 줄에 섞지 않고 나눠 적는다.
  * 제품 소개는 위스키 화면이 맡고, 여기서는 보유 수량·용량·잔량·재료 연결만 다룬다.
  */
 import { useMemo, useState } from 'react';
-import { useUI } from '../UIContext';
+import { useUI, type CellarSub } from '../UIContext';
 import { useBottles, useHeldIds, useSubMap, useInventory, inventoryRepo } from '../../hooks/useData';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { evaluateAll, tallyStatus } from '../../services/availabilityService';
@@ -18,12 +18,12 @@ import { ChipRow, ChipToggle, SearchBox, BottleBadges, type ChipOption } from '.
 import { normalize, hits, useGroupChips } from '../listUtils';
 import { IS_PUBLIC } from '../../config';
 import { type Bottle } from '../../models/types';
+import { LogList } from './NotesPage';
 
-type Sub = 'bottles' | 'stock';
-const SUBS: ChipOption<Sub>[] = [{ v: 'bottles', label: '보유 술' }, { v: 'stock', label: '재료 재고' }];
+const SUBS: ChipOption<CellarSub>[] = [{ v: 'bottles', label: '보유 술' }, { v: 'stock', label: '재료 재고' }, { v: 'logs', label: '마신 기록' }];
 
 export function CellarPage() {
-  const [sub, setSub] = useState<Sub>('bottles');
+  const { cellarSub: sub, setCellarSub: setSub } = useUI();
   const bottles = useBottles();
   const heldIds = useHeldIds();
   const subMap = useSubMap();
@@ -32,7 +32,7 @@ export function CellarPage() {
 
   return (
     <>
-      <h2 className="pagetitle">내 술장</h2>
+      <h2 className="pagetitle">술장</h2>
 
       {/* 두 가지 집계를 나눠 적는다 — 병 수와 재료 수는 다른 것이다 */}
       <div className="statline">
@@ -44,7 +44,7 @@ export function CellarPage() {
       </div>
 
       <ChipRow value={sub} onChange={setSub} options={SUBS} />
-      {sub === 'bottles' ? <BottleList bottles={bottles} /> : <StockManager />}
+      {sub === 'bottles' ? <BottleList bottles={bottles} /> : sub === 'stock' ? <StockManager /> : <LogList />}
     </>
   );
 }

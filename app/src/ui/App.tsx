@@ -1,6 +1,6 @@
 /**
  * App — 앱 셸.
- * 헤더(로고 · PC 메뉴 · 설정) + 본문 + 모바일 하단 메뉴 5개.
+ * 헤더(로고 · PC 메뉴 · 설정) + 본문 + 모바일 하단 메뉴 5개(메인 · 칵테일 · 위스키 · 술장 · 취향).
  * 상단에 늘 붙어 있던 통계 카드는 내 술장으로 옮겼다 — 모든 화면에서 본문과 경쟁하던 숫자다.
  * 전역 '+' 버튼도 없앴다. 술 추가는 내 술장에서, 기록은 상세와 기록 화면에서 한다.
  */
@@ -14,18 +14,18 @@ import { TodayPage } from './pages/TodayPage';
 import { CocktailsPage } from './pages/CocktailsPage';
 import { WhiskyPage } from './pages/WhiskyPage';
 import { CellarPage } from './pages/CellarPage';
-import { NotesPage } from './pages/NotesPage';
+import { TastePage } from './pages/TastePage';
 import { SettingsPage } from './pages/SettingsPage';
 import { StarterPage } from './pages/StarterPage';
-import { IconHome, IconMartini, IconWhisky, IconBottle, IconNote, IconGear, IconLogo } from './components/icons';
+import { IconHome, IconMartini, IconWhisky, IconBottle, IconProfile, IconGear, IconLogo } from './components/icons';
 import { IS_BETA } from '../config';
 
 const TABS: { id: Tab; label: string; ic: ReactNode }[] = [
-  { id: 'today', label: '오늘', ic: <IconHome /> },
+  { id: 'today', label: '메인', ic: <IconHome /> },
   { id: 'cocktails', label: '칵테일', ic: <IconMartini /> },
   { id: 'whisky', label: '위스키', ic: <IconWhisky /> },
-  { id: 'cellar', label: '내 술장', ic: <IconBottle /> },
-  { id: 'notes', label: '기록', ic: <IconNote /> },
+  { id: 'cellar', label: '술장', ic: <IconBottle /> },
+  { id: 'taste', label: '취향', ic: <IconProfile /> },
 ];
 
 function Shell() {
@@ -72,7 +72,7 @@ function Shell() {
         {tab === 'cocktails' && <CocktailsPage />}
         {tab === 'whisky' && <WhiskyPage />}
         {tab === 'cellar' && <CellarPage />}
-        {tab === 'notes' && <NotesPage />}
+        {tab === 'taste' && <TastePage />}
         {tab === 'settings' && <SettingsPage />}
         {tab === 'starter' && <StarterPage />}
         <div className="tailspace" />

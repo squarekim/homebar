@@ -5,7 +5,10 @@
  */
 import { lazy, Suspense, useMemo, useState } from 'react';
 import { useUI } from '../UIContext';
-import { useWhiskies, useBottles, useBottleNotes } from '../../hooks/useData';
+import { useWhiskies, useBottles, useBottleNotes, useHeldIds, useSubMap } from '../../hooks/useData';
+import { cocktailsForBottle } from '../../services/pairingService';
+import { STATUS_LEAD_KO } from '../../services/availabilityService';
+import { CocktailMark } from '../components/Mark';
 import { bottleNoteRepo } from '../../repositories/bottleNoteRepo';
 import { flavorWords } from '../../services/flavorService';
 import { computeCoverage, computeRegionMaturityMatrix, simulateAdd, MATRIX_TIERS } from '../../services/whiskyDiversityService';
@@ -18,12 +21,16 @@ import { DistilleryCard } from '../components/DistilleryCard';
 /** 세계 지도는 데이터·윤곽이 커서(약 320KB) 열 때 불러온다 */
 const DistilleryMapView = lazy(() => import('../components/DistilleryMap').then((m) => ({ default: m.DistilleryMapView })));
 import { bottleKindLabel } from '../../data/bottleIngredients';
-import { FlavorBars, MakerNoteView, BottleBadges, Term, ChipRow, SearchBox, allChips } from '../components/common';
+import { FlavorBars, MakerNoteView, BottleBadges, Term, ChipRow, SearchBox, allChips, type ChipOption } from '../components/common';
 import { BottleMark } from '../components/Mark';
 import { normalize, hits } from '../listUtils';
 import { type Bottle, type WhiskySpec } from '../../models/types';
 
 const CLASS_CHIPS = allChips(CLASS_FILTERS, '분류 전체');
+
+/** 위스키 탭 안의 세 화면 */
+type View = 'list' | 'map' | 'table';
+const VIEWS: ChipOption<View>[] = [{ v: 'list', label: '내 위스키' }, { v: 'map', label: '증류소 지도' }, { v: 'table', label: '위스키 분류 표' }];
 
 /** 핵심 맛 — 향미 상위 두 축과 분류 캐릭터(피티드 등) */
 function character(w: Bottle): string {
@@ -75,8 +82,11 @@ function PersonalNote({ bottleId, initial, onSaved }: { bottleId: string; initia
 }
 
 function WhiskyDetail({ bottle: w }: { bottle: Bottle }) {
-  const { openLog, toast } = useUI();
+  const { openLog, toast, openCocktail } = useUI();
   const notes = useBottleNotes();
+  const heldIds = useHeldIds();
+  const subMap = useSubMap();
+  const pairs = useMemo(() => cocktailsForBottle(w, heldIds, subMap), [w, heldIds, subMap]);
   const [more, setMore] = useState(false);
   const spec = specFor(w);
   const distillery = distilleryOfProduct(w.productId);
@@ -95,6 +105,24 @@ function WhiskyDetail({ bottle: w }: { bottle: Bottle }) {
 
       <div className="sechead in">제조사 공식 노트</div>
       <MakerNoteView note={w.makerNote} empty="이 제품은 확인된 제조사 공식 노트가 없습니다." />
+
+      {pairs.length > 0 && (
+        <>
+          <div className="sechead in">이 위스키로 만들면 좋아요</div>
+          <div className="rowlist">
+            {pairs.map(({ cocktail: c, status }) => (
+              <button className="rowitem" key={c.id} onClick={() => openCocktail(c.id)}>
+                <CocktailMark base={c.base} cocktailId={c.id} size="sm" />
+                <div className="body">
+                  <span className="nm">{c.name}</span>
+                  <div className="taste">{flavorWords(c.flavor).join(' · ')}</div>
+                  <div className="foot"><span className={`state s-${status}`}>{STATUS_LEAD_KO[status]}</span></div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
 
       <div className="sechead in">내 메모 <small className="sub">공식 노트와 별개로 저장됩니다</small></div>
       <PersonalNote bottleId={w.id} initial={notes.get(w.id) ?? ''} onSaved={() => toast('메모 저장')} />
@@ -129,8 +157,7 @@ export function WhiskyPage() {
   const allBottles = useBottles();
   const [q, setQ] = useState('');
   const [cls, setCls] = useState('all');
-  const [gapView, setGapView] = useState(false);
-  const [mapView, setMapView] = useState(false);
+  const [view, setView] = useState<View>('list');
 
   const rows = useMemo(() => {
     const t = normalize(q);
@@ -143,18 +170,19 @@ export function WhiskyPage() {
 
   const selected = allBottles.find((b) => b.id === bottleId);
 
-  if (gapView) return <GapView onBack={() => setGapView(false)} />;
-  if (mapView) return <Suspense fallback={<div className="hint">지도를 불러오는 중이에요</div>}><DistilleryMapView onBack={() => setMapView(false)} /></Suspense>;
+  if (view === 'table') return <GapView onBack={() => setView('list')} />;
+  if (view === 'map') return <Suspense fallback={<div className="hint">지도를 불러오는 중이에요</div>}><DistilleryMapView onBack={() => setView('list')} /></Suspense>;
 
   return (
     <>
       <h2 className="pagetitle">위스키<span className="sub">보유 {whiskies.length}종 · 맛과 공식 노트로 비교</span></h2>
+      <ChipRow value={view} options={VIEWS} onChange={setView} />
       <SearchBox value={q} onChange={setQ} placeholder="이름·분류(셰리/피트/싱글몰트…) 검색" />
       <ChipRow value={cls} options={CLASS_CHIPS} onChange={setCls} />
 
       <div className="split">
         <div className="listpane">
-          <div className="hint">{rows.length}종 · <button className="lnk" onClick={() => setMapView(true)}>증류소 지도</button> · <button className="lnk" onClick={() => setGapView(true)}>축별 결손 보기</button></div>
+          <div className="hint">{rows.length}종</div>
           {rows.length === 0 && <div className="empty">조건에 맞는 위스키가 없습니다.</div>}
           <div className="rowlist">
             {rows.map((w) => (
@@ -191,7 +219,7 @@ export function WhiskyPage() {
   );
 }
 
-/** 축별 결손 — 보유 위스키에서 실시간 계산한 다양성 지도 (기존 기능 유지) */
+/** 위스키 분류 표 — 보유 위스키를 지역·숙성·분류별로 놓고, 아직 없는 칸을 보여 준다 */
 function GapView({ onBack }: { onBack: () => void }) {
   const whiskies = useWhiskies();
   const coverage = useMemo(() => computeCoverage(whiskies), [whiskies]);
@@ -203,7 +231,7 @@ function GapView({ onBack }: { onBack: () => void }) {
 
   return (
     <>
-      <h2 className="pagetitle">축별 결손<span className="sub">보유 위스키에서 실시간 계산 · 결손 {totalGaps}</span></h2>
+      <h2 className="pagetitle">위스키 분류 표<span className="sub">가진 위스키로 채운 표 · 빈 칸 {totalGaps}</span></h2>
       <div className="btnrow"><button className="btn ghost" onClick={onBack}>← 위스키 목록으로</button></div>
 
       <div className="sechead">스카치 싱글몰트 · 지역 × 숙성</div>
@@ -216,7 +244,7 @@ function GapView({ onBack }: { onBack: () => void }) {
                 <td style={{ whiteSpace: 'nowrap' }}><Term label={row.region} /></td>
                 {MATRIX_TIERS.map((t) => {
                   const list = row.cells[t];
-                  return <td key={t}>{list.length === 0 ? <span className="tag-na">결손</span> : list.map((n, i) => <div key={i} className="tag-ok">{n}</div>)}</td>;
+                  return <td key={t}>{list.length === 0 ? <span className="tag-na">없음</span> : list.map((n, i) => <div key={i} className="tag-ok">{n}</div>)}</td>;
                 })}
               </tr>
             ))}
@@ -225,20 +253,20 @@ function GapView({ onBack }: { onBack: () => void }) {
       </div>
       <p className="hint">숙성: 엔트리 ≤11년 · 스탠다드 12–17년 · 고숙성 18년+ (병 이름의 연수로 판정, NAS 제외).</p>
 
-      <div className="sechead">축별 커버리지</div>
+      <div className="sechead">분류별 보유</div>
       {coverage.map((fam) => (
         <div className="grpbox" key={fam.key}>
-          <h4>{fam.label} · 결손 {fam.gapCount}</h4>
+          <h4>{fam.label} · 빈 칸 {fam.gapCount}</h4>
           <div className="clstags">
             {fam.cells.map((c) => (
-              <Term key={c.value} term={c.value} label={`${c.value}${c.gap ? ' · 결손' : ` · ${c.count}`}`} className={c.gap ? 'gap' : 'have'} />
+              <Term key={c.value} term={c.value} label={`${c.value}${c.gap ? ' · 없음' : ` · ${c.count}`}`} className={c.gap ? 'gap' : 'have'} />
             ))}
           </div>
         </div>
       ))}
 
       <div className="sechead">구매 시뮬레이터</div>
-      <div className="hint">후보를 더했을 때 겹치는 축과 새로 열리는 축을 계산합니다.</div>
+      <div className="hint">후보를 더했을 때 새로 채워지는 칸을 계산해요.</div>
       <div className="rowlist">
         {sims.map(({ c, sim }) => (
           <div className="rowitem" key={c.id}>
@@ -246,7 +274,7 @@ function GapView({ onBack }: { onBack: () => void }) {
               <span className="nm">{c.name}</span>
               <div className="taste">{c.note}</div>
               <div className="foot">
-                <span className={sim.gain > 0 ? 'state s-READY' : 'mi'}>{sim.gain > 0 ? `새 축 ${sim.gain}개` : '겹침만'}</span>
+                <span className={sim.gain > 0 ? 'state s-READY' : 'mi'}>{sim.gain > 0 ? `새 칸 ${sim.gain}개` : '겹침만'}</span>
                 {sim.newlyFilled.slice(0, 3).map((h, i) => <span className="mi" key={i}>{h.value}</span>)}
               </div>
             </div>

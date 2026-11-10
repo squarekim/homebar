@@ -531,3 +531,16 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 .firstrun .steps{display:block;text-align:center;font-size:13px;color:var(--mute);margin-top:var(--s2)}
 .firstrun .skip{position:absolute;right:12px;top:10px;min-height:44px;padding:0 10px;font-size:14px;color:var(--mute)}
 .firstrun .pickbtns{margin-top:0}
+/* 메인의 입문 묶음 — 처음 온 사람이 고를 세 가지 */
+.starts{display:grid;gap:var(--s1)}
+@media (min-width:700px){.starts{grid-template-columns:repeat(3,1fr)}}
+.starts button{display:flex;flex-direction:column;gap:4px;text-align:left;padding:var(--s2) var(--s3);border-radius:var(--r);
+  background:var(--panel);color:var(--mute);font-size:14px;line-height:1.45;word-break:keep-all}
+.starts button b{color:var(--ink);font-weight:600;font-size:15px}
+.starts button:hover{background:var(--raise)}
+/* 취향 화면의 맨 위 카드 */
+.tastecard{background:var(--panel);border-radius:var(--r);padding:var(--s3);margin-top:var(--s2)}
+.tastecard small{display:block;font-size:13px;color:var(--mute)}
+.tastecard b{display:block;font-family:var(--display);font-weight:700;font-size:22px;line-height:1.35;margin-top:4px;word-break:keep-all}
+.tastecard p{font-size:14px;color:var(--mute);margin:var(--s1) 0 0}
+.recipe .ing .lackmark{font-size:12px;font-weight:600;color:var(--sub);margin-left:6px}

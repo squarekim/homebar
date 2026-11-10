@@ -63,6 +63,15 @@ export function CocktailsPage() {
       .sort(byReadyThenName((x) => x.e.status, (x) => x.c.name));
   }, [q, ready, base, iba, status, heldIds, subMap]);
 
+  // 만들 수 있는 잔과 재료가 모자란 잔을 두 묶음으로 나눠 보여 준다
+  const groups = useMemo(() => {
+    const can = rows.filter((x) => x.e.status === 'READY' || x.e.status === 'SUBSTITUTE');
+    return [
+      { title: '지금 만들 수 있어요', rows: can },
+      { title: '재료가 부족해요', rows: rows.filter((x) => !can.includes(x)) },
+    ];
+  }, [rows]);
+
   const selected = cocktailId ? referenceRepo.cocktailById(cocktailId) : undefined;
 
   if (view !== 'recipe') {
@@ -103,8 +112,11 @@ export function CocktailsPage() {
         <div className="listpane">
           <div className="hint">{rows.length}종 · <button className="lnk" onClick={() => setView('simple')}>간단 조합</button> · <button className="lnk" onClick={() => setView('ingredient')}>재료 목록</button></div>
           {rows.length === 0 && <div className="empty">조건에 맞는 레시피가 없습니다. 검색어나 필터를 지워보세요.</div>}
-          <div className="rowlist">
-            {rows.map(({ c, e }) => (
+          {groups.map((g) => g.rows.length > 0 && (
+            <div key={g.title}>
+              <div className="sechead sm">{g.title} <small className="sub">{g.rows.length}</small></div>
+              <div className="rowlist">
+                {g.rows.map(({ c, e }) => (
               <button className="rowitem" key={c.id} aria-current={cocktailId === c.id}
                 onClick={() => openCocktail(c.id)}>
                 <CocktailMark base={c.base} cocktailId={c.id} size="sm" />
@@ -117,8 +129,10 @@ export function CocktailsPage() {
                   <div className="foot"><StateLine status={e.status} lack={e.lack} /></div>
                 </div>
               </button>
-            ))}
-          </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
 
         <div className="detailpane">
