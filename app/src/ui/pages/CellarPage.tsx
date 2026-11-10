@@ -14,7 +14,7 @@ import { bottleService } from '../../services/bottleService';
 import { resetInventoryToSeed } from '../../db/migrate';
 import { isUserBottle } from '../../data/userBottles';
 import { bottleKindLabel, groupLabel } from '../../data/bottleIngredients';
-import { ChipRow, ChipToggle, SearchBox, BottleBadges, type ChipOption } from '../components/common';
+import { ChipRow, ChipToggle, SearchBox, BottleBadges, type ChipOption, StarterNotice } from '../components/common';
 import { normalize, hits, useGroupChips } from '../listUtils';
 import { IS_PUBLIC } from '../../config';
 import { type Bottle } from '../../models/types';
@@ -33,6 +33,7 @@ export function CellarPage() {
   return (
     <>
       <h2 className="pagetitle">술장</h2>
+      <StarterNotice />
 
       {/* 두 가지 집계를 나눠 적는다 — 병 수와 재료 수는 다른 것이다 */}
       <div className="statline">

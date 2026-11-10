@@ -1,8 +1,9 @@
-import { useEffect, type ReactNode, type SyntheticEvent } from 'react';
+import { useEffect, useState, type ReactNode, type SyntheticEvent } from 'react';
 import { type MethodKey, METHOD_LABELS_KO, type AvailabilityStatus, type FlavorVector, FLAVOR_AXES, FLAVOR_LABELS_KO, type RecommendationResult, type MakerNote, type BottleBadge, type WhiskyClass, type DrinkLog, SERVING_LABELS_KO } from '../../models/types';
 import { STATUS_LABEL_KO, STATUS_SENTENCE_KO } from '../../services/availabilityService';
 import { lookupTerm, normalizeTerm } from '../../data/glossary';
 import { useUI } from '../UIContext';
+import { IS_PUBLIC, STARTER_INVENTORY } from '../../config';
 import { IconBuild, IconShake, IconStir, IconMuddle, IconBlend, IconLayer, IconSwizzle, IconFloat } from './icons';
 
 /**
@@ -310,6 +311,30 @@ export function SearchBox({ value, onChange, placeholder }: { value: string; onC
   return (
     <div className="controls">
       <input type="search" value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} />
+    </div>
+  );
+}
+
+/**
+ * 새 사용자 안내 — 공개 빌드는 빈 화면을 피하려고 기본 홈바 세트를 가진 것으로 해 둔다.
+ * 실제로 가진 것이 아니므로 그 사실과 바꾸는 길을 처음 한 번 알려 준다. 닫으면 다시 나오지 않는다.
+ */
+const STARTER_NOTICE_KEY = 'homebar.starterNoticeSeen';
+export function StarterNotice() {
+  const { goTab, setCellarSub } = useUI();
+  const [seen, setSeen] = useState(() => { try { return localStorage.getItem(STARTER_NOTICE_KEY) === '1'; } catch { return false; } });
+  if (!IS_PUBLIC || seen) return null;
+  const close = () => { try { localStorage.setItem(STARTER_NOTICE_KEY, '1'); } catch { /* 저장이 막혀도 닫는다 */ } setSeen(true); };
+  return (
+    <div className="notice" role="note">
+      <p>
+        처음이라 <b>기본 홈바 세트 {STARTER_INVENTORY.length}가지</b>를 가진 것으로 해 두었어요.
+        지금 보이는 "만들 수 있는 잔"은 이 예시 기준이에요. 실제로 가진 것만 남기면 내 술장에 맞게 바뀌어요.
+      </p>
+      <div className="btnrow">
+        <button className="btn sm primary" onClick={() => { close(); setCellarSub('stock'); goTab('cellar'); }}>내 재료로 바꾸기</button>
+        <button className="btn sm" onClick={close}>이대로 둘러보기</button>
+      </div>
     </div>
   );
 }

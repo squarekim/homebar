@@ -10,7 +10,7 @@ import { useRecommendContext } from '../../hooks/useRecommendContext';
 import { useLogs } from '../../hooks/useData';
 import { whatToDrink, type RecommendMode } from '../../services/recommendationService';
 import { STATUS_LEAD_KO } from '../../services/availabilityService';
-import { ChipRow, LogCard } from '../components/common';
+import { ChipRow, LogCard, StarterNotice } from '../components/common';
 import { TodayReel } from '../components/TodayReel';
 import { MODES, GroupRec, PurchaseRec, ClearStockRec } from './RecommendPage';
 import { type RecommendationResult } from '../../models/types';
@@ -46,9 +46,9 @@ function reelPool(all: RecommendationResult[]): RecommendationResult[] {
 
 type Way = 'group' | 'purchase' | 'clearstock';
 const WAYS: { v: Way; label: string; hint: string }[] = [
-  { v: 'group', label: '함께 마실 사람', hint: '여러 명의 취향을 함께 봅니다.' },
-  { v: 'purchase', label: '뭘 사면 좋을까', hint: '한 병 더 샀을 때 열리는 레시피 수로 순위를 냅니다.' },
-  { v: 'clearstock', label: '재고 소진', hint: '잔량이 적은 재료를 먼저 씁니다.' },
+  { v: 'group', label: '함께 마실 사람', hint: '여러 명의 취향을 함께 봐요.' },
+  { v: 'purchase', label: '뭘 사면 좋을까', hint: '한 병 더 샀을 때 새로 만들 수 있는 잔 수로 순서를 매겨요.' },
+  { v: 'clearstock', label: '재고 소진', hint: '조금 남은 재료를 먼저 써요.' },
 ];
 
 /** 다른 기준으로 고르기 — 기존 추천 기능을 한 자리에 접어 둔다 */
@@ -107,6 +107,7 @@ export function TodayPage() {
         <p className="asksub">
           {picks.length ? `지금 술장으로 만들 수 있는 ${picks.length}잔 중에서 골라요` : '고를 수 있는 잔이 아직 없어요'}
         </p>
+        <StarterNotice />
 
         {picks.length > 0 ? (
           <TodayReel picks={picks} onPicked={onPicked}

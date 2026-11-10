@@ -10,7 +10,29 @@ import { type AvailabilityStatus } from '../models/types';
 
 /** 검색어를 한 번만 다듬는다 (빈 문자열이면 "전부 통과") */
 export function normalize(q: string): string {
-  return q.trim().toLowerCase();
+  return fold(q);
+}
+
+/** 영문으로 친 흔한 이름 → 앱의 한글 표기 */
+const EN_KO: Array<[RegExp, string]> = [
+  [/oldfashioned/g, '올드패션드'], [/margarita/g, '마가리타'], [/mojito/g, '모히토'], [/negroni/g, '네그로니'], [/martini/g, '마티니'],
+  [/daiquiri/g, '다이키리'], [/manhattan/g, '맨해튼'], [/highball/g, '하이볼'], [/cosmopolitan/g, '코스모폴리탄'], [/pinacolada/g, '피나콜라다'],
+  [/moscowmule/g, '모스코뮬'], [/sidecar/g, '사이드카'], [/gimlet/g, '김렛'], [/sour/g, '사워'], [/collins/g, '콜린스'], [/tonic/g, '토닉'],
+  [/whisk(e)?y/g, '위스키'], [/bourbon/g, '버번'], [/scotch/g, '스카치'], [/vodka/g, '보드카'], [/tequila/g, '데킬라'], [/brandy/g, '브랜디'],
+  [/cognac/g, '코냑'], [/rum/g, '럼'], [/gin/g, '진'], [/lime/g, '라임'], [/lemon/g, '레몬'], [/mint/g, '민트'],
+];
+/** 같은 말의 다른 한글 표기를 한쪽으로 모은다 */
+const KO_VARIANTS: Array<[RegExp, string]> = [
+  [/마르가리타/g, '마가리타'], [/히또/g, '히토'], [/테킬라/g, '데킬라'], [/칼루아/g, '깔루아'], [/맨하탄|맨해턴/g, '맨해튼'],
+  [/다이커리|다이퀴리/g, '다이키리'], [/피냐/g, '피나'], [/올드패션(?!드)/g, '올드패션드'], [/꼬냑/g, '코냑'], [/위스키사우어/g, '위스키사워'],
+  [/사우어/g, '사워'], [/아마레또/g, '아마레토'], [/진앤토닉/g, '진토닉'], [/버몬트|베르뭇/g, '베르무트'],
+];
+/** 검색 대조용으로 접는다: 소문자, 띄어쓰기와 구두점 제거, 영문 이름과 표기 차이를 한쪽으로 */
+export function fold(s: string): string {
+  let t = s.toLowerCase().replace(/[\s·・.,'"’`()[\]{}\-_/&+]/g, '');
+  if (/[a-z]/.test(t)) for (const [re, ko] of EN_KO) t = t.replace(re, ko);
+  for (const [re, ko] of KO_VARIANTS) t = t.replace(re, ko);
+  return t;
 }
 
 /**
@@ -19,7 +41,7 @@ export function normalize(q: string): string {
  */
 export function hits(term: string, ...parts: (string | null | undefined)[]): boolean {
   if (!term) return true;
-  return parts.some((p) => !!p && p.toLowerCase().includes(term));
+  return parts.some((p) => !!p && fold(p).includes(term));
 }
 
 /** 만들 수 있는 것부터, 같은 상태면 가나다순 */

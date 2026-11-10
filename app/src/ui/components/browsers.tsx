@@ -58,7 +58,7 @@ export function SimpleBuildBrowser() {
                   <span className="nm">{b.name}</span>
                   <div className="taste">{b.parts.join(' · ')}{b.ratio ? ` · ${b.ratio}` : ''}</div>
                   <div className="foot">
-                    <StateLine status={e.status} lack={e.lack} />
+                    {e.status !== 'READY' && <StateLine status={e.status} lack={e.lack} />}
                     {b.glass && <span className="mi">{b.glass} 잔</span>}
                     {mine.length > 0 && <span className="mi">내 술 {mine.length}종</span>}
                   </div>
@@ -122,7 +122,7 @@ export function IngredientBrowser() {
       <ChipRow value={cat} options={cats} onChange={setCat}>
         <ChipToggle label="보유만" cls="ok" on={ownedOnly} onToggle={() => setOwnedOnly((v) => !v)} />
       </ChipRow>
-      <p className="hint">{rows.length}종 · 보유 {rows.filter((r) => heldIds.has(r.id)).length} · 항목을 누르면 어디에 쓰이는지 보여줍니다.</p>
+      <p className="hint">{rows.length}종 · 보유 {rows.filter((r) => heldIds.has(r.id)).length} · 숫자는 그 재료를 쓰는 레시피 수예요. 누르면 어디에 쓰이는지 볼 수 있어요.</p>
       <div className="items">
         {rows.map((i) => (
           <button className={`it ${heldIds.has(i.id) ? '' : 'off'}`} key={i.id}

@@ -231,6 +231,11 @@ const SUBSTITUTION_PAIRS: Array<[from: string, to: string, note?: string]> = [
   ['블렌디드 스카치', '스카치', '같은 스카치 위스키'],
   ['XO 브랜디(코냑 외)', '포도 브랜디', '같은 포도 브랜디 계열'],
   ['XO 브랜디(코냑 외)', '코냑', '같은 포도 브랜디 계열'],
+  // 더 좁게 적힌 재료 → 같은 술의 넓은 이름. 반대 방향은 잇지 않는다
+  ['쿠바산 화이트 럼', '화이트 럼', '같은 화이트 럼(원산지만 다름)'],
+  ['100% 아가베 데킬라', '데킬라', '같은 데킬라(원료 비율이 다름)'],
+  ['버번 또는 라이', '버번', '레시피가 둘 중 하나를 쓰라고 적음'],
+  ['버번 또는 라이', '라이 위스키', '레시피가 둘 중 하나를 쓰라고 적음'],
 ];
 export const substitutions: IngredientSubstitution[] = SUBSTITUTION_PAIRS
   .filter(([f, t]) => ingIdByName.has(f) || ingIdByName.has(t))

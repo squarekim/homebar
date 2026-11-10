@@ -546,3 +546,7 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 .tastecard b{display:block;font-family:var(--display);font-weight:700;font-size:22px;line-height:1.35;margin-top:4px;word-break:keep-all}
 .tastecard p{font-size:14px;color:var(--mute);margin:var(--s1) 0 0}
 .recipe .ing .lackmark{font-size:12px;font-weight:600;color:var(--sub);margin-left:6px}
+
+/* 새 사용자 안내 띠 */
+.notice{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:var(--s3);margin:var(--s3) 0;text-align:left}
+.notice p{margin:0 0 var(--s2);font-size:14px;line-height:1.6;color:var(--ink)}

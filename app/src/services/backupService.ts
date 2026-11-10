@@ -49,7 +49,7 @@ export const backupService = {
 
   async importJson(json: string, mode: 'replace' | 'merge' = 'replace'): Promise<void> {
     const obj = JSON.parse(json);
-    if (!this.validate(obj)) throw new Error('백업 스키마가 올바르지 않습니다.');
+    if (!this.validate(obj)) throw new Error('백업 파일 형식이 맞지 않아요.');
     await this.importSnapshot(obj, mode);
   },
 };

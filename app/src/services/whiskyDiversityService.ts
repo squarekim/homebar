@@ -12,9 +12,10 @@ export interface AxisFamily {
   pick: (c: WhiskyClass) => string[];
 }
 
-/** 축 값과 병의 분류 값이 매칭되는지 (셰리는 PX/올로로소 포함, 지역/캐스크는 부분일치) */
-function match(axisValue: string, picked: string): boolean {
+/** 축 값과 병의 분류 값이 매칭되는지 (셰리는 PX/올로로소 포함, 지역/캐스크는 부분일치, 타입은 완전일치) */
+function match(axisValue: string, picked: string, exact = false): boolean {
   if (!picked) return false;
+  if (exact) return picked === axisValue;
   if (axisValue === '셰리') return ['셰리', 'PX', '올로로소'].some((s) => picked.includes(s));
   return picked.includes(axisValue) || axisValue.includes(picked);
 }
@@ -35,7 +36,7 @@ export function computeCoverage(whiskies: Bottle[]): FamilyCoverage[] {
   return AXIS_FAMILIES.map((fam) => {
     const cells: AxisCell[] = fam.universe.map((value) => {
       const bottles = classed
-        .filter((w) => fam.pick(w.whiskyClass!).some((p) => match(value, p)))
+        .filter((w) => fam.pick(w.whiskyClass!).some((p) => match(value, p, fam.key === 'type')))
         .map((w) => w.name);
       return { value, count: bottles.length, bottles, gap: bottles.length === 0 };
     });
@@ -93,7 +94,7 @@ export function simulateAdd(candidate: WhiskyClass, whiskies: Bottle[]): SimResu
     const picked = fam.pick(candidate).filter(Boolean);
     const famCov = covByKey.get(fam.key)!;
     for (const value of fam.universe) {
-      const candidateCovers = picked.some((p) => match(value, p));
+      const candidateCovers = picked.some((p) => match(value, p, fam.key === 'type'));
       if (!candidateCovers) continue;
       const cell = famCov.cells.find((c) => c.value === value)!;
       if (cell.gap) newlyFilled.push({ family: fam.label, value });

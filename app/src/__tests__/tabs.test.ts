@@ -45,3 +45,30 @@ describe('이 위스키로 만들면 좋아요', () => {
     expect(cocktailsForBottle({ ingredientIds: [] }, held, new Map())).toEqual([]);
   });
 });
+
+import { fold, hits } from '../ui/listUtils';
+import { substitutions, ingredientIdOf } from '../data/adapters';
+import { computeCoverage } from '../services/whiskyDiversityService';
+
+describe('검색어 접기', () => {
+  it('표기가 달라도 같은 잔을 찾는다', () => {
+    for (const q of ['마가리타', 'margarita', '모히또', 'Old Fashioned', '올드패션드', '올드 패션'])
+      expect(['마르가리타', '모히토', '올드 패션드'].some((n) => hits(fold(q), n))).toBe(true);
+  });
+});
+
+describe('좁게 적힌 재료의 대체', () => {
+  it('쿠바산 화이트 럼은 화이트 럼으로 채운다', () => {
+    expect(substitutions.some((s) => s.ingredientId === ingredientIdOf('쿠바산 화이트 럼') && s.substituteId === ingredientIdOf('화이트 럼'))).toBe(true);
+    expect(substitutions.some((s) => s.ingredientId === ingredientIdOf('화이트 럼') && s.substituteId === ingredientIdOf('쿠바산 화이트 럼'))).toBe(false);
+  });
+});
+
+describe('분류 표의 타입 칸', () => {
+  it('블렌디드와 블렌디드 몰트를 따로 센다', () => {
+    const type = computeCoverage(whiskies).find((f) => f.key === 'type')!;
+    const n = (v: string) => type.cells.find((c) => c.value === v)!.count;
+    expect(n('블렌디드')).toBe(7);
+    expect(n('블렌디드 몰트')).toBe(1);
+  });
+});

@@ -99,7 +99,7 @@ export function CocktailDetail({ id }: { id: string }) {
       <div className="art"><GlassArt cocktail={ck} size={120} /></div>
 
       {/* ② 맛 설명과 제조 가능 상태 */}
-      <p className="taste">{words.join(' · ')}{ck.note ? ` — ${ck.note}` : ''}</p>
+      <p className="taste">{words.join(' · ')}</p>
       <div className="meta">
         <span className="mi">{ck.base}</span>
         {IBA_PLAIN[ck.iba] && <span className="mi">{IBA_PLAIN[ck.iba]}</span>}
@@ -158,6 +158,7 @@ export function CocktailDetail({ id }: { id: string }) {
         {more && (
           <div className="inner">
             {rec && <WhyPicked rec={rec} />}
+            {ck.note && <><div className="sechead in">메모</div><p className="hint">{ck.note}</p></>}
             <div className="sechead in">향미 프로파일</div>
             <FlavorBars vector={ck.flavor} compact />
             <div className="sechead in">분류</div>
