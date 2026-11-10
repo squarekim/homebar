@@ -86,7 +86,7 @@ describe('입문 안내 카드', () => {
     }
   });
   it('오해는 모두 12개이고 탭 안내는 있는 장을 가리킨다', () => {
-    expect(GUIDE_CHAPTERS.flatMap((c) => c.cards).filter((c) => c.myth).length).toBe(12);
+    expect(GUIDE_CHAPTERS.flatMap((c) => c.cards).filter((c) => c.myth).length).toBe(20);
     for (const id of Object.values(GUIDE_FOR_TAB)) expect(GUIDE_CHAPTERS.some((c) => c.id === id)).toBe(true);
   });
 });
@@ -106,5 +106,13 @@ describe('용어 풀이', () => {
   it('지역 풀이는 맛을 정하지 않는다', () => {
     expect(GLOSSARY['아일라']).toContain('피트를 쓰지 않는 증류소도');
     expect(GLOSSARY['블렌디드']).toContain('품질 등급을 뜻하지 않아요');
+  });
+});
+
+import { methodSteps } from '../data/beginnerGuide';
+describe('만드는 방법 순서', () => {
+  it('레시피에 쓰이는 방법마다 순서가 있다', () => {
+    for (const k of ['build', 'stir', 'shake', 'float', 'layer', 'swizzle']) expect(methodSteps(k).length, k).toBeGreaterThanOrEqual(3);
+    expect(methodSteps('nope')).toEqual([]);
   });
 });

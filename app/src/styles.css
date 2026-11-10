@@ -572,3 +572,10 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 .guidecard .gmenu button{display:flex;justify-content:space-between;align-items:center;gap:var(--s3);text-align:left;
   background:var(--raise);border-radius:var(--r);padding:var(--s3);min-height:52px}
 .guidecard .gmenu span{font-size:13px;color:var(--mute);flex:none}
+
+/* 레시피 상세: 방법별 기본 순서와 안내 바로가기 */
+.detail .steps{background:var(--panel);border-radius:var(--r);padding:var(--s3);margin-top:var(--s2)}
+.detail .steps .stepshead{font-size:13px;color:var(--mute);margin-bottom:var(--s1)}
+.detail .steps ol{margin:0;padding-left:1.3em;line-height:1.7;font-size:15px}
+.detail .guidelinks{display:flex;flex-wrap:wrap;gap:var(--s1);margin-top:var(--s2)}
+.detail .guidelinks button{font-size:13px;color:var(--mute);text-decoration:underline;min-height:36px;padding:0 var(--s1)}

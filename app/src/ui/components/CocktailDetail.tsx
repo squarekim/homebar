@@ -13,6 +13,7 @@ import { evaluateCocktail, STATUS_LEAD_KO } from '../../services/availabilitySer
 import { flavorWords } from '../../services/flavorService';
 import { FlavorBars, MethodIcon, Term } from './common';
 import { GlassArt } from './GlassArt';
+import { methodSteps } from '../../data/beginnerGuide';
 import { METHOD_PLAIN_KO, METHOD_LABELS_KO, type Cocktail, type RecommendationResult } from '../../models/types';
 
 /** IBA 분류를 풀어 쓴 말. 공식 목록에 없는 잔은 적지 않는다 */
@@ -81,7 +82,7 @@ function Variants({ ck }: { ck: Cocktail }) {
 }
 
 export function CocktailDetail({ id }: { id: string }) {
-  const { openLog, lastRec } = useUI();
+  const { openLog, lastRec, openGuide } = useUI();
   const heldIds = useHeldIds();
   const subMap = useSubMap();
   const [more, setMore] = useState(false);
@@ -137,9 +138,22 @@ export function CocktailDetail({ id }: { id: string }) {
         <span className="lb">만드는 법</span>
         <span>{ck.methodKeys.length ? `${ck.methodKeys.map((k) => METHOD_PLAIN_KO[k]).join(", ")} (${ck.method})` : ck.method}</span>
       </div>
+      {/* 방법별 기본 순서 — 레시피마다 적은 글이 아니라 그 방법의 공통 순서다(머들은 잔마다 달라 뺐다) */}
+      {ck.methodKeys.filter((k) => k !== 'muddle' && methodSteps(k).length > 0).slice(0, 2).map((k) => (
+        <div className="steps" key={k}>
+          <div className="stepshead">{METHOD_LABELS_KO[k]} 기본 순서</div>
+          <ol>{methodSteps(k).map((t, i) => <li key={i}>{t.replace(/^\d\.\s*/, '')}</li>)}</ol>
+        </div>
+      ))}
       {ck.garnish && (
         <div className="garnish"><span className="gl">가니시</span><span className="gv">{ck.garnish}</span></div>
       )}
+      <div className="guidelinks">
+        <button onClick={() => openGuide('methods')}>만드는 방법</button>
+        <button onClick={() => openGuide('units')}>단위 읽는 법</button>
+        <button onClick={() => openGuide('garnish')}>가니시 준비</button>
+        <button onClick={() => openGuide('glasses')}>잔</button>
+      </div>
 
       {/* ⑥ 기록 */}
       <div className="btnrow">
