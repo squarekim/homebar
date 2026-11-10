@@ -175,11 +175,14 @@ export const GUIDE_CHAPTERS: readonly GuideChapter[] = [
     ],
   },
   {
-    id: 'syrup', group: 'cocktail', title: '설탕시럽 만들기',
-    intro: '설탕시럽은 레시피 44종에 들어가요. 집에 있는 설탕과 물로 만들 수 있어요.',
+    id: 'syrup', group: 'cocktail', title: '시럽과 과즙 준비',
+    intro: '설탕시럽은 레시피 44종에 들어가요. 시럽은 집에서 만들 수 있고, 레몬과 라임은 짜서 써요.',
     cards: [
       { title: '진한 시럽 (설탕 2 : 물 1)', body: ['1. 냄비에 물 1컵을 넣고 설탕 2컵을 넣어요. 컵으로 재는 부피 기준이에요.', '2. 약한 불에서 설탕이 다 녹을 때까지 저어요.', '3. 식힌 뒤 깨끗한 병에 담아 냉장고에 넣어요.', '냉장하면 6개월 동안 쓸 수 있어요.'], sources: [D_SYRUP] },
       { title: '기본 시럽 (설탕 1 : 물 1)', body: ['설탕과 물을 같은 부피로 넣고 설탕이 다 녹을 때까지 저어요.', '레시피에 적힌 "설탕시럽"이 어느 쪽인지 정해져 있지 않으면 이 비율로 만들어요. 진한 시럽은 더 달아서 양을 줄여 써요.'], sources: [D_SYRUP] },
+      { title: '허니 시럽 (꿀 3 : 물 1)', body: ['꿀은 그대로 넣으면 잘 섞이지 않아서 물에 풀어 써요.', '1. 꿀을 담고, 꿀 무게의 3분의 1만큼 물을 넣어요.', '2. 따뜻한 물에 그릇째 담가 저어요. 40°C를 넘기지 않아요.', '3. 냉장고에 넣어요.', '며칠 안에 쓸 만큼만 만들어요.'], sources: [D('Honey & honey syrup', 'g/1109/honey-and-honey-syrup'), iba("Bee's Knees", 'bees-knees')] },
+      { title: '그레나딘 (석류 시럽)', body: ['1. 냄비에 석류 주스 1컵을 넣고 설탕 2컵을 조금씩 넣으며 저어요.', '2. 끓지 않게 약한 불에서 설탕이 녹을 때까지 데워요.', '3. 식힌 뒤 걸러서 병에 담아 냉장고에 넣어요.', '냉장해도 1주일쯤 가요. 쓴 석류 주스의 기한도 확인해요.'], sources: [D('Pomegranate / Grenadine syrup', 'encyclopedia/29/cocktails/pomegranate-grenadine-syrup')] },
+      { title: '레몬즙, 라임즙', body: ['과일을 흐르는 물에 씻은 뒤 반으로 잘라 짜요.', "America's Test Kitchen의 시음에서는 짜서 냉장고에 4시간 둔 즙을 넣은 잔을 더 좋아했어요. 6시간이 넘으면 쓴맛이 강해졌어요.", '그래서 마시기 직전에 짜도 되고, 몇 시간 전에 짜서 냉장고에 넣어 둬도 돼요. 6시간을 넘기지는 않아요.'], sources: [{ label: "America's Test Kitchen, When Fresh-Squeezed Isn't Best", url: 'https://www.americastestkitchen.com/how_tos/6429-when-fresh-squeezed-isnt-best' }, { label: '미국 FDA, Juice Safety', url: 'https://www.fda.gov/food/buy-store-serve-safe-food/what-you-need-know-about-juice-safety' }] },
     ],
   },
   {
