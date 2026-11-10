@@ -49,7 +49,7 @@ export function GuidePopup() {
                 {GUIDE_CHAPTERS.filter((c) => c.group === g.key).map((c) => (
                   <button key={c.id} onClick={() => openGuide(c.id)}>
                     <b>{c.title}</b>
-                    <span>카드 {c.cards.length}장</span>
+                    <span aria-hidden="true">›</span>
                   </button>
                 ))}
               </div>
