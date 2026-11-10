@@ -579,3 +579,10 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 .detail .steps ol{margin:0;padding-left:1.3em;line-height:1.7;font-size:15px}
 .detail .guidelinks{display:flex;flex-wrap:wrap;gap:var(--s1);margin-top:var(--s2)}
 .detail .guidelinks button{font-size:13px;color:var(--mute);text-decoration:underline;min-height:36px;padding:0 var(--s1)}
+
+/* 휴대폰: 상세가 열려도 아래 탭은 보이게 */
+@media (max-width:899px){.sheet{bottom:calc(58px + env(safe-area-inset-bottom))}}
+/* 탭 위쪽 안내 띠 */
+.guidehint{display:flex;align-items:center;gap:var(--s1);background:var(--panel);border-radius:var(--r);margin:0 0 var(--s3);padding:0 var(--s1) 0 var(--s3)}
+.guidehint .go{flex:1;text-align:left;min-height:44px;font-size:14px;color:var(--ink)}
+.guidehint .x{width:44px;height:44px;font-size:20px;color:var(--mute)}

@@ -5,12 +5,12 @@
  *   이름·이미지 → 맛과 제조 가능 상태(없는 재료 이름까지) → 재료와 용량(없는 줄에 표시) → 만드는 법 → 기록하기 → (펼침) 수치·분류·출처.
  * 만드는 순서는 DB 에 없다. 지어내지 않고 원문 조주 방식만 적는다.
  */
+import { cocktailWords } from '../../services/tasteWords';
 import { useState } from 'react';
 import { useUI } from '../UIContext';
 import { useHeldIds, useSubMap } from '../../hooks/useData';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { evaluateCocktail, STATUS_LEAD_KO } from '../../services/availabilityService';
-import { flavorWords } from '../../services/flavorService';
 import { FlavorBars, MethodIcon, Term } from './common';
 import { GlassArt } from './GlassArt';
 import { methodSteps } from '../../data/beginnerGuide';
@@ -90,7 +90,7 @@ export function CocktailDetail({ id }: { id: string }) {
   if (!ck) return <div className="empty">레시피를 찾을 수 없어요.</div>;
 
   const ev = evaluateCocktail(ck, heldIds, subMap);
-  const words = flavorWords(ck.flavor);
+  const words = cocktailWords(ck);
   const rec = lastRec && lastRec.id === ck.id ? lastRec : null;
 
   return (

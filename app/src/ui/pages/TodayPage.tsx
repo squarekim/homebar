@@ -8,7 +8,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useUI } from '../UIContext';
 import { useRecommendContext } from '../../hooks/useRecommendContext';
 import { useLogs } from '../../hooks/useData';
-import { whatToDrink, type RecommendMode } from '../../services/recommendationService';
+import { whatToDrink, type RecommendMode, diversePool } from '../../services/recommendationService';
 import { STATUS_LEAD_KO } from '../../services/availabilityService';
 import { ChipRow, LogCard, StarterNotice } from '../components/common';
 import { TodayReel } from '../components/TodayReel';
@@ -40,8 +40,10 @@ function taste(rec: RecommendationResult): string {
 
 /** 뽑기 후보 — 만들 수 있는 칵테일(대체 포함)과 가진 위스키, 추천 순서 상위 12개 */
 const POOL = 12;
-function reelPool(all: RecommendationResult[]): RecommendationResult[] {
-  return all.filter((r) => r.kind === 'whisky' || r.status === 'READY' || r.status === 'SUBSTITUTE').slice(0, POOL);
+function reelPool(all: RecommendationResult[], mode: RecommendMode): RecommendationResult[] {
+  const ok = all.filter((r) => r.kind === 'whisky' || r.status === 'READY' || r.status === 'SUBSTITUTE');
+  // '위스키' 칩을 골랐을 때는 일부러 한 종류만 보는 것이라 섞지 않는다
+  return mode === 'whisky' ? ok.slice(0, POOL) : diversePool(ok, POOL);
 }
 
 type Way = 'group' | 'purchase' | 'clearstock';
@@ -80,7 +82,7 @@ export function TodayPage() {
   const { openCocktail, openLog, goTab, goLogs, openGuide } = useUI();
   const logs = useLogs();
   const [mode, setMode] = useState<RecommendMode>('available');
-  const picks = useMemo(() => reelPool(whatToDrink(ctx, mode, 40)), [ctx, mode]);
+  const picks = useMemo(() => reelPool(whatToDrink(ctx, mode, 80), mode), [ctx, mode]);
   const [picked, setPicked] = useState<RecommendationResult | null>(null);
   const onPicked = useCallback((r: RecommendationResult | null) => setPicked(r), []);
   const recent = logs.slice(0, 3);

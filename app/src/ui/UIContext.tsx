@@ -4,7 +4,7 @@
  * 칵테일·병 상세는 '어느 탭의 무엇이 선택됐는가'로 표현한다 —
  * 그래야 PC 에서 목록 옆에 상세를 붙이고, 모바일에서 전체 화면으로 띄우는 걸 같은 상태로 처리할 수 있다.
  */
-import { createContext, useContext, useState, type ReactNode, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useRef, type ReactNode, useCallback } from 'react';
 import { type DrinkType, type ServingStyle, type RecommendationResult } from '../models/types';
 import { type GuideId } from '../data/beginnerGuide';
 
@@ -76,7 +76,8 @@ export function UIProvider({ children }: { children: ReactNode }) {
   const [addQuery, setAddQuery] = useState('');
 
   const [tabTick, setTabTick] = useState(0);
-  const goTab = useCallback((t: Tab) => { setTab(t); setTabTick((n) => n + 1); window.scrollTo(0, 0); }, []);
+  // 아래 탭을 누르면 열려 있던 상세는 닫는다 — 상세가 열린 채 탭만 바뀌면 다른 탭에서 그 상세가 다시 뜬다
+  const goTab = useCallback((t: Tab) => { setCocktailId(null); setBottleId(null); setTab(t); setTabTick((n) => n + 1); window.scrollTo(0, 0); }, []);
   const goLogs = useCallback(() => { setCellarSub('logs'); setTab('cellar'); window.scrollTo(0, 0); }, []);
   const openCocktail = useCallback((id: string, rec?: RecommendationResult) => {
     setCocktailId(id);
@@ -94,6 +95,44 @@ export function UIProvider({ children }: { children: ReactNode }) {
   const showTerm = useCallback((title: string, body: string) => setTermInfo({ title, body }), []);
   const openAdd = useCallback((query = '') => { setAddQuery(query); setAddOpen(true); }, []);
   const closeAdd = useCallback(() => setAddOpen(false), []);
+
+  /*
+   * 뒤로 가기 — 안드로이드의 뒤로 버튼과 브라우저의 뒤로 가기가 "지금 떠 있는 것 하나 닫기"가 되게 한다.
+   * 겹쳐 뜬 것(용어·안내·기록·술 추가·상세)과 "메인이 아닌 탭"을 각각 한 단계로 세고, 그 수만큼 history 에 쌓아 둔다.
+   * 화면에서 직접 닫으면 쌓아 둔 것을 되돌리고, 뒤로 가기를 누르면 맨 위 하나를 닫는다. 메인에서 한 번 더 누르면 앱을 나간다.
+   */
+  const layers = [tab !== 'today', !!(cocktailId || bottleId), addOpen, !!logPrefill, !!guide, !!termInfo];
+  const depth = layers.filter(Boolean).length;
+  const pushed = useRef(0);
+  const skip = useRef(0);
+  const closeTop = useRef<() => void>(() => {});
+  closeTop.current = () => {
+    if (termInfo) setTermInfo(null);
+    else if (guide) setGuide(null);
+    else if (logPrefill) setLogPrefill(null);
+    else if (addOpen) setAddOpen(false);
+    else if (cocktailId || bottleId) { setCocktailId(null); setBottleId(null); }
+    else if (tab !== 'today') { setTab('today'); setTabTick((n) => n + 1); }
+  };
+  useEffect(() => {
+    if (depth > pushed.current) {
+      for (let i = pushed.current; i < depth; i++) window.history.pushState({ homebar: i + 1 }, '');
+      pushed.current = depth;
+    } else if (depth < pushed.current) {
+      const n = pushed.current - depth;
+      pushed.current = depth;
+      skip.current += 1;
+      window.history.go(-n);
+    }
+  }, [depth]);
+  useEffect(() => {
+    const onPop = () => {
+      if (skip.current > 0) { skip.current -= 1; return; }
+      if (pushed.current > 0) { pushed.current -= 1; closeTop.current(); }
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
 
   return (
     <Ctx.Provider value={{

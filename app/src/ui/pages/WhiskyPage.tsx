@@ -3,6 +3,8 @@
  * 목록은 병 · 이름 · 도수 · 핵심 맛까지만 보여주고, 상세에서 맛 설명과 제조사 공식 노트를 먼저 읽힌다.
  * 지역·캐스크·분류·향미 수치는 그 뒤로 미룬다. 보유 수량·잔량 관리는 내 술장이 맡는다.
  */
+import { GuideHint } from '../components/GuidePopup';
+import { cocktailWords, whiskyWords } from '../../services/tasteWords';
 import { lazy, Suspense, useMemo, useState } from 'react';
 import { useUI } from '../UIContext';
 import { useWhiskies, useBottles, useBottleNotes, useHeldIds, useSubMap } from '../../hooks/useData';
@@ -10,7 +12,6 @@ import { cocktailsForBottle } from '../../services/pairingService';
 import { STATUS_LEAD_KO } from '../../services/availabilityService';
 import { CocktailMark } from '../components/Mark';
 import { bottleNoteRepo } from '../../repositories/bottleNoteRepo';
-import { flavorWords } from '../../services/flavorService';
 import { computeCoverage, computeRegionMaturityMatrix, simulateAdd, MATRIX_TIERS } from '../../services/whiskyDiversityService';
 import { CANDIDATE_WHISKIES } from '../../data/candidateWhiskies';
 import { CLASS_FILTERS, classTags } from '../../data/whiskyClass';
@@ -35,7 +36,7 @@ const VIEWS: ChipOption<View>[] = [{ v: 'list', label: '내 위스키' }, { v: '
 
 /** 핵심 맛 — 향미 상위 두 축과 분류 캐릭터(피티드 등) */
 function character(w: Bottle): string {
-  const words = flavorWords(w.flavor);
+  const words = whiskyWords(w);
   const chars = w.whiskyClass?.character.filter((c) => c !== '논피트') ?? [];
   return [...chars, ...words].slice(0, 3).join(' · ');
 }
@@ -116,7 +117,7 @@ function WhiskyDetail({ bottle: w }: { bottle: Bottle }) {
                 <CocktailMark base={c.base} cocktailId={c.id} size="sm" />
                 <div className="body">
                   <span className="nm">{c.name}</span>
-                  <div className="taste">{flavorWords(c.flavor).join(' · ')}</div>
+                  <div className="taste">{cocktailWords(c).join(' · ')}</div>
                   <div className="foot"><span className={`state s-${status}`}>{STATUS_LEAD_KO[status]}</span></div>
                 </div>
               </button>
@@ -177,6 +178,7 @@ export function WhiskyPage() {
   return (
     <>
       <h2 className="pagetitle">위스키<span className="sub">보유 {whiskies.length}종 · 맛과 공식 노트를 볼 수 있어요</span></h2>
+      <GuideHint tab="whisky" />
       <ChipRow value={view} options={VIEWS} onChange={setView} />
       <SearchBox value={q} onChange={setQ} placeholder="이름·분류(셰리/피트/싱글몰트…) 검색" />
       <ChipRow value={cls} options={CLASS_CHIPS} onChange={setCls} />

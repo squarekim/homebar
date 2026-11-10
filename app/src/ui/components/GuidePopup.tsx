@@ -1,6 +1,6 @@
 /**
  * GuidePopup — 입문 안내 팝업. 사전조사 카드(beginnerGuide.ts)를 한 장씩 넘겨 보여 준다.
- *  - 위스키·칵테일·술장 탭에 처음 들어가면 그 탭에 맞는 안내가 한 번 뜬다. 닫으면 다시 뜨지 않는다.
+ *  - 위스키·칵테일·술장 탭에는 그 탭에 맞는 안내로 가는 작은 띠(GuideHint)가 한 번 나온다. 눌러야 열리고, 닫으면 다시 나오지 않는다.
  *  - 메인의 '입문 안내'에서 언제든 목록으로 다시 열 수 있다.
  * 카드 문장과 출처는 데이터 그대로다. 여기서는 넘기는 것만 한다.
  */
@@ -9,21 +9,12 @@ import { useUI } from '../UIContext';
 import { GUIDE_CHAPTERS, GUIDE_GROUPS, GUIDE_FOR_TAB, guideById, type GuideId } from '../../data/beginnerGuide';
 
 const SEEN_PREFIX = 'homebar.guideSeen.';
-const FIRST_RUN_KEY = 'homebar.firstRunSeen';
 const read = (k: string): boolean => { try { return localStorage.getItem(k) === '1'; } catch { return true; } };
 const mark = (k: string): void => { try { localStorage.setItem(k, '1'); } catch { /* 저장이 막혀도 계속 */ } };
 
 export function GuidePopup() {
-  const { tab, guide, openGuide, closeGuide } = useUI();
+  const { guide, openGuide, closeGuide } = useUI();
   const [at, setAt] = useState(-1); // -1 = 소개 장
-
-  // 탭에 처음 들어왔을 때 한 번. 첫 실행 안내가 끝난 뒤에만 띄운다
-  useEffect(() => {
-    const id = GUIDE_FOR_TAB[tab];
-    if (!id || !read(FIRST_RUN_KEY) || read(SEEN_PREFIX + id)) return;
-    mark(SEEN_PREFIX + id);
-    openGuide(id);
-  }, [tab, openGuide]);
 
   useEffect(() => { setAt(-1); }, [guide]);
   useEffect(() => {
@@ -103,6 +94,25 @@ export function GuidePopup() {
             : <button className="btn primary" onClick={() => setAt(at + 1)}>{at < 0 ? '보기' : '다음'}</button>}
         </div>
       </div>
+    </div>
+  );
+}
+
+/**
+ * GuideHint — 탭 위쪽에 놓는 작은 안내 띠. 스스로 뜨는 팝업 대신 쓴다.
+ * 그 탭의 안내를 한 번이라도 열었거나 띠를 닫으면 다시 나오지 않는다.
+ */
+export function GuideHint({ tab }: { tab: string }) {
+  const { openGuide } = useUI();
+  const id = GUIDE_FOR_TAB[tab];
+  const [gone, setGone] = useState(() => (id ? read(SEEN_PREFIX + id) : true));
+  if (!id || gone) return null;
+  const ch = guideById(id);
+  const done = () => { mark(SEEN_PREFIX + id); setGone(true); };
+  return (
+    <div className="guidehint">
+      <button className="go" onClick={() => { done(); openGuide(id); }}>처음이라면 <b>{ch.title}</b> 보기 ›</button>
+      <button className="x" onClick={done} aria-label="안내 띠 닫기">×</button>
     </div>
   );
 }

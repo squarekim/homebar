@@ -116,3 +116,23 @@ describe('만드는 방법 순서', () => {
     expect(methodSteps('nope')).toEqual([]);
   });
 });
+
+import { diversePool } from '../services/recommendationService';
+import { cocktailWords, whiskyWords } from '../services/tasteWords';
+import { cocktails as allCocktails } from '../data/adapters';
+describe('뽑기 후보와 맛 설명', () => {
+  it('같은 베이스가 셋을 넘지 않게 고르고, 모자라면 채운다', () => {
+    const mk = (id: string, base: string) => ({ kind: 'cocktail', id, name: id, base, score: 1, flavorWords: [] }) as never;
+    const all = [...Array(8).keys()].map((i) => mk('w' + i, '위스키')).concat([mk('g1', '진'), mk('r1', '럼')]);
+    const pool = diversePool(all, 6, 3) as unknown as { id: string }[];
+    expect(pool.map((r) => r.id)).toEqual(['w0', 'w1', 'w2', 'g1', 'r1', 'w3']);
+  });
+  it('위스키 사워는 시트러스가 먼저 나온다', () => {
+    const ws = allCocktails.find((c) => c.name === '위스키 사워')!;
+    expect(cocktailWords(ws)[0]).toBe('시트러스');
+  });
+  it('공식 노트가 있는 위스키는 노트의 맛을 쓴다', () => {
+    const t = whiskies.find((w) => w.id === 'talisker10')!;
+    expect(whiskyWords(t)).toEqual(['피트', '바다']);
+  });
+});
