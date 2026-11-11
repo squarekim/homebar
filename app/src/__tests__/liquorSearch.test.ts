@@ -164,7 +164,8 @@ describe('기준 DB 확장', () => {
 
   it('도수를 확인하지 못한 제품은 값을 지어내지 않는다', () => {
     expect(liquorMasterById.get('m_glenallachie10cs')!.abv).toBeUndefined();  // 배치별 상이
-    expect(liquorMasterById.get('m_hallasan')!.abv).toBeUndefined();          // 출처 페이지를 열지 못해 비워 둔다
+    expect(liquorMasterById.get('m_wolgyegwan_junmai')!.abv).toBeUndefined(); // 같은 이름의 제품이 여럿이라 비워 둔다
+    expect(liquorMasterById.get('m_hallasan')!.abv).toBe(21);                 // 한국민족문화대백과사전·비즈워치로 확인
     expect(liquorMasterById.get('m_joeunday')!.abv).toBe(15.7);               // 2026-03 무학 발표로 확인
     // 수입사 제품 설명으로 확인된 값은 채운다
     const appletree = liquorMasterById.get('m_appletree')!;
@@ -181,6 +182,8 @@ describe('기준 DB 확장', () => {
     expect(liquorMasterById.get('m_igangju')!.subcategory).toContain('리큐르');
     expect(searchLiquor('사케', { limit: 8 }).every((h) => h.item.category === 'sake')).toBe(true);
     expect(searchLiquor('막걸리', { limit: 8 }).every((h) => h.item.category === 'trad')).toBe(true);
+    expect(searchLiquor('민속주', { limit: 8 }).map((h) => h.item.nameKo).sort()).toEqual(['문배주', '안동소주', '이강주']);
+    expect(searchLiquor('지역특산주', { limit: 8 }).map((h) => h.item.nameKo)).toEqual(['원소주 스피릿']);
   });
 
   it('수제맥주를 이름·브랜드로 찾는다', () => {

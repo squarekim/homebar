@@ -42,7 +42,7 @@ const INDEX: Indexed[] = LIQUOR_MASTER.map((item) => {
   const en = normalizeQuery(item.nameEn);
   const brand = normalizeQuery(item.brand);
   const aliases = item.aliases.map(normalizeQuery).filter(Boolean);
-  const kind = [item.subcategory, ...(item.category === 'trad' ? ['우리술', '전통주'] : []), ...(item.whiskyClass ? classTags(item.whiskyClass) : []), ...KIND_WORDS.filter(([re]) => re.test(item.subcategory)).flatMap(([, w]) => w)]
+  const kind = [item.subcategory, ...(item.category === 'trad' ? ['우리술', '전통주'] : []), ...(/민속주/.test(item.subcategory ?? '') ? ['민속주'] : []), ...(/지역특산주/.test(item.subcategory ?? '') ? ['지역특산주'] : []), ...(item.whiskyClass ? classTags(item.whiskyClass) : []), ...KIND_WORDS.filter(([re]) => re.test(item.subcategory)).flatMap(([, w]) => w)]
     .map(normalizeQuery).filter(Boolean);
   return { item, ko, en, brand, aliases, cho: initials(ko), all: [ko, en, brand, ...aliases], kind };
 });
