@@ -183,7 +183,8 @@ describe('기준 DB 확장', () => {
     expect(searchLiquor('사케', { limit: 8 }).every((h) => h.item.category === 'sake')).toBe(true);
     expect(searchLiquor('막걸리', { limit: 8 }).every((h) => h.item.category === 'trad')).toBe(true);
     expect(searchLiquor('민속주', { limit: 8 }).map((h) => h.item.nameKo).sort()).toEqual(['문배주', '안동소주', '이강주']);
-    expect(searchLiquor('지역특산주', { limit: 8 }).map((h) => h.item.nameKo)).toEqual(['원소주 스피릿']);
+    expect(searchLiquor('우리쌀', { limit: 8 }).map((h) => h.item.nameKo).sort()).toEqual(['내국양조 능이주', '내국양조 송이주', '원소주 스피릿', '토끼소주 화이트']);
+    expect(LIQUOR_MASTER.some((m) => /지역특산주/.test(m.subcategory ?? ''))).toBe(false); // 법적 지위는 적지 않는다
   });
 
   it('수제맥주를 이름·브랜드로 찾는다', () => {
