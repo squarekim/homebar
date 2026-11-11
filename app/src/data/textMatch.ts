@@ -3,13 +3,13 @@
  * 정규화 · 한글 초성 · 부분열 · 편집거리만 제공하고, 랭킹은 서비스 계층이 한다.
  */
 
-/** 소문자화 + 공백/구두점 제거 + 연차 표기(년/yo/year) 제거 */
+import { SPELLING } from './searchAliases';
+
+/** 소문자화 + 공백/구두점 제거 + 같은 말의 다른 표기 모으기 + 연차 표기(년/yo/year) 제거 */
 export function normalizeQuery(s: string): string {
-  return s
-    .toLowerCase()
-    .replace(/[\s·・.,'"’`()[\]{}\-_/&+]/g, '')
-    .replace(/년|년산|yearold|years|year|yrs|yr|yo\b/g, '')
-    .trim();
+  let t = s.toLowerCase().replace(/[\s·・.,'"’`()[\]{}\-_/&+]/g, '');
+  for (const [re, to] of SPELLING) t = t.replace(re, to);
+  return t.replace(/년|년산|yearold|years|year|yrs|yr|yo\b/g, '').trim();
 }
 
 /** 토큰 분리(공백 기준). 각 토큰도 정규화한다. */

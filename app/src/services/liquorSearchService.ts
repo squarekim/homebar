@@ -15,14 +15,34 @@ interface Indexed {
   aliases: string[];
   cho: string;     // 한글명 초성
   all: string[];   // 매칭 대상 전체
+  kind: string[];  // 종류 이름(세부분류와 사람들이 부르는 종류 이름) — '사케', '탁주'로 찾을 때
 }
+
+/**
+ * 세부분류 → 사람들이 그 종류를 부르는 말.
+ * 제품 이름에 없는 말로 찾을 때 쓴다(사케를 치면 준마이·긴조가, 탁주를 치면 막걸리가 나오게).
+ */
+const KIND_WORDS: Array<[RegExp, string[]]> = [
+  [/준마이|긴조/, ['사케', '니혼슈', '일본술', '일본청주', 'sake', 'nihonshu']],
+  [/보리 소주|고구마 소주|쌀 소주/, ['쇼추', '일본소주', 'shochu']],
+  [/막걸리/, ['탁주', '동동주', 'makgeolli']],
+  [/약주/, ['약주', '전통주']],
+  [/증류식 소주/, ['전통소주', '증류소주', '소주', 'soju']],
+  [/희석식 소주|과일 소주/, ['소주', 'soju']],
+  [/라거|에일|IPA|스타우트|밀맥주|바이스|트라피스트|람빅/i, ['맥주', 'beer']],
+  [/버번/, ['버번', 'bourbon']],
+  [/싱글몰트/, ['싱글몰트', 'single malt']],
+  [/츄하이|하이볼 캔|RTD/i, ['캔칵테일', '츄하이', 'rtd']],
+];
 
 const INDEX: Indexed[] = LIQUOR_MASTER.map((item) => {
   const ko = normalizeQuery(item.nameKo);
   const en = normalizeQuery(item.nameEn);
   const brand = normalizeQuery(item.brand);
   const aliases = item.aliases.map(normalizeQuery).filter(Boolean);
-  return { item, ko, en, brand, aliases, cho: initials(ko), all: [ko, en, brand, ...aliases] };
+  const kind = [item.subcategory, ...KIND_WORDS.filter(([re]) => re.test(item.subcategory)).flatMap(([, w]) => w)]
+    .map(normalizeQuery).filter(Boolean);
+  return { item, ko, en, brand, aliases, cho: initials(ko), all: [ko, en, brand, ...aliases], kind };
 });
 
 /** 한 제품에 대한 점수. 0 이면 매칭 실패 */
@@ -43,6 +63,9 @@ function scoreOne(x: Indexed, q: string, qCho: string, tokens: string[]): { scor
   if (x.aliases.some((a) => a.includes(q))) return { score: 760, matched: 'alias' };
   if (x.brand.includes(q)) return { score: 730, matched: 'partial' };
 
+  // 3-2) 종류 이름 ('사케' → 준마이·긴조, '탁주' → 막걸리)
+  if (q.length >= 2 && x.kind.some((k) => k === q || k.startsWith(q))) return { score: 680, matched: 'partial' };
+
   // 4) 토큰 AND ("발베니 12" → 발베니 + 12 가 모두 들어 있으면 히트)
   if (tokens.length > 1) {
     const hay = x.all.join('|');
@@ -50,7 +73,8 @@ function scoreOne(x: Indexed, q: string, qCho: string, tokens: string[]): { scor
   }
 
   // 5) 초성 ("ㅂㅂㄴ" → 발베니)
-  if (qCho.length >= 2 && x.cho.includes(qCho) && /[ㄱ-ㅎ]/.test(qCho)) return { score: 620, matched: 'fuzzy' };
+  // 사용자가 자음만 쳤을 때만 쓴다. '사케'를 'ㅅㅋ'로 바꿔 대조하면 김창수(ㄱㅊㅅ)… 같은 엉뚱한 결과가 붙는다
+  if (qCho.length >= 2 && /^[ㄱ-ㅎ0-9]+$/.test(q) && x.cho.includes(qCho)) return { score: 620, matched: 'fuzzy' };
 
   // 6) 부분열 ("조니블랙" → 조니워커블랙라벨)
   if (q.length >= 3) {
@@ -95,7 +119,9 @@ export function searchLiquor(query: string, opts: SearchOptions = {}): LiquorSea
     if (score > 0) hits.push({ item: x.item, score, matched });
   }
   hits.sort((a, b) => b.score - a.score || a.item.nameKo.localeCompare(b.item.nameKo, 'ko'));
-  return hits.slice(0, limit);
+  // 이름으로 확실히 맞은 것이 있으면, 글자 몇 개만 겹친 결과(참이슬 → 베이슬 헤이든)는 뺀다
+  const strong = (hits[0]?.score ?? 0) >= 680;
+  return (strong ? hits.filter((h) => h.score >= 600) : hits).slice(0, limit);
 }
 
 /** 카테고리별 인기/대표 제품 (검색어 없이 화면을 채울 때) */

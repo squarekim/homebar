@@ -6,7 +6,8 @@
 import { useMemo, useState } from 'react';
 import { statusRank } from '../services/availabilityService';
 import { allChips, type ChipOption } from './components/common';
-import { type AvailabilityStatus } from '../models/types';
+import { type AvailabilityStatus, type Cocktail } from '../models/types';
+import { SPELLING, COCKTAIL_ALIASES, SIMPLE_ALIASES, INGREDIENT_ALIASES, ibaEnglishName } from '../data/searchAliases';
 
 /** 검색어를 한 번만 다듬는다 (빈 문자열이면 "전부 통과") */
 export function normalize(q: string): string {
@@ -21,17 +22,11 @@ const EN_KO: Array<[RegExp, string]> = [
   [/whisk(e)?y/g, '위스키'], [/bourbon/g, '버번'], [/scotch/g, '스카치'], [/vodka/g, '보드카'], [/tequila/g, '데킬라'], [/brandy/g, '브랜디'],
   [/cognac/g, '코냑'], [/rum/g, '럼'], [/gin/g, '진'], [/lime/g, '라임'], [/lemon/g, '레몬'], [/mint/g, '민트'],
 ];
-/** 같은 말의 다른 한글 표기를 한쪽으로 모은다 */
-const KO_VARIANTS: Array<[RegExp, string]> = [
-  [/마르가리타/g, '마가리타'], [/히또/g, '히토'], [/테킬라/g, '데킬라'], [/칼루아/g, '깔루아'], [/맨하탄|맨해턴/g, '맨해튼'],
-  [/다이커리|다이퀴리/g, '다이키리'], [/피냐/g, '피나'], [/올드패션(?!드)/g, '올드패션드'], [/꼬냑/g, '코냑'], [/위스키사우어/g, '위스키사워'],
-  [/사우어/g, '사워'], [/아마레또/g, '아마레토'], [/진앤토닉/g, '진토닉'], [/버몬트|베르뭇/g, '베르무트'],
-];
 /** 검색 대조용으로 접는다: 소문자, 띄어쓰기와 구두점 제거, 영문 이름과 표기 차이를 한쪽으로 */
 export function fold(s: string): string {
   let t = s.toLowerCase().replace(/[\s·・.,'"’`()[\]{}\-_/&+]/g, '');
   if (/[a-z]/.test(t)) for (const [re, ko] of EN_KO) t = t.replace(re, ko);
-  for (const [re, ko] of KO_VARIANTS) t = t.replace(re, ko);
+  for (const [re, ko] of SPELLING) t = t.replace(re, ko);
   return t;
 }
 
@@ -42,6 +37,41 @@ export function fold(s: string): string {
 export function hits(term: string, ...parts: (string | null | undefined)[]): boolean {
   if (!term) return true;
   return parts.some((p) => !!p && fold(p).includes(term));
+}
+
+/**
+ * 미리 접어 둔 검색 문자열. 목록이 클 때 글자를 칠 때마다 이름과 별명을 다시 접지 않도록 한 번만 만든다.
+ * 조각 사이에 '|'를 넣어, 앞 조각의 끝과 뒤 조각의 앞이 이어져 엉뚱하게 맞는 일을 막는다.
+ */
+export function searchKey(...parts: (string | null | undefined)[]): string {
+  return parts.filter(Boolean).map((p) => fold(p!)).join('|');
+}
+export function hitsKey(term: string, key: string): boolean {
+  return !term || key.includes(term);
+}
+
+const ckKeys = new Map<string, string>();
+/** 칵테일 검색 문자열 — 이름, 다른 이름, IBA 영어 이름, 재료와 재료의 다른 이름 */
+export function cocktailKey(c: Cocktail): string {
+  let k = ckKeys.get(c.id);
+  if (k === undefined) {
+    k = searchKey(c.name, ...(COCKTAIL_ALIASES[c.name] ?? []), ibaEnglishName(c.url),
+      ...c.ingredients.flatMap((i) => [i.ingredientName, ...ingredientAliases(i.ingredientName)]));
+    ckKeys.set(c.id, k);
+  }
+  return k;
+}
+export const ingredientAliases = (name: string): string[] => INGREDIENT_ALIASES[name] ?? [];
+export const simpleAliases = (name: string): string[] => SIMPLE_ALIASES[name] ?? [];
+const sbKeys = new Map<string, string>();
+/** 간단 조합 검색 문자열 — 이름, 다른 이름, 구성 재료와 그 다른 이름 */
+export function simpleKey(b: { id: string; name: string; parts: string[] }): string {
+  let k = sbKeys.get(b.id);
+  if (k === undefined) {
+    k = searchKey(b.name, ...simpleAliases(b.name), ...b.parts, ...b.parts.flatMap(ingredientAliases));
+    sbKeys.set(b.id, k);
+  }
+  return k;
 }
 
 /** 만들 수 있는 것부터, 같은 상태면 가나다순 */

@@ -24,6 +24,13 @@ const DistilleryMapView = lazy(() => import('../components/DistilleryMap').then(
 import { bottleKindLabel } from '../../data/bottleIngredients';
 import { FlavorBars, MakerNoteView, BottleBadges, Term, ChipRow, SearchBox, allChips, type ChipOption } from '../components/common';
 import { BottleMark } from '../components/Mark';
+import { liquorMasterById } from '../../data/liquorMaster';
+
+/** 넣은 병의 제품 영문명과 별칭 — '맥켈란', 'macallan'으로도 내 병을 찾게 한다 */
+const masterNames = (id: string | undefined): string[] => {
+  const m = id ? liquorMasterById.get(id) : undefined;
+  return m ? [m.nameEn, m.brand, ...m.aliases] : [];
+};
 import { normalize, hits } from '../listUtils';
 import { type Bottle, type WhiskySpec } from '../../models/types';
 import { lookupTerm } from '../../data/glossary';
@@ -168,7 +175,8 @@ export function WhiskyPage() {
     return whiskies.filter((w) => {
       const s = specFor(w);
       return (cls === 'all' || (!!s && specMatchesTerm(s, cls)))
-        && hits(t, w.name, w.whiskyClass ? classTags(w.whiskyClass).join(' ') : '', s ? specTitle(s) : '', distilleryOfProduct(w.productId)?.nameKo ?? '');
+        && hits(t, w.name, w.whiskyClass ? classTags(w.whiskyClass).join(' ') : '', s ? specTitle(s) : '', distilleryOfProduct(w.productId)?.nameKo ?? '',
+          ...masterNames(w.productId));
     });
   }, [whiskies, q, cls]);
 

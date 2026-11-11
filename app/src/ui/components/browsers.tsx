@@ -9,7 +9,7 @@ import { useHeldIds, useSubMap, useBottles } from '../../hooks/useData';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { simpleBuilds, evaluateSimpleBuild, pickMyBottles } from '../../services/simpleBuildService';
 import { StateLine, ChipRow, ChipToggle, SearchBox, allChips } from './common';
-import { normalize, hits, byReadyThenName, useGroupChips } from '../listUtils';
+import { normalize, hits, hitsKey, simpleKey, ingredientAliases, byReadyThenName, useGroupChips } from '../listUtils';
 
 /**
  * SimpleBuildBrowser — 믹서 조합표와 Build 계열 레시피를 합쳐 기주별로 보여준다.
@@ -39,7 +39,7 @@ export function SimpleBuildBrowser({ initialQuery, initialOpen }: { initialQuery
       .filter(({ b, e }) => {
         if (grp !== 'all' && b.group !== grp) return false;
         if (readyOnly && e.status !== 'READY') return false;
-        return hits(t, b.name, b.parts.join(' '));
+        return hitsKey(t, simpleKey(b));
       })
       .sort(byReadyThenName((x) => x.e.status, (x) => x.b.name));
   }, [judged, q, grp, readyOnly]);
@@ -104,7 +104,7 @@ export function IngredientBrowser() {
   const rows = useMemo(() => {
     const t = normalize(q);
     return referenceRepo.ingredients().filter((i) =>
-      (cat === 'all' || i.category === cat) && hits(t, i.name) && (!ownedOnly || heldIds.has(i.id)));
+      (cat === 'all' || i.category === cat) && hits(t, i.name, ...ingredientAliases(i.name)) && (!ownedOnly || heldIds.has(i.id)));
   }, [q, cat, ownedOnly, heldIds]);
 
   const describe = (id: string, name: string, category: string, usage: number) => {

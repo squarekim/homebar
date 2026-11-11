@@ -19,7 +19,7 @@ import { SimpleBuildBrowser, IngredientBrowser } from '../components/browsers';
 import { simpleBuilds, evaluateSimpleBuild } from '../../services/simpleBuildService';
 import { ChipRow, ChipToggle, SearchBox, StateLine, MethodIcon, type ChipOption, FilterButton, GarnishBadge } from '../components/common';
 import { CocktailMark } from '../components/Mark';
-import { normalize, hits, byReadyThenName, useGroupChips } from '../listUtils';
+import { normalize, hitsKey, cocktailKey, simpleKey, byReadyThenName, useGroupChips } from '../listUtils';
 import { type AvailabilityStatus } from '../../models/types';
 
 type StatusFilter = 'all' | AvailabilityStatus;
@@ -63,7 +63,7 @@ export function CocktailsPage() {
         if (base !== 'all' && c.base !== base) return false;
         if (iba !== 'all' && c.iba !== iba) return false;
         if (status !== 'all' && e.status !== status) return false;
-        return hits(t, c.name, ...c.ingredients.map((i) => i.ingredientName));
+        return hitsKey(t, cocktailKey(c));
       })
       .sort(byReadyThenName((x) => x.e.status, (x) => x.c.name));
   }, [q, ready, base, iba, status, heldIds, subMap]);
@@ -74,7 +74,7 @@ export function CocktailsPage() {
     const t = normalize(q);
     if (!t || filterCount > 0) return [];
     return simpleBuilds()
-      .filter((b) => !b.recipeId && hits(t, b.name, b.parts.join(' ')))
+      .filter((b) => !b.recipeId && hitsKey(t, simpleKey(b)))
       .map((b) => ({ b, e: evaluateSimpleBuild(b, heldIds, subMap) }))
       .filter(({ e }) => !ready || e.status === 'READY' || e.status === 'SUBSTITUTE')
       .sort(byReadyThenName((x) => x.e.status, (x) => x.b.name));
