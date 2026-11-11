@@ -36,8 +36,10 @@ const VIEWS: ChipOption<View>[] = [{ v: 'list', label: '내 위스키' }, { v: '
 
 /** 핵심 맛 — 향미 상위 두 축과 분류 캐릭터(피티드 등) */
 function character(w: Bottle): string {
-  const words = whiskyWords(w);
   const chars = w.whiskyClass?.character.filter((c) => c !== '논피트') ?? [];
+  // 분류 말과 같은 뜻의 맛 말은 한 번만 적는다 ('피티드'가 있으면 '피트', '해양성'이 있으면 '바다'는 뺀다)
+  const SAME: Record<string, string> = { 피트: '피티드', 바다: '해양성', 스모크: '스모키' };
+  const words = whiskyWords(w, 3).filter((x) => !(SAME[x] && chars.includes(SAME[x]!)));
   return [...chars, ...words].slice(0, 3).join(' · ');
 }
 
@@ -224,7 +226,7 @@ export function WhiskyPage() {
                   <button className="btn sm ghost" onClick={closeBottle}>← 목록</button>
                   <b>{selected.name}</b>
                 </div>
-                <WhiskyDetail bottle={selected} />
+                <WhiskyDetail key={selected.id} bottle={selected} />
               </div>
             )
             : <div className="placeholder">목록에서 한 병을 고르면 맛 설명과 공식 노트가 열려요.</div>}

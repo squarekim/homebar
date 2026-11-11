@@ -146,7 +146,7 @@ export function CocktailsPage() {
                   <button className="btn sm ghost" onClick={closeCocktail}>← 목록</button>
                   <b>{selected.name}</b>
                 </div>
-                <CocktailDetail id={selected.id} />
+                <CocktailDetail key={selected.id} id={selected.id} />
               </div>
             )
             : <div className="placeholder">목록에서 한 잔을 고르면 여기에 레시피가 열려요.</div>}
