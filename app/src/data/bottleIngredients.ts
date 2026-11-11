@@ -88,5 +88,8 @@ export function bottleKindLabel(b: { node: string; group: string }): string {
 
 /** 데이터의 묶음 이름을 화면에 적는 말로 — 칵테일에 안 쓰는 술 묶음은 '그 밖의 술' */
 export function groupLabel(group: string): string {
-  return group === '기타 (칵테일 미활용)' ? '그 밖의 술' : group;
+  if (group === '기타 (칵테일 미활용)') return '그 밖의 술';
+  // 저장된 값은 그대로 두고 보이는 이름만 바꾼다('상비품'은 처음 만든 사람의 말이었다)
+  if (group === '음료·믹서·시럽·비터·상비품') return '음료·믹서·시럽·비터';
+  return group;
 }

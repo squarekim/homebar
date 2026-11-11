@@ -117,7 +117,7 @@ function BottleList({ bottles }: { bottles: Bottle[] }) {
 }
 
 const SPIRIT_CATS = ['위스키', '진', '보드카', '럼', '데킬라·아가베', '브랜디', '리큐르', '비터·아페리티프', '베르무트·와인'];
-const MIXER_CATS = ['주스·과즙', '탄산·음료', '시럽·감미', '신선·허브', '유제품·기타'];
+const MIXER_CATS = ['주스·과즙', '탄산·음료', '시럽·감미', '신선·허브', '부재료'];
 
 type View = 'all' | 'spirit' | 'mixer';
 type Own = 'all' | 'owned' | 'missing';
