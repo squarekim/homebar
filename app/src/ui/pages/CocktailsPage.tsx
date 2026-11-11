@@ -11,11 +11,12 @@ import { cocktailWords } from '../../services/tasteWords';
 import { useMemo, useState } from 'react';
 import { useUI } from '../UIContext';
 import { useHeldIds, useSubMap } from '../../hooks/useData';
+import { garnishState } from '../../services/garnishStock';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { evaluateCocktail } from '../../services/availabilityService';
 import { CocktailDetail } from '../components/CocktailDetail';
 import { SimpleBuildBrowser, IngredientBrowser } from '../components/browsers';
-import { ChipRow, ChipToggle, SearchBox, StateLine, MethodIcon, type ChipOption, FilterButton } from '../components/common';
+import { ChipRow, ChipToggle, SearchBox, StateLine, MethodIcon, type ChipOption, FilterButton, GarnishBadge } from '../components/common';
 import { CocktailMark } from '../components/Mark';
 import { normalize, hits, byReadyThenName, useGroupChips } from '../listUtils';
 import { type AvailabilityStatus } from '../../models/types';
@@ -129,7 +130,12 @@ export function CocktailsPage() {
                   </span>
                   <div className="taste">{cocktailWords(c).join(' · ')} · {c.base}</div>
                   {/* 묶음 제목이 이미 '지금 만들 수 있어요'라서, 그대로 만들 수 있는 잔에는 상태를 다시 적지 않는다 */}
-                  {e.status !== 'READY' && <div className="foot"><StateLine status={e.status} lack={e.lack} /></div>}
+                  {(e.status !== 'READY' || garnishState(c, heldIds) === 'all') && (
+                    <div className="foot">
+                      {e.status !== 'READY' && <StateLine status={e.status} lack={e.lack} />}
+                      {(e.status === 'READY' || e.status === 'SUBSTITUTE') && garnishState(c, heldIds) === 'all' && <GarnishBadge />}
+                    </div>
+                  )}
                 </div>
               </button>
                 ))}

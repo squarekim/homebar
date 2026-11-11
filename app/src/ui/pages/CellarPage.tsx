@@ -20,6 +20,7 @@ import { normalize, hits, useGroupChips } from '../listUtils';
 import { IS_PUBLIC } from '../../config';
 import { type Bottle } from '../../models/types';
 import { LogList } from './NotesPage';
+import { GarnishStockBox } from '../components/GarnishStockBox';
 
 const SUBS: ChipOption<CellarSub>[] = [{ v: 'bottles', label: '보유 술' }, { v: 'stock', label: '재료 재고' }, { v: 'logs', label: '마신 기록' }];
 
@@ -223,6 +224,7 @@ function StockManager() {
           </div>
         );
       })}
+      {view !== 'spirit' && <GarnishStockBox own={own} />}
     </>
   );
 }

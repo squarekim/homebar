@@ -172,6 +172,13 @@ export const GUIDE_CHAPTERS: readonly GuideChapter[] = [
       { title: '소금 림, 설탕 림', body: ['1. 라임이나 오렌지 조각으로 잔 테두리의 바깥쪽만 적셔요.', '2. 접시에 편 소금이나 설탕에 테두리를 굴려요.', '잔 안쪽까지 묻히면 음료에 씻겨 들어가 짜져요.'], sources: [D_RIM, iba('Margarita', 'margarita')] },
       { title: '체리, 올리브, 칵테일 어니언', body: ['병에서 꺼내 픽에 꽂아 잔에 걸치거나 잔에 넣어요.'], sources: [iba('Manhattan', 'manhattan'), I_MARTINI] },
       { title: '넛맥', body: ['통 넛맥(육두구)을 강판에 갈아 완성한 음료 위에 뿌려요.'], sources: [iba('Alexander', 'alexander')] },
+      { title: '가니시가 없을 때', body: [
+        '가니시가 있든 없든 음료를 만드는 데는 문제가 없어요. 중요한 손님이 온다면 올리는 편이 더 먹음직스러워요.',
+        '생과일을 늘 두기 어렵다면 말린 레몬·라임·오렌지 칩으로 슬라이스를 대신할 수 있어요. 말린 칩은 보기 좋게 해 주지만 향이나 오일은 더하지 않아요.',
+        '사제락, 베스퍼, 불바디에처럼 레시피에 제스트나 필이 적힌 잔은 껍질을 비틀어 오일로 향을 입혀요. 이런 잔에는 생과일 껍질이 있어야 해요.',
+        '자른 껍질은 하루 남짓만 가요. 미리 잘라 둘 때는 냉장고에 넣어요.',
+        '술장 › 재료 재고의 "가니시"에 체크해 두면 레시피에 "가니시까지 있어요"가 붙어요.',
+      ], sources: [{ label: 'Cocktails Distilled, How To Make Dehydrated Citrus Wheels', url: 'https://cocktailsdistilled.com/?p=4630' }, D_ZEST] },
     ],
   },
   {

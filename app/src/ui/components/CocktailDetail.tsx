@@ -9,6 +9,7 @@ import { cocktailWords } from '../../services/tasteWords';
 import { useState } from 'react';
 import { useUI } from '../UIContext';
 import { useHeldIds, useSubMap } from '../../hooks/useData';
+import { garnishState } from '../../services/garnishStock';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { evaluateCocktail, STATUS_LEAD_KO } from '../../services/availabilityService';
 import { FlavorBars, MethodIcon, Term } from './common';
@@ -146,7 +147,11 @@ export function CocktailDetail({ id }: { id: string }) {
         </div>
       ))}
       {ck.garnish && (
-        <div className="garnish"><span className="gl">가니시</span><span className="gv">{ck.garnish}</span></div>
+        <div className="garnish">
+          <span className="gl">가니시</span><span className="gv">{ck.garnish}</span>
+          {/* 있을 때만 알린다 — 없다고 매 잔마다 적지 않는다(가니시는 없어도 만들 수 있다) */}
+          {garnishState(ck, heldIds) === 'all' && <span className="gnhave">있어요</span>}
+        </div>
       )}
       <div className="guidelinks">
         <button onClick={() => openGuide('methods')}>만드는 방법</button>

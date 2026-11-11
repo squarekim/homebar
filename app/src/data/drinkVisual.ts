@@ -269,25 +269,42 @@ const CITRUS = new Set<GarnishKind>(['lemon', 'lime', 'orange']);
 /** 한 잔에 그리는 가니시 수 — 뉴욕 사워(제스트+체리), 마이 타이(라임+민트+파인애플)까지 담는다 */
 export const GARNISH_MAX = 3;
 
+/** 가니시 글의 한 조각 — 무엇(kind)과 모양(form), 그리고 '(선택)'이 붙었는지. 못 알아본 조각은 kind 가 null 이다. */
+export interface GarnishPart { text: string; kind: GarnishKind | null; form: GarnishForm | null; optional: boolean }
+
+/**
+ * 가니시 글을 조각으로 읽는다(개수 제한 없음). 그림(garnishItems)과 재고 판정(garnishStock)이 같은 읽기를 쓴다.
+ * '(선택)'은 그 말이 붙은 조각에만 걸린다.
+ */
+export function garnishParts(garnish: string | undefined): GarnishPart[] {
+  if (!garnish) return [];
+  // '레몬/오렌지 제스트'는 둘 다 제스트다
+  return garnish.split(/[+·,]|와 |과 /).map((p) => p.trim()).filter(Boolean)
+    .flatMap((p) => {
+      const optional = /\(선택\)/.test(p);
+      const t = p.replace(/\s*\(선택\)/g, '').trim();
+      const pieces = t.includes('/') && /제스트|필/.test(t)
+        ? t.split('/').map((s) => (/제스트|필/.test(s) ? s : `${s} 제스트`))
+        : [t];
+      return pieces.map((x) => {
+        const kind = GARNISH.find(([re]) => re.test(x))?.[1] ?? null;
+        const fruit = kind !== null && (CITRUS.has(kind) || kind === 'pineapple');
+        const form: GarnishForm | null = !fruit ? null
+          : /제스트|필|트위스트|껍질/.test(x) ? 'peel'
+          : /슬라이스|휠|둥근/.test(x) ? 'wheel'
+          : 'wedge';
+        return { text: x, kind, form, optional };
+      });
+    });
+}
+
 /** 가니시 — 데이터에 적힌 것만, 적힌 순서대로. 못 알아보면 아무것도 그리지 않는다. */
 export function garnishItems(ck: Cocktail): GarnishItem[] {
   if (!ck.garnish) return [];
   const glass = glassOf(ck);
-  // '레몬/오렌지 제스트'는 둘 다 제스트다
-  const parts = ck.garnish.replace(/\s*\(선택\)/g, '')
-    .split(/[+·,]|와 |과 /).map((p) => p.trim()).filter(Boolean)
-    .flatMap((p) => p.includes('/') && /제스트|필/.test(p)
-      ? p.split('/').map((s) => (/제스트|필/.test(s) ? s : `${s} 제스트`))
-      : [p]);
   const out: GarnishItem[] = [];
-  for (const t of parts) {
-    const kind = GARNISH.find(([re]) => re.test(t))?.[1];
+  for (const { text: t, kind, form } of garnishParts(ck.garnish)) {
     if (!kind) continue;
-    const fruit = CITRUS.has(kind) || kind === 'pineapple';
-    const form: GarnishForm | null = !fruit ? null
-      : /제스트|필|트위스트|껍질/.test(t) ? 'peel'
-      : /슬라이스|휠|둥근/.test(t) ? 'wheel'
-      : 'wedge';
     const place: GarnishPlace = kind === 'rim' ? 'rim'
       : kind === 'dust' ? 'dust'
       : PICKED.has(kind) ? 'pick'

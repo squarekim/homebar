@@ -9,10 +9,11 @@ import { IconMartini, IconWhisky } from '../components/icons';
 import { useCallback, useMemo, useState, type ReactElement } from 'react';
 import { useUI } from '../UIContext';
 import { useRecommendContext } from '../../hooks/useRecommendContext';
-import { useLogs } from '../../hooks/useData';
+import { useLogs, useHeldIds } from '../../hooks/useData';
+import { garnishState } from '../../services/garnishStock';
 import { whatToDrink, type RecommendMode, diversePool } from '../../services/recommendationService';
 import { STATUS_LEAD_KO } from '../../services/availabilityService';
-import { ChipRow, FilterButton, LogCard, StarterNotice, StartButtons, allChips } from '../components/common';
+import { ChipRow, FilterButton, LogCard, StarterNotice, StartButtons, allChips, GarnishBadge } from '../components/common';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { TodayReel } from '../components/TodayReel';
 import { MODES, GroupRec, PurchaseRec, ClearStockRec } from './RecommendPage';
@@ -135,6 +136,7 @@ export function TodayPage() {
     </div>
   );
   const [picked, setPicked] = useState<RecommendationResult | null>(null);
+  const heldIds = useHeldIds();
   const onPicked = useCallback((r: RecommendationResult | null) => setPicked(r), []);
   const recent = logs.slice(0, 3);
 
@@ -175,6 +177,10 @@ export function TodayPage() {
                     : picked.kind === 'whisky' ? '가지고 있는 병이에요' : '지금 술장으로 만들 수 있어요'}
                 </p>
                 {state(picked) && <div className={`state s-${state(picked)!.cls}`}>{state(picked)!.text}</div>}
+                {picked.kind === 'cocktail' && (() => {
+                  const ck = referenceRepo.cocktailById(picked.id);
+                  return ck && garnishState(ck, heldIds) === 'all' ? <GarnishBadge /> : null;
+                })()}
                 <div className="pickbtns">
                   <button className="btn primary big" onClick={() => made(picked)}>
                     {picked.kind === 'cocktail' ? '만든 잔 남기기' : '마신 잔 남기기'}
