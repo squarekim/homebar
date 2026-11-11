@@ -5,7 +5,7 @@ import { GLOSSARY, lookupTerm, normalizeTerm } from '../../data/glossary';
 import { useUI } from '../UIContext';
 import { IS_PUBLIC, STARTER_INVENTORY } from '../../config';
 import { isExampleOn, turnOffExample, keepExampleAsMine, resetInventoryToSeed } from '../../db/migrate';
-import { IconBuild, IconShake, IconStir, IconMuddle, IconBlend, IconLayer, IconSwizzle, IconFloat } from './icons';
+import { IconStrainer, IconBuild, IconShake, IconStir, IconMuddle, IconBlend, IconLayer, IconSwizzle, IconFloat } from './icons';
 
 /**
  * 모달 껍데기 — 스크림 · 닫기 버튼 · ESC 닫기 · 배경 스크롤 잠금.
@@ -358,5 +358,16 @@ export function StartButtons() {
         <button className="btn" onClick={async () => { await resetInventoryToSeed(); notifyExample(); toast('예시 재고를 켰어요'); }}>예시로 둘러보기</button>
       )}
     </div>
+  );
+}
+
+/** 필터 버튼 — 글자 대신 바 스트레이너 아이콘. 켜진 조건 수를 작은 점 숫자로 붙인다 */
+export function FilterButton({ open, count, onToggle }: { open: boolean; count: number; onToggle: () => void }) {
+  const label = count ? `필터, ${count}개 켜짐` : '필터';
+  return (
+    <button className="chip iconchip" aria-pressed={open} aria-label={label} title={label} onClick={onToggle}>
+      <IconStrainer />
+      {count > 0 && <span className="badge">{count}</span>}
+    </button>
   );
 }

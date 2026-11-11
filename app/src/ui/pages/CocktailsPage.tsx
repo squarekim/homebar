@@ -15,7 +15,7 @@ import { referenceRepo } from '../../repositories/referenceRepo';
 import { evaluateCocktail } from '../../services/availabilityService';
 import { CocktailDetail } from '../components/CocktailDetail';
 import { SimpleBuildBrowser, IngredientBrowser } from '../components/browsers';
-import { ChipRow, ChipToggle, SearchBox, StateLine, MethodIcon, type ChipOption } from '../components/common';
+import { ChipRow, ChipToggle, SearchBox, StateLine, MethodIcon, type ChipOption, FilterButton } from '../components/common';
 import { CocktailMark } from '../components/Mark';
 import { normalize, hits, byReadyThenName, useGroupChips } from '../listUtils';
 import { type AvailabilityStatus } from '../../models/types';
@@ -48,7 +48,7 @@ export function CocktailsPage() {
   const [status, setStatus] = useState<StatusFilter>('all');
 
   const bases = useGroupChips(referenceRepo.cocktails(), (c) => c.base, '베이스 술 전체');
-  const filtered = base !== 'all' || iba !== 'all' || status !== 'all';
+  const filterCount = (base !== 'all' ? 1 : 0) + (iba !== 'all' ? 1 : 0) + (status !== 'all' ? 1 : 0);
 
   const rows = useMemo(() => {
     const t = normalize(q);
@@ -92,8 +92,8 @@ export function CocktailsPage() {
 
       <SearchBox value={q} onChange={setQ} placeholder="칵테일 또는 재료 검색" />
       <div className="controls tight">
+        <FilterButton open={openFilter} count={filterCount} onToggle={() => setOpenFilter((v) => !v)} />
         <ChipToggle label="지금 만들 수 있는 것" cls="ok" on={ready} onToggle={() => setReady((v) => !v)} />
-        <ChipToggle label={filtered ? '필터 켜짐' : '필터'} on={openFilter} onToggle={() => setOpenFilter((v) => !v)} />
       </div>
 
       {openFilter && (

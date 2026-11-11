@@ -10,7 +10,7 @@ import { useRecommendContext } from '../../hooks/useRecommendContext';
 import { useLogs } from '../../hooks/useData';
 import { whatToDrink, type RecommendMode, diversePool } from '../../services/recommendationService';
 import { STATUS_LEAD_KO } from '../../services/availabilityService';
-import { ChipRow, ChipToggle, LogCard, StarterNotice, StartButtons, allChips } from '../components/common';
+import { ChipRow, FilterButton, LogCard, StarterNotice, StartButtons, allChips } from '../components/common';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { TodayReel } from '../components/TodayReel';
 import { MODES, GroupRec, PurchaseRec, ClearStockRec } from './RecommendPage';
@@ -112,12 +112,10 @@ export function TodayPage() {
   const filters = (
     <div className="pickfilters">
       <div className="controls tight">
+        {kind !== 'whisky' && <FilterButton open={openFilter} count={filterCount} onToggle={() => setOpenFilter((v) => !v)} />}
         {KINDS.map((k) => (
           <button key={k.v} className="chip" aria-pressed={kind === k.v} onClick={() => setKind(k.v)}>{k.label}</button>
         ))}
-        {kind !== 'whisky' && (
-          <ChipToggle label={filterCount ? `필터 ${filterCount}` : '필터'} on={openFilter} onToggle={() => setOpenFilter((v) => !v)} />
-        )}
       </div>
       {openFilter && kind !== 'whisky' && (
         <div className="filterpanel">
