@@ -1,3 +1,4 @@
+import { isOfficialNote, noteSourceLabel } from '../../data/makerNoteSource';
 import { useEffect, useState, type ReactNode, type SyntheticEvent } from 'react';
 import { type MethodKey, METHOD_LABELS_KO, type AvailabilityStatus, type FlavorVector, FLAVOR_AXES, FLAVOR_LABELS_KO, type RecommendationResult, type MakerNote, type BottleBadge, type WhiskyClass, type DrinkLog, SERVING_LABELS_KO } from '../../models/types';
 import { STATUS_LABEL_KO, STATUS_SENTENCE_KO } from '../../services/availabilityService';
@@ -102,6 +103,10 @@ export function BottleBadges({ badges }: { badges: BottleBadge[] }) {
 }
 
 /** 제조사/공식 테이스팅 노트 표시 (출처 링크 포함) */
+/** 노트 제목 — 제조사(공식 수입사 포함)가 밝힌 노트인지, 매체·판매처가 정리한 노트인지 */
+export const noteHeading = (n: MakerNote | undefined): string => (!n || isOfficialNote(n) ? '제조사 공식 노트' : '테이스팅 노트');
+export const noteTag = (n: MakerNote | undefined): string => (isOfficialNote(n) ? '공식 노트' : '테이스팅 노트');
+
 export function MakerNoteView({ note, empty }: { note?: MakerNote | undefined; empty?: string | undefined }) {
   if (!note) {
     return <div className="hint" style={{ margin: '6px 0 0' }}>{empty ?? '제조사 공식 노트가 아직 없는 술이에요. 아래에 직접 적어 두세요.'}</div>;
@@ -112,7 +117,9 @@ export function MakerNoteView({ note, empty }: { note?: MakerNote | undefined; e
       {note.nose && <p className="mn-line"><b>향(Nose)</b> {note.nose}</p>}
       {note.palate && <p className="mn-line"><b>맛(Palate)</b> {note.palate}</p>}
       {note.finish && <p className="mn-line"><b>피니시(Finish)</b> {note.finish}</p>}
-      <a className="mn-src" href={note.source} target="_blank" rel="noopener">출처: {note.sourceName ?? note.source} ↗</a>
+      <a className="mn-src" href={note.source} target="_blank" rel="noopener">
+        출처: {noteSourceLabel(note)}{isOfficialNote(note) ? '' : ' · 매체 정리'} ↗
+      </a>
     </div>
   );
 }

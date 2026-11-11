@@ -177,7 +177,10 @@ export function TodayReel({ picks, onPicked, between, children }: {
           <button className="btn primary big" onClick={pick} disabled={!k}>
             {phase === 'shuffle' ? '바로 보기' : '대신 골라 주기'}
           </button>
-          <p className="hint">{phase === 'shuffle' ? '카드를 뒤집는 중이에요' : '마음에 드는 카드를 눌러 보세요. 취향에 가까운 잔일수록 자주 나와요'}</p>
+          <p className="hint">{phase === 'shuffle' ? '카드를 뒤집는 중이에요' : (picks.length > k
+              // 카드는 7장까지만 펼치지만, 어느 카드를 눌러도 후보 전체에서 한 잔을 고른다
+              ? `카드 ${k}장 중 아무거나 누르면 ${picks.length}잔 가운데 한 잔이 나와요. 취향에 가까운 잔일수록 자주 나와요`
+              : '마음에 드는 카드를 눌러 보세요. 취향에 가까운 잔일수록 자주 나와요')}</p>
         </div>
       )}
     </>

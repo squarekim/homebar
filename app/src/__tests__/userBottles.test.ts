@@ -44,3 +44,26 @@ describe('위스키 둘러보기', () => {
     expect(balvenie.makerNote).toBeTruthy();
   });
 });
+
+describe('칵테일 도수(재료 기준)', () => {
+  it('양과 라벨 도수로 계산하고, 양이 정해지지 않으면 비운다', async () => {
+    const { cocktails } = await import('../data/adapters');
+    const { cocktailAbv } = await import('../services/cocktailStrength');
+    const at = (n: string) => cocktailAbv(cocktails.find((c) => c.name === n)!);
+    expect(at('네그로니')).toBeGreaterThan(20);
+    expect(at('네그로니')).toBeLessThan(35);
+    expect(at('미모사')).toBeLessThan(10);
+    expect(at('올드 패션드')).not.toBeNull();   // 각설탕은 부피 0
+    expect(at('모히토')).toBeNull();            // 탄산수 Top
+  });
+});
+
+describe('노트 출처', () => {
+  it('공식·수입사는 공식 노트, 매체 정리는 따로 표시한다', async () => {
+    const { isOfficialNote, noteSourceLabel } = await import('../data/makerNoteSource');
+    expect(isOfficialNote({ source: 'x', sourceName: 'The Macallan 공식' })).toBe(true);
+    expect(isOfficialNote({ source: 'x', sourceName: 'The Whiskey Wash (JW Black 12)' })).toBe(false);
+    expect(isOfficialNote({ source: 'x', sourceName: '참고: 나무위키(화요) — 공식 영문 노트 부재' })).toBe(false);
+    expect(noteSourceLabel({ source: 'x', sourceName: 'The Balvenie 공식 — 숙성 설명(향미 3분할 노트는 공식 페이지에 없음)' })).toBe('The Balvenie 공식');
+  });
+});

@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { useUI } from '../UIContext';
 import { useHeldIds, useSubMap } from '../../hooks/useData';
 import { garnishState } from '../../services/garnishStock';
+import { cocktailAbv } from '../../services/cocktailStrength';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { evaluateCocktail, STATUS_LEAD_KO } from '../../services/availabilityService';
 import { FlavorBars, MethodIcon, Term } from './common';
@@ -92,6 +93,7 @@ export function CocktailDetail({ id }: { id: string }) {
 
   const ev = evaluateCocktail(ck, heldIds, subMap);
   const words = cocktailWords(ck);
+  const abv = cocktailAbv(ck);
   const rec = lastRec && lastRec.id === ck.id ? lastRec : null;
 
   return (
@@ -105,6 +107,11 @@ export function CocktailDetail({ id }: { id: string }) {
       <div className="meta">
         <span className="mi">{ck.base}</span>
         {IBA_PLAIN[ck.iba] && <span className="mi">{IBA_PLAIN[ck.iba]}</span>}
+        {abv !== null && (
+          <span className="mi" title="재료 양과 라벨 도수로 계산했어요. 얼음이 녹으면 더 낮아져요.">
+            도수 약 {abv}% <small>(얼음 넣기 전)</small>
+          </span>
+        )}
       </div>
       <div className={`state s-${ev.status}`}>
         {STATUS_LEAD_KO[ev.status]}{ev.lack.length > 0 && ` · 없는 재료: ${ev.lack.join(', ')}`}

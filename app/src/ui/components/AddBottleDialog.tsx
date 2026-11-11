@@ -12,7 +12,7 @@ import { draftFromMaster, draftManual } from '../../data/userBottles';
 import { CATEGORY_LABELS, CATEGORY_ORDER, CATEGORY_DEFAULT_INGREDIENT, SUBCATEGORY_INGREDIENT } from '../../data/liquorCategory';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { type LiquorCategory, type LiquorMasterItem, type UserBottle, type WhiskyClass } from '../../models/types';
-import { ChipRow, ChipMulti, Modal, MakerNoteView, chips, type ChipOption } from './common';
+import { ChipRow, ChipMulti, Modal, MakerNoteView, noteHeading, noteTag, chips, type ChipOption } from './common';
 import { MASTER_MAKER_NOTES } from '../../data/makerNotesMaster';
 import { toggleValue } from '../listUtils';
 import { specOf, specTitle, displayRegionLabel } from '../../data/whiskySpec';
@@ -183,7 +183,7 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
                     <span className="mi">{item.subcategory}</span>
                     {item.abv ? <span className="mi">{item.abv}%</span> : null}
                     <span className="mi">{item.country}</span>
-                    {MASTER_MAKER_NOTES[item.id] && <span className="mi note">공식 노트</span>}
+                    {MASTER_MAKER_NOTES[item.id] && <span className="mi note">{noteTag(MASTER_MAKER_NOTES[item.id])}</span>}
                   </div>
                 </button>
               ))}
@@ -218,7 +218,7 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
                   자동 분류: {autoClass(picked)}
                 </div>
               )}
-              <div className="sechead in">제조사 공식 노트</div>
+              <div className="sechead in">{noteHeading(MASTER_MAKER_NOTES[picked.id])}</div>
               <MakerNoteView
                 note={MASTER_MAKER_NOTES[picked.id]}
                 empty="이 술은 확인된 제조사 공식 노트가 없어요. 추가한 뒤 직접 적어 둘 수 있어요."

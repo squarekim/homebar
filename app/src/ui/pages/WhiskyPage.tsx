@@ -22,7 +22,7 @@ import { DistilleryCard } from '../components/DistilleryCard';
 /** 세계 지도는 데이터·윤곽이 커서(약 320KB) 열 때 불러온다 */
 const DistilleryMapView = lazy(() => import('../components/DistilleryMap').then((m) => ({ default: m.DistilleryMapView })));
 import { bottleKindLabel } from '../../data/bottleIngredients';
-import { FlavorBars, MakerNoteView, BottleBadges, Term, ChipRow, SearchBox, allChips, type ChipOption } from '../components/common';
+import { FlavorBars, MakerNoteView, noteHeading, noteTag, BottleBadges, Term, ChipRow, SearchBox, allChips, type ChipOption } from '../components/common';
 import { BottleMark } from '../components/Mark';
 import { liquorMasterById, LIQUOR_MASTER } from '../../data/liquorMaster';
 import { previewBottle, isPreviewId } from '../../data/userBottles';
@@ -122,7 +122,7 @@ function WhiskyDetail({ bottle: w, owned }: { bottle: Bottle; owned?: Bottle | u
       </div>
       <BottleBadges badges={w.badges} />
 
-      <div className="sechead in">제조사 공식 노트</div>
+      <div className="sechead in">{noteHeading(w.makerNote)}</div>
       <MakerNoteView note={w.makerNote} empty="이 술은 확인된 제조사 공식 노트가 없어요." />
 
       {pairs.length > 0 && (
@@ -243,7 +243,7 @@ export function WhiskyPage() {
                   <div className="foot">
                     {w.abv && <span className="mi">{w.abv}</span>}
                     <RegionTag w={w} />
-                    {w.makerNote && <span className="mi note">공식 노트</span>}
+                    {w.makerNote && <span className="mi note">{noteTag(w.makerNote)}</span>}
                     {browsing && w.productId && ownedByProduct.has(w.productId) && <span className="mi own">가지고 있어요</span>}
                   </div>
                 </div>
