@@ -11,7 +11,7 @@ git clone https://github.com/squarekim/homebar.git
 cd homebar/app
 npm install
 npm run dev      # http://localhost:5173
-npm test         # 32건, 전부 통과해야 정상
+npm test         # 70건, 전부 통과해야 정상
 ```
 
 Node 20 이상. 그 외 준비물 없다 — **서버도 DB도 API 키도 없다.** 전부 브라우저 안에서 돈다.
@@ -99,9 +99,9 @@ git push -u origin feat/무엇을-하는지
 설명은 `note` 에 **한 문장**. IBA 등재 연혁은 적지 않는다(화면의 IBA 배지가 이미 말한다).
 일괄 정리는 `scripts/structureRecipeNotes.mjs` 가 한다.
 
-**추천 화면 문구** → 상태는 **평소와 다를 때만** 적는다. `STATUS_SENTENCE_KO` 에 READY 가 없는 건 그래서다 —
+**추천 화면 문구** → 상태는 **평소와 다를 때만** 적는다. `오늘` 화면이 READY 일 때 문구를 띄우지 않는 건 그래서다 —
 레시피대로 만들 수 있는 게 기본값이라 모든 카드에 같은 말을 붙이면 정보가 되지 않는다.
-쓰는 말은 둘뿐이다: `대체해서 만들 수 있어요`(근사) · `없어서 안 돼요`(부족·불가).
+화면에 뜨는 말은 `STATUS_LEAD_KO` 의 둘뿐이다: `대체 재료로 만들 수 있어요`(근사) · `재료가 부족해요`(부족·불가).
 `STATUS_LABEL_KO`(정규·근사)는 배지·통계처럼 자리가 좁은 곳에만 남긴다. 점수는 카드 앞면에 두지 않는다 —
 이름·맛이 먼저고, 숫자는 '추천 근거'를 펼쳤을 때 나온다(이슈 #1).
 
@@ -131,7 +131,7 @@ git push -u origin feat/무엇을-하는지
 ## 6. 테스트 기준
 
 ```bash
-npm test          # vitest 42건
+npm test          # vitest 70건
 npm run typecheck # 앱(tsconfig.json) + 빌드 설정(tsconfig.node.json) 둘 다
 npm run build     # typecheck + vite build
 ```
@@ -174,7 +174,7 @@ npm run build     # typecheck + vite build
 |---|---|---|
 | 쉬움 | 기준 제품 DB 확장 (현재 377종) | 검색해서 안 나오는 술이 아직 많다. 데이터만 추가하면 된다 |
 | 쉬움 | 추가한 술 **편집** 기능 | 지금은 추가/삭제만 된다 |
-| 쉬움 | 제조사 공식 노트 **채우기** | 43종뿐이다. 공식 페이지가 있는 제품부터 `makerNotesMaster.ts` 에 출처와 함께 추가하면 된다 |
+| 쉬움 | 제조사 공식 노트 **채우기** | 42종뿐이다. 공식 페이지가 있는 제품부터 `makerNotesMaster.ts` 에 출처와 함께 추가하면 된다 |
 | 중간 | 재고 잔량 UI 개선 | 잔량 입력이 슬라이더뿐이라 실사용이 번거롭다 |
 | 중간 | 그룹 추천 UX | 사람 등록·선택 흐름이 아직 투박하다 |
 | 어려움 | 계정·동기화(Supabase 등) | 기기 간 동기화. `repositories/` 뒤만 갈아끼우면 되도록 이미 격리해 뒀다 |

@@ -1,17 +1,21 @@
 /**
- * TodayPage — '오늘'.
- * 샘플 안내 → 오늘의 한 잔(대표 1) → 다른 선택 둘 → 최근 기록 순서다.
+ * TodayPage — '메인'. 오늘의 잔과 입문을 한 화면에 둔다.
+ * 샘플 안내 → 오늘의 잔 뽑기 → 고른 잔 → 처음이라면(입문) → 다르게 골라보기 → 최근 기록 순서다.
  * 첫 화면이 답해야 할 것은 넷뿐이다: 무엇을 마실까 · 무슨 맛인가 · 지금 만들 수 있나 · 뭘 누르면 되나.
- * 점수는 여기서 말하지 않는다. 상세의 '추천 이유'에 있다.
+ * 뽑기 후보는 지금 만들 수 있는 잔뿐이다(칩으로 좁혀도 같다). 점수는 여기서 말하지 않는다.
  */
-import { useMemo, useState } from 'react';
+import { OPEN_HEALTH_KEY } from './SettingsPage';
+import { IconMartini, IconWhisky } from '../components/icons';
+import { useCallback, useMemo, useState, type ReactElement } from 'react';
 import { useUI } from '../UIContext';
 import { useRecommendContext } from '../../hooks/useRecommendContext';
-import { useLogs } from '../../hooks/useData';
-import { todayPicks, type RecommendMode } from '../../services/recommendationService';
+import { useLogs, useHeldIds } from '../../hooks/useData';
+import { garnishState } from '../../services/garnishStock';
+import { whatToDrink, type RecommendMode, diversePool } from '../../services/recommendationService';
 import { STATUS_LEAD_KO } from '../../services/availabilityService';
-import { ChipRow, LogCard } from '../components/common';
-import { CocktailMark, LeadArt } from '../components/Mark';
+import { ChipRow, FilterButton, LogCard, StarterNotice, StartButtons, allChips, GarnishBadge } from '../components/common';
+import { referenceRepo } from '../../repositories/referenceRepo';
+import { TodayReel } from '../components/TodayReel';
 import { MODES, GroupRec, PurchaseRec, ClearStockRec } from './RecommendPage';
 import { type RecommendationResult } from '../../models/types';
 import { IS_BETA } from '../../config';
@@ -27,16 +31,42 @@ function state(rec: RecommendationResult): { text: string; cls: string } | null 
   return { text: STATUS_LEAD_KO[rec.status], cls: rec.status };
 }
 
+/** 받침 따라 '와/과' */
+const wa = (w: string) => { const c = w.charCodeAt(w.length - 1) - 0xac00; return c >= 0 && c % 28 ? '과' : '와'; };
+const asTaste = (w: string) => (w.endsWith('맛') ? w : `${w} 맛`);
+
+/** '허브와 과일 맛' */
 function taste(rec: RecommendationResult): string {
-  const words = rec.flavorWords.join(' · ');
-  return rec.base ? [words, `${rec.base} 베이스`].filter(Boolean).join(' · ') : words;
+  const [a, b] = rec.flavorWords;
+  if (!a) return rec.base ? `${rec.base} 베이스` : '';
+  return b ? `${a}${wa(a)} ${asTaste(b)}` : asTaste(a);
 }
+
+/** 뽑기 후보 — 만들 수 있는 칵테일(대체 포함)과 가진 위스키, 추천 순서 상위 12개 */
+const POOL = 12;
+function reelPool(all: RecommendationResult[], mode: RecommendMode): RecommendationResult[] {
+  const ok = all.filter((r) => r.kind === 'whisky' || r.status === 'READY' || r.status === 'SUBSTITUTE');
+  // '위스키' 칩을 골랐을 때는 일부러 한 종류만 보는 것이라 섞지 않는다
+  return mode === 'whisky' ? ok.slice(0, POOL) : diversePool(ok, POOL);
+}
+
+/** 한 잔 고르기의 종류 필터 */
+type Kind = 'all' | 'cocktail' | 'whisky';
+const KINDS: { v: Kind; label: string; icon?: () => ReactElement }[] = [
+  { v: 'all', label: '전체' },
+  { v: 'cocktail', label: '칵테일', icon: IconMartini },
+  { v: 'whisky', label: '위스키 한 잔', icon: IconWhisky },
+];
+/** 베이스 술 필터 — 레시피에 있는 베이스 순서 그대로 */
+const BASES = allChips([...new Set(referenceRepo.cocktails().map((c) => c.base))], '전체');
+/** 맛 필터 — 칵테일에만 적용된다. 위스키는 종류 필터로 옮겼다 */
+const TASTES = MODES.filter((m) => m.v !== 'whisky').map((m) => (m.v === 'available' ? { ...m, label: '맛 전체' } : m));
 
 type Way = 'group' | 'purchase' | 'clearstock';
 const WAYS: { v: Way; label: string; hint: string }[] = [
-  { v: 'group', label: '함께 마실 사람', hint: '여러 명의 취향을 함께 봅니다.' },
-  { v: 'purchase', label: '뭘 사면 좋을까', hint: '한 병 더 샀을 때 열리는 레시피 수로 순위를 냅니다.' },
-  { v: 'clearstock', label: '재고 소진', hint: '잔량이 적은 재료를 먼저 씁니다.' },
+  { v: 'group', label: '함께 마실 사람', hint: '여러 명의 취향을 함께 봐요.' },
+  { v: 'purchase', label: '뭘 사면 좋을까', hint: '한 병 더 샀을 때 새로 만들 수 있는 잔 수로 순서를 매겨요.' },
+  { v: 'clearstock', label: '재고 소진', hint: '조금 남은 재료를 먼저 써요.' },
 ];
 
 /** 다른 기준으로 고르기 — 기존 추천 기능을 한 자리에 접어 둔다 */
@@ -65,84 +95,149 @@ function OtherWays() {
 
 export function TodayPage() {
   const ctx = useRecommendContext();
-  const { openCocktail, openLog, goTab } = useUI();
+  const { openCocktail, openLog, goTab, goLogs, openGuide } = useUI();
   const logs = useLogs();
   const [mode, setMode] = useState<RecommendMode>('available');
-  const picks = useMemo(() => todayPicks(ctx, mode, 3), [ctx, mode]);
-  const [lead, ...alts] = picks;
-  const leadState = lead ? state(lead) : null;
+  const [kind, setKind] = useState<Kind>('all');
+  const [base, setBase] = useState('all');
+  const [openFilter, setOpenFilter] = useState(false);
+  const picks = useMemo(() => {
+    if (kind === 'whisky') return reelPool(whatToDrink(ctx, 'whisky', 80), 'whisky');
+    let all = whatToDrink(ctx, mode, 120);
+    if (kind === 'cocktail' || base !== 'all') all = all.filter((r) => r.kind === 'cocktail');
+    if (base !== 'all') all = all.filter((r) => r.base === base);
+    return reelPool(all, mode);
+  }, [ctx, mode, kind, base]);
+  // 종류 칩만 바깥에 두고, 맛과 베이스 술은 칵테일 목록처럼 "필터" 안에 모은다
+  const tasteOn = mode !== 'available';
+  const baseOn = base !== 'all';
+  const filterCount = (kind !== 'whisky' && tasteOn ? 1 : 0) + (kind !== 'whisky' && baseOn ? 1 : 0);
+  const filters = (
+    <div className="pickfilters">
+      <div className="controls tight">
+        {/* 위스키 한 잔일 때도 자리를 지켜 칩이 옆으로 밀리지 않게 한다. 맛·베이스는 칵테일 조건이라 그때는 끈다 */}
+        <FilterButton open={openFilter && kind !== 'whisky'} count={filterCount} disabled={kind === 'whisky'} onToggle={() => setOpenFilter((v) => !v)} />
+        {KINDS.map((k) => (
+          <button key={k.v} className={k.icon ? 'chip iconchip' : 'chip'} aria-pressed={kind === k.v} aria-label={k.label} title={k.label}
+            onClick={() => setKind(k.v)}>{k.icon ? <k.icon /> : k.label}</button>
+        ))}
+      </div>
+      {openFilter && kind !== 'whisky' && (
+        <div className="filterpanel">
+          <div className="hint lbl">맛</div>
+          <ChipRow value={mode} options={TASTES} onChange={setMode} wrap tight />
+          <div className="hint lbl">베이스 술 (칵테일)</div>
+          <ChipRow value={base} options={BASES} onChange={setBase} wrap tight />
+          <div className="btnrow">
+            <button className="btn sm ghost" onClick={() => { setMode('available'); setBase('all'); }}>필터 비우기</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+  const [picked, setPicked] = useState<RecommendationResult | null>(null);
+  const heldIds = useHeldIds();
+  const onPicked = useCallback((r: RecommendationResult | null) => setPicked(r), []);
   const recent = logs.slice(0, 3);
 
   const open = (r: RecommendationResult) => {
     if (r.kind === 'cocktail') openCocktail(r.id, r);
     else openLog({ drinkId: r.id, drinkType: 'whisky', drinkName: r.name, servingStyle: 'neat' });
   };
+  const made = (r: RecommendationResult) => openLog(r.kind === 'cocktail'
+    ? { drinkId: r.id, drinkType: 'cocktail', drinkName: r.name, servingStyle: 'cocktail' }
+    : { drinkId: r.id, drinkType: 'whisky', drinkName: r.name, servingStyle: 'neat' });
 
   return (
     <>
       {IS_BETA && (
         <div className="sample">
-          <span><b>샘플 술장</b>으로 둘러보는 중입니다. 바꾼 내용은 이 브라우저에만 저장됩니다.</span>
-          <button className="btn sm" onClick={() => goTab('cellar')}>내 술장 설정</button>
+          <span><b>샘플 술장</b>으로 둘러보는 중이에요. 바꾼 내용은 이 브라우저에만 저장돼요.</span>
+          <button className="btn sm" onClick={() => goTab('cellar')}>술장 채우기</button>
         </div>
       )}
 
-      <h2 className="pagetitle">
-        오늘의 한 잔
-        <span className="sub">{ctx.hasTaste ? '취향과 보유 재료 기준' : '보유 재료 기준 (취향 설정 전)'}</span>
-      </h2>
+      <section className="today">
+        <h2 className="ask">오늘 뭐 마실까요?</h2>
+        <p className="asksub">
+          {picks.length ? `${kind === 'whisky' ? '가진 위스키' : '지금 술장으로 만들 수 있는'} ${picks.length}잔 중에서 골라요` : '고를 수 있는 잔이 아직 없어요'}
+        </p>
+        <StarterNotice />
 
-      <ChipRow value={mode} options={MODES} onChange={setMode} />
-
-      {!lead && <div className="empty">추천할 항목이 없습니다. 내 술장에서 보유 재료를 등록해 주세요.</div>}
-
-      {lead && (
-        <>
-          <section className="lead">
-            <div className="inner">
-              <LeadArt base={lead.base} kind={lead.kind} cocktailId={lead.kind === 'cocktail' ? lead.id : undefined} />
-              <div className="text">
-                <h3>{lead.name}</h3>
-                <p className="taste">{taste(lead)}</p>
-                {leadState && <div className={`state s-${leadState.cls}`}>{leadState.text}</div>}
-                <div className="btnrow">
-                  <button className="btn primary" onClick={() => open(lead)}>
-                    {lead.kind === 'cocktail' ? '레시피 보기' : '기록하기'}
+        {picks.length > 0 ? (
+          <TodayReel picks={picks} onPicked={onPicked}
+            between={filters}>
+            {(again) => picked && (
+              <div className="picked">
+                <h3>{picked.name}</h3>
+                <p className="taste">{taste(picked)}</p>
+                <p className="why">
+                  {ctx.hasTaste && picked.flavorWords[0]
+                    ? `취향에서 높은 ${asTaste(picked.flavorWords[0])}${wa(asTaste(picked.flavorWords[0]))} 가까워요`
+                    : picked.kind === 'whisky' ? '가지고 있는 병이에요' : '지금 술장으로 만들 수 있어요'}
+                </p>
+                {state(picked) && <div className={`state s-${state(picked)!.cls}`}>{state(picked)!.text}</div>}
+                {picked.kind === 'cocktail' && (() => {
+                  const ck = referenceRepo.cocktailById(picked.id);
+                  return ck && garnishState(ck, heldIds) === 'all' ? <GarnishBadge /> : null;
+                })()}
+                <div className="pickbtns">
+                  <button className="btn primary big" onClick={() => made(picked)}>
+                    {picked.kind === 'cocktail' ? '만든 잔 남기기' : '마신 잔 남기기'}
                   </button>
+                  {picked.kind === 'cocktail' && <button className="btn ghost big" onClick={() => open(picked)}>레시피 보기</button>}
+                  <button className="btn ghost big" onClick={again}>다시 고르기</button>
                 </div>
               </div>
-            </div>
-          </section>
+            )}
+          </TodayReel>
+        ) : (
+          <>
+          {filters}
+          <div className="empty">
+            {kind === 'whisky'
+              ? <>아직 넣은 위스키가 없어요. 가진 위스키를 넣으면 여기서 골라 드려요.</>
+              : baseOn
+                ? <>이 베이스 술로 지금 만들 수 있는 잔이 없어요. 필터를 바꿔 보세요.</>
+              : mode === 'available'
+                ? <>아직 넣은 술과 재료로는 만들 수 있는 잔이 없어요. 가진 것을 넣으면 여기서 골라 드려요.</>
+                : <>이 맛으로 지금 만들 수 있는 잔이 없어요. 다른 칩을 골라 보세요.</>}
+            {(kind === 'whisky' || (mode === 'available' && !baseOn)) && <StartButtons />}
+          </div>
+          </>
+        )}
+      </section>
 
-          {alts.length > 0 && (
-            <>
-              <div className="sechead sm">다른 선택</div>
-              <div className="rowlist">
-                {alts.map((r) => (
-                  <button className="rowitem" key={r.kind + r.id} onClick={() => open(r)}>
-                    <CocktailMark base={r.base} cocktailId={r.kind === 'cocktail' ? r.id : undefined} size="sm" />
-                    <div className="body">
-                      <span className="nm">{r.name}</span>
-                      <div className="taste">{taste(r)}</div>
-                      {state(r) && <div className="foot"><span className={`state s-${state(r)!.cls}`}>{state(r)!.text}</span></div>}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-        </>
-      )}
+      {/* 입문 — 처음 온 사람이 할 수 있는 세 가지. 취향을 이미 정했으면 문구만 바꾼다 */}
+      <div className="sechead">처음이라면</div>
+      <div className="starts">
+        <button onClick={() => goTab('starter')}>
+          <b>{ctx.hasTaste ? '취향 다시 찾기' : '취향 찾기'}</b>
+          <span>평소 마시는 음료를 고르면 맞는 위스키와 칵테일을 골라 드려요</span>
+        </button>
+        <button onClick={() => goTab('cellar')}>
+          <b>집에 있는 술 넣기</b>
+          <span>가진 술과 재료를 넣으면 지금 만들 수 있는 잔이 나와요</span>
+        </button>
+        <button onClick={() => openGuide('menu')}>
+          <b>입문 안내서</b>
+          <span>위스키와 칵테일로 나눠 마시는 법, 첫 병, 도구, 보관, 흔한 오해를 알려 드려요</span>
+        </button>
+        <button onClick={() => { try { sessionStorage.setItem(OPEN_HEALTH_KEY, '1'); } catch { /* 저장이 막혀도 이동은 한다 */ } goTab('settings'); }}>
+          <b>건강한 음주 안내</b>
+          <span>마시기 전에 알아 둘 것을 설정에 모아 두었어요</span>
+        </button>
+      </div>
 
       <OtherWays />
 
       <div className="sechead">최근 기록</div>
       {recent.length === 0
-        ? <div className="empty">아직 기록이 없습니다. 레시피 상세에서 <b>이 잔 기록하기</b>를 누르면 여기에 쌓입니다.</div>
+        ? <div className="empty">아직 기록이 없어요. 고른 잔을 만들고 <b>만든 잔 남기기</b>를 누르면 여기에 쌓여요.</div>
         : (
           <>
             {recent.map((l) => <LogCard key={l.id} log={l} />)}
-            <div className="btnrow"><button className="btn ghost" onClick={() => goTab('notes')}>기록 전체 보기</button></div>
+            <div className="btnrow"><button className="btn ghost" onClick={goLogs}>기록 전체 보기</button></div>
           </>
         )}
     </>

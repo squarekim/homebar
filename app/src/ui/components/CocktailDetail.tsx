@@ -2,18 +2,24 @@
  * CocktailDetail — 한 잔의 상세. PC 는 목록 옆, 모바일은 화면 전체에서 같은 컴포넌트를 쓴다.
  *
  * 읽는 순서를 데이터가 아니라 행동에 맞췄다:
- *   이름·이미지 → 맛과 제조 가능 상태 → 재료와 용량 → 조주 방식 → 대체·부족 → 기록하기 → (펼침) 수치·분류·출처.
+ *   이름·이미지 → 맛과 제조 가능 상태(없는 재료 이름까지) → 재료와 용량(없는 줄에 표시) → 만드는 법 → 기록하기 → (펼침) 수치·분류·출처.
  * 만드는 순서는 DB 에 없다. 지어내지 않고 원문 조주 방식만 적는다.
  */
+import { cocktailWords } from '../../services/tasteWords';
 import { useState } from 'react';
 import { useUI } from '../UIContext';
 import { useHeldIds, useSubMap } from '../../hooks/useData';
+import { garnishState } from '../../services/garnishStock';
+import { cocktailAbvLabel } from '../../services/cocktailStrength';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { evaluateCocktail, STATUS_LEAD_KO } from '../../services/availabilityService';
-import { flavorWords } from '../../services/flavorService';
 import { FlavorBars, MethodIcon, Term } from './common';
 import { GlassArt } from './GlassArt';
-import { type Cocktail, type RecommendationResult } from '../../models/types';
+import { methodSteps } from '../../data/beginnerGuide';
+import { METHOD_PLAIN_KO, METHOD_LABELS_KO, type Cocktail, type RecommendationResult } from '../../models/types';
+
+/** IBA 분류를 풀어 쓴 말. 공식 목록에 없는 잔은 적지 않는다 */
+const IBA_PLAIN: Record<string, string> = { 현행IBA: 'IBA 공식 칵테일', 구IBA: '예전 IBA 공식 칵테일' };
 
 /** 받침이 있으면 '으로', 없으면 '로' — 레몬즙으로 / 코앵트로로 */
 function ro(word: string): string {
@@ -78,15 +84,16 @@ function Variants({ ck }: { ck: Cocktail }) {
 }
 
 export function CocktailDetail({ id }: { id: string }) {
-  const { openLog, lastRec } = useUI();
+  const { openLog, lastRec, openGuide } = useUI();
   const heldIds = useHeldIds();
   const subMap = useSubMap();
   const [more, setMore] = useState(false);
   const ck = referenceRepo.cocktailById(id);
-  if (!ck) return <div className="empty">레시피를 찾을 수 없습니다.</div>;
+  if (!ck) return <div className="empty">레시피를 찾을 수 없어요.</div>;
 
   const ev = evaluateCocktail(ck, heldIds, subMap);
-  const words = flavorWords(ck.flavor);
+  const words = cocktailWords(ck);
+  const abv = cocktailAbvLabel(ck);
   const rec = lastRec && lastRec.id === ck.id ? lastRec : null;
 
   return (
@@ -96,13 +103,19 @@ export function CocktailDetail({ id }: { id: string }) {
       <div className="art"><GlassArt cocktail={ck} size={120} /></div>
 
       {/* ② 맛 설명과 제조 가능 상태 */}
-      <p className="taste">{words.join(' · ')}{ck.note ? ` — ${ck.note}` : ''}</p>
+      <p className="taste">{words.join(' · ')}</p>
       <div className="meta">
         <span className="mi">{ck.base}</span>
-        <span className="mi">{ck.method}</span>
-        <span className="mi">{ck.iba}</span>
+        {IBA_PLAIN[ck.iba] && <span className="mi">{IBA_PLAIN[ck.iba]}</span>}
+        {abv !== null && (
+          <span className="mi" title="재료 양과 제품 라벨 도수로 계산한 값에 ±2%를 둔 폭이에요. 쓰는 제품과 얼음이 녹는 정도에 따라 달라져요.">
+            도수 {abv}
+          </span>
+        )}
       </div>
-      <div className={`state s-${ev.status}`}>{STATUS_LEAD_KO[ev.status]}</div>
+      <div className={`state s-${ev.status}`}>
+        {STATUS_LEAD_KO[ev.status]}{ev.lack.length > 0 && ` · 없는 재료: ${ev.lack.join(', ')}`}
+      </div>
 
       {/* ③ 필요한 재료와 용량 */}
       <div className="sechead in">재료</div>
@@ -118,7 +131,8 @@ export function CocktailDetail({ id }: { id: string }) {
               <span>
                 {swap ? <s>{ing.ingredientName}</s> : ing.ingredientName}
                 {swap && <span className="swap">→ {swap}{ro(swap)} 대체</span>}
-                {!swap && ing.substitute && <span className="tag">대체 조주</span>}
+                {!swap && ing.substitute && <span className="tag">대체 재료</span>}
+                {off && <span className="lackmark">없음</span>}
                 {ing.optional && <span className="opt">선택</span>}
               </span>
               <span className="amt">{amountOf(ing.raw, ing.ingredientName) || '적당량'}</span>
@@ -129,28 +143,29 @@ export function CocktailDetail({ id }: { id: string }) {
 
       {/* ④ 만드는 방식 — DB 에 순서가 없으므로 조주 방식만 */}
       <div className="method">
-        <span className="lb">조주</span>
-        <span>{ck.method}</span>
+        <span className="lb">만드는 법</span>
+        <span>{ck.methodKeys.length ? `${ck.methodKeys.map((k) => METHOD_PLAIN_KO[k]).join(", ")} (${ck.method})` : ck.method}</span>
       </div>
+      {/* 방법별 기본 순서 — 레시피마다 적은 글이 아니라 그 방법의 공통 순서다(머들은 잔마다 달라 뺐다) */}
+      {ck.methodKeys.filter((k) => k !== 'muddle' && methodSteps(k).length > 0).slice(0, 2).map((k) => (
+        <div className="steps" key={k}>
+          <div className="stepshead">{METHOD_LABELS_KO[k]} 기본 순서</div>
+          <ol>{methodSteps(k).map((t, i) => <li key={i}>{t.replace(/^\d\.\s*/, '')}</li>)}</ol>
+        </div>
+      ))}
       {ck.garnish && (
-        <div className="garnish"><span className="gl">가니시</span><span className="gv">{ck.garnish}</span></div>
-      )}
-
-      {/* ⑤ 대체·부족 */}
-      {(ev.lack.length > 0 || ev.sub.length > 0) && (
-        <div className="shortage">
-          <h4>{ev.lack.length > 0 ? '지금 없는 재료' : '대체 재료로 채우는 것'}</h4>
-          <ul>
-            {ev.lack.map((n) => <li key={n}>{n}</li>)}
-            {ev.sub.map((n) => {
-              const id = referenceRepo.ingredients().find((x) => x.name === n)?.id;
-              const swapId = id && !heldIds.has(id) ? (subMap.get(id) ?? []).find((s) => heldIds.has(s)) : undefined;
-              const swap = swapId ? referenceRepo.ingredientById(swapId)?.name : undefined;
-              return <li className="s" key={n}>{swap ? <><s>{n}</s> → {swap}</> : `${n} — 대체 조주`}</li>;
-            })}
-          </ul>
+        <div className="garnish">
+          <span className="gl">가니시</span><span className="gv">{ck.garnish}</span>
+          {/* 있을 때만 알린다 — 없다고 매 잔마다 적지 않는다(가니시는 없어도 만들 수 있다) */}
+          {garnishState(ck, heldIds) === 'all' && <span className="gnhave">있어요</span>}
         </div>
       )}
+      <div className="guidelinks">
+        <button onClick={() => openGuide('methods')}>만드는 방법</button>
+        <button onClick={() => openGuide('units')}>단위 읽는 법</button>
+        <button onClick={() => openGuide('garnish')}>가니시 준비</button>
+        <button onClick={() => openGuide('glasses')}>잔</button>
+      </div>
 
       {/* ⑥ 기록 */}
       <div className="btnrow">
@@ -169,13 +184,14 @@ export function CocktailDetail({ id }: { id: string }) {
         {more && (
           <div className="inner">
             {rec && <WhyPicked rec={rec} />}
+            {ck.note && <><div className="sechead in">메모</div><p className="hint">{ck.note}</p></>}
             <div className="sechead in">향미 프로파일</div>
             <FlavorBars vector={ck.flavor} compact />
             <div className="sechead in">분류</div>
             <div className="clstags">
               <Term label={ck.base} />
               <Term label={ck.iba} />
-              {ck.methodKeys.map((k) => <Term key={k} label={k} />)}
+              {ck.methodKeys.map((k) => <Term key={k} label={METHOD_LABELS_KO[k]} />)}
             </div>
             {(ck.sourceName || ck.url) && (
               <>

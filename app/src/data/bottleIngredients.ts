@@ -6,7 +6,7 @@
  * 사용자가 추가한 병은 등록할 때 이미 표준 재료를 고르므로 그 값을 그대로 쓴다.
  */
 
-/** 시드 병의 node → 이 병으로 충당되는 표준 재료명(재료 마스터 128종 기준) */
+/** 시드 병의 node → 이 병으로 충당되는 표준 재료명(재료 마스터 130종 기준) */
 export const NODE_TO_INGREDIENTS: Record<string, string[]> = {
   // 위스키
   'w.scotch.malt': ['싱글몰트 스카치', '스카치'],
@@ -78,10 +78,18 @@ export function bottleKind(b: { node: string; group: string }): string {
 const KIND_LABELS: Record<string, string> = {
   whisky: '위스키', gin: '진', vodka: '보드카', rum: '럼', tequila: '데킬라',
   mezcal: '메즈칼', brandy: '브랜디', liqueur: '리큐르', vermouth: '베르무트',
-  wine: '와인', beer: '맥주', sake: '사케·소주', rtd: 'RTD', spirit: '증류주', mixer: '부재료',
+  wine: '와인', beer: '맥주', trad: '우리술', soju: '소주', sake: '사케·일본 소주', rtd: 'RTD', spirit: '증류주', mixer: '부재료',
 };
 
 /** 카드 우측에 적는 술 종류 (럼·데킬라·브랜디 묶음 대신 '데킬라'처럼 실제 종류로) */
 export function bottleKindLabel(b: { node: string; group: string }): string {
-  return KIND_LABELS[bottleKind(b)] ?? b.group;
+  return groupLabel(KIND_LABELS[bottleKind(b)] ?? b.group);
+}
+
+/** 데이터의 묶음 이름을 화면에 적는 말로 — 칵테일에 안 쓰는 술 묶음은 '그 밖의 술' */
+export function groupLabel(group: string): string {
+  if (group === '기타 (칵테일 미활용)') return '그 밖의 술';
+  // 저장된 값은 그대로 두고 보이는 이름만 바꾼다('상비품'은 처음 만든 사람의 말이었다)
+  if (group === '음료·믹서·시럽·비터·상비품') return '음료·믹서·시럽·비터';
+  return group;
 }

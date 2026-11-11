@@ -104,7 +104,7 @@ export function calculatePurchases(ctx: PurchaseContext, limit = 30): PurchaseSu
       unlockedRecipeNames: unlocked,
       tasteScore,
       totalScore: Math.round(total),
-      reason: buildReason(added, blocked, tasteScore, utilization, seedBoost.has(ing.name), unlocked),
+      reason: buildReason(added, blocked, tasteScore, utilization, unlocked),
     });
   }
 
@@ -113,12 +113,11 @@ export function calculatePurchases(ctx: PurchaseContext, limit = 30): PurchaseSu
     .slice(0, limit);
 }
 
-function buildReason(added: number, blocked: number, tasteScore: number, util: number, seed: boolean, unlocked: string[]): string {
+function buildReason(added: number, blocked: number, tasteScore: number, util: number, unlocked: string[]): string {
   const parts: string[] = [];
-  parts.push(added > 0 ? `구매 시 +${added}종 제조 가능` : `막힘 ${blocked}건 해소 후보`);
-  if (tasteScore >= 70) parts.push('취향 적합도 높음');
-  if (util >= 8) parts.push(`활용도 ${util}회`);
-  if (seed) parts.push('기존 구매우선순위 상위');
+  parts.push(added > 0 ? `사면 ${added}잔을 새로 만들 수 있어요` : `모자란 레시피 ${blocked}개에 들어가요`);
+  if (tasteScore >= 70) parts.push('취향에 가까워요');
+  if (util >= 8) parts.push(`레시피 ${util}개에 쓰여요`);
   if (unlocked.length) parts.push(unlocked.slice(0, 3).join(', '));
   return parts.join(' · ');
 }

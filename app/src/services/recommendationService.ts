@@ -4,13 +4,14 @@
  * 각 하위 점수는 0~100, 결과에 점수와 이유(reason)를 함께 반환한다.
  * UI 와 완전히 분리된 순수 로직.
  */
+import { cocktailWords, whiskyWords } from './tasteWords';
 import {
   type Cocktail, type Bottle, type FlavorVector, type RecommendationResult, type DrinkLog,
   type AvailabilityResult, FLAVOR_LABELS_KO, type FlavorAxis, type StockContext,
 } from '../models/types';
 import { referenceRepo } from '../repositories/referenceRepo';
 import { evaluateCocktail, AVAIL_SCORE } from './availabilityService';
-import { tasteMatch, topAxes, flavorWords, cosineSimilarity } from './flavorService';
+import { tasteMatch, topAxes, cosineSimilarity } from './flavorService';
 
 export type RecommendMode =
   | 'available'   // 있는 재료만
@@ -66,7 +67,7 @@ function inventoryCoverage(ck: Cocktail, heldIds: Set<string>, subMap: Map<strin
 
 /** 칵테일 강도: 주정 재료 ml 비율 (0~1) */
 const SPIRIT_CATS = new Set(['위스키', '진', '보드카', '럼', '데킬라·아가베', '브랜디']);
-function cocktailStrength(ck: Cocktail): number {
+export function cocktailStrength(ck: Cocktail): number {
   let spirit = 0, total = 0;
   for (const i of ck.ingredients) {
     const ml = i.amountMl ?? 0;
@@ -155,7 +156,7 @@ export function recommendCocktails(
       kind: 'cocktail', id: ck.id, name: ck.name, score,
       tasteScore, inventoryScore, availabilityScore, noveltyScore: nov,
       status: avail.status, reason: reasonFor(ck, ctx.taste, avail, inventoryScore),
-      flavorWords: flavorWords(ck.flavor), base: ck.base,
+      flavorWords: cocktailWords(ck), base: ck.base,
     });
   }
 
@@ -184,7 +185,7 @@ export function recommendWhiskies(
   const stats = drinkStats(ctx.logs);
   const out: RecommendationResult[] = [];
 
-  for (const w of referenceRepo.whiskies()) {
+  for (const w of ctx.whiskies ?? referenceRepo.whiskies()) {
     const tasteScore = tasteMatch(ctx.taste, w.flavor);
     const nov = noveltyScore(w.id, stats, now);
     const inventoryScore = 100; // 보유 병
@@ -194,7 +195,7 @@ export function recommendWhiskies(
       kind: 'whisky', id: w.id, name: w.name, score,
       tasteScore, inventoryScore, availabilityScore, noveltyScore: nov,
       reason: whiskyReason(w, ctx.taste),
-      flavorWords: flavorWords(w.flavor), base: w.whiskyClass?.origin ?? '위스키',
+      flavorWords: whiskyWords(w), base: w.whiskyClass?.origin ?? '위스키',
     });
   }
   return out.sort((a, b) => b.score - a.score).slice(0, limit);
@@ -233,6 +234,23 @@ export function whatToDrink(ctx: RecommendContext, mode: RecommendMode = 'availa
   if (mode === 'whisky') return recommendWhiskies(ctx, limit);
   const wk = recommendWhiskies(ctx, 4);
   return [...ck, ...wk].sort((a, b) => b.score - a.score).slice(0, limit);
+}
+
+/**
+ * 뽑기 후보 — 추천 순서를 지키되 같은 베이스 술이 perBase 개를 넘지 않게 고른다.
+ * 점수순 상위만 자르면 가진 술이 많은 쪽(위스키)으로 후보가 몰린다. 모자라면 남은 것을 점수순으로 채운다.
+ */
+export function diversePool(all: RecommendationResult[], size = 12, perBase = 3): RecommendationResult[] {
+  const picked: RecommendationResult[] = [];
+  const rest: RecommendationResult[] = [];
+  const count = new Map<string, number>();
+  for (const r of all) {
+    const key = r.kind === 'whisky' ? '위스키 한 잔' : (r.base ?? '');
+    const n = count.get(key) ?? 0;
+    if (picked.length < size && n < perBase) { picked.push(r); count.set(key, n + 1); } else rest.push(r);
+  }
+  for (const r of rest) { if (picked.length >= size) break; picked.push(r); }
+  return picked;
 }
 
 export { cosineSimilarity };

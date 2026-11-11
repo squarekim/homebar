@@ -1,9 +1,12 @@
-import { useEffect, type ReactNode, type SyntheticEvent } from 'react';
+import { isOfficialNote, noteSourceLabel } from '../../data/makerNoteSource';
+import { useEffect, useState, type ReactNode, type SyntheticEvent } from 'react';
 import { type MethodKey, METHOD_LABELS_KO, type AvailabilityStatus, type FlavorVector, FLAVOR_AXES, FLAVOR_LABELS_KO, type RecommendationResult, type MakerNote, type BottleBadge, type WhiskyClass, type DrinkLog, SERVING_LABELS_KO } from '../../models/types';
 import { STATUS_LABEL_KO, STATUS_SENTENCE_KO } from '../../services/availabilityService';
-import { lookupTerm, normalizeTerm } from '../../data/glossary';
+import { GLOSSARY, lookupTerm, normalizeTerm } from '../../data/glossary';
 import { useUI } from '../UIContext';
-import { IconBuild, IconShake, IconStir, IconMuddle, IconBlend, IconLayer, IconSwizzle, IconFloat } from './icons';
+import { IS_PUBLIC, STARTER_INVENTORY, STARTER_GROUPS } from '../../config';
+import { isExampleOn, turnOffExample, keepExampleAsMine, resetInventoryToSeed } from '../../db/migrate';
+import { IconFilter, IconBuild, IconShake, IconStir, IconMuddle, IconBlend, IconLayer, IconSwizzle, IconFloat } from './icons';
 
 /**
  * 모달 껍데기 — 스크림 · 닫기 버튼 · ESC 닫기 · 배경 스크롤 잠금.
@@ -76,7 +79,7 @@ export function WhiskyClassTags({ cls }: { cls?: WhiskyClass }) {
       <Term label={cls.origin} className="or" />
       <Term label={cls.type} />
       {cls.region && <Term label={cls.region} term={stripParen(cls.region)} />}
-      {cls.cask.map((c, i) => <Term key={'k' + i} label={`${c} 캐스크`} term={c} />)}
+      {cls.cask.map((c, i) => <Term key={'k' + i} label={`${c} 캐스크`} term={GLOSSARY[`${c} 캐스크`] ? `${c} 캐스크` : c} />)}
       {cls.character.map((c, i) => <Term key={'c' + i} label={c} className="ch" />)}
     </div>
   );
@@ -100,9 +103,13 @@ export function BottleBadges({ badges }: { badges: BottleBadge[] }) {
 }
 
 /** 제조사/공식 테이스팅 노트 표시 (출처 링크 포함) */
+/** 노트 제목 — 제조사(공식 수입사 포함)가 밝힌 노트인지, 매체·판매처가 정리한 노트인지 */
+export const noteHeading = (n: MakerNote | undefined): string => (!n || isOfficialNote(n) ? '제조사 공식 노트' : '테이스팅 노트');
+export const noteTag = (n: MakerNote | undefined): string => (isOfficialNote(n) ? '공식 노트' : '테이스팅 노트');
+
 export function MakerNoteView({ note, empty }: { note?: MakerNote | undefined; empty?: string | undefined }) {
   if (!note) {
-    return <div className="hint" style={{ margin: '6px 0 0' }}>{empty ?? '제조사 공식 노트가 아직 없는 술입니다. 아래에 직접 기록해 두세요.'}</div>;
+    return <div className="hint" style={{ margin: '6px 0 0' }}>{empty ?? '제조사 공식 노트가 아직 없는 술이에요. 아래에 직접 적어 두세요.'}</div>;
   }
   return (
     <div className="makernote">
@@ -110,7 +117,9 @@ export function MakerNoteView({ note, empty }: { note?: MakerNote | undefined; e
       {note.nose && <p className="mn-line"><b>향(Nose)</b> {note.nose}</p>}
       {note.palate && <p className="mn-line"><b>맛(Palate)</b> {note.palate}</p>}
       {note.finish && <p className="mn-line"><b>피니시(Finish)</b> {note.finish}</p>}
-      <a className="mn-src" href={note.source} target="_blank" rel="noopener">출처: {note.sourceName ?? note.source} ↗</a>
+      <a className="mn-src" href={note.source} target="_blank" rel="noopener">
+        출처: {noteSourceLabel(note)}{isOfficialNote(note) ? '' : ' · 매체·판매처 정리'} ↗
+      </a>
     </div>
   );
 }
@@ -127,6 +136,11 @@ export function StateLine({ status, lack }: { status: AvailabilityStatus; lack?:
       {missing ? `${lack.slice(0, 2).join(' · ')}${lack.length > 2 ? ` 외 ${lack.length - 2}` : ''} 없음` : short}
     </span>
   );
+}
+
+/** 재료도 가니시도 다 있는 잔 — 만들 수 있는지 판정과는 따로 붙는 표시 */
+export function GarnishBadge() {
+  return <span className="gnbadge">가니시까지 있어요</span>;
 }
 
 /** 필터 칩·통계처럼 자리가 좁은 곳에서 쓰는 짧은 판정명 */
@@ -311,5 +325,87 @@ export function SearchBox({ value, onChange, placeholder }: { value: string; onC
     <div className="controls">
       <input type="search" value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} />
     </div>
+  );
+}
+
+/**
+ * 예시 재고 안내 — 사용자가 "예시로 둘러보기"를 골라 기본 홈바 세트를 켜 둔 동안만 나온다.
+ * 실제로 가진 것이 아니라는 점과, 끄거나 내 것으로 고치는 길을 알려 준다.
+ */
+export function StarterNotice() {
+  const { goTab, setCellarSub, toast } = useUI();
+  const [on, setOn] = useState(isExampleOn);
+  useEffect(() => {
+    const sync = () => setOn(isExampleOn());
+    window.addEventListener(EXAMPLE_EVENT, sync);
+    return () => window.removeEventListener(EXAMPLE_EVENT, sync);
+  }, []);
+  if (!on) return null;
+  return (
+    <div className="notice" role="note">
+      <p>
+        지금은 <b>예시로 기본 홈바 세트 {STARTER_INVENTORY.length}가지</b>를 가진 것으로 해 두었어요.
+        "만들 수 있는 잔"은 이 예시 기준이에요.
+      </p>
+      <StarterSetList />
+      <div className="btnrow">
+        <button className="btn sm primary" onClick={async () => { await turnOffExample(); notifyExample(); toast('예시를 껐어요'); }}>예시 끄기</button>
+        <button className="btn sm" onClick={() => { keepExampleAsMine(); notifyExample(); setCellarSub('stock'); goTab('cellar'); }}>내 재료로 고쳐 쓰기</button>
+      </div>
+    </div>
+  );
+}
+
+/** 예시 재고가 켜지거나 꺼졌음을 화면에 알린다 */
+const EXAMPLE_EVENT = 'homebar:example';
+export function notifyExample(): void { window.dispatchEvent(new Event(EXAMPLE_EVENT)); }
+
+/**
+ * 기본 홈바 세트가 무엇인지 — 칵테일을 막 시작한 집에 있을 법한 술과 재료.
+ * 특정 사람의 술장이 아니라 예시이고, 이걸로 레시피 210종 가운데 몇 잔이 열리는지 보여 주려고 둔다.
+ */
+export function StarterSetList() {
+  return (
+    <details className="starterset">
+      <summary>기본 홈바 세트가 뭔가요?</summary>
+      <p className="hint">칵테일을 막 시작한 집에 있을 법한 것만 담았어요. 술 세 병, 리큐르 한 병, 마트에서 사는 주스와 탄산까지 모두 {STARTER_INVENTORY.length}가지예요.
+        실제로 가진 것이 아니고, 이 정도만 있어도 어떤 잔을 만들 수 있는지 미리 보여 드리려고 둔 예시예요.</p>
+      <dl>
+        {STARTER_GROUPS.map((g) => (
+          <div key={g.label}>
+            <dt>{g.label} <span>{g.items.length}</span></dt>
+            <dd>{g.items.join(', ')}</dd>
+          </div>
+        ))}
+      </dl>
+    </details>
+  );
+}
+
+/** 아직 아무것도 넣지 않은 사람에게 보여 주는 시작 버튼 */
+export function StartButtons() {
+  const { goTab, setCellarSub, openAdd, toast } = useUI();
+  return (
+    <>
+    <div className="btnrow center">
+      <button className="btn primary" onClick={() => { goTab('cellar'); openAdd(); }}>집에 있는 술 넣기</button>
+      <button className="btn" onClick={() => { setCellarSub('stock'); goTab('cellar'); }}>가진 재료 체크하기</button>
+      {IS_PUBLIC && (
+        <button className="btn" onClick={async () => { await resetInventoryToSeed(); notifyExample(); toast('예시 재고를 켰어요'); }}>예시로 둘러보기</button>
+      )}
+    </div>
+    {IS_PUBLIC && <StarterSetList />}
+    </>
+  );
+}
+
+/** 필터 버튼 — 글자 대신 깔때기 아이콘. 켜진 조건 수를 작은 숫자로 붙인다 */
+export function FilterButton({ open, count, onToggle, disabled }: { open: boolean; count: number; onToggle: () => void; disabled?: boolean }) {
+  const label = count ? `필터, ${count}개 켜짐` : '필터';
+  return (
+    <button className="chip iconchip" aria-pressed={open} aria-label={label} title={label} onClick={onToggle} disabled={disabled}>
+      <IconFilter />
+      {count > 0 && <span className="badge">{count}</span>}
+    </button>
   );
 }

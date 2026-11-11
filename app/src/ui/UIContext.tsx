@@ -1,13 +1,16 @@
 /**
  * UIContext — 화면 전환과 겹쳐 뜨는 것(기록·술 추가·용어)을 한곳에서 관리한다.
- * 주요 메뉴는 오늘 / 칵테일 / 위스키 / 내 술장 / 기록이고, 설정은 헤더에서 들어간다.
+ * 주요 메뉴는 메인 / 칵테일 / 위스키 / 술장 / 취향이고, 설정은 헤더와 취향 화면에서 들어간다.
  * 칵테일·병 상세는 '어느 탭의 무엇이 선택됐는가'로 표현한다 —
  * 그래야 PC 에서 목록 옆에 상세를 붙이고, 모바일에서 전체 화면으로 띄우는 걸 같은 상태로 처리할 수 있다.
  */
-import { createContext, useContext, useState, type ReactNode, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useRef, type ReactNode, useCallback } from 'react';
 import { type DrinkType, type ServingStyle, type RecommendationResult } from '../models/types';
+import { type GuideId } from '../data/beginnerGuide';
 
-export type Tab = 'today' | 'cocktails' | 'whisky' | 'cellar' | 'notes' | 'settings';
+export type Tab = 'today' | 'cocktails' | 'whisky' | 'cellar' | 'taste' | 'settings' | 'starter';
+
+export type CellarSub = 'bottles' | 'stock' | 'logs';
 
 export interface LogPrefill {
   drinkId: string;
@@ -21,6 +24,13 @@ export interface TermInfo { title: string; body: string; }
 interface UIState {
   tab: Tab;
   goTab: (tab: Tab) => void;
+  /** 탭을 누를 때마다 오른다 — 같은 탭을 다시 누르면 그 탭의 첫 화면으로 돌아가게 하는 데 쓴다 */
+  tabTick: number;
+  /** 술장 안에서 보고 있는 화면 — 보유 술 · 재료 재고 · 마신 기록 */
+  cellarSub: CellarSub;
+  setCellarSub: (s: CellarSub) => void;
+  /** 술장의 마신 기록으로 바로 간다 */
+  goLogs: () => void;
   /** 칵테일 상세 열기 — 어느 화면에서 눌러도 칵테일 탭의 상세로 간다.
    *  추천에서 들어왔다면 그 추천 결과를 함께 넘겨 상세의 '추천 이유'에 쓴다. */
   openCocktail: (id: string, rec?: RecommendationResult) => void;
@@ -40,6 +50,10 @@ interface UIState {
   showTerm: (title: string, body: string) => void;
   closeTerm: () => void;
   termInfo: TermInfo | null;
+  /** 입문 안내 팝업 — 'menu' 는 안내 목록 */
+  guide: GuideId | 'menu' | null;
+  openGuide: (id: GuideId | 'menu') => void;
+  closeGuide: () => void;
   openAdd: (query?: string) => void;
   closeAdd: () => void;
   addOpen: boolean;
@@ -50,6 +64,7 @@ const Ctx = createContext<UIState | null>(null);
 
 export function UIProvider({ children }: { children: ReactNode }) {
   const [tab, setTab] = useState<Tab>('today');
+  const [cellarSub, setCellarSub] = useState<CellarSub>('bottles');
   const [cocktailId, setCocktailId] = useState<string | null>(null);
   const [lastRec, setLastRec] = useState<RecommendationResult | null>(null);
   const [bottleId, setBottleId] = useState<string | null>(null);
@@ -57,9 +72,13 @@ export function UIProvider({ children }: { children: ReactNode }) {
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [termInfo, setTermInfo] = useState<TermInfo | null>(null);
   const [addOpen, setAddOpen] = useState(false);
+  const [guide, setGuide] = useState<GuideId | 'menu' | null>(null);
   const [addQuery, setAddQuery] = useState('');
 
-  const goTab = useCallback((t: Tab) => { setTab(t); window.scrollTo(0, 0); }, []);
+  const [tabTick, setTabTick] = useState(0);
+  // 아래 탭을 누르면 열려 있던 상세는 닫는다 — 상세가 열린 채 탭만 바뀌면 다른 탭에서 그 상세가 다시 뜬다
+  const goTab = useCallback((t: Tab) => { setCocktailId(null); setBottleId(null); setTab(t); setTabTick((n) => n + 1); window.scrollTo(0, 0); }, []);
+  const goLogs = useCallback(() => { setCellarSub('logs'); setTab('cellar'); window.scrollTo(0, 0); }, []);
   const openCocktail = useCallback((id: string, rec?: RecommendationResult) => {
     setCocktailId(id);
     setLastRec(rec ?? null);
@@ -77,15 +96,54 @@ export function UIProvider({ children }: { children: ReactNode }) {
   const openAdd = useCallback((query = '') => { setAddQuery(query); setAddOpen(true); }, []);
   const closeAdd = useCallback(() => setAddOpen(false), []);
 
+  /*
+   * 뒤로 가기 — 안드로이드의 뒤로 버튼과 브라우저의 뒤로 가기가 "지금 떠 있는 것 하나 닫기"가 되게 한다.
+   * 겹쳐 뜬 것(용어·안내·기록·술 추가·상세)과 "메인이 아닌 탭"을 각각 한 단계로 세고, 그 수만큼 history 에 쌓아 둔다.
+   * 화면에서 직접 닫으면 쌓아 둔 것을 되돌리고, 뒤로 가기를 누르면 맨 위 하나를 닫는다. 메인에서 한 번 더 누르면 앱을 나간다.
+   */
+  const layers = [tab !== 'today', !!(cocktailId || bottleId), addOpen, !!logPrefill, !!guide, !!termInfo];
+  const depth = layers.filter(Boolean).length;
+  const pushed = useRef(0);
+  const skip = useRef(0);
+  const closeTop = useRef<() => void>(() => {});
+  closeTop.current = () => {
+    if (termInfo) setTermInfo(null);
+    else if (guide) setGuide(null);
+    else if (logPrefill) setLogPrefill(null);
+    else if (addOpen) setAddOpen(false);
+    else if (cocktailId || bottleId) { setCocktailId(null); setBottleId(null); }
+    else if (tab !== 'today') { setTab('today'); setTabTick((n) => n + 1); }
+  };
+  useEffect(() => {
+    if (depth > pushed.current) {
+      for (let i = pushed.current; i < depth; i++) window.history.pushState({ homebar: i + 1 }, '');
+      pushed.current = depth;
+    } else if (depth < pushed.current) {
+      const n = pushed.current - depth;
+      pushed.current = depth;
+      skip.current += 1;
+      window.history.go(-n);
+    }
+  }, [depth]);
+  useEffect(() => {
+    const onPop = () => {
+      if (skip.current > 0) { skip.current -= 1; return; }
+      if (pushed.current > 0) { pushed.current -= 1; closeTop.current(); }
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
   return (
     <Ctx.Provider value={{
-      tab, goTab,
+      tab, goTab, tabTick, cellarSub, setCellarSub, goLogs,
       cocktailId, lastRec, openCocktail, closeCocktail: () => setCocktailId(null),
       bottleId, openBottle, closeBottle: () => setBottleId(null),
       logPrefill, openLog: setLogPrefill, closeLog: () => setLogPrefill(null),
       toastMsg, toast,
       termInfo, showTerm, closeTerm: () => setTermInfo(null),
       addOpen, addQuery, openAdd, closeAdd,
+      guide, openGuide: setGuide, closeGuide: () => setGuide(null),
     }}>
       {children}
     </Ctx.Provider>

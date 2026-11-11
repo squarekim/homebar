@@ -9,20 +9,24 @@ import { useHeldIds, useSubMap, useBottles } from '../../hooks/useData';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { simpleBuilds, evaluateSimpleBuild, pickMyBottles } from '../../services/simpleBuildService';
 import { StateLine, ChipRow, ChipToggle, SearchBox, allChips } from './common';
-import { normalize, hits, byReadyThenName, useGroupChips } from '../listUtils';
+import { normalize, hits, hitsKey, simpleKey, ingredientAliases, byReadyThenName, useGroupChips } from '../listUtils';
 
 /**
  * SimpleBuildBrowser — 믹서 조합표와 Build 계열 레시피를 합쳐 기주별로 보여준다.
  */
-export function SimpleBuildBrowser() {
+/** 받침 따라 '이/가' */
+const ga = (w: string) => { const c = w.charCodeAt(w.length - 1) - 0xac00; return c >= 0 && c % 28 ? '이' : '가'; };
+
+/** initialQuery·initialOpen: 칵테일 검색에서 넘어올 때 그 조합을 찾아 펼쳐 둔다 */
+export function SimpleBuildBrowser({ initialQuery, initialOpen }: { initialQuery?: string | undefined; initialOpen?: string | undefined } = {}) {
   const heldIds = useHeldIds();
   const subMap = useSubMap();
   const bottles = useBottles();
   const { openCocktail } = useUI();
-  const [q, setQ] = useState('');
+  const [q, setQ] = useState(initialQuery ?? '');
   const [grp, setGrp] = useState('all');
   const [readyOnly, setReadyOnly] = useState(false);
-  const [open, setOpen] = useState<string | null>(null);
+  const [open, setOpen] = useState<string | null>(initialOpen ?? null);
 
   const all = useMemo(() => simpleBuilds(), []);
   const groups = useGroupChips(all, (b) => b.group);
@@ -35,7 +39,7 @@ export function SimpleBuildBrowser() {
       .filter(({ b, e }) => {
         if (grp !== 'all' && b.group !== grp) return false;
         if (readyOnly && e.status !== 'READY') return false;
-        return hits(t, b.name, b.parts.join(' '));
+        return hitsKey(t, simpleKey(b));
       })
       .sort(byReadyThenName((x) => x.e.status, (x) => x.b.name));
   }, [judged, q, grp, readyOnly]);
@@ -46,7 +50,7 @@ export function SimpleBuildBrowser() {
       <ChipRow value={grp} options={groups} onChange={setGrp}>
         <ChipToggle label="바로 가능" cls="ok" on={readyOnly} onToggle={() => setReadyOnly((v) => !v)} />
       </ChipRow>
-      <p className="hint">셰이커 없이 <b>잔에 바로 붓는</b> 조합 {all.length}종 중 지금 <b>{readyCount}종</b> 가능합니다.</p>
+      <p className="hint">셰이커 없이 <b>잔에 바로 붓는</b> 조합 {all.length}종 중 지금 <b>{readyCount}종</b>을 만들 수 있어요.</p>
       <div className="rowlist">
         {rows.map(({ b, e }) => {
           const mine = pickMyBottles(b, bottles);
@@ -58,7 +62,7 @@ export function SimpleBuildBrowser() {
                   <span className="nm">{b.name}</span>
                   <div className="taste">{b.parts.join(' · ')}{b.ratio ? ` · ${b.ratio}` : ''}</div>
                   <div className="foot">
-                    <StateLine status={e.status} lack={e.lack} />
+                    {e.status !== 'READY' && <StateLine status={e.status} lack={e.lack} />}
                     {b.glass && <span className="mi">{b.glass} 잔</span>}
                     {mine.length > 0 && <span className="mi">내 술 {mine.length}종</span>}
                   </div>
@@ -69,7 +73,7 @@ export function SimpleBuildBrowser() {
                   <div className="sechead in">내 술로 만들기</div>
                   {mine.length > 0
                     ? <div className="parts">{mine.map((x) => <span key={x.id}>{x.name}{x.abv ? ` ${x.abv}` : ''}</span>)}</div>
-                    : <p className="hint">보유한 {b.group}이(가) 없습니다. 내 술장에서 추가하면 여기에 뜹니다.</p>}
+                    : <p className="hint">가진 {b.group}{ga(b.group)} 없어요. 술장에서 추가하면 여기에 나와요.</p>}
                   {b.note && <p className="hint">{b.note}</p>}
                   {b.recipeId && (
                     <div className="btnrow">
@@ -100,7 +104,7 @@ export function IngredientBrowser() {
   const rows = useMemo(() => {
     const t = normalize(q);
     return referenceRepo.ingredients().filter((i) =>
-      (cat === 'all' || i.category === cat) && hits(t, i.name) && (!ownedOnly || heldIds.has(i.id)));
+      (cat === 'all' || i.category === cat) && hits(t, i.name, ...ingredientAliases(i.name)) && (!ownedOnly || heldIds.has(i.id)));
   }, [q, cat, ownedOnly, heldIds]);
 
   const describe = (id: string, name: string, category: string, usage: number) => {
@@ -108,10 +112,10 @@ export function IngredientBrowser() {
     const subs = (subMap.get(id) ?? []).map((sid) => referenceRepo.ingredientById(sid)?.name).filter(Boolean) as string[];
     const mine = bottles.filter((b) => b.ingredientIds.includes(id));
     const lines = [
-      `${category} · 레시피 ${usage}회 사용 · ${heldIds.has(id) ? '보유 중' : '미보유'}`,
+      `${category} · 레시피 ${usage}회 사용 · ${heldIds.has(id) ? '가지고 있어요' : '없어요'}`,
       mine.length ? `내 술: ${mine.map((b) => `${b.name}${b.abv ? ` (${b.abv})` : ''}`).join(', ')}` : '',
       subs.length ? `대체 가능: ${subs.join(', ')}` : '',
-      uses.length ? `쓰이는 레시피: ${uses.slice(0, 12).join(', ')}${uses.length > 12 ? ` 외 ${uses.length - 12}종` : ''}` : '이 재료를 쓰는 레시피가 없습니다.',
+      uses.length ? `쓰이는 레시피: ${uses.slice(0, 12).join(', ')}${uses.length > 12 ? ` 외 ${uses.length - 12}종` : ''}` : '이 재료를 쓰는 레시피가 없어요.',
     ].filter(Boolean);
     showTerm(name, lines.join('\n\n'));
   };
@@ -122,7 +126,7 @@ export function IngredientBrowser() {
       <ChipRow value={cat} options={cats} onChange={setCat}>
         <ChipToggle label="보유만" cls="ok" on={ownedOnly} onToggle={() => setOwnedOnly((v) => !v)} />
       </ChipRow>
-      <p className="hint">{rows.length}종 · 보유 {rows.filter((r) => heldIds.has(r.id)).length} · 항목을 누르면 어디에 쓰이는지 보여줍니다.</p>
+      <p className="hint">{rows.length}종 · 보유 {rows.filter((r) => heldIds.has(r.id)).length} · 숫자는 그 재료를 쓰는 레시피 수예요. 누르면 어디에 쓰이는지 볼 수 있어요.</p>
       <div className="items">
         {rows.map((i) => (
           <button className={`it ${heldIds.has(i.id) ? '' : 'off'}`} key={i.id}

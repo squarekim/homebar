@@ -13,12 +13,12 @@ export interface CandidateWhisky {
 }
 
 export const CANDIDATE_WHISKIES: CandidateWhisky[] = [
-  { id: 'lagavulin16', name: '라가불린 16', note: '아일라 피트의 교과서. 셰리 숙성으로 스모크+단맛.', cls: { origin: '스카치', type: '싱글몰트', region: '아일라', cask: ['셰리'], character: ['피티드', '스모키'] } },
-  { id: 'ardbeg10', name: '아드벡 10', note: '아일라 피트, 버번 캐스크의 정통 피티드.', cls: { origin: '스카치', type: '싱글몰트', region: '아일라', cask: ['버번'], character: ['피티드', '스모키'] } },
-  { id: 'springbank10', name: '스프링뱅크 10', note: '캠벨타운 유일급. 셰리+버번, 라이트 피트·해양성.', cls: { origin: '스카치', type: '싱글몰트', region: '캠벨타운', cask: ['셰리', '버번'], character: ['피티드', '해양성'] } },
-  { id: 'auchentoshan12', name: '오켄토션 12', note: '로우랜드 삼중증류, 논피트 라이트.', cls: { origin: '스카치', type: '싱글몰트', region: '로우랜드', cask: ['셰리', '버번'], character: ['논피트'] } },
-  { id: 'glendronach12', name: '글렌드로낙 12', note: '하이랜드 셰리 폭탄(PX·올로로소).', cls: { origin: '스카치', type: '싱글몰트', region: '하이랜드', cask: ['PX', '올로로소'], character: ['논피트'] } },
-  { id: 'bunnahabhain12', name: '부나하벤 12', note: '아일라인데 비피트+셰리 — 아일라의 다른 얼굴.', cls: { origin: '스카치', type: '싱글몰트', region: '아일라', cask: ['셰리'], character: ['논피트'] } },
-  { id: 'redbreast12', name: '레드브레스트 12', note: '아이리시 싱글 팟 스틸, 셰리+버번.', cls: { origin: '아이리시', type: '싱글 팟 스틸', cask: ['셰리', '버번'], character: ['논피트'] } },
-  { id: 'yamazaki12', name: '야마자키 12', note: '재패니즈 싱글몰트(미즈나라 포함).', cls: { origin: '재패니즈', type: '싱글몰트', cask: ['셰리', '버번', '미즈나라'], character: ['논피트'] } },
+  { id: 'lagavulin16', name: '라가불린 16', note: '아일라 싱글몰트. 피트 향이 강하고 셰리 캐스크를 함께 써요.', cls: { origin: '스카치', type: '싱글몰트', region: '아일라', cask: ['셰리'], character: ['피티드', '스모키'] } },
+  { id: 'ardbeg10', name: '아드벡 10', note: '아일라 싱글몰트. 버번 캐스크에서 숙성한 피티드예요.', cls: { origin: '스카치', type: '싱글몰트', region: '아일라', cask: ['버번'], character: ['피티드', '스모키'] } },
+  { id: 'springbank10', name: '스프링뱅크 10', note: '캠벨타운 싱글몰트. 셰리와 버번 캐스크, 약한 피트예요.', cls: { origin: '스카치', type: '싱글몰트', region: '캠벨타운', cask: ['셰리', '버번'], character: ['피티드', '해양성'] } },
+  { id: 'auchentoshan12', name: '오켄토션 12', note: '로우랜드 싱글몰트. 세 번 증류하고 피트를 쓰지 않아요.', cls: { origin: '스카치', type: '싱글몰트', region: '로우랜드', cask: ['셰리', '버번'], character: ['논피트'] } },
+  { id: 'glendronach12', name: '글렌드로낙 12', note: '하이랜드 싱글몰트. PX와 올로로소 셰리 캐스크예요.', cls: { origin: '스카치', type: '싱글몰트', region: '하이랜드', cask: ['PX', '올로로소'], character: ['논피트'] } },
+  { id: 'bunnahabhain12', name: '부나하벤 12', note: '아일라 싱글몰트. 피트를 쓰지 않고 셰리 캐스크를 써요.', cls: { origin: '스카치', type: '싱글몰트', region: '아일라', cask: ['셰리'], character: ['논피트'] } },
+  { id: 'redbreast12', name: '레드브레스트 12', note: '아이리시 싱글 팟 스틸. 셰리와 버번 캐스크예요.', cls: { origin: '아이리시', type: '싱글 팟 스틸', cask: ['셰리', '버번'], character: ['논피트'] } },
+  { id: 'yamazaki12', name: '야마자키 12', note: '재패니즈 싱글몰트. 미즈나라 캐스크도 써요.', cls: { origin: '재패니즈', type: '싱글몰트', cask: ['셰리', '버번', '미즈나라'], character: ['논피트'] } },
 ];

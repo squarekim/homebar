@@ -1,29 +1,31 @@
 /**
- * CellarPage — '내 술장'. 무엇을 얼마나 갖고 있는지 관리하는 곳이다.
+ * CellarPage — '술장'. 무엇을 얼마나 갖고 있고 무엇을 마셨는지 보는 곳이다.
  *
  * 모든 화면 위에 붙어 있던 통계('정규·근사·불가·보유재료')를 여기로 옮겼다.
  * 개별 제품(병)과 표준 재료는 서로 다른 집계라 한 줄에 섞지 않고 나눠 적는다.
  * 제품 소개는 위스키 화면이 맡고, 여기서는 보유 수량·용량·잔량·재료 연결만 다룬다.
  */
+import { GuideHint } from '../components/GuidePopup';
 import { useMemo, useState } from 'react';
-import { useUI } from '../UIContext';
+import { useUI, type CellarSub } from '../UIContext';
 import { useBottles, useHeldIds, useSubMap, useInventory, inventoryRepo } from '../../hooks/useData';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { evaluateAll, tallyStatus } from '../../services/availabilityService';
 import { bottleService } from '../../services/bottleService';
 import { resetInventoryToSeed } from '../../db/migrate';
 import { isUserBottle } from '../../data/userBottles';
-import { bottleKindLabel } from '../../data/bottleIngredients';
-import { ChipRow, ChipToggle, SearchBox, BottleBadges, type ChipOption } from '../components/common';
+import { bottleKindLabel, groupLabel } from '../../data/bottleIngredients';
+import { ChipRow, ChipToggle, SearchBox, BottleBadges, type ChipOption, StarterNotice, notifyExample } from '../components/common';
 import { normalize, hits, useGroupChips } from '../listUtils';
 import { IS_PUBLIC } from '../../config';
 import { type Bottle } from '../../models/types';
+import { LogList } from './NotesPage';
+import { GarnishStockBox } from '../components/GarnishStockBox';
 
-type Sub = 'bottles' | 'stock';
-const SUBS: ChipOption<Sub>[] = [{ v: 'bottles', label: '보유 술' }, { v: 'stock', label: '재료 재고' }];
+const SUBS: ChipOption<CellarSub>[] = [{ v: 'bottles', label: '보유 술' }, { v: 'stock', label: '재료 재고' }, { v: 'logs', label: '마신 기록' }];
 
 export function CellarPage() {
-  const [sub, setSub] = useState<Sub>('bottles');
+  const { cellarSub: sub, setCellarSub: setSub } = useUI();
   const bottles = useBottles();
   const heldIds = useHeldIds();
   const subMap = useSubMap();
@@ -32,19 +34,21 @@ export function CellarPage() {
 
   return (
     <>
-      <h2 className="pagetitle">내 술장</h2>
+      <h2 className="pagetitle">술장</h2>
+      <GuideHint tab="cellar" />
+      <StarterNotice />
 
       {/* 두 가지 집계를 나눠 적는다 — 병 수와 재료 수는 다른 것이다 */}
       <div className="statline">
-        <div className="cell"><b>{bottles.length}</b><small>보유 제품(병)</small></div>
-        <div className="cell"><b>{heldIds.size}<small style={{ fontSize: 14 }}> / {totalIngredients}</small></b><small>표준 재료</small></div>
-        <div className="cell ok"><b>{tally.READY}</b><small>그대로 만들 수 있는 레시피</small></div>
-        <div className="cell alt"><b>{tally.SUBSTITUTE}</b><small>대체로 가능</small></div>
-        <div className="cell"><b>{tally.MISSING + tally.UNAVAILABLE}</b><small>재료 부족</small></div>
+        <div className="cell"><b>{bottles.length}</b><small>가진 술(병)</small></div>
+        <div className="cell"><b>{heldIds.size}<small style={{ fontSize: 14 }}> / {totalIngredients}</small></b><small>가진 재료</small></div>
+        <div className={tally.READY ? 'cell ok' : 'cell'}><b>{tally.READY}</b><small>지금 만들 수 있는 잔</small></div>
+        <div className={tally.SUBSTITUTE ? 'cell alt' : 'cell'}><b>{tally.SUBSTITUTE}</b><small>대체 재료로 가능</small></div>
+        <div className="cell"><b>{tally.MISSING + tally.UNAVAILABLE}</b><small>재료가 모자란 잔</small></div>
       </div>
 
       <ChipRow value={sub} onChange={setSub} options={SUBS} />
-      {sub === 'bottles' ? <BottleList bottles={bottles} /> : <StockManager />}
+      {sub === 'bottles' ? <BottleList bottles={bottles} /> : sub === 'stock' ? <StockManager /> : <LogList />}
     </>
   );
 }
@@ -55,7 +59,8 @@ function BottleList({ bottles }: { bottles: Bottle[] }) {
   const heldIds = useHeldIds();
   const [q, setQ] = useState('');
   const [grp, setGrp] = useState('all');
-  const groups = useGroupChips(bottles, (b) => b.group);
+  const rawGroups = useGroupChips(bottles, (b) => b.group);
+  const groups = useMemo(() => rawGroups.map((g) => ({ ...g, label: groupLabel(g.label) })), [rawGroups]);
 
   const rows = useMemo(() => {
     const t = normalize(q);
@@ -73,7 +78,7 @@ function BottleList({ bottles }: { bottles: Bottle[] }) {
       <ChipRow value={grp} options={groups} onChange={setGrp} wrap />
       {rows.length === 0 && (
         <div className="empty">
-          {q.trim() ? '검색 결과가 없습니다.' : '아직 등록한 술이 없습니다. 위의 술 추가로 시작하세요.'}
+          {q.trim() ? '찾는 술이 없어요.' : '아직 넣은 술이 없어요. 위의 술 추가로 시작해 보세요.'}
         </div>
       )}
       <div className="rowlist">
@@ -100,25 +105,25 @@ function BottleList({ bottles }: { bottles: Bottle[] }) {
               <div className="num">
                 {b.qty > 1 ? `${b.qty}병` : '1병'}
                 {isUserBottle(b.id) && (
-                  <div><button className="btn sm ghost" onClick={async () => { await bottleService.remove(b.id); toast('삭제됨'); }}>삭제</button></div>
+                  <div><button className="btn sm ghost" onClick={async () => { await bottleService.remove(b.id); toast('지웠어요'); }}>삭제</button></div>
                 )}
               </div>
             </div>
           );
         })}
       </div>
-      <p className="hint">항목을 누르면 위스키 화면의 상세(맛·공식 노트)로 갑니다. 수량·용량은 저장된 값이며, 없는 항목은 비워 둡니다.</p>
+      <p className="hint">술을 누르면 맛과 공식 노트를 볼 수 있어요. 도수와 용량은 확인된 것만 적어요.</p>
     </>
   );
 }
 
 const SPIRIT_CATS = ['위스키', '진', '보드카', '럼', '데킬라·아가베', '브랜디', '리큐르', '비터·아페리티프', '베르무트·와인'];
-const MIXER_CATS = ['주스·과즙', '탄산·음료', '시럽·감미', '신선·허브', '유제품·기타'];
+const MIXER_CATS = ['주스·과즙', '탄산·음료', '시럽·감미', '신선·허브', '부재료'];
 
 type View = 'all' | 'spirit' | 'mixer';
 type Own = 'all' | 'owned' | 'missing';
 const OWN_FILTERS: ChipOption<Own>[] = [
-  { v: 'all', label: '전체' }, { v: 'owned', label: '보유만', cls: 'ok' }, { v: 'missing', label: '미보유만' },
+  { v: 'all', label: '전체' }, { v: 'owned', label: '가진 것만', cls: 'ok' }, { v: 'missing', label: '없는 것만' },
 ];
 
 /** 재료 재고 — 레시피 판정에 직접 쓰이는 표준 재료의 보유·잔량 */
@@ -151,8 +156,8 @@ function StockManager() {
   return (
     <>
       <p className="hint">
-        레시피 판정은 <b>표준 재료</b>로 합니다. 체크한 재료만 보유로 계산되고, 위 숫자가 즉시 바뀝니다.
-        현재 {ownedCount}/{allIngredients.length}종.
+        만들 수 있는 잔은 <b>체크한 재료</b>로 계산해요. 체크를 바꾸면 위 숫자도 바로 바뀌어요.
+        지금 {ownedCount}/{allIngredients.length}종을 가지고 있어요.
       </p>
       <ChipRow value={own} onChange={setOwn} options={OWN_FILTERS} wrap />
       <div className="controls tight">
@@ -163,23 +168,23 @@ function StockManager() {
 
       {confirmReset ? (
         <div className="confirm">
-          <p>보유 재료를 <b>전부 해제</b>합니다. 지금 켜져 있는 {ownedCount}종이 모두 꺼집니다.</p>
-          <p className="sub">음용 기록·취향·추가한 술은 지워지지 않습니다.</p>
+          <p>재료 체크를 <b>전부 꺼요</b>. 지금 켜져 있는 {ownedCount}종이 모두 꺼져요.</p>
+          <p className="sub">마신 기록, 취향, 추가한 술은 지워지지 않아요.</p>
           <div className="btnrow">
             <button className="btn danger" onClick={async () => {
               await inventoryRepo.setAll(false, allIngredients.map((i) => ({ id: i.id, name: i.name })));
-              setConfirmReset(false); setOwn('all'); toast('보유재료를 비웠습니다');
+              setConfirmReset(false); setOwn('all'); toast('재료 체크를 모두 껐어요');
             }}>비우기</button>
             <button className="btn" onClick={() => setConfirmReset(false)}>취소</button>
           </div>
         </div>
       ) : (
         <div className="btnrow">
-          <button className="btn sm" onClick={() => setConfirmReset(true)}>보유재료 초기화</button>
-          <button className="btn sm" onClick={async () => { await resetInventoryToSeed(); toast(IS_PUBLIC ? '기본 홈바 세트로 되돌림' : '기본 컬렉션으로 되돌림'); }}>
-            {IS_PUBLIC ? '기본 홈바 세트' : '기본 컬렉션'}
+          <button className="btn sm" onClick={() => setConfirmReset(true)}>재료 체크 모두 끄기</button>
+          <button className="btn sm" onClick={async () => { await resetInventoryToSeed(); notifyExample(); toast(IS_PUBLIC ? '예시로 기본 홈바 세트를 켰어요' : '기본 컬렉션으로 되돌렸어요'); }}>
+            {IS_PUBLIC ? '예시: 기본 홈바 세트' : '기본 컬렉션'}
           </button>
-          <button className="btn sm" onClick={async () => { await inventoryRepo.setAll(true, allIngredients.map((i) => ({ id: i.id, name: i.name }))); toast('전부 보유'); }}>전부 보유</button>
+          <button className="btn sm" onClick={async () => { await inventoryRepo.setAll(true, allIngredients.map((i) => ({ id: i.id, name: i.name }))); toast('모두 켰어요'); }}>모두 켜기</button>
         </div>
       )}
 
@@ -219,6 +224,7 @@ function StockManager() {
           </div>
         );
       })}
+      {view !== 'spirit' && <GarnishStockBox own={own} />}
     </>
   );
 }

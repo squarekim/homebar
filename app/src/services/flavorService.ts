@@ -109,3 +109,35 @@ export function flavorWords(v: FlavorVector, n = 2): string[] {
 export function topAxes(v: FlavorVector, n = 3): FlavorAxis[] {
   return [...FLAVOR_AXES].sort((a, b) => v[b] - v[a]).slice(0, n).filter((a) => v[a] > 0);
 }
+
+/** 취향 화면에 적는 기록 요약. 3잔이 안 되면 취향을 말하기에 모자라다고 보고 enough=false 로 둔다 */
+export const TASTE_MIN_LOGS = 3;
+export interface LogSummary {
+  count: number; enough: boolean; avg: number; retry: number;
+  /** 종류별 잔 수 — 칵테일 / 위스키 / 그 밖 */
+  kinds: { cocktail: number; whisky: number; other: number };
+  /** 여러 번 마신 잔(많이 마신 순) */
+  often: { name: string; n: number }[];
+  /** 4점 이상을 준 잔(높은 점수 순, 같은 잔은 한 번만) */
+  loved: { name: string; rating: number }[];
+}
+export function summarizeLogs(logs: DrinkLog[], n = 3): LogSummary {
+  const count = logs.length;
+  const byName = new Map<string, { n: number; best: number }>();
+  const kinds = { cocktail: 0, whisky: 0, other: 0 };
+  for (const l of logs) {
+    const e = byName.get(l.drinkName) ?? { n: 0, best: 0 };
+    byName.set(l.drinkName, { n: e.n + 1, best: Math.max(e.best, l.rating) });
+    kinds[l.drinkType === 'cocktail' ? 'cocktail' : l.drinkType === 'whisky' ? 'whisky' : 'other']++;
+  }
+  const names = [...byName].map(([name, e]) => ({ name, ...e }));
+  const ko = (a: { name: string }, b: { name: string }) => a.name.localeCompare(b.name, 'ko');
+  return {
+    count, enough: count >= TASTE_MIN_LOGS,
+    avg: count ? logs.reduce((s, l) => s + l.rating, 0) / count : 0,
+    retry: logs.filter((l) => l.retryIntent).length,
+    kinds,
+    often: names.filter((x) => x.n > 1).sort((a, b) => b.n - a.n || ko(a, b)).slice(0, n).map(({ name, n: c }) => ({ name, n: c })),
+    loved: names.filter((x) => x.best >= 4).sort((a, b) => b.best - a.best || ko(a, b)).slice(0, n).map(({ name, best }) => ({ name, rating: best })),
+  };
+}

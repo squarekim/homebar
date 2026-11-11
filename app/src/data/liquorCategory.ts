@@ -7,13 +7,13 @@ import { type LiquorCategory } from '../models/types';
 
 export const CATEGORY_ORDER: LiquorCategory[] = [
   'whisky', 'gin', 'vodka', 'rum', 'tequila', 'mezcal', 'brandy',
-  'liqueur', 'vermouth', 'wine', 'beer', 'sake', 'rtd', 'spirit', 'mixer',
+  'liqueur', 'vermouth', 'wine', 'beer', 'trad', 'soju', 'sake', 'rtd', 'spirit', 'mixer',
 ];
 
 export const CATEGORY_LABELS: Record<LiquorCategory, string> = {
   whisky: '위스키', gin: '진', vodka: '보드카', rum: '럼', tequila: '데킬라',
   mezcal: '메즈칼', brandy: '브랜디·코냑', liqueur: '리큐르', vermouth: '베르무트',
-  wine: '와인·주정강화', beer: '맥주', sake: '사케·소주', rtd: 'RTD·캔칵테일',
+  wine: '와인·주정강화', beer: '맥주', trad: '우리술', soju: '소주', sake: '사케·일본 소주', rtd: 'RTD·캔칵테일',
   spirit: '기타 증류주', mixer: '칵테일 부재료',
 };
 
@@ -22,7 +22,7 @@ export const CATEGORY_GROUP: Record<LiquorCategory, string> = {
   whisky: '위스키', gin: '진', vodka: '보드카',
   rum: '럼·데킬라·브랜디', tequila: '럼·데킬라·브랜디', mezcal: '럼·데킬라·브랜디', brandy: '럼·데킬라·브랜디',
   liqueur: '리큐르', vermouth: '기타 (칵테일 미활용)', wine: '기타 (칵테일 미활용)',
-  beer: '기타 (칵테일 미활용)', sake: '기타 (칵테일 미활용)', rtd: '기타 (칵테일 미활용)',
+  beer: '기타 (칵테일 미활용)', trad: '기타 (칵테일 미활용)', soju: '기타 (칵테일 미활용)', sake: '기타 (칵테일 미활용)', rtd: '기타 (칵테일 미활용)',
   spirit: '기타 (칵테일 미활용)',
   mixer: '음료·믹서·시럽·비터·상비품',
 };

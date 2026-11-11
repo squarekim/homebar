@@ -164,11 +164,28 @@ describe('기준 DB 확장', () => {
 
   it('도수를 확인하지 못한 제품은 값을 지어내지 않는다', () => {
     expect(liquorMasterById.get('m_glenallachie10cs')!.abv).toBeUndefined();  // 배치별 상이
-    expect(liquorMasterById.get('m_joeunday')!.abv).toBeUndefined();          // 희석식 소주는 도수가 자주 바뀐다
+    expect(liquorMasterById.get('m_wolgyegwan_junmai')!.abv).toBe(15.6);      // 750ml(키햐), 다이긴죠 720ml는 따로 둔다
+    expect(liquorMasterById.get('m_wolgyegwan_daiginjo')!.abv).toBe(16.5);
+    expect(liquorMasterById.get('m_hallasan')!.abv).toBe(21);                 // 한국민족문화대백과사전·비즈워치로 확인
+    expect(liquorMasterById.get('m_joeunday')!.abv).toBe(15.7);               // 2026-03 무학 발표로 확인
     // 수입사 제품 설명으로 확인된 값은 채운다
     const appletree = liquorMasterById.get('m_appletree')!;
     expect(appletree.abv).toBe(15);
     expect(appletree.volumeMl).toBe(700);
+  });
+
+  it('한국 술은 우리술·소주·사케로 나눈다(2026-11-11 전통주 분류 조사)', () => {
+    const cat = (id: string) => liquorMasterById.get(id)!.category;
+    expect(['m_jangsu', 'm_baekseju', 'm_hwayo25', 'm_munbaeju', 'm_soju_andong'].map(cat)).toEqual(['trad', 'trad', 'trad', 'trad', 'trad']);
+    expect(['m_chamisul', 'm_jamong_aisul'].map(cat)).toEqual(['soju', 'soju']);
+    expect(['m_dassai45', 'm_iichiko'].map(cat)).toEqual(['sake', 'sake']);
+    expect(cat('m_tokki_sunbee')).toBe('gin');
+    expect(liquorMasterById.get('m_igangju')!.subcategory).toContain('리큐르');
+    expect(searchLiquor('사케', { limit: 8 }).every((h) => h.item.category === 'sake')).toBe(true);
+    expect(searchLiquor('막걸리', { limit: 8 }).every((h) => h.item.category === 'trad')).toBe(true);
+    expect(searchLiquor('민속주', { limit: 8 }).map((h) => h.item.nameKo).sort()).toEqual(['문배주', '안동소주', '이강주']);
+    expect(searchLiquor('우리쌀', { limit: 8 }).map((h) => h.item.nameKo).sort()).toEqual(['내국양조 능이주', '내국양조 송이주', '원소주 스피릿', '토끼소주 화이트']);
+    expect(LIQUOR_MASTER.some((m) => /지역특산주/.test(m.subcategory ?? ''))).toBe(false); // 법적 지위는 적지 않는다
   });
 
   it('수제맥주를 이름·브랜드로 찾는다', () => {

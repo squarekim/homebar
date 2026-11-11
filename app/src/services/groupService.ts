@@ -2,10 +2,11 @@
  * groupService — 여러 사람의 TasteProfile 을 합친 그룹 추천.
  * 평균만 쓰지 않고, 한 명이라도 매우 싫어하는 향미가 강한 술에는 패널티를 준다.
  */
+import { cocktailWords, whiskyWords } from './tasteWords';
 import { type FlavorVector, type RecommendationResult, FLAVOR_LABELS_KO, type StockContext } from '../models/types';
 import { referenceRepo } from '../repositories/referenceRepo';
 import { evaluateCocktail, AVAIL_SCORE } from './availabilityService';
-import { flavorWords, groupTasteMatch, topAxes } from './flavorService';
+import { groupTasteMatch, topAxes } from './flavorService';
 
 export interface GroupContext extends StockContext {
   profiles: { name: string; vector: FlavorVector }[];
@@ -40,7 +41,7 @@ export function recommendGroupCocktails(ctx: GroupContext, onlyAvailable = false
       kind: 'cocktail', id: ck.id, name: ck.name, score,
       tasteScore: groupScore, inventoryScore: 0, availabilityScore, noveltyScore: 0,
       status: avail.status, reason: groupReason(ck.flavor, penalty),
-      flavorWords: flavorWords(ck.flavor), base: ck.base,
+      flavorWords: cocktailWords(ck), base: ck.base,
     });
   }
   return out.sort((a, b) => b.score - a.score).slice(0, limit);
@@ -49,13 +50,13 @@ export function recommendGroupCocktails(ctx: GroupContext, onlyAvailable = false
 export function recommendGroupWhiskies(ctx: GroupContext, limit = 12): RecommendationResult[] {
   const vectors = ctx.profiles.map((p) => p.vector);
   const out: RecommendationResult[] = [];
-  for (const w of referenceRepo.whiskies()) {
+  for (const w of ctx.whiskies ?? referenceRepo.whiskies()) {
     const { score: groupScore, penalty } = groupTasteMatch(vectors, w.flavor);
     out.push({
       kind: 'whisky', id: w.id, name: w.name, score: groupScore,
       tasteScore: groupScore, inventoryScore: 100, availabilityScore: 100, noveltyScore: 0,
       reason: groupReason(w.flavor, penalty),
-      flavorWords: flavorWords(w.flavor), base: w.whiskyClass?.origin ?? '위스키',
+      flavorWords: whiskyWords(w), base: w.whiskyClass?.origin ?? '위스키',
     });
   }
   return out.sort((a, b) => b.score - a.score).slice(0, limit);

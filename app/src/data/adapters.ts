@@ -113,6 +113,7 @@ export const cocktails: Cocktail[] = SEED.recipes.map((r) => {
     note: r.note,
     sourceName: r.s,
     garnish: r.g,
+    glass: r.gl,
     variantOf: r.v ? slugId('ck', r.v[0]) : undefined,
     variantNote: r.v?.[1],
     variants: [],
@@ -174,6 +175,7 @@ export const bottles: Bottle[] = SEED.bottles.map((b) => {
     whiskyClass: WHISKY_CLASS[b.id],
   };
 });
+export const bottleById = new Map<string, Bottle>(bottles.map((b) => [b.id, b]));
 export const whiskies: Bottle[] = bottles.filter((b) => b.isWhisky);
 export const spirits: Bottle[] = bottles.filter((b) => b.isSpirit);
 
@@ -211,10 +213,29 @@ const SUBSTITUTION_PAIRS: Array<[from: string, to: string, note?: string]> = [
   ['커피 리큐르', '깔루아(커피 리큐르)', '깔루아는 커피 리큐르의 대표 제품'],
   ['트리플 섹', '코앵트로', '코앵트로는 프리미엄 트리플 섹'],
   ['코앵트로', '트리플 섹', '트리플 섹으로 대체 가능(당도 차이)'],
+  ['오렌지 큐라소', '트리플 섹', '같은 오렌지 리큐르 계열(트리플 섹은 무색·드라이한 편)'],
+  ['오렌지 큐라소', '그랑 마르니에', '코냑 바탕의 오렌지 큐라소 계열'],
   ['설탕시럽', '심플시럽', '동일'],
   ['라임즙', '레몬즙', '시트러스 대체(산미 유사)'],
   ['포도 브랜디', '코냑', '코냑은 포도 브랜디의 한 종류(원산지 한정)'],
   ['포도 브랜디', 'XO 브랜디(코냑 외)', '같은 포도 브랜디 계열'],
+  // 한 레시피에만 쓰이던 병 — 같은 계열 안에서만 잇는다(맛을 정하는 메즈칼·치나르·아마로·비올렛·피스코는 잇지 않는다)
+  ['그린 크렘 드 멘트', '크렘 드 멘트', '같은 민트 리큐르(색만 다름)'],
+  ['그린 크렘 드 멘트', '화이트 크렘 드 멘트', '같은 민트 리큐르(색만 다름)'],
+  ['화이트 크렘 드 멘트', '크렘 드 멘트', '같은 민트 리큐르'],
+  ['화이트 크렘 드 멘트', '그린 크렘 드 멘트', '같은 민트 리큐르(색만 다름)'],
+  ['크렘 드 멘트', '그린 크렘 드 멘트', '같은 민트 리큐르'],
+  ['크렘 드 멘트', '화이트 크렘 드 멘트', '같은 민트 리큐르'],
+  ['크렘 드 뮈르', '크렘 드 카시스', '같은 베리 크렘 리큐르(블랙베리 → 블랙커런트)'],
+  ['보드카 시트론', '플레인 보드카', '시트러스 향만 빠짐'],
+  ['블렌디드 스카치', '스카치', '같은 스카치 위스키'],
+  ['XO 브랜디(코냑 외)', '포도 브랜디', '같은 포도 브랜디 계열'],
+  ['XO 브랜디(코냑 외)', '코냑', '같은 포도 브랜디 계열'],
+  // 더 좁게 적힌 재료 → 같은 술의 넓은 이름. 반대 방향은 잇지 않는다
+  ['쿠바산 화이트 럼', '화이트 럼', '같은 화이트 럼(원산지만 다름)'],
+  ['100% 아가베 데킬라', '데킬라', '같은 데킬라(원료 비율이 다름)'],
+  ['버번 또는 라이', '버번', '레시피가 둘 중 하나를 쓰라고 적음'],
+  ['버번 또는 라이', '라이 위스키', '레시피가 둘 중 하나를 쓰라고 적음'],
 ];
 export const substitutions: IngredientSubstitution[] = SUBSTITUTION_PAIRS
   .filter(([f, t]) => ingIdByName.has(f) || ingIdByName.has(t))

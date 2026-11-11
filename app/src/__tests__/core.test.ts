@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ingredients, cocktails, bottles, whiskies } from '../data/adapters';
+import { ingredients, cocktails, bottles, whiskies, substitutions } from '../data/adapters';
 import { evaluateAll, evaluateCocktail, tallyStatus, STATUS_LABEL_KO, STATUS_SENTENCE_KO, STATUS_LEAD_KO } from '../services/availabilityService';
 import { isNeutralTaste } from '../services/flavorService';
 import { recommendCocktails, recommendWhiskies, todayPicks, type RecommendContext } from '../services/recommendationService';
@@ -19,8 +19,8 @@ function seedHeld(): Set<string> {
 
 describe('seed adapters', () => {
   it('원본 건수 유지', () => {
-    expect(ingredients.length).toBe(128);
-    expect(cocktails.length).toBe(202);
+    expect(ingredients.length).toBe(130); // 원본 128 + 오렌지 큐라소(마이 타이 IBA 교정) + 셰리(셰리 코블러)
+    expect(cocktails.length).toBe(210); // 원본 202 + 현행 IBA 8종(addIbaRecipes)
     expect(bottles.length).toBe(82); // 원본 81 + 클라이넬리쉬 14년 추가
     expect(whiskies.length).toBeGreaterThan(0);
     expect(bottles.some((b) => b.id === 'clynelish14')).toBe(true);
@@ -124,7 +124,7 @@ describe('availability', () => {
     const t = tallyStatus(all);
     // 원본 재고 기준 정규 121 (레시피의 [대체] 표시를 걷어낸 뒤)
     expect(t.READY).toBeGreaterThan(50);
-    expect(t.READY + t.SUBSTITUTE + t.MISSING + t.UNAVAILABLE).toBe(202);
+    expect(t.READY + t.SUBSTITUTE + t.MISSING + t.UNAVAILABLE).toBe(210);
   });
   it('빈 재고면 대부분 불가', () => {
     const empty = new Set<string>();
@@ -211,11 +211,12 @@ describe('레시피 note 위생 — 재고 서술 분리', () => {
 
   it('레시피 본문(맛·기법·가니시·대체 안내)은 보존된다', () => {
     const byName = (n: string) => cocktails.find((c) => c.name === n)!;
-    expect(byName('카이피리냐').note).toContain('럼으로 대체되지 않습니다');   // 일반 대체 안내
+    expect(byName('카이피리냐').note).toContain('럼으로 대신할 수 없어요');   // 일반 대체 안내
     expect(byName('피나 콜라다').garnish).toContain('체리');                   // 가니시는 별도 필드로
     expect(byName('비외 카레').note).toContain('베네딕틴 1바스푼');            // 만들 때 필요한 스펙
     expect(byName('갓파더').note).toContain('3.5cl : 3.5cl');                  // 레시피 스펙 설명
-    expect(cocktails.filter((c) => c.note && c.note.length > 0).length).toBeGreaterThan(140);
+    // 출처 이름만 적혀 있던 메모 11건은 출처 칸으로 옮겼다
+    expect(cocktails.filter((c) => c.note && c.note.length > 0).length).toBeGreaterThanOrEqual(138);
   });
 
   it('판정은 note 가 아니라 재고 변화에만 반응한다', () => {
@@ -539,5 +540,42 @@ describe('홈 첫 화면 추천 — 대표 한 잔과 다른 성격', () => {
   it('중립 프로필은 취향 설정으로 치지 않는다 (부팅 때 자동 생성된다)', () => {
     expect(isNeutralTaste(vec({}))).toBe(true);
     expect(isNeutralTaste(vec({ smoke: 9 }))).toBe(false);
+  });
+});
+
+describe('마이 타이 — IBA 원문대로 오렌지 큐라소', () => {
+  const mt = cocktails.find((c) => c.name === '마이 타이')!;
+  it('블루 큐라소가 아니라 오렌지 큐라소 15ml', () => {
+    const names = mt.ingredients.map((i) => i.ingredientName);
+    expect(names).toContain('오렌지 큐라소');
+    expect(names).not.toContain('블루 큐라소');
+  });
+  it('트리플 섹이나 그랑 마르니에로 대체할 수 있다', () => {
+    const others = mt.ingredients.filter((i) => i.ingredientName !== '오렌지 큐라소').map((i) => i.ingredientId);
+    const subMap = new Map<string, string[]>();
+    for (const s of substitutions) subMap.set(s.ingredientId, [...(subMap.get(s.ingredientId) ?? []), s.substituteId]);
+    const triple = ingredients.find((i) => i.name === '트리플 섹')!.id;
+    expect(evaluateCocktail(mt, new Set([...others, triple]), subMap).status).toBe('SUBSTITUTE');
+    expect(evaluateCocktail(mt, new Set(others), subMap).status).toBe('MISSING');
+  });
+});
+
+describe('IBA 원문 대조 (alignIbaRecipes)', () => {
+  const ml = (n: string, ing: string) => cocktails.find((c) => c.name === n)!.ingredients.find((i) => i.ingredientName === ing)?.amountMl;
+  it('용량이 원문과 같다', () => {
+    expect([ml('그랜드 마르가리타', '100% 아가베 데킬라'), ml('그랜드 마르가리타', '그랑 마르니에')]).toEqual([45, 30]);
+    expect(ml('앤젤 페이스', '애프리콧 브랜디')).toBe(30);
+    expect([ml('좀비', '자메이카 럼(앰버/블랙스트랩)'), ml('좀비', '골드 럼'), ml('좀비', '데메라라 럼')]).toEqual([45, 45, 30]);
+    expect([ml('칸찬차라', '쿠바산 화이트 럼'), ml('칸찬차라', '물')]).toEqual([60, 50]);
+  });
+  it('없는 재료는 가까운 기존 재료로 맞추고 원문 이름을 남긴다', () => {
+    const raw = cocktails.find((c) => c.name === '마이 타이')!.ingredients.map((i) => i.raw).join(' ');
+    expect(raw).toContain('원문: 마르티니크 몰라세스 럼');
+    expect(cocktails.find((c) => c.name === '브랜디 크러스타')!.method).toBe('Stir');
+  });
+  it('재료 사용 수는 실제 레시피 수와 같다', () => {
+    for (const ing of ingredients) {
+      expect(cocktails.filter((c) => c.ingredients.some((i) => i.ingredientId === ing.id)).length, ing.name).toBe(ing.usageCount);
+    }
   });
 });

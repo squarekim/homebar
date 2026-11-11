@@ -53,6 +53,12 @@ export const METHOD_LABELS_KO: Record<MethodKey, string> = {
   blend: '블렌드', layer: '레이어', swizzle: '스위즐', float: '플로트',
 };
 
+/** 조주법을 처음 보는 사람도 알 수 있는 말로 — 상세의 '만드는 법'에 쓴다 */
+export const METHOD_PLAIN_KO: Record<MethodKey, string> = {
+  build: '잔에 바로 붓기', shake: '셰이커로 흔들기', stir: '저어서 섞기', muddle: '으깨기',
+  blend: '블렌더로 갈기', layer: '층층이 쌓기', swizzle: '막대로 휘젓기', float: '위에 띄우기',
+};
+
 /** 칵테일 (기존 recipes) */
 export interface Cocktail {
   id: string;
@@ -65,7 +71,9 @@ export interface Cocktail {
   url?: string | undefined;
   note?: string | undefined;      // 코멘터리 한 문장 (없을 수도 있다)
   sourceName?: string | undefined; // 출처 표기 — URL 이 없을 때도 근거를 밝힌다
-  garnish?: string | undefined;  // 원본 note 끝에 붙어 있던 가니시 표기를 분리한 값
+  garnish?: string | undefined;
+  /** IBA 원문이 정한 잔(있으면 잔 규칙보다 먼저 쓴다): coupe·martini·highball·rocks·flute·hurricane·shot·mug */
+  glass?: string | undefined;  // 원본 note 끝에 붙어 있던 가니시 표기를 분리한 값
   /** 이 레시피의 원형 (변형인 경우) */
   variantOf?: string | undefined;      // 원형 칵테일 id
   variantNote?: string | undefined;    // 무엇을 바꾼 변형인지 한 문장
@@ -91,6 +99,105 @@ export interface WhiskyClass {
   region?: string | undefined;      // 스페이사이드 / 하이랜드 / 아일라 / 아일랜드 / 캠벨타운 / 로우랜드 / 켄터키
   cask: string[];       // 셰리 / 버번 / 프렌치오크 / 버진오크 / 와인 / PX / 올로로소 / 뉴 차드 오크
   character: string[];  // 피티드 / 논피트 / 스모키 / 왁시 / 캐스크 스트렝스 / 휘티드 / 차콜 멜로잉 등
+}
+
+export type WhiskyBase = '몰트' | '그레인' | '몰트+그레인' | '팟 스틸' | '버번' | '라이';
+export type WhiskyPeat = '피티드' | '논피트' | '미상';
+
+/**
+ * 위스키 3층 분류. WhiskyClass 에서 계산하며 저장하지 않는다(whiskySpec.ts).
+ *  ① 법적 정체성: 생산국 → 법적 명칭 → 구성(single/blended) + 원료
+ *  ② 제품 속성: 연수 · 캐스크 · 병입 · 피트 · 향미 표현 · 공정
+ *  ③ 지역: 법적 지역 + 세부 지역
+ * 원본에 없는 값은 null 로 둔다. 추정해서 채우지 않는다.
+ */
+export interface WhiskySpec {
+  country: string;                        // 스코틀랜드 · 아일랜드 · 미국 · 캐나다 · 일본 · 한국
+  legal: string | null;                   // 스카치 위스키 · 버번 위스키 … null = 기준 충족 미확인
+  composition: 'single' | 'blended' | null;
+  base: WhiskyBase | null;
+  straight: boolean | null;               // 미국 위스키만. null = 미확인 또는 해당 없음
+  mashbill: string | null;                // 휘티드 · 하이 라이
+  legalRegion: string | null;             // 스카치 5개 지역 · 미국 주
+  subRegion: string | null;               // 섬 · 스카이, 해안 등 관행상 구분
+  age: number | null;                     // 라벨 표시 연수. null = 표시 없음 또는 미확인
+  casks: string[];                        // 주 숙성·피니시 구분 없음(원본에 순서 정보가 없다)
+  caskMethod: string[];                   // 솔레라 · 더블 에이징 · 프렌치 오크 스테이브
+  strength: '캐스크 스트렝스' | '하이 프루프' | null;
+  bottledInBond: boolean;
+  singleBarrel: boolean;
+  peat: WhiskyPeat;
+  peatNote: string | null;                // 제조사 표현 그대로(라이트 피티드)
+  flavorNotes: string[];                  // 스모키 · 해양성 · 왁시 — 법적 분류가 아니다
+  process: string[];                      // 차콜 멜로잉 · 3회 증류
+}
+
+/** 방문자 투어. 확인하지 못한 곳은 이 값 대신 visit 을 null 로 둔다 */
+export type DistilleryTour = '운영' | '중단' | '없음';
+
+/** 방문 정보. 가격·운영 시간은 자주 바뀌어 넣지 않는다 */
+export interface DistilleryVisit {
+  status: DistilleryTour;
+  url?: string | undefined;  // 공식 예약·안내 페이지 (중단·없음이면 그 사실을 적은 페이지)
+  checked: string;        // 확인한 날짜 YYYY-MM-DD
+}
+
+/** 싱글몰트 증류소. 위치 판의 점 하나 */
+export interface Distillery {
+  id: string;
+  nameKo: string;
+  nameEn: string;
+  country: string;
+  legalRegion: string | null;
+  subRegion: string | null;
+  /** 공식 주소 기준 좌표. 출처 확인 전에는 null */
+  lat: number | null;
+  lng: number | null;
+  /** 공식 사이트 */
+  web?: string | undefined;
+  /** null = 확인 전 */
+  visit: DistilleryVisit | null;
+  /** 브랜드와 증류소 이름이 다를 때 등 */
+  note?: string | undefined;
+  /** 설립 연도. 기준이 갈리는 곳은 foundedNote 에 다른 연도를 밝힌다 */
+  founded?: number | undefined;
+  foundedNote?: string | undefined;
+  /** 현재 소유 회사 */
+  owner?: string | undefined;
+  /** 세부 위치(지역·마을) */
+  place?: string | undefined;
+  sources: string[];
+}
+
+/** 증류소 운영 상태. '근거 약함'은 2차 자료로만 확인한 곳 */
+export type DistilleryStatus = '운영' | '운영 (근거 약함)' | '증류 중단' | '준공 (생산 시작 미확인)' | '법정관리 중' | '청산 중';
+
+/** 세계 증류소 지도의 점 하나. 2026-10-28 조사 병합본에서 생성한다(worldDistilleries.ts) */
+export interface WorldDistillery {
+  id: string;
+  ko: string;
+  en: string;
+  /** 영국은 스코틀랜드·잉글랜드·웨일스·북아일랜드로 나눠 적는다 */
+  country: string;
+  region?: string;
+  place?: string;
+  status: DistilleryStatus;
+  statusNote?: string;
+  /** 없음 = 두 조사 모두 투어 안내를 찾지 못함 */
+  tour?: DistilleryTour;
+  /** 투어 값을 어느 조사에서 가져왔는지. 화면에는 쓰지 않고 재확인할 곳을 고를 때만 쓴다 */
+  tourBy?: 'GPT' | '제미나이만';
+  tourUrl?: string;
+  founded?: number;
+  lat?: number;
+  lng?: number;
+  /** 증류소 = 증류소 자체 좌표, 마을 = 소재 마을 좌표(Wikidata) */
+  coord?: '증류소' | '마을';
+  src?: string;
+  /** 하이랜드 중 본섬 밖 섬에 있는 곳 */
+  isle?: true;
+  /** 기존 싱글몰트 40곳(distilleries.ts) 중 같은 곳 */
+  appId?: string;
 }
 
 /**
@@ -310,7 +417,7 @@ export interface UserBottle {
 /** 대분류. 세부분류(subcategory)는 마스터 DB 내부에서 관리하며 사용자가 고르지 않는다. */
 export type LiquorCategory =
   | 'whisky' | 'gin' | 'vodka' | 'rum' | 'tequila' | 'mezcal' | 'brandy'
-  | 'liqueur' | 'vermouth' | 'wine' | 'beer' | 'sake' | 'rtd' | 'spirit' | 'mixer';
+  | 'liqueur' | 'vermouth' | 'wine' | 'beer' | 'trad' | 'soju' | 'sake' | 'rtd' | 'spirit' | 'mixer';
 
 /** 기준 제품 1건. 사용자는 이름만 검색해 고르고, 나머지는 여기서 자동 채워진다. */
 export interface LiquorMasterItem {
@@ -346,4 +453,6 @@ export interface StockContext {
   heldIds: Set<string>;
   subMap: Map<string, string[]>;
   logs: DrinkLog[];
+  /** 가진 위스키(앱에 든 병 + 사용자가 넣은 병). 없으면 앱에 든 병만 본다 */
+  whiskies?: readonly Bottle[] | undefined;
 }

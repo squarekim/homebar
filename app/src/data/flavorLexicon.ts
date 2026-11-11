@@ -24,7 +24,7 @@ const CATEGORY_BASE: Record<string, Partial14> = {
   '탄산·음료': {},
   '시럽·감미': { sweet: 9 },
   '신선·허브': { herbal: 5, citrus: 3, floral: 2, fruit: 2 },
-  '유제품·기타': { body: 6, sweet: 2 },
+  '부재료': { body: 6, sweet: 2 },
 };
 
 /** 이름 부분문자열 → 향미 기여. 재료·주류 공통 */

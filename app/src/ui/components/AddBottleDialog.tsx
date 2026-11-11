@@ -12,9 +12,19 @@ import { draftFromMaster, draftManual } from '../../data/userBottles';
 import { CATEGORY_LABELS, CATEGORY_ORDER, CATEGORY_DEFAULT_INGREDIENT, SUBCATEGORY_INGREDIENT } from '../../data/liquorCategory';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { type LiquorCategory, type LiquorMasterItem, type UserBottle, type WhiskyClass } from '../../models/types';
-import { ChipRow, ChipMulti, Modal, MakerNoteView, chips, type ChipOption } from './common';
+import { ChipRow, ChipMulti, Modal, MakerNoteView, noteHeading, noteTag, chips, type ChipOption } from './common';
 import { MASTER_MAKER_NOTES } from '../../data/makerNotesMaster';
 import { toggleValue } from '../listUtils';
+import { specOf, specTitle, displayRegionLabel } from '../../data/whiskySpec';
+import { distilleryOfProduct } from '../../data/distilleries';
+
+/** 분류 · 지역 · 캐스크 · 증류소 한 줄 */
+function autoClass(item: LiquorMasterItem): string {
+  const s = specOf(item.whiskyClass!, item.nameKo);
+  const d = distilleryOfProduct(item.id);
+  return [specTitle(s), displayRegionLabel(s.legalRegion, s.subRegion), ...s.casks, s.peat === '피티드' && '피티드', s.strength,
+    d && `증류소 ${d.nameKo}`].filter(Boolean).join(' · ');
+}
 
 const ORIGINS = chips(['스카치', '버번', '테네시', '아이리시', '재패니즈', '코리안', '기타']);
 const TYPES = chips(['싱글몰트', '블렌디드', '블렌디드 몰트', '스트레이트 버번', '휘티드 버번', '테네시 위스키', '싱글 팟 스틸']);
@@ -128,7 +138,7 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
 
   const save = async () => {
     const n = name.trim();
-    if (!n) { toast('이름을 입력하세요'); return; }
+    if (!n) { toast('이름을 넣어 주세요'); return; }
     setSaving(true);
     const over: Partial<UserBottle> = {
       qty, use,
@@ -148,7 +158,7 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
     }
     await bottleService.add(draft, { linkIngredient: link });
     const ing = link ? resolveIngredient(ingName) : undefined;
-    toast(ing ? `${n} 추가됨 · 재료 '${ing.name}' 보유 ON` : `${n} 추가됨`);
+    toast(ing ? `${n} 추가했어요 · 재료 '${ing.name}'도 켰어요` : `${n} 추가했어요`);
     onClose();
   };
 
@@ -158,10 +168,10 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
         <>
           <h2>술 추가</h2>
           <p className="hint sub">
-            제품명만 입력하면 분류·도수·용량·원산지·칵테일 재료가 자동으로 채워집니다.
+            이름만 넣으면 도수와 용량, 칵테일 재료는 알아서 채워 드려요.
           </p>
           <input type="search" autoFocus value={q} placeholder="예: 발베니 12 / 조니블랙 / Absolut" onChange={(e) => setQ(e.target.value)} />
-          {q.trim() === '' && <div className="hint">한글·영문·줄임말 모두 검색됩니다.</div>}
+          {q.trim() === '' && <div className="hint">한글, 영문, 줄임말로 모두 찾을 수 있어요.</div>}
           {q.trim() !== '' && (
             <div className="list" style={{ marginTop: 10 }}>
               {hits.map(({ item, matched }) => (
@@ -173,11 +183,11 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
                     <span className="mi">{item.subcategory}</span>
                     {item.abv ? <span className="mi">{item.abv}%</span> : null}
                     <span className="mi">{item.country}</span>
-                    {MASTER_MAKER_NOTES[item.id] && <span className="mi note">공식 노트</span>}
+                    {MASTER_MAKER_NOTES[item.id] && <span className="mi note">{noteTag(MASTER_MAKER_NOTES[item.id])}</span>}
                   </div>
                 </button>
               ))}
-              {hits.length === 0 && <div className="hint">검색 결과가 없습니다. 아래 <b>직접 추가</b>로 등록하세요.</div>}
+              {hits.length === 0 && <div className="hint">찾는 술이 없어요. 아래 <b>직접 추가</b>로 넣어 주세요.</div>}
             </div>
           )}
           <div className="btnrow">
@@ -205,14 +215,13 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
               </div>
               {picked.whiskyClass && (
                 <div className="hint sub">
-                  자동 분류: {[picked.whiskyClass.origin, picked.whiskyClass.type, picked.whiskyClass.region,
-                    ...picked.whiskyClass.cask.map((c) => `${c} 캐스크`), ...picked.whiskyClass.character].filter(Boolean).join(' · ')}
+                  자동 분류: {autoClass(picked)}
                 </div>
               )}
-              <div className="sechead in">제조사 공식 노트</div>
+              <div className="sechead in">{noteHeading(MASTER_MAKER_NOTES[picked.id])}</div>
               <MakerNoteView
                 note={MASTER_MAKER_NOTES[picked.id]}
-                empty="이 제품은 확인된 제조사 공식 노트가 없습니다. 추가한 뒤 술장에서 직접 기록할 수 있습니다."
+                empty="이 술은 확인된 제조사 공식 노트가 없어요. 추가한 뒤 직접 적어 둘 수 있어요."
               />
             </div>
           )}
@@ -229,7 +238,7 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
           <div className="sechead in">칵테일 재료 연결</div>
           <label className="it" style={{ marginBottom: 6 }}>
             <input type="checkbox" checked={link} onChange={(e) => setLink(e.target.checked)} />
-            <span>이 술을 표준 재료로 재고에 반영 (레시피 판정에 즉시 적용)</span>
+            <span>이 술을 칵테일 재료로도 쓸게요</span>
           </label>
           <IngredientLink value={ingName} onChange={(v) => { setIngName(v); setLink(!!v); }} />
 
@@ -254,7 +263,7 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
 
           {step === 'manual' && category === 'whisky' && (
             <>
-              <div className="sechead in">위스키 세부 분류 <small className="sub">선택 — 축별 결손 계산에 쓰입니다</small></div>
+              <div className="sechead in">위스키 세부 분류 <small className="sub">선택 · 위스키 분류 표에 쓰여요</small></div>
               <div className="hint lbl">원산지</div>
               <ChipRow value={origin} options={ORIGINS} onChange={setOrigin} wrap tight />
               <div className="hint lbl">타입</div>

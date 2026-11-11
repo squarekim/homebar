@@ -6,6 +6,8 @@
 import { type LiquorCategory, type LiquorMasterItem, type LiquorSearchHit } from '../models/types';
 import { LIQUOR_MASTER } from '../data/liquorMaster';
 import { normalizeQuery, tokenize, initials, isSubsequence, subsequenceDensity, similarity } from '../data/textMatch';
+import { QUERY_TERMS } from '../data/searchAliases';
+import { classTags } from '../data/whiskyClass';
 
 interface Indexed {
   item: LiquorMasterItem;
@@ -15,14 +17,34 @@ interface Indexed {
   aliases: string[];
   cho: string;     // 한글명 초성
   all: string[];   // 매칭 대상 전체
+  kind: string[];  // 종류 이름(세부분류와 사람들이 부르는 종류 이름) — '사케', '탁주'로 찾을 때
 }
+
+/**
+ * 세부분류 → 사람들이 그 종류를 부르는 말.
+ * 제품 이름에 없는 말로 찾을 때 쓴다(사케를 치면 준마이·긴조가, 탁주를 치면 막걸리가 나오게).
+ */
+const KIND_WORDS: Array<[RegExp, string[]]> = [
+  [/준마이|긴조/, ['사케', '니혼슈', '일본술', '일본청주', 'sake', 'nihonshu']],
+  [/보리 소주|고구마 소주|쌀 소주/, ['쇼추', '일본소주', 'shochu']],
+  [/막걸리/, ['탁주', '동동주', 'makgeolli']],
+  [/약주/, ['약주', '전통주']],
+  [/증류식 소주/, ['전통소주', '증류소주', '소주', 'soju']],
+  [/희석식 소주|과일 소주/, ['소주', 'soju']],
+  [/라거|에일|IPA|스타우트|밀맥주|바이스|트라피스트|람빅/i, ['맥주', 'beer']],
+  [/버번/, ['버번', 'bourbon']],
+  [/싱글몰트/, ['싱글몰트', 'single malt']],
+  [/츄하이|하이볼 캔|RTD/i, ['캔칵테일', '츄하이', 'rtd']],
+];
 
 const INDEX: Indexed[] = LIQUOR_MASTER.map((item) => {
   const ko = normalizeQuery(item.nameKo);
   const en = normalizeQuery(item.nameEn);
   const brand = normalizeQuery(item.brand);
   const aliases = item.aliases.map(normalizeQuery).filter(Boolean);
-  return { item, ko, en, brand, aliases, cho: initials(ko), all: [ko, en, brand, ...aliases] };
+  const kind = [item.subcategory, ...(item.category === 'trad' ? ['우리술', '전통주'] : []), ...(/민속주/.test(item.subcategory ?? '') ? ['민속주'] : []), ...(/국산 (찹)?쌀|원주 쌀/.test(item.subcategory ?? '') ? ['국산쌀', '우리쌀'] : []), ...(item.whiskyClass ? classTags(item.whiskyClass) : []), ...KIND_WORDS.filter(([re]) => re.test(item.subcategory)).flatMap(([, w]) => w)]
+    .map(normalizeQuery).filter(Boolean);
+  return { item, ko, en, brand, aliases, cho: initials(ko), all: [ko, en, brand, ...aliases], kind };
 });
 
 /** 한 제품에 대한 점수. 0 이면 매칭 실패 */
@@ -43,6 +65,9 @@ function scoreOne(x: Indexed, q: string, qCho: string, tokens: string[]): { scor
   if (x.aliases.some((a) => a.includes(q))) return { score: 760, matched: 'alias' };
   if (x.brand.includes(q)) return { score: 730, matched: 'partial' };
 
+  // 3-2) 종류 이름 ('사케' → 준마이·긴조, '탁주' → 막걸리)
+  if (q.length >= 2 && x.kind.some((k) => k === q || k.startsWith(q))) return { score: 680, matched: 'partial' };
+
   // 4) 토큰 AND ("발베니 12" → 발베니 + 12 가 모두 들어 있으면 히트)
   if (tokens.length > 1) {
     const hay = x.all.join('|');
@@ -50,7 +75,8 @@ function scoreOne(x: Indexed, q: string, qCho: string, tokens: string[]): { scor
   }
 
   // 5) 초성 ("ㅂㅂㄴ" → 발베니)
-  if (qCho.length >= 2 && x.cho.includes(qCho) && /[ㄱ-ㅎ]/.test(qCho)) return { score: 620, matched: 'fuzzy' };
+  // 사용자가 자음만 쳤을 때만 쓴다. '사케'를 'ㅅㅋ'로 바꿔 대조하면 김창수(ㄱㅊㅅ)… 같은 엉뚱한 결과가 붙는다
+  if (qCho.length >= 2 && /^[ㄱ-ㅎ0-9]+$/.test(q) && x.cho.includes(qCho)) return { score: 620, matched: 'fuzzy' };
 
   // 6) 부분열 ("조니블랙" → 조니워커블랙라벨)
   if (q.length >= 3) {
@@ -82,6 +108,23 @@ export interface SearchOptions {
 
 /** 제품명 검색. 상위 limit(기본 8)건만 반환한다. */
 export function searchLiquor(query: string, opts: SearchOptions = {}): LiquorSearchHit[] {
+  const q = normalizeQuery(query);
+  // 커뮤니티 줄임말(싱몰, 킬달튼, 맥발…)은 펼친 말로도 찾아 가장 높은 점수를 쓴다
+  const more = QUERY_TERMS[q];
+  if (!more) return searchOne(query, opts);
+  const best = new Map<string, LiquorSearchHit>();
+  for (const w of [query, ...more]) {
+    for (const h of searchOne(w, { ...opts, limit: 40 })) {
+      // 원래 검색어('cs')는 이름이 그 말로 시작할 때만 쓴다 — 'kcs' 같은 별칭 속 글자로 맞은 것은 뺀다
+      if (w === query && h.score < 860) continue;
+      const cur = best.get(h.item.id);
+      if (!cur || h.score > cur.score) best.set(h.item.id, h);
+    }
+  }
+  return [...best.values()].sort((a, b) => b.score - a.score || a.item.nameKo.localeCompare(b.item.nameKo, 'ko')).slice(0, opts.limit ?? 8);
+}
+
+function searchOne(query: string, opts: SearchOptions): LiquorSearchHit[] {
   const limit = opts.limit ?? 8;
   const q = normalizeQuery(query);
   if (!q) return [];
@@ -95,7 +138,9 @@ export function searchLiquor(query: string, opts: SearchOptions = {}): LiquorSea
     if (score > 0) hits.push({ item: x.item, score, matched });
   }
   hits.sort((a, b) => b.score - a.score || a.item.nameKo.localeCompare(b.item.nameKo, 'ko'));
-  return hits.slice(0, limit);
+  // 이름으로 확실히 맞은 것이 있으면, 글자 몇 개만 겹친 결과(참이슬 → 베이슬 헤이든)는 뺀다
+  const strong = (hits[0]?.score ?? 0) >= 680;
+  return (strong ? hits.filter((h) => h.score >= 600) : hits).slice(0, limit);
 }
 
 /** 카테고리별 인기/대표 제품 (검색어 없이 화면을 채울 때) */
@@ -117,7 +162,9 @@ const CATEGORY_HINTS: Array<[RegExp, LiquorCategory]> = [
   [/리큐르|liqueur|큐라소|슈납스|아마레토|캄파리|아페롤|비터|bitters|크렘 드|아마로/i, 'liqueur'],
   [/와인|wine|샴페인|champagne|프로세코|셰리|포트|sherry|port/i, 'wine'],
   [/맥주|beer|라거|에일|ale|스타우트|ipa/i, 'beer'],
-  [/사케|sake|준마이|다이긴조|소주|soju|shochu|막걸리|탁주|약주/i, 'sake'],
+  [/막걸리|탁주|동동주|약주|전통주|우리술|증류식 소주|makgeolli/i, 'trad'],
+  [/사케|sake|준마이|다이긴조|쇼추|shochu/i, 'sake'],
+  [/소주|soju/i, 'soju'],
   [/하이볼\s*캔|캔\s*하이볼|츄하이|chuhai|호로요이|스트롱\s*제로|rtd|칵테일\s*캔/i, 'rtd'],
   [/토닉|tonic|진저에일|콜라|시럽|syrup|탄산|소다/i, 'mixer'],
 ];
