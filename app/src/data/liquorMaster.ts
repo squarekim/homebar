@@ -468,7 +468,10 @@ const SAKE: Row[] = [
   // '일본(교토)'과 '미국'으로 엇갈려 브랜드 본사 기준 일본으로 둔다. 다이긴죠 720ml는 키햐 16.5%·일본.
   ['m_wolgyegwan_junmai', '월계관 준마이 750', 'Gekkeikan Junmai 750', '월계관', '준마이', 15.6, 750, '일본', '', '월계관 겟케이칸 gekkeikan 준마이750'],
   ['m_wolgyegwan_daiginjo', '월계관 준마이 다이긴죠', 'Gekkeikan Junmai Daiginjo', '월계관', '준마이다이긴조', 16.5, 720, '일본', '', '월계관 겟케이칸 gekkeikan 다이긴죠 다이긴조'],
-  ['m_yumeginga', '유메긴가 준마이 다이긴조', 'Yumeginga Junmai Daiginjo', '야마자키카모시', '준마이다이긴조', 16, 720, '일본', '', '유메긴가 dream 드림'],
+  // 유메긴가(夢吟香)는 아이치현 술쌀 품종 이름이라 같은 이름의 사케가 여럿이다. 국내에서 보이는 두 가지를 둔다(2026-11-11 확인).
+  // 야마자키 DREAM: 제조사(손노) 공식 14%·720ml / 긴샤치: 데일리샷 15~16%·720ml(도수가 범위라 숫자 칸은 비운다)
+  ['m_yumeginga', '야마자키 유메긴가 DREAM 준마이 다이긴죠', 'Yamazaki Yumeginga DREAM Junmai Daiginjo Genshu', '야마자키(손노)', '준마이다이긴조 원주', 14, 720, '일본', '', '유메긴가 dream 드림 야마자키카모시 夢吟香'],
+  ['m_kinshachi_yumeginga', '긴샤치 준마이 다이긴죠', 'Kinshachi Junmai Daiginjo', '긴샤치', '준마이다이긴조 · 도수 15~16%', 0, 720, '일본', '', '긴샤치 금호 kinshachi 유메긴가'],
   ['m_iichiko', '이이치코 실루엣', 'Iichiko Silhouette', '산와슈루이', '보리 소주', 25, 720, '일본', '', '이이치코 iichiko'],
 ];
 
