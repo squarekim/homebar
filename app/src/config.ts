@@ -27,8 +27,8 @@ export const STARTER_GROUPS: ReadonlyArray<{ label: string; items: readonly stri
     '앙고스투라 비터', '캄파리', '스위트 베르무트', '드라이 베르무트'] },
   { label: '주스·과즙', items: ['레몬즙', '라임즙', '오렌지 주스', '파인애플 주스', '크랜베리 주스', '자몽 주스', '사과 주스'] },
   { label: '시럽·설탕', items: ['설탕시럽', '그레나딘', '각설탕', '정제 설탕'] },
-  { label: '탄산·음료', items: ['탄산수', '무향 탄산', '토닉워터', '콜라', '진저에일', '레몬라임 소다(스프라이트/세븐업)', '에스프레소'] },
-  { label: '늘 있는 것', items: ['물', '우유', '생크림', '계란흰자'] },
+  { label: '음료·탄산', items: ['탄산수', '무향 탄산', '토닉워터', '콜라', '진저에일', '레몬라임 소다(스프라이트/세븐업)', '에스프레소', '물', '우유'] },
+  { label: '부재료', items: ['생크림', '계란흰자'] },
 ];
 export const STARTER_INVENTORY: string[] = STARTER_GROUPS.flatMap((g) => [...g.items]);
 

@@ -702,3 +702,15 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 .starterset dt span{color:var(--dim);font-weight:400;margin-left:4px}
 .starterset dd{margin:0;color:var(--ink)}
 @media (max-width:520px){.starterset dl > div{grid-template-columns:1fr;gap:2px}}
+
+/* 펼친 카드를 직접 고르기 — 카드는 버튼이다. 뒤집기는 .lift 안에서, 마우스를 올리면 살짝 들린다 */
+.stage .card{padding:0;border:0;background:none;color:inherit;font:inherit;cursor:default}
+.stage .card.pickable{cursor:pointer}
+.stage .card .lift{position:absolute;inset:0;display:block;transform-style:preserve-3d;transition:transform .16s ease-out}
+.stage .card.pickable:hover .lift,.stage .card.pickable:focus-visible .lift{transform:translateY(-14px)}
+.stage .card.pickable:focus-visible .back{outline:2px solid var(--accent);outline-offset:3px}
+.stage .card .face,.stage .card .back{display:flex}
+@media (prefers-reduced-motion:reduce){.stage .card .lift{transition:none}}
+/* 흐리게 할 때 카드 전체에 opacity 를 주면 3D 가 납작해져 뒷면 대신 앞면이 보인다. 그래서 면에만 준다 */
+.stage .card.dim{opacity:1}
+.stage .card.dim .face,.stage .card.dim .back{opacity:.5}
