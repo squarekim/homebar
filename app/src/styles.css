@@ -182,15 +182,15 @@ input::placeholder{color:var(--dim)}
 .kvrow .meta{margin-top:2px}
 .kvrow .num{font-size:14px;color:var(--mute);white-space:nowrap;text-align:right}
 
-/* ── 목록 + 상세 2단 (PC) ── */
+/* ── 목록 + 상세 2단 (PC) — 아래 탭이 사라지는 900px부터. 그보다 좁으면 상세가 화면 위로 덮인다 ── */
 .split{display:block}
-@media (min-width:1000px){
+@media (min-width:900px){
   .split{display:grid;grid-template-columns:minmax(340px,400px) 1fr;gap:var(--s5);align-items:start}
   .split .listpane{max-height:calc(100vh - 140px);overflow:auto;padding-right:4px}
   .split .detailpane{position:sticky;top:84px;max-height:calc(100vh - 120px);overflow:auto}
 }
 .detailpane .placeholder{display:none}
-@media (min-width:1000px){
+@media (min-width:900px){
   .detailpane .placeholder{display:block;color:var(--mute);background:var(--panel);
     border-radius:var(--r);padding:64px var(--s4);text-align:center}
 }
@@ -203,7 +203,7 @@ input::placeholder{color:var(--dim)}
   display:flex;align-items:center;gap:var(--s1);margin:0 -16px;padding:10px 12px;border-bottom:1px solid var(--line)}
 .sheet .sheetbar b{font-size:15px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sheet .detail{padding-top:var(--s2)}
-@media (min-width:1000px){.sheet{position:static;padding:0;overflow:visible}.sheet .sheetbar{display:none}}
+@media (min-width:900px){.sheet{position:static;padding:0;overflow:visible}.sheet .sheetbar{display:none}}
 
 /* ── 오늘: 대표 추천 ── */
 .lead{margin-top:var(--s3)}
@@ -535,7 +535,8 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 .firstrun .pickbtns{margin-top:0}
 /* 메인의 입문 묶음 — 처음 온 사람이 고를 세 가지 */
 .starts{display:grid;gap:var(--s1)}
-@media (min-width:700px){.starts{grid-template-columns:repeat(3,1fr)}}
+@media (min-width:700px){.starts{grid-template-columns:repeat(2,1fr)}}
+@media (min-width:1100px){.starts{grid-template-columns:repeat(4,1fr)}}
 .starts button{display:flex;flex-direction:column;gap:4px;text-align:left;padding:var(--s2) var(--s3);border-radius:var(--r);
   background:var(--panel);color:var(--mute);font-size:14px;line-height:1.45;word-break:keep-all}
 .starts button b{color:var(--ink);font-weight:600;font-size:15px}
@@ -590,3 +591,9 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 /* 한 잔 고르기 필터: 종류 줄과 맛 줄 */
 .pickfilters{display:grid;gap:var(--s1)}
 .pickfilters .filterpanel{margin-top:0}
+
+/* PC: 글 위주 화면은 760px 폭, 지도는 본문 폭을 다 쓴다 */
+@media (min-width:900px){
+  main.narrow{max-width:808px}
+  .distmap{max-width:none}
+}

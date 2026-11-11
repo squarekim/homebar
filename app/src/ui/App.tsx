@@ -68,7 +68,8 @@ function Shell() {
         </div>
       </header>
 
-      <main className="wrap">
+      {/* 글이 위주인 화면은 PC에서 한 줄이 너무 길어지지 않게 폭을 줄인다 */}
+      <main className={`wrap${tab === 'taste' || tab === 'settings' || tab === 'starter' ? ' narrow' : ''}`}>
         {tab === 'today' && <TodayPage />}
         {tab === 'cocktails' && <CocktailsPage key={tabTick} />}
         {tab === 'whisky' && <WhiskyPage key={tabTick} />}
