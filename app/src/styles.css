@@ -112,6 +112,9 @@ small.sub{color:var(--dim);font-weight:400}
 .state.s-READY{color:var(--ok)}
 .state.s-SUBSTITUTE{color:var(--sub)}
 .state.s-MISSING,.state.s-UNAVAILABLE{color:var(--mute)}
+/* 목록 줄의 '○○ · ○○ 외 1 없음'은 재료 이름이 길면 화면 밖으로 밀린다 — 좁은 화면에서는 줄을 바꾼다 */
+.rowitem .state,.detail .state{white-space:normal;max-width:100%;align-items:baseline}
+.rowitem .state::before,.detail .state::before{transform:translateY(-1px)}
 
 /* ── 폼·버튼 ── */
 input[type=search],input[type=text],input[type=number],textarea,select{

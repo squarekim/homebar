@@ -185,7 +185,7 @@ export function recommendWhiskies(
   const stats = drinkStats(ctx.logs);
   const out: RecommendationResult[] = [];
 
-  for (const w of referenceRepo.whiskies()) {
+  for (const w of ctx.whiskies ?? referenceRepo.whiskies()) {
     const tasteScore = tasteMatch(ctx.taste, w.flavor);
     const nov = noveltyScore(w.id, stats, now);
     const inventoryScore = 100; // 보유 병

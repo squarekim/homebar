@@ -12,6 +12,25 @@ import { CaskArt } from './CaskArt';
 import { bottleColor } from '../../data/bottleVisual';
 import { drawsAsCask } from '../../data/caskVisual';
 import { referenceRepo } from '../../repositories/referenceRepo';
+import { useMemo } from 'react';
+import { useUserBottles } from '../../hooks/useData';
+import { userBottleToDomain } from '../../data/userBottles';
+import { type Bottle } from '../../models/types';
+
+/**
+ * 아이디로 병을 찾는다 — 앱에 들어 있는 병 다음에 사용자가 넣은 병까지 본다.
+ * 공개 배포는 모든 병이 사용자가 넣은 병이라, 이걸 빼면 그림이 아이콘으로만 떨어진다.
+ */
+function useBottle(id: string | undefined): Bottle | undefined {
+  const ubs = useUserBottles();
+  return useMemo(() => {
+    if (!id) return undefined;
+    const seeded = referenceRepo.bottleById(id);
+    if (seeded) return seeded;
+    const ub = ubs.find((u) => u.id === id);
+    return ub ? userBottleToDomain(ub) : undefined;
+  }, [id, ubs]);
+}
 
 type Size = 'sm' | 'md' | 'lg';
 
@@ -50,7 +69,7 @@ export function CocktailMark({ base, cocktailId, size = 'md' }: {
 export function BottleMark({ kind, bottleId, size = 'md' }: {
   kind?: string | undefined; bottleId?: string | undefined; size?: Size;
 }) {
-  const b = bottleId ? referenceRepo.bottleById(bottleId) : undefined;
+  const b = useBottle(bottleId);
   return (
     <span className={`mark ${size} k-${keyOf(kind)}`} aria-hidden="true">
       {b ? (drawsAsCask(b) ? <CaskArt bottle={b} size={PX[size]} /> : <BottleArt bottle={b} size={PX[size]} />) : <IconBottle />}
@@ -67,7 +86,7 @@ export function LeadArt({ base, kind, cocktailId, bottleId, size = 124 }: {
   cocktailId?: string | undefined; bottleId?: string | undefined; size?: number;
 }) {
   const ck = cocktailId ? referenceRepo.cocktailById(cocktailId) : undefined;
-  const bt = bottleId ? referenceRepo.bottleById(bottleId) : undefined;
+  const bt = useBottle(bottleId);
   const pour = bt ? bottleColor(bt) : undefined;
   return (
     <div className={`art k-${keyOf(base)}`} aria-hidden="true">

@@ -14,15 +14,19 @@ import { normalize, hits, byReadyThenName, useGroupChips } from '../listUtils';
 /**
  * SimpleBuildBrowser — 믹서 조합표와 Build 계열 레시피를 합쳐 기주별로 보여준다.
  */
-export function SimpleBuildBrowser() {
+/** 받침 따라 '이/가' */
+const ga = (w: string) => { const c = w.charCodeAt(w.length - 1) - 0xac00; return c >= 0 && c % 28 ? '이' : '가'; };
+
+/** initialQuery·initialOpen: 칵테일 검색에서 넘어올 때 그 조합을 찾아 펼쳐 둔다 */
+export function SimpleBuildBrowser({ initialQuery, initialOpen }: { initialQuery?: string | undefined; initialOpen?: string | undefined } = {}) {
   const heldIds = useHeldIds();
   const subMap = useSubMap();
   const bottles = useBottles();
   const { openCocktail } = useUI();
-  const [q, setQ] = useState('');
+  const [q, setQ] = useState(initialQuery ?? '');
   const [grp, setGrp] = useState('all');
   const [readyOnly, setReadyOnly] = useState(false);
-  const [open, setOpen] = useState<string | null>(null);
+  const [open, setOpen] = useState<string | null>(initialOpen ?? null);
 
   const all = useMemo(() => simpleBuilds(), []);
   const groups = useGroupChips(all, (b) => b.group);
@@ -69,7 +73,7 @@ export function SimpleBuildBrowser() {
                   <div className="sechead in">내 술로 만들기</div>
                   {mine.length > 0
                     ? <div className="parts">{mine.map((x) => <span key={x.id}>{x.name}{x.abv ? ` ${x.abv}` : ''}</span>)}</div>
-                    : <p className="hint">가진 {b.group} 술이 없어요. 술장에서 추가하면 여기에 나와요.</p>}
+                    : <p className="hint">가진 {b.group}{ga(b.group)} 없어요. 술장에서 추가하면 여기에 나와요.</p>}
                   {b.note && <p className="hint">{b.note}</p>}
                   {b.recipeId && (
                     <div className="btnrow">

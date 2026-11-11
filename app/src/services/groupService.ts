@@ -50,7 +50,7 @@ export function recommendGroupCocktails(ctx: GroupContext, onlyAvailable = false
 export function recommendGroupWhiskies(ctx: GroupContext, limit = 12): RecommendationResult[] {
   const vectors = ctx.profiles.map((p) => p.vector);
   const out: RecommendationResult[] = [];
-  for (const w of referenceRepo.whiskies()) {
+  for (const w of ctx.whiskies ?? referenceRepo.whiskies()) {
     const { score: groupScore, penalty } = groupTasteMatch(vectors, w.flavor);
     out.push({
       kind: 'whisky', id: w.id, name: w.name, score: groupScore,

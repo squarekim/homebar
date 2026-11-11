@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useHeldIds, useSubMap, useLogs, useMe, useRemainingMap, neutralVector } from './useData';
+import { useHeldIds, useSubMap, useLogs, useMe, useRemainingMap, useWhiskies, neutralVector } from './useData';
 import { type RecommendContext } from '../services/recommendationService';
 import { isNeutralTaste } from '../services/flavorService';
 
@@ -9,9 +9,10 @@ export function useRecommendContext(): RecommendContext {
   const logs = useLogs();
   const me = useMe();
   const remainingById = useRemainingMap();
+  const whiskies = useWhiskies();
   return useMemo(() => ({
     taste: me?.vector ?? neutralVector(),
     hasTaste: !!me && !isNeutralTaste(me.vector),
-    heldIds, subMap, logs, remainingById,
-  }), [me, heldIds, subMap, logs, remainingById]);
+    heldIds, subMap, logs, remainingById, whiskies,
+  }), [me, heldIds, subMap, logs, remainingById, whiskies]);
 }

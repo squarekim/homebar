@@ -453,4 +453,6 @@ export interface StockContext {
   heldIds: Set<string>;
   subMap: Map<string, string[]>;
   logs: DrinkLog[];
+  /** 가진 위스키(앱에 든 병 + 사용자가 넣은 병). 없으면 앱에 든 병만 본다 */
+  whiskies?: readonly Bottle[] | undefined;
 }
