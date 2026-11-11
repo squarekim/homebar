@@ -164,7 +164,8 @@ describe('기준 DB 확장', () => {
 
   it('도수를 확인하지 못한 제품은 값을 지어내지 않는다', () => {
     expect(liquorMasterById.get('m_glenallachie10cs')!.abv).toBeUndefined();  // 배치별 상이
-    expect(liquorMasterById.get('m_wolgyegwan_junmai')!.abv).toBeUndefined(); // 같은 이름의 제품이 여럿이라 비워 둔다
+    expect(liquorMasterById.get('m_wolgyegwan_junmai')!.abv).toBe(15.6);      // 750ml(키햐), 다이긴죠 720ml는 따로 둔다
+    expect(liquorMasterById.get('m_wolgyegwan_daiginjo')!.abv).toBe(16.5);
     expect(liquorMasterById.get('m_hallasan')!.abv).toBe(21);                 // 한국민족문화대백과사전·비즈워치로 확인
     expect(liquorMasterById.get('m_joeunday')!.abv).toBe(15.7);               // 2026-03 무학 발표로 확인
     // 수입사 제품 설명으로 확인된 값은 채운다

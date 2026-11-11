@@ -464,7 +464,10 @@ const SOJU: Row[] = [
 const SAKE: Row[] = [
   ['m_dassai45', '닷사이 45 준마이다이긴조', 'Dassai 45 Junmai Daiginjo', '아사히슈조', '준마이다이긴조', 15, 720, '일본', '', '닷사이 다사이 dassai'],
   ['m_kubota_senju', '쿠보타 센주', 'Kubota Senju', '아사히슈조(니가타)', '긴조', 15, 720, '일본', '', '쿠보타 kubota'],
-  ['m_wolgyegwan_junmai', '월계관 준마이', 'Gekkeikan Junmai', '월계관', '준마이', 0, 720, '일본', '', '월계관 겟케이칸 gekkeikan'],
+  // 월계관은 국내에 두 가지가 같이 팔린다(2026-11-11 확인). 750은 키햐 15.6%·데일리샷 14~16%, 생산국은 판매처마다
+  // '일본(교토)'과 '미국'으로 엇갈려 브랜드 본사 기준 일본으로 둔다. 다이긴죠 720ml는 키햐 16.5%·일본.
+  ['m_wolgyegwan_junmai', '월계관 준마이 750', 'Gekkeikan Junmai 750', '월계관', '준마이', 15.6, 750, '일본', '', '월계관 겟케이칸 gekkeikan 준마이750'],
+  ['m_wolgyegwan_daiginjo', '월계관 준마이 다이긴죠', 'Gekkeikan Junmai Daiginjo', '월계관', '준마이다이긴조', 16.5, 720, '일본', '', '월계관 겟케이칸 gekkeikan 다이긴죠 다이긴조'],
   ['m_yumeginga', '유메긴가 준마이 다이긴조', 'Yumeginga Junmai Daiginjo', '야마자키카모시', '준마이다이긴조', 16, 720, '일본', '', '유메긴가 dream 드림'],
   ['m_iichiko', '이이치코 실루엣', 'Iichiko Silhouette', '산와슈루이', '보리 소주', 25, 720, '일본', '', '이이치코 iichiko'],
 ];
