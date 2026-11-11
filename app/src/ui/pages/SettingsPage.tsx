@@ -135,8 +135,12 @@ function ScreenSetup() {
 }
 
 /** 건강한 음주 안내 — 찾아서 열 때만 보인다. 형량·g 단위 음주량은 법과 기준이 바뀌면 틀려서 넣지 않는다 */
+/** 메인의 "건강한 음주 안내"에서 들어오면 펼친 채로 보여 준다 */
+export const OPEN_HEALTH_KEY = 'homebar.openHealthGuide';
 function DrinkingGuide() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(() => {
+    try { const v = sessionStorage.getItem(OPEN_HEALTH_KEY) === '1'; sessionStorage.removeItem(OPEN_HEALTH_KEY); return v; } catch { return false; }
+  });
   return (
     <div className="more">
       <button onClick={() => setOpen(!open)} aria-expanded={open}>건강한 음주 안내</button>

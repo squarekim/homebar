@@ -553,10 +553,10 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 .notice p{margin:0 0 var(--s2);font-size:14px;line-height:1.6;color:var(--ink)}
 
 /* 입문 안내 팝업 */
-.guide{position:fixed;inset:0;z-index:65;background:rgba(9,14,16,.62);display:flex;align-items:flex-end;justify-content:center}
+.guidepop{position:fixed;inset:0;z-index:65;background:rgba(9,14,16,.62);display:flex;align-items:flex-end;justify-content:center}
 .guidecard{position:relative;width:min(520px,100%);max-height:86vh;overflow:auto;background:var(--panel);border-radius:20px 20px 0 0;
   padding:var(--s5) var(--s4) calc(var(--s4) + env(safe-area-inset-bottom))}
-@media (min-width:600px){.guide{align-items:center}.guidecard{border-radius:20px}}
+@media (min-width:600px){.guidepop{align-items:center}.guidecard{border-radius:20px}}
 .guidecard h2{font-family:var(--display);font-weight:700;font-size:22px;line-height:1.4;margin:0 0 var(--s3);text-wrap:balance}
 .guidecard .gkicker{font-size:13px;color:var(--mute);margin:0 0 var(--s2);padding-right:44px}
 .guidecard .gbody{font-size:16px;line-height:1.7;margin:0 0 var(--s2);color:var(--ink)}

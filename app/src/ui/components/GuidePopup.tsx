@@ -28,7 +28,7 @@ export function GuidePopup() {
 
   if (guide === 'menu') {
     return (
-      <div className="guide" role="dialog" aria-modal="true" aria-label="입문 안내" onClick={closeGuide}>
+      <div className="guidepop" role="dialog" aria-modal="true" aria-label="입문 안내" onClick={closeGuide}>
         <div className="guidecard" onClick={(e) => e.stopPropagation()}>
           <button className="gx" onClick={closeGuide} aria-label="닫기">×</button>
           <p className="gkicker">입문 안내</p>
@@ -55,7 +55,7 @@ export function GuidePopup() {
   const card = at >= 0 ? ch.cards[at] : null;
   const last = at === ch.cards.length - 1;
   return (
-    <div className="guide" role="dialog" aria-modal="true" aria-label={ch.title} onClick={closeGuide}>
+    <div className="guidepop" role="dialog" aria-modal="true" aria-label={ch.title} onClick={closeGuide}>
       <div className="guidecard" onClick={(e) => e.stopPropagation()}>
         <button className="gx" onClick={closeGuide} aria-label="닫기">×</button>
         <p className="gkicker">{ch.title}{card ? ` · ${at + 1} / ${ch.cards.length}` : ''}</p>

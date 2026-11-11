@@ -4,6 +4,7 @@
  * 첫 화면이 답해야 할 것은 넷뿐이다: 무엇을 마실까 · 무슨 맛인가 · 지금 만들 수 있나 · 뭘 누르면 되나.
  * 뽑기 후보는 지금 만들 수 있는 잔뿐이다(칩으로 좁혀도 같다). 점수는 여기서 말하지 않는다.
  */
+import { OPEN_HEALTH_KEY } from './SettingsPage';
 import { IconMartini, IconWhisky } from '../components/icons';
 import { useCallback, useMemo, useState, type ReactElement } from 'react';
 import { useUI } from '../UIContext';
@@ -216,7 +217,7 @@ export function TodayPage() {
           <b>입문 안내서</b>
           <span>위스키와 칵테일로 나눠 마시는 법, 첫 병, 도구, 보관, 흔한 오해를 알려 드려요</span>
         </button>
-        <button onClick={() => goTab('settings')}>
+        <button onClick={() => { try { sessionStorage.setItem(OPEN_HEALTH_KEY, '1'); } catch { /* 저장이 막혀도 이동은 한다 */ } goTab('settings'); }}>
           <b>건강한 음주 안내</b>
           <span>마시기 전에 알아 둘 것을 설정에 모아 두었어요</span>
         </button>
