@@ -108,7 +108,7 @@ export function CocktailDetail({ id }: { id: string }) {
         <span className="mi">{ck.base}</span>
         {IBA_PLAIN[ck.iba] && <span className="mi">{IBA_PLAIN[ck.iba]}</span>}
         {abv !== null && (
-          <span className="mi" title="재료 양과 제품 라벨 도수로 계산한 값에 ±5%를 둔 폭이에요. 쓰는 제품과 얼음이 녹는 정도에 따라 달라져요.">
+          <span className="mi" title="재료 양과 제품 라벨 도수로 계산한 값에 ±2%를 둔 폭이에요. 쓰는 제품과 얼음이 녹는 정도에 따라 달라져요.">
             도수 {abv}
           </span>
         )}
