@@ -15,7 +15,7 @@
  */
 import { type LiquorCategory, type LiquorMasterItem, type WhiskyClass } from '../models/types';
 import { normalizeQuery, initials } from './textMatch';
-import { LIQUOR_ALIASES } from './liquorAliases';
+import { LIQUOR_ALIASES, communityNicknames } from './liquorAliases';
 
 /** [id, 한글명, 영문명, 브랜드, 세부분류, 도수(0=미상), 용량ml(0=미상), 원산지, 표준재료명(''=없음), 별칭(공백구분)] */
 type Row = [string, string, string, string, string, number, number, string, string, string, WhiskyClass?];
@@ -496,7 +496,7 @@ const GROUPS: Array<[LiquorCategory, Row[]]> = [
 ];
 
 function build([id, ko, en, brand, sub, abv, ml, country, ing, alias, wc]: Row, category: LiquorCategory): LiquorMasterItem {
-  const aliases = [...new Set([...alias.split(/\s+/).filter(Boolean), ...(LIQUOR_ALIASES[id] ?? [])])];
+  const aliases = [...new Set([...alias.split(/\s+/).filter(Boolean), ...(LIQUOR_ALIASES[id] ?? []), ...communityNicknames(ko)])];
   const keywordSource = [ko, en, brand, sub, ...aliases];
   const searchKeywords = [...new Set(keywordSource.map(normalizeQuery).filter(Boolean).concat(initials(normalizeQuery(ko))))];
   return {

@@ -5,11 +5,11 @@ import { searchLiquor } from '../services/liquorSearchService';
 import { LIQUOR_ALIASES } from '../data/liquorAliases';
 import { liquorMasterById } from '../data/liquorMaster';
 import { COCKTAIL_ALIASES, INGREDIENT_ALIASES, SIMPLE_ALIASES } from '../data/searchAliases';
-import { fold, hitsKey, cocktailKey, simpleKey } from '../ui/listUtils';
+import { hits, normalize, hitsKey, cocktailKey, simpleKey } from '../ui/listUtils';
 import { ingredients } from '../data/adapters';
 
-const ck = (q: string) => cocktails.filter((c) => hitsKey(fold(q), cocktailKey(c))).map((c) => c.name);
-const sb = (q: string) => simpleBuilds().filter((b) => hitsKey(fold(q), simpleKey(b))).map((b) => b.name);
+const ck = (q: string) => cocktails.filter((c) => hitsKey(normalize(q), cocktailKey(c))).map((c) => c.name);
+const sb = (q: string) => simpleBuilds().filter((b) => hitsKey(normalize(q), simpleKey(b))).map((b) => b.name);
 const top = (q: string, n = 3) => searchLiquor(q, { limit: n }).map((h) => h.item.nameKo);
 
 describe('칵테일을 다른 이름으로 찾는다', () => {
@@ -71,5 +71,28 @@ describe('초성 검색', () => {
   });
   it('완성된 글자를 치면 초성으로 바꿔 대조하지 않는다', () => {
     expect(searchLiquor('사케', { limit: 8 }).every((h) => h.item.category === 'sake')).toBe(true);
+  });
+});
+
+describe('커뮤니티 용어 (위갤 입문 용어 사전·클리앙 위스키 잡학사전)', () => {
+  const cases: Array<[string, string]> = [
+    ['메막', '메이커스 마크'], ['물추', '버팔로 트레이스'], ['몽숄', '몽키 숄더'], ['하팍', '하이랜드 파크'], ['스뱅', '스프링뱅크'],
+    ['우포리', '우드포드 리저브'], ['야칠', '와일드 터키'], ['와턱', '와일드 터키'], ['라프', '라프로익'], ['라가', '라가불린'],
+    ['사슴', '글렌피딕'], ['수류탄', '블랑톤스'], ['드로낙', '글렌드로낙'], ['탈리', '탈리스커'], ['포샬', '포트 샬롯'],
+    ['포로', '포 로지스'], ['자메손', '제임슨'], ['잭다', '잭 다니엘스'], ['창스키', '김창수'], ['우거달', '아드벡 우거다일'],
+    ['발12덥', '발베니 더블우드'], ['맥덥캐', '맥캘란 더블캐스크'], ['킬달튼', '라가불린'], ['맥발', '발베니'], ['싱몰', '싱글몰트'],
+  ];
+  it.each(cases)('술 추가: %s → %s', (q, part) =>
+    expect(searchLiquor(q, { limit: 8 }).some((h) => h.item.nameKo.includes(part))).toBe(true));
+
+  it('킬달튼은 아드벡·라가불린·라프로익을 모두 찾는다', () => {
+    const names = searchLiquor('킬달튼', { limit: 20 }).map((h) => h.item.nameKo).join(' ');
+    for (const n of ['아드벡', '라가불린', '라프로익']) expect(names).toContain(n);
+  });
+  it('목록 검색: CS·싱몰은 정식 이름으로 펼친다', () => {
+    expect(hits(normalize('CS'), '글렌알라키 10년 캐스크 스트렝스')).toBe(true);
+    expect(hits(normalize('싱몰'), '싱글몰트 스카치')).toBe(true);
+    expect(hits(normalize('높은공'), '위스키 하이볼')).toBe(true);
+    expect(ck('올패')).toContain('올드 패션드');
   });
 });

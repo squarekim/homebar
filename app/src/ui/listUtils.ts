@@ -7,11 +7,14 @@ import { useMemo, useState } from 'react';
 import { statusRank } from '../services/availabilityService';
 import { allChips, type ChipOption } from './components/common';
 import { type AvailabilityStatus, type Cocktail } from '../models/types';
-import { SPELLING, COCKTAIL_ALIASES, SIMPLE_ALIASES, INGREDIENT_ALIASES, ibaEnglishName } from '../data/searchAliases';
+import { SPELLING, QUERY_TERMS, COCKTAIL_ALIASES, SIMPLE_ALIASES, INGREDIENT_ALIASES, ibaEnglishName } from '../data/searchAliases';
 
 /** 검색어를 한 번만 다듬는다 (빈 문자열이면 "전부 통과") */
 export function normalize(q: string): string {
-  return fold(q);
+  const t = fold(q);
+  // 커뮤니티 줄임말은 검색어 전체가 그 말일 때만 펼친다. '|'로 이은 말 가운데 하나만 맞아도 된다
+  const more = QUERY_TERMS[t];
+  return more ? [t, ...more.map(fold)].join('|') : t;
 }
 
 /** 영문으로 친 흔한 이름 → 앱의 한글 표기 */
@@ -36,7 +39,8 @@ export function fold(s: string): string {
  */
 export function hits(term: string, ...parts: (string | null | undefined)[]): boolean {
   if (!term) return true;
-  return parts.some((p) => !!p && fold(p).includes(term));
+  const terms = term.split('|');
+  return parts.some((p) => { if (!p) return false; const f = fold(p); return terms.some((t) => f.includes(t)); });
 }
 
 /**
@@ -47,7 +51,7 @@ export function searchKey(...parts: (string | null | undefined)[]): string {
   return parts.filter(Boolean).map((p) => fold(p!)).join('|');
 }
 export function hitsKey(term: string, key: string): boolean {
-  return !term || key.includes(term);
+  return !term || term.split('|').some((t) => key.includes(t));
 }
 
 const ckKeys = new Map<string, string>();

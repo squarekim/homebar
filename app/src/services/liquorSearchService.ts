@@ -6,6 +6,8 @@
 import { type LiquorCategory, type LiquorMasterItem, type LiquorSearchHit } from '../models/types';
 import { LIQUOR_MASTER } from '../data/liquorMaster';
 import { normalizeQuery, tokenize, initials, isSubsequence, subsequenceDensity, similarity } from '../data/textMatch';
+import { QUERY_TERMS } from '../data/searchAliases';
+import { classTags } from '../data/whiskyClass';
 
 interface Indexed {
   item: LiquorMasterItem;
@@ -40,7 +42,7 @@ const INDEX: Indexed[] = LIQUOR_MASTER.map((item) => {
   const en = normalizeQuery(item.nameEn);
   const brand = normalizeQuery(item.brand);
   const aliases = item.aliases.map(normalizeQuery).filter(Boolean);
-  const kind = [item.subcategory, ...KIND_WORDS.filter(([re]) => re.test(item.subcategory)).flatMap(([, w]) => w)]
+  const kind = [item.subcategory, ...(item.whiskyClass ? classTags(item.whiskyClass) : []), ...KIND_WORDS.filter(([re]) => re.test(item.subcategory)).flatMap(([, w]) => w)]
     .map(normalizeQuery).filter(Boolean);
   return { item, ko, en, brand, aliases, cho: initials(ko), all: [ko, en, brand, ...aliases], kind };
 });
@@ -106,6 +108,23 @@ export interface SearchOptions {
 
 /** 제품명 검색. 상위 limit(기본 8)건만 반환한다. */
 export function searchLiquor(query: string, opts: SearchOptions = {}): LiquorSearchHit[] {
+  const q = normalizeQuery(query);
+  // 커뮤니티 줄임말(싱몰, 킬달튼, 맥발…)은 펼친 말로도 찾아 가장 높은 점수를 쓴다
+  const more = QUERY_TERMS[q];
+  if (!more) return searchOne(query, opts);
+  const best = new Map<string, LiquorSearchHit>();
+  for (const w of [query, ...more]) {
+    for (const h of searchOne(w, { ...opts, limit: 40 })) {
+      // 원래 검색어('cs')는 이름이 그 말로 시작할 때만 쓴다 — 'kcs' 같은 별칭 속 글자로 맞은 것은 뺀다
+      if (w === query && h.score < 860) continue;
+      const cur = best.get(h.item.id);
+      if (!cur || h.score > cur.score) best.set(h.item.id, h);
+    }
+  }
+  return [...best.values()].sort((a, b) => b.score - a.score || a.item.nameKo.localeCompare(b.item.nameKo, 'ko')).slice(0, opts.limit ?? 8);
+}
+
+function searchOne(query: string, opts: SearchOptions): LiquorSearchHit[] {
   const limit = opts.limit ?? 8;
   const q = normalizeQuery(query);
   if (!q) return [];
