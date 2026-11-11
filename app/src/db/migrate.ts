@@ -7,9 +7,10 @@
 import { db } from './schema';
 import { ingredients, ingredientIdOf, substitutions as seedSubs } from '../data/adapters';
 import { type InventoryItem, type TasteProfile, FLAVOR_AXES, type FlavorVector } from '../models/types';
-import { IS_PUBLIC, STARTER_INVENTORY } from '../config';
+import { IS_PUBLIC, STARTER_INVENTORY, LEGACY_STARTER_INVENTORY } from '../config';
 
 const STARTER = new Set(STARTER_INVENTORY);
+const LEGACY_STARTER = new Set(LEGACY_STARTER_INVENTORY);
 /**
  * 처음 설치했을 때의 재고. 공개 배포는 아무것도 가진 것으로 두지 않는다 —
  * 넣지도 않은 술로 "지금 만들 수 있어요"라고 말하면 거짓이 된다. 개인 빌드는 원본 own 플래그를 따른다.
@@ -116,7 +117,7 @@ export async function ensureSeeded(): Promise<void> {
     if (IS_PUBLIC && typeof seeded?.value === 'number' && seeded.value < 6) {
       const inv = await db.inventory.toArray();
       const owned = inv.filter((r) => r.owned).map((r) => r.ingredientName);
-      const untouched = owned.length === STARTER.size && owned.every((n) => STARTER.has(n));
+      const untouched = owned.length === LEGACY_STARTER.size && owned.every((n) => LEGACY_STARTER.has(n));
       if (untouched && untouchedElsewhere) {
         await db.inventory.bulkPut(inv.map((r) => ({ ...r, owned: false, remaining: 0, updatedAt: now })));
       }
@@ -141,7 +142,8 @@ export async function resetInventoryToSeed(): Promise<void> {
 /** 예시 재고 끄기 — 예시 세트에 든 재료만 끈다. 그 사이 사용자가 따로 켠 재료는 남긴다 */
 export async function turnOffExample(): Promise<void> {
   const now = Date.now();
-  const rows = (await db.inventory.toArray()).filter((r) => r.owned && STARTER.has(r.ingredientName));
+  // 예전 41가지 세트를 켜 둔 기기도 함께 끈다
+  const rows = (await db.inventory.toArray()).filter((r) => r.owned && (STARTER.has(r.ingredientName) || LEGACY_STARTER.has(r.ingredientName)));
   await db.inventory.bulkPut(rows.map((r) => ({ ...r, owned: false, remaining: 0, updatedAt: now })));
   setExample(false);
 }

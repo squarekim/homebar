@@ -146,3 +146,19 @@ describe('레시피 메모', () => {
     }
   });
 });
+
+import { STARTER_INVENTORY } from '../config';
+import { ingredients as allIngredients, substitutions as allSubs } from '../data/adapters';
+import { evaluateCocktail } from '../services/availabilityService';
+describe('예시 홈바 세트', () => {
+  it('모든 품목이 재료 목록에 있고, 작게 두되 만들 수 있는 잔이 있다', () => {
+    const ids = STARTER_INVENTORY.map((n) => allIngredients.find((i) => i.name === n)?.id);
+    expect(ids.every(Boolean)).toBe(true);
+    expect(STARTER_INVENTORY.length).toBeLessThanOrEqual(15);
+    const held = new Set(ids as string[]);
+    const subMap = new Map<string, string[]>();
+    for (const s of allSubs) subMap.set(s.ingredientId, [...(subMap.get(s.ingredientId) ?? []), s.substituteId]);
+    const ready = allCocktails.filter((c) => evaluateCocktail(c, held, subMap).status === 'READY').length;
+    expect(ready).toBeGreaterThanOrEqual(10);
+  });
+});

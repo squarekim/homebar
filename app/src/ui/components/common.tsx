@@ -349,15 +349,15 @@ const EXAMPLE_EVENT = 'homebar:example';
 export function notifyExample(): void { window.dispatchEvent(new Event(EXAMPLE_EVENT)); }
 
 /**
- * 기본 홈바 세트가 무엇인지 — 칵테일을 처음 만들 때 흔히 갖추는 술과 재료 41가지.
+ * 기본 홈바 세트가 무엇인지 — 칵테일을 막 시작한 집에 있을 법한 술과 재료.
  * 특정 사람의 술장이 아니라 예시이고, 이걸로 레시피 210종 가운데 몇 잔이 열리는지 보여 주려고 둔다.
  */
 export function StarterSetList() {
   return (
     <details className="starterset">
       <summary>기본 홈바 세트가 뭔가요?</summary>
-      <p className="hint">칵테일을 처음 만들어 볼 때 흔히 갖추는 술과 재료 {STARTER_INVENTORY.length}가지를 모은 예시예요.
-        실제로 가진 것이 아니고, 이만큼 있으면 어떤 잔을 만들 수 있는지 미리 보여 드리려고 둔 거예요.</p>
+      <p className="hint">칵테일을 막 시작한 집에 있을 법한 것만 담았어요. 술 세 병, 리큐르 한 병, 마트에서 사는 주스와 탄산까지 모두 {STARTER_INVENTORY.length}가지예요.
+        실제로 가진 것이 아니고, 이 정도만 있어도 어떤 잔을 만들 수 있는지 미리 보여 드리려고 둔 예시예요.</p>
       <dl>
         {STARTER_GROUPS.map((g) => (
           <div key={g.label}>
