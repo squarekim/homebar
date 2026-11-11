@@ -118,7 +118,7 @@ export function MakerNoteView({ note, empty }: { note?: MakerNote | undefined; e
       {note.palate && <p className="mn-line"><b>맛(Palate)</b> {note.palate}</p>}
       {note.finish && <p className="mn-line"><b>피니시(Finish)</b> {note.finish}</p>}
       <a className="mn-src" href={note.source} target="_blank" rel="noopener">
-        출처: {noteSourceLabel(note)}{isOfficialNote(note) ? '' : ' · 매체 정리'} ↗
+        출처: {noteSourceLabel(note)}{isOfficialNote(note) ? '' : ' · 매체·판매처 정리'} ↗
       </a>
     </div>
   );

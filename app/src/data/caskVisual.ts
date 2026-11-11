@@ -68,7 +68,7 @@ const FLAVOR_WORDS: Array<[RegExp, FlavorKey]> = [
   [/바다|소금|짠|해초|요오드|brine|salt|sea|iodine/i, 'sea'], [/토피|캐러멜|카라멜|버터스카치|toffee|caramel|butterscotch/i, 'caramel'],
   [/복숭아|살구|열대|파인애플|바나나|망고|peach|apricot|tropical|pineapple|banana|mango/i, 'tropical'],
   [/베리|체리|딸기|블랙커런트|berry|cherry|strawberr/i, 'berry'], [/커피|에스프레소|coffee/i, 'coffee'],
-  [/곡물|몰트|맥아|비스킷|빵|시리얼|grain|malt|biscuit|cereal/i, 'grain'], [/허브|풀|민트|herb|grass|mint/i, 'herb'],
+  [/곡물|몰트|맥아|비스킷|빵|시리얼|grain|malt|biscuit|cereal/i, 'grain'], [/허브|풀(?!바디)|민트|herb|grass|mint/i, 'herb'],
   [/피트|스모크|훈연|연기|이탄|peat|smoke/i, 'peat'],
 ];
 
