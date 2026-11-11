@@ -417,7 +417,7 @@ export interface UserBottle {
 /** 대분류. 세부분류(subcategory)는 마스터 DB 내부에서 관리하며 사용자가 고르지 않는다. */
 export type LiquorCategory =
   | 'whisky' | 'gin' | 'vodka' | 'rum' | 'tequila' | 'mezcal' | 'brandy'
-  | 'liqueur' | 'vermouth' | 'wine' | 'beer' | 'sake' | 'rtd' | 'spirit' | 'mixer';
+  | 'liqueur' | 'vermouth' | 'wine' | 'beer' | 'trad' | 'soju' | 'sake' | 'rtd' | 'spirit' | 'mixer';
 
 /** 기준 제품 1건. 사용자는 이름만 검색해 고르고, 나머지는 여기서 자동 채워진다. */
 export interface LiquorMasterItem {

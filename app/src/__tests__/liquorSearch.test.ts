@@ -164,11 +164,23 @@ describe('기준 DB 확장', () => {
 
   it('도수를 확인하지 못한 제품은 값을 지어내지 않는다', () => {
     expect(liquorMasterById.get('m_glenallachie10cs')!.abv).toBeUndefined();  // 배치별 상이
-    expect(liquorMasterById.get('m_joeunday')!.abv).toBeUndefined();          // 희석식 소주는 도수가 자주 바뀐다
+    expect(liquorMasterById.get('m_hallasan')!.abv).toBeUndefined();          // 출처 페이지를 열지 못해 비워 둔다
+    expect(liquorMasterById.get('m_joeunday')!.abv).toBe(15.7);               // 2026-03 무학 발표로 확인
     // 수입사 제품 설명으로 확인된 값은 채운다
     const appletree = liquorMasterById.get('m_appletree')!;
     expect(appletree.abv).toBe(15);
     expect(appletree.volumeMl).toBe(700);
+  });
+
+  it('한국 술은 우리술·소주·사케로 나눈다(2026-11-11 전통주 분류 조사)', () => {
+    const cat = (id: string) => liquorMasterById.get(id)!.category;
+    expect(['m_jangsu', 'm_baekseju', 'm_hwayo25', 'm_munbaeju', 'm_soju_andong'].map(cat)).toEqual(['trad', 'trad', 'trad', 'trad', 'trad']);
+    expect(['m_chamisul', 'm_jamong_aisul'].map(cat)).toEqual(['soju', 'soju']);
+    expect(['m_dassai45', 'm_iichiko'].map(cat)).toEqual(['sake', 'sake']);
+    expect(cat('m_tokki_sunbee')).toBe('gin');
+    expect(liquorMasterById.get('m_igangju')!.subcategory).toContain('리큐르');
+    expect(searchLiquor('사케', { limit: 8 }).every((h) => h.item.category === 'sake')).toBe(true);
+    expect(searchLiquor('막걸리', { limit: 8 }).every((h) => h.item.category === 'trad')).toBe(true);
   });
 
   it('수제맥주를 이름·브랜드로 찾는다', () => {

@@ -211,6 +211,7 @@ const GIN: Row[] = [
   ['m_nordes', '노르데스', 'Nordés Atlantic Galician Gin', '노르데스', '컨템포러리 진', 40, 700, '스페인', '런던 드라이 진', '노르데스 nordes'],
   ['m_hayman_oldtom', '헤이맨스 올드 톰 진', "Hayman's Old Tom Gin", '헤이맨스', '올드 톰 진', 41.4, 700, '영국', '올드 톰 진', '올드톰 oldtom 헤이맨스'],
   ['m_buja', '부자진', 'Buja Gin', '부자진', '크래프트 진', 44, 525, '한국', '런던 드라이 진', '부자 진 bujagin 양평'],
+  ['m_tokki_sunbee', '토끼소주 선비진', 'Tokki Soju Sunbee', '토끼소주', '크래프트 진', 48, 375, '한국', '런던 드라이 진', '선비진 토끼진 sunbee'],
   ['m_tanqueray_sevilla', '탱커레이 플로어 드 세비야', 'Tanqueray Flor de Sevilla', '탱커레이', '플레이버드 진', 41.3, 700, '영국', '런던 드라이 진', '세비야 탱커레이세비야'],
 ];
 
@@ -420,34 +421,46 @@ const CRAFT_BEER: Row[] = [
 ];
 
 /* ── 사케 · 소주 ── */
-const SAKE: Row[] = [
-  ['m_dassai45', '닷사이 45 준마이다이긴조', 'Dassai 45 Junmai Daiginjo', '아사히슈조', '준마이다이긴조', 16, 720, '일본', '', '닷사이 다사이 dassai'],
-  ['m_kubota_senju', '쿠보타 센주', 'Kubota Senju', '아사히슈조(니가타)', '긴조', 15, 720, '일본', '', '쿠보타 kubota'],
-  ['m_iichiko', '이이치코 실루엣', 'Iichiko Silhouette', '산와슈루이', '보리 소주', 25, 720, '일본', '', '이이치코 iichiko'],
+/* ── 우리술 (막걸리·약주·증류식 소주 등 한국 술) ──
+ * 2026-11-11 전통주 분류 조사(제미나이) 반영: 주종은 라벨·상품정보고시 표기로 확인한 것만 고쳤다.
+ *   이강주 → 리큐르, 감홍로 → 일반증류주(400ml), 선비진 → 진(48%, 진 묶음으로 옮김), 안동소주를 여기로 옮김.
+ * '우리술'은 더술닷컴(농림축산식품부·aT)의 '우리술 찾기'에서 쓰는 말이다. 법적 '전통주'(민속주·지역특산주)와 같은 뜻이 아니다. */
+const TRAD: Row[] = [
   ['m_hwayo25', '화요 25', 'Hwayo 25', '화요', '증류식 소주', 25, 375, '한국', '', '화요 hwayo'],
   ['m_hwayo41', '화요 41', 'Hwayo 41', '화요', '증류식 소주', 41, 375, '한국', '', '화요41'],
-  ['m_chamisul', '참이슬 후레쉬', 'Chamisul Fresh', '하이트진로', '희석식 소주', 0, 360, '한국', '', '참이슬 소주 chamisul'],
-  ['m_chumchurum', '처음처럼', 'Chum Churum', '롯데칠성', '희석식 소주', 0, 360, '한국', '', '처음처럼'],
   ['m_wonsoju_spirit', '원소주 스피릿', 'Won Soju Spirit', '원스피리츠', '증류식 소주', 24, 375, '한국', '', '원소주 스피릿 wonsoju'],
   ['m_tokki_white', '토끼소주 화이트', 'Tokki Soju White', '토끼소주', '증류식 소주', 23, 375, '한국', '', '토끼소주 tokki'],
-  ['m_tokki_sunbee', '토끼소주 선비진', 'Tokki Soju Sunbee', '토끼소주', '증류식 소주', 40, 375, '한국', '', '선비진 토끼소주40'],
-  ['m_jinro_isback', '진로 이즈백', 'Jinro Is Back', '하이트진로', '희석식 소주', 0, 360, '한국', '', '진로이즈백 진로'],
-  ['m_saero', '새로', 'Saero', '롯데칠성', '희석식 소주', 0, 360, '한국', '', '새로 제로슈거'],
-  ['m_hallasan', '한라산 오리지널', 'Hallasan Original', '한라산소주', '희석식 소주', 0, 375, '한국', '', '한라산소주 제주소주'],
-  ['m_wolgyegwan_junmai', '월계관 준마이', 'Gekkeikan Junmai', '월계관', '준마이', 0, 720, '일본', '', '월계관 겟케이칸 gekkeikan'],
-  ['m_yumeginga', '유메긴가 준마이 다이긴조', 'Yumeginga Junmai Daiginjo', '야마자키카모시', '준마이다이긴조', 16, 720, '일본', '', '유메긴가 dream 드림'],
   ['m_neungi', '내국양조 능이주', 'Naeguk Neungi-ju', '내국양조', '약주', 13, 375, '한국', '', '능이주 내국양조'],
   ['m_songi', '내국양조 송이주', 'Naeguk Songi-ju', '내국양조', '약주', 13, 375, '한국', '', '송이주 내국양조'],
   ['m_jangsu', '장수 생막걸리', 'Jangsu Makgeolli', '서울장수', '생막걸리', 6, 750, '한국', '', '장수막걸리 막걸리 jangsu'],
   ['m_kooksoondang', '국순당 생막걸리', 'Kooksoondang Makgeolli', '국순당', '생막걸리', 6, 750, '한국', '', '국순당 우국생 막걸리'],
   ['m_jipyeong', '지평 생막걸리', 'Jipyeong Makgeolli', '지평주조', '생막걸리', 5, 750, '한국', '', '지평막걸리 지평'],
   ['m_baekseju', '백세주', 'Baekseju', '국순당', '약주', 13, 375, '한국', '', '백세주 baekseju'],
-  ['m_igangju', '이강주', 'Igangju', '전주이강주', '증류식 소주', 25, 375, '한국', '', '이강주 전주이강주'],
-  ['m_gamhongro', '감홍로', 'Gamhongro', '감홍로주', '증류식 소주', 40, 375, '한국', '', '감홍로 감홍로주'],
+  ['m_igangju', '이강주', 'Igangju', '전주이강주', '리큐르(배·생강 등 침출)', 25, 375, '한국', '', '이강주 전주이강주'],
+  ['m_gamhongro', '감홍로', 'Gamhongro', '감홍로주', '일반증류주(약재 침출)', 40, 400, '한국', '', '감홍로 감홍로주'],
   ['m_munbaeju', '문배주', 'Munbaeju', '문배주양조원', '증류식 소주', 40, 375, '한국', '', '문배주 munbaeju'],
+  ['m_soju_andong', '안동소주', 'Andong Soju', '민속주안동소주', '증류식 소주', 45, 400, '한국', '', '안동소주'],
+];
+
+/* ── 소주 (희석식·과일 소주) — 15.7%는 2026년 제조사 발표 기준(참이슬·처음처럼·진로·새로·좋은데이) ── */
+const SOJU: Row[] = [
+  ['m_chamisul', '참이슬 후레쉬', 'Chamisul Fresh', '하이트진로', '희석식 소주', 15.7, 360, '한국', '', '참이슬 소주 chamisul'],
+  ['m_chumchurum', '처음처럼', 'Chum Churum', '롯데칠성', '희석식 소주', 15.7, 360, '한국', '', '처음처럼'],
+  ['m_jinro_isback', '진로 이즈백', 'Jinro Is Back', '하이트진로', '희석식 소주', 15.7, 360, '한국', '', '진로이즈백 진로'],
+  ['m_saero', '새로', 'Saero', '롯데칠성', '희석식 소주', 15.7, 360, '한국', '', '새로 제로슈거'],
+  ['m_hallasan', '한라산 오리지널', 'Hallasan Original', '한라산소주', '희석식 소주', 0, 375, '한국', '', '한라산소주 제주소주'],
+  ['m_joeunday', '좋은데이', 'Good Day', '무학', '희석식 소주', 15.7, 360, '한국', '', '좋은데이 goodday'],
   ['m_jamong_aisul', '자몽에이슬', 'Jamong-e-isul', '하이트진로', '과일 소주', 13, 360, '한국', '', '자몽에이슬 과일소주'],
   ['m_sunhari', '순하리 처음처럼', 'Sunhari Chum Churum', '롯데칠성', '과일 소주', 12, 360, '한국', '', '순하리 sunhari'],
-  ['m_joeunday', '좋은데이', 'Good Day', '무학', '희석식 소주', 0, 360, '한국', '', '좋은데이 goodday'],
+];
+
+/* ── 사케·일본 소주 ── */
+const SAKE: Row[] = [
+  ['m_dassai45', '닷사이 45 준마이다이긴조', 'Dassai 45 Junmai Daiginjo', '아사히슈조', '준마이다이긴조', 15, 720, '일본', '', '닷사이 다사이 dassai'],
+  ['m_kubota_senju', '쿠보타 센주', 'Kubota Senju', '아사히슈조(니가타)', '긴조', 15, 720, '일본', '', '쿠보타 kubota'],
+  ['m_wolgyegwan_junmai', '월계관 준마이', 'Gekkeikan Junmai', '월계관', '준마이', 0, 720, '일본', '', '월계관 겟케이칸 gekkeikan'],
+  ['m_yumeginga', '유메긴가 준마이 다이긴조', 'Yumeginga Junmai Daiginjo', '야마자키카모시', '준마이다이긴조', 16, 720, '일본', '', '유메긴가 dream 드림'],
+  ['m_iichiko', '이이치코 실루엣', 'Iichiko Silhouette', '산와슈루이', '보리 소주', 25, 720, '일본', '', '이이치코 iichiko'],
 ];
 
 /* ── RTD · 캔칵테일 (편의점에서 바로 집는 것들) ── */
@@ -467,7 +480,6 @@ const RTD: Row[] = [
 /* ── 기타 증류주 ── */
 const SPIRIT: Row[] = [
   ['m_baijiu_luzhou', '루저우라오자오', 'Luzhou Laojiao', '루저우라오자오', '농향형 백주', 52, 500, '중국', '', '백주 고량주 baijiu'],
-  ['m_soju_andong', '안동소주', 'Andong Soju', '민속주안동소주', '증류식 소주', 45, 400, '한국', '', '안동소주'],
   ['m_yeontae', '연태구냥', 'Yantai Guniang', '옌타이', '농향형 백주', 0, 500, '중국', '', '연태구냥 옌타이 yantai'],
 ];
 
@@ -492,7 +504,7 @@ const GROUPS: Array<[LiquorCategory, Row[]]> = [
   ['whisky', WHISKY_AMERICAN], ['whisky', WHISKY_WORLD],
   ['gin', GIN], ['vodka', VODKA], ['rum', RUM], ['tequila', TEQUILA], ['mezcal', MEZCAL],
   ['brandy', BRANDY], ['liqueur', LIQUEUR], ['vermouth', VERMOUTH], ['wine', WINE],
-  ['beer', BEER], ['beer', CRAFT_BEER], ['sake', SAKE], ['rtd', RTD], ['spirit', SPIRIT], ['mixer', MIXER],
+  ['beer', BEER], ['beer', CRAFT_BEER], ['trad', TRAD], ['soju', SOJU], ['sake', SAKE], ['rtd', RTD], ['spirit', SPIRIT], ['mixer', MIXER],
 ];
 
 function build([id, ko, en, brand, sub, abv, ml, country, ing, alias, wc]: Row, category: LiquorCategory): LiquorMasterItem {

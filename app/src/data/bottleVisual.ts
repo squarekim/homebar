@@ -24,7 +24,7 @@ export function bottleShapeOf(b: Bottle): BottleShapeKind {
   }
   switch (bottleKind(b)) {
     case 'whisky': return 'scotch';
-    case 'gin': case 'vodka': case 'wine': case 'vermouth': case 'sake': return 'slim';
+    case 'gin': case 'vodka': case 'wine': case 'vermouth': case 'sake': case 'trad': case 'soju': return 'slim';
     default: return 'generic';
   }
 }
@@ -34,7 +34,7 @@ const KIND_COLOR: Record<string, [string, number]> = {
   whisky: ['#C0862F', .82], gin: ['#E8F0EA', .3], vodka: ['#EEF5FA', .26],
   rum: ['#A8622A', .84], tequila: ['#E7D296', .55], mezcal: ['#E0CE9A', .55],
   brandy: ['#A85A22', .86], liqueur: ['#C2703F', .8], vermouth: ['#8E3A21', .8],
-  wine: ['#6B1220', .9], beer: ['#C98A2E', .72], sake: ['#EFE8D2', .32],
+  wine: ['#6B1220', .9], beer: ['#C98A2E', .72], sake: ['#EFE8D2', .32], trad: ['#EDE5D0', .45], soju: ['#EEF5FA', .22],
   rtd: ['#E0A66A', .62], spirit: ['#E4DECE', .32], mixer: ['#EAE2CE', .3], other: ['#D2BE94', .55],
 };
 

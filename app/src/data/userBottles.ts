@@ -7,6 +7,7 @@ import { type Bottle, type LiquorCategory, type LiquorMasterItem, type UserBottl
 import { flavorForBottle } from './flavorLexicon';
 import { CATEGORY_GROUP, CATEGORY_DEFAULT_INGREDIENT, categoryFromGroup } from './liquorCategory';
 import { MASTER_MAKER_NOTES } from './makerNotesMaster';
+import { liquorMasterById } from './liquorMaster';
 
 const SPIRIT_GROUPS = ['위스키', '진', '보드카', '럼·데킬라·브랜디'];
 
@@ -16,7 +17,14 @@ function parseAbv(abv?: string): number | null {
   return m?.[1] ? parseFloat(m[1]) : null;
 }
 
-export function userBottleToDomain(ub: UserBottle): Bottle {
+export function userBottleToDomain(stored: UserBottle): Bottle {
+  // 기준 목록에서 고른 병은 분류·세부분류를 목록에서 다시 읽는다 — 목록을 고치면(예: '사케·소주'를 우리술·소주·사케로 나눔)
+  // 이미 넣어 둔 병도 따라간다. 도수는 사용자가 적은 값이 없을 때만 목록 값을 쓴다.
+  const m = stored.masterId ? liquorMasterById.get(stored.masterId) : undefined;
+  const ub: UserBottle = m ? {
+    ...stored, category: m.category, group: CATEGORY_GROUP[m.category], subcategory: m.subcategory,
+    abv: stored.abv || (m.abv ? `${m.abv}%` : undefined),
+  } : stored;
   const isWhisky = ub.category ? ub.category === 'whisky' : ub.group === '위스키';
   const abv = ub.abv ?? '';
   const noteParts = [ub.subcategory, ub.note ?? ''].filter(Boolean);

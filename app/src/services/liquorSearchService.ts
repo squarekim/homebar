@@ -42,7 +42,7 @@ const INDEX: Indexed[] = LIQUOR_MASTER.map((item) => {
   const en = normalizeQuery(item.nameEn);
   const brand = normalizeQuery(item.brand);
   const aliases = item.aliases.map(normalizeQuery).filter(Boolean);
-  const kind = [item.subcategory, ...(item.whiskyClass ? classTags(item.whiskyClass) : []), ...KIND_WORDS.filter(([re]) => re.test(item.subcategory)).flatMap(([, w]) => w)]
+  const kind = [item.subcategory, ...(item.category === 'trad' ? ['우리술', '전통주'] : []), ...(item.whiskyClass ? classTags(item.whiskyClass) : []), ...KIND_WORDS.filter(([re]) => re.test(item.subcategory)).flatMap(([, w]) => w)]
     .map(normalizeQuery).filter(Boolean);
   return { item, ko, en, brand, aliases, cho: initials(ko), all: [ko, en, brand, ...aliases], kind };
 });
@@ -162,7 +162,9 @@ const CATEGORY_HINTS: Array<[RegExp, LiquorCategory]> = [
   [/리큐르|liqueur|큐라소|슈납스|아마레토|캄파리|아페롤|비터|bitters|크렘 드|아마로/i, 'liqueur'],
   [/와인|wine|샴페인|champagne|프로세코|셰리|포트|sherry|port/i, 'wine'],
   [/맥주|beer|라거|에일|ale|스타우트|ipa/i, 'beer'],
-  [/사케|sake|준마이|다이긴조|소주|soju|shochu|막걸리|탁주|약주/i, 'sake'],
+  [/막걸리|탁주|동동주|약주|전통주|우리술|증류식 소주|makgeolli/i, 'trad'],
+  [/사케|sake|준마이|다이긴조|쇼추|shochu/i, 'sake'],
+  [/소주|soju/i, 'soju'],
   [/하이볼\s*캔|캔\s*하이볼|츄하이|chuhai|호로요이|스트롱\s*제로|rtd|칵테일\s*캔/i, 'rtd'],
   [/토닉|tonic|진저에일|콜라|시럽|syrup|탄산|소다/i, 'mixer'],
 ];
