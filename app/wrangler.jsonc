@@ -1,0 +1,10 @@
+// Cloudflare Workers(정적 자산) 배포 설정 — 공개판 빌드 결과(dist-public)를 그대로 올린다.
+// 대시보드 빌드 설정: Root directory = app, Build command = npm run build:public, Deploy command = npx wrangler deploy
+{
+  "name": "homebar",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist-public",
+    "not_found_handling": "single-page-application"
+  }
+}

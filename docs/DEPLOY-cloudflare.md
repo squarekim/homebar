@@ -3,7 +3,17 @@
 홈바 공개판(개인 보유 데이터를 뺀 빌드)을 Cloudflare Pages로 올리는 방법이에요.
 서버와 데이터베이스가 없는 정적 사이트라 호스팅 비용은 0원이에요. 드는 돈은 도메인을 살 때뿐이에요.
 
-## 1. 처음 한 번만 하는 일
+## 0. Workers로 만들어진 경우
+
+Cloudflare가 Pages 대신 Workers로 프로젝트를 만들었다면 **Settings → Build**에서 아래처럼 바꿔요. 설정 파일은 `app/wrangler.jsonc`에 있어요.
+
+| 항목 | 값 |
+|---|---|
+| Root directory | `app` |
+| Build command | `npm run build:public` |
+| Deploy command | `npx wrangler deploy` |
+
+## 1. 처음 한 번만 하는 일 (Pages로 만들 때)
 
 1. Cloudflare 계정을 만들어요. 무료 요금제로 충분하고 결제 수단은 등록하지 않아도 돼요.
 2. 대시보드에서 **Workers & Pages → Create → Pages → Connect to Git**을 눌러요.
