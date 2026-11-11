@@ -10,7 +10,8 @@ import { useRecommendContext } from '../../hooks/useRecommendContext';
 import { useLogs } from '../../hooks/useData';
 import { whatToDrink, type RecommendMode, diversePool } from '../../services/recommendationService';
 import { STATUS_LEAD_KO } from '../../services/availabilityService';
-import { ChipRow, LogCard, StarterNotice, StartButtons } from '../components/common';
+import { ChipRow, ChipToggle, LogCard, StarterNotice, StartButtons, allChips } from '../components/common';
+import { referenceRepo } from '../../repositories/referenceRepo';
 import { TodayReel } from '../components/TodayReel';
 import { MODES, GroupRec, PurchaseRec, ClearStockRec } from './RecommendPage';
 import { type RecommendationResult } from '../../models/types';
@@ -53,6 +54,8 @@ const KINDS: { v: Kind; label: string }[] = [
   { v: 'cocktail', label: '칵테일' },
   { v: 'whisky', label: '위스키 한 잔' },
 ];
+/** 베이스 술 필터 — 레시피에 있는 베이스 순서 그대로 */
+const BASES = allChips([...new Set(referenceRepo.cocktails().map((c) => c.base))], '전체');
 /** 맛 필터 — 칵테일에만 적용된다. 위스키는 종류 필터로 옮겼다 */
 const TASTES = MODES.filter((m) => m.v !== 'whisky').map((m) => (m.v === 'available' ? { ...m, label: '맛 전체' } : m));
 
@@ -93,15 +96,40 @@ export function TodayPage() {
   const logs = useLogs();
   const [mode, setMode] = useState<RecommendMode>('available');
   const [kind, setKind] = useState<Kind>('all');
+  const [base, setBase] = useState('all');
+  const [openFilter, setOpenFilter] = useState(false);
   const picks = useMemo(() => {
     if (kind === 'whisky') return reelPool(whatToDrink(ctx, 'whisky', 80), 'whisky');
-    const all = whatToDrink(ctx, mode, 80);
-    return reelPool(kind === 'cocktail' ? all.filter((r) => r.kind === 'cocktail') : all, mode);
-  }, [ctx, mode, kind]);
+    let all = whatToDrink(ctx, mode, 120);
+    if (kind === 'cocktail' || base !== 'all') all = all.filter((r) => r.kind === 'cocktail');
+    if (base !== 'all') all = all.filter((r) => r.base === base);
+    return reelPool(all, mode);
+  }, [ctx, mode, kind, base]);
+  // 종류 칩만 바깥에 두고, 맛과 베이스 술은 칵테일 목록처럼 "필터" 안에 모은다
+  const tasteOn = mode !== 'available';
+  const baseOn = base !== 'all';
+  const filterCount = (kind !== 'whisky' && tasteOn ? 1 : 0) + (kind !== 'whisky' && baseOn ? 1 : 0);
   const filters = (
     <div className="pickfilters">
-      <ChipRow value={kind} options={KINDS} onChange={setKind} />
-      {kind !== 'whisky' && <ChipRow value={mode} options={TASTES} onChange={setMode} />}
+      <div className="controls tight">
+        {KINDS.map((k) => (
+          <button key={k.v} className="chip" aria-pressed={kind === k.v} onClick={() => setKind(k.v)}>{k.label}</button>
+        ))}
+        {kind !== 'whisky' && (
+          <ChipToggle label={filterCount ? `필터 ${filterCount}` : '필터'} on={openFilter} onToggle={() => setOpenFilter((v) => !v)} />
+        )}
+      </div>
+      {openFilter && kind !== 'whisky' && (
+        <div className="filterpanel">
+          <div className="hint lbl">맛</div>
+          <ChipRow value={mode} options={TASTES} onChange={setMode} wrap tight />
+          <div className="hint lbl">베이스 술 (칵테일)</div>
+          <ChipRow value={base} options={BASES} onChange={setBase} wrap tight />
+          <div className="btnrow">
+            <button className="btn sm ghost" onClick={() => { setMode('available'); setBase('all'); }}>필터 비우기</button>
+          </div>
+        </div>
+      )}
     </div>
   );
   const [picked, setPicked] = useState<RecommendationResult | null>(null);
@@ -161,10 +189,12 @@ export function TodayPage() {
           <div className="empty">
             {kind === 'whisky'
               ? <>아직 넣은 위스키가 없어요. 가진 위스키를 넣으면 여기서 골라 드려요.</>
+              : baseOn
+                ? <>이 베이스 술로 지금 만들 수 있는 잔이 없어요. 필터를 바꿔 보세요.</>
               : mode === 'available'
                 ? <>아직 넣은 술과 재료로는 만들 수 있는 잔이 없어요. 가진 것을 넣으면 여기서 골라 드려요.</>
                 : <>이 맛으로 지금 만들 수 있는 잔이 없어요. 다른 칩을 골라 보세요.</>}
-            {(kind === 'whisky' || mode === 'available') && <StartButtons />}
+            {(kind === 'whisky' || (mode === 'available' && !baseOn)) && <StartButtons />}
           </div>
           </>
         )}

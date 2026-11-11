@@ -589,3 +589,4 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 
 /* 한 잔 고르기 필터: 종류 줄과 맛 줄 */
 .pickfilters{display:grid;gap:var(--s1)}
+.pickfilters .filterpanel{margin-top:0}
