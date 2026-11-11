@@ -2,7 +2,7 @@
  * cocktailStrength — 칵테일 도수(재료 기준 추정).
  *
  * 계산: 재료마다 (양 ml × 그 재료의 도수)를 더해 전체 양으로 나눈다. 얼음이 녹아 늘어나는 물은 넣지 않는다.
- * 그래서 화면에는 "얼음 넣기 전 재료 기준"이라고 같이 적는다.
+ * 제품마다 도수가 다르고 얼음이 녹는 정도도 달라, 화면에는 계산값 ±5%의 폭으로 적는다(cocktailAbvLabel).
  *
  * 재료 도수: 술 추가 목록(liquorMaster)에서 그 재료로 이어진 제품들의 라벨 도수 가운데 값.
  * 주스·탄산·시럽·허브·부재료 분류의 재료는 0%로 본다.
@@ -49,6 +49,15 @@ export function cocktailAbv(ck: Cocktail): number | null {
     vol += ml; alc += ml * abv;
   }
   return vol > 0 ? Math.round(alc / vol) : null;
+}
+
+/** 화면에 적는 폭 — 계산값 ±5%. 제품마다 도수가 다르고 얼음이 녹는 정도도 달라 한 숫자로 적지 않는다 */
+export const ABV_SPREAD = 5;
+export function cocktailAbvLabel(ck: Cocktail): string | null {
+  const v = cocktailAbv(ck);
+  if (v === null) return null;
+  const lo = v - ABV_SPREAD, hi = v + ABV_SPREAD;
+  return lo <= 0 ? `약 ${hi}% 이하` : `약 ${lo}~${hi}%`;
 }
 
 /** 재료 도수표(테스트·점검용) */

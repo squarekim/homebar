@@ -56,6 +56,14 @@ describe('칵테일 도수(재료 기준)', () => {
     expect(at('올드 패션드')).not.toBeNull();   // 각설탕은 부피 0
     expect(at('모히토')).toBeNull();            // 탄산수 Top
   });
+  it('화면에는 ±5% 폭으로 적는다', async () => {
+    const { cocktails } = await import('../data/adapters');
+    const { cocktailAbvLabel } = await import('../services/cocktailStrength');
+    const lab = (n: string) => cocktailAbvLabel(cocktails.find((c) => c.name === n)!);
+    expect(lab('네그로니')).toBe('약 23~33%');
+    expect(lab('카시스 오렌지')).toBe('약 9% 이하');
+    expect(lab('모히토')).toBeNull();
+  });
 });
 
 describe('노트 출처', () => {
