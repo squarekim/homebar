@@ -89,3 +89,19 @@ export function draftManual(name: string, category: LiquorCategory, over: Partia
 export function categoryOf(ub: UserBottle): LiquorCategory {
   return ub.category ?? categoryFromGroup(ub.group);
 }
+
+/**
+ * 둘러보기용 병 — 술장에 넣지 않은 기준 DB 제품을 병처럼 보여 준다(저장하지 않는다).
+ * 아이디는 'pv_' + 제품 아이디. 넣은 병과 같은 규칙으로 그림·분류·공식 노트가 붙는다.
+ */
+export const PREVIEW_PREFIX = 'pv_';
+const previewCache = new Map<string, Bottle>();
+export function previewBottle(item: LiquorMasterItem): Bottle {
+  let b = previewCache.get(item.id);
+  if (!b) {
+    b = { ...userBottleToDomain({ ...draftFromMaster(item, { qty: 0 }), id: PREVIEW_PREFIX + item.id, createdAt: 0 } as UserBottle) };
+    previewCache.set(item.id, b);
+  }
+  return b;
+}
+export const isPreviewId = (id: string): boolean => id.startsWith(PREVIEW_PREFIX);

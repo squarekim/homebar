@@ -289,6 +289,7 @@ input::placeholder{color:var(--dim)}
 .mi{font-size:13px;color:var(--mute)}
 .mi+.mi::before{content:"·";margin-right:var(--s1);color:var(--control)}
 .mi.note{color:var(--ink);font-weight:600}
+.mi.own{color:var(--ok);font-weight:600}
 .mi.on{color:var(--ok);font-weight:600}
 .badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:var(--s1)}
 .bdg{font-size:12px;font-weight:600;border-radius:999px;padding:3px 10px;white-space:nowrap;

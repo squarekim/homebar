@@ -14,7 +14,8 @@ import { drawsAsCask } from '../../data/caskVisual';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { useMemo } from 'react';
 import { useUserBottles } from '../../hooks/useData';
-import { userBottleToDomain } from '../../data/userBottles';
+import { userBottleToDomain, previewBottle, isPreviewId, PREVIEW_PREFIX } from '../../data/userBottles';
+import { liquorMasterById } from '../../data/liquorMaster';
 import { type Bottle } from '../../models/types';
 
 /**
@@ -27,6 +28,10 @@ function useBottle(id: string | undefined): Bottle | undefined {
     if (!id) return undefined;
     const seeded = referenceRepo.bottleById(id);
     if (seeded) return seeded;
+    if (isPreviewId(id)) {
+      const m = liquorMasterById.get(id.slice(PREVIEW_PREFIX.length));
+      return m ? previewBottle(m) : undefined;
+    }
     const ub = ubs.find((u) => u.id === id);
     return ub ? userBottleToDomain(ub) : undefined;
   }, [id, ubs]);

@@ -24,7 +24,11 @@ const DistilleryMapView = lazy(() => import('../components/DistilleryMap').then(
 import { bottleKindLabel } from '../../data/bottleIngredients';
 import { FlavorBars, MakerNoteView, BottleBadges, Term, ChipRow, SearchBox, allChips, type ChipOption } from '../components/common';
 import { BottleMark } from '../components/Mark';
-import { liquorMasterById } from '../../data/liquorMaster';
+import { liquorMasterById, LIQUOR_MASTER } from '../../data/liquorMaster';
+import { previewBottle, isPreviewId } from '../../data/userBottles';
+
+/** 둘러보기 목록 — 기준 DB의 위스키 전부(술장에 넣지 않은 것도) */
+const CATALOG: Bottle[] = LIQUOR_MASTER.filter((m) => m.category === 'whisky').map(previewBottle);
 
 /** 넣은 병의 제품 영문명과 별칭 — '맥켈란', 'macallan'으로도 내 병을 찾게 한다 */
 const masterNames = (id: string | undefined): string[] => {
@@ -38,8 +42,11 @@ import { lookupTerm } from '../../data/glossary';
 const CLASS_CHIPS = allChips(CLASS_FILTERS, '분류 전체');
 
 /** 위스키 탭 안의 세 화면 */
-type View = 'list' | 'map' | 'table';
-const VIEWS: ChipOption<View>[] = [{ v: 'list', label: '내 위스키' }, { v: 'map', label: '증류소 지도' }, { v: 'table', label: '위스키 분류 표' }];
+type View = 'list' | 'browse' | 'map' | 'table';
+const VIEWS: ChipOption<View>[] = [
+  { v: 'list', label: '내 위스키' }, { v: 'browse', label: '둘러보기' },
+  { v: 'map', label: '증류소 지도' }, { v: 'table', label: '위스키 분류 표' },
+];
 
 /** 핵심 맛 — 향미 상위 두 축과 분류 캐릭터(피티드 등) */
 function character(w: Bottle): string {
@@ -92,8 +99,9 @@ function PersonalNote({ bottleId, initial, onSaved }: { bottleId: string; initia
   );
 }
 
-function WhiskyDetail({ bottle: w }: { bottle: Bottle }) {
-  const { openLog, toast, openCocktail } = useUI();
+function WhiskyDetail({ bottle: w, owned }: { bottle: Bottle; owned?: Bottle | undefined }) {
+  const { openLog, toast, openCocktail, openAdd, openBottle } = useUI();
+  const preview = isPreviewId(w.id);
   const notes = useBottleNotes();
   const heldIds = useHeldIds();
   const subMap = useSubMap();
@@ -135,14 +143,25 @@ function WhiskyDetail({ bottle: w }: { bottle: Bottle }) {
         </>
       )}
 
-      <div className="sechead in">내 메모 <small className="sub">공식 노트와 따로 저장돼요</small></div>
-      <PersonalNote bottleId={w.id} initial={notes.get(w.id) ?? ''} onSaved={() => toast('메모를 저장했어요')} />
+      {preview ? (
+        // 둘러보기: 아직 술장에 없는 병이라 메모·기록 대신 넣기를 보여 준다
+        <div className="btnrow">
+          {owned
+            ? <button className="btn" onClick={() => openBottle(owned.id)}>가지고 있어요 · 내 병 보기</button>
+            : <button className="btn primary" onClick={() => openAdd(w.name)}>내 술장에 넣기</button>}
+        </div>
+      ) : (
+        <>
+          <div className="sechead in">내 메모 <small className="sub">공식 노트와 따로 저장돼요</small></div>
+          <PersonalNote bottleId={w.id} initial={notes.get(w.id) ?? ''} onSaved={() => toast('메모를 저장했어요')} />
 
-      <div className="btnrow">
-        <button className="btn primary" onClick={() => openLog({ drinkId: w.id, drinkType: w.isWhisky ? 'whisky' : 'spirit', drinkName: w.name, servingStyle: 'neat' })}>
-          이 잔 기록하기
-        </button>
-      </div>
+          <div className="btnrow">
+            <button className="btn primary" onClick={() => openLog({ drinkId: w.id, drinkType: w.isWhisky ? 'whisky' : 'spirit', drinkName: w.name, servingStyle: 'neat' })}>
+              이 잔 기록하기
+            </button>
+          </div>
+        </>
+      )}
 
       <div className="more">
         <button onClick={() => setMore((v) => !v)} aria-expanded={more}>
@@ -168,26 +187,30 @@ export function WhiskyPage() {
   const allBottles = useBottles();
   const [q, setQ] = useState('');
   const [cls, setCls] = useState('all');
-  const [view, setView] = useState<View>('list');
+  // 넣은 위스키가 없으면 둘러보기부터 연다
+  const [view, setView] = useState<View>(() => (whiskies.length ? 'list' : 'browse'));
+  const browsing = view === 'browse';
+  /** 제품 아이디 → 내가 가진 병 (둘러보기에서 '가지고 있어요' 표시) */
+  const ownedByProduct = useMemo(() => new Map(whiskies.filter((w) => w.productId).map((w) => [w.productId!, w])), [whiskies]);
 
   const rows = useMemo(() => {
     const t = normalize(q);
-    return whiskies.filter((w) => {
+    return (browsing ? CATALOG : whiskies).filter((w) => {
       const s = specFor(w);
       return (cls === 'all' || (!!s && specMatchesTerm(s, cls)))
-        && hits(t, w.name, w.whiskyClass ? classTags(w.whiskyClass).join(' ') : '', s ? specTitle(s) : '', distilleryOfProduct(w.productId)?.nameKo ?? '',
+        && hits(t, w.name, ...(w.whiskyClass ? classTags(w.whiskyClass) : []), s ? specTitle(s) : '', distilleryOfProduct(w.productId)?.nameKo ?? '',
           ...masterNames(w.productId));
     });
-  }, [whiskies, q, cls]);
+  }, [whiskies, q, cls, browsing]);
 
-  const selected = allBottles.find((b) => b.id === bottleId);
+  const selected = allBottles.find((b) => b.id === bottleId) ?? CATALOG.find((b) => b.id === bottleId);
 
   if (view === 'table') return <GapView onBack={() => setView('list')} />;
   if (view === 'map') return <Suspense fallback={<div className="hint">지도를 불러오는 중이에요</div>}><DistilleryMapView onBack={() => setView('list')} /></Suspense>;
 
   return (
     <>
-      <h2 className="pagetitle">위스키<span className="sub">보유 {whiskies.length}종 · 맛과 공식 노트를 볼 수 있어요</span></h2>
+      <h2 className="pagetitle">위스키<span className="sub">{browsing ? `둘러보기 ${CATALOG.length}종 · 사기 전에 맛과 공식 노트를 볼 수 있어요` : `보유 ${whiskies.length}종 · 맛과 공식 노트를 볼 수 있어요`}</span></h2>
       <GuideHint tab="whisky" />
       <ChipRow value={view} options={VIEWS} onChange={setView} />
       <SearchBox value={q} onChange={setQ} placeholder="이름·분류(셰리/피트/싱글몰트…) 검색" />
@@ -197,14 +220,15 @@ export function WhiskyPage() {
       <div className="split">
         <div className="listpane">
           <div className="hint">{rows.length}종</div>
-          {rows.length === 0 && whiskies.length > 0 && <div className="empty">조건에 맞는 위스키가 없어요.</div>}
-          {whiskies.length === 0 && (
+          {rows.length === 0 && (browsing || whiskies.length > 0) && <div className="empty">조건에 맞는 위스키가 없어요.</div>}
+          {!browsing && whiskies.length === 0 && (
             <div className="empty">
               아직 넣은 위스키가 없어요. 처음이라면 아래에서 시작해 보세요.
               <div className="btnrow center">
                 <button className="btn primary" onClick={() => goTab('starter')}>내 입맛에 맞는 위스키 찾기</button>
                 <button className="btn" onClick={() => openGuide('drink')}>위스키 마시는 법</button>
                 <button className="btn" onClick={() => openGuide('myths-whisky')}>흔한 오해 10가지</button>
+                <button className="btn" onClick={() => setView('browse')}>위스키 둘러보기</button>
                 <button className="btn" onClick={() => openAdd()}>가진 위스키 넣기</button>
               </div>
             </div>
@@ -220,6 +244,7 @@ export function WhiskyPage() {
                     {w.abv && <span className="mi">{w.abv}</span>}
                     <RegionTag w={w} />
                     {w.makerNote && <span className="mi note">공식 노트</span>}
+                    {browsing && w.productId && ownedByProduct.has(w.productId) && <span className="mi own">가지고 있어요</span>}
                   </div>
                 </div>
               </button>
@@ -234,7 +259,8 @@ export function WhiskyPage() {
                   <button className="btn sm ghost" onClick={closeBottle}>← 목록</button>
                   <b>{selected.name}</b>
                 </div>
-                <WhiskyDetail key={selected.id} bottle={selected} />
+                <WhiskyDetail key={selected.id} bottle={selected}
+                  owned={selected.productId && isPreviewId(selected.id) ? ownedByProduct.get(selected.productId) : undefined} />
               </div>
             )
             : <div className="placeholder">목록에서 한 병을 고르면 맛 설명과 공식 노트가 열려요.</div>}

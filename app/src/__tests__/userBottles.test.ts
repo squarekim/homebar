@@ -28,3 +28,19 @@ describe('칵테일 검색이 간단 조합도 찾는다', () => {
     expect(find('하이볼')).not.toContain('위스키 하이볼');
   });
 });
+
+describe('위스키 둘러보기', () => {
+  it('술장에 넣지 않은 제품도 병처럼 그린다(분류·공식 노트 포함)', async () => {
+    const { LIQUOR_MASTER } = await import('../data/liquorMaster');
+    const { previewBottle, isPreviewId } = await import('../data/userBottles');
+    const { drawsAsCask } = await import('../data/caskVisual');
+    const items = LIQUOR_MASTER.filter((m) => m.category === 'whisky');
+    const all = items.map(previewBottle);
+    expect(all.length).toBeGreaterThan(100);
+    expect(all.every((b) => isPreviewId(b.id) && b.isWhisky && b.qty === 0)).toBe(true);
+    expect(all.every(drawsAsCask)).toBe(true);
+    const balvenie = all.find((b) => b.name === '발베니 더블우드 12년')!;
+    expect(balvenie.whiskyClass?.type).toBe('싱글몰트');
+    expect(balvenie.makerNote).toBeTruthy();
+  });
+});
