@@ -691,3 +691,14 @@ th{color:var(--mute);font-size:12px;font-weight:500}
   .rowitem:hover,.starts button:hover{transform:none}
 }
 .detail .art .mark{background:transparent}
+
+/* 기본 홈바 세트 설명 */
+.starterset{margin-top:var(--s2);text-align:left}
+.starterset summary{cursor:pointer;font-size:14px;color:var(--ink);text-decoration:underline;text-underline-offset:3px;min-height:36px;display:inline-flex;align-items:center}
+.starterset .hint{margin:var(--s1) 0 var(--s2)}
+.starterset dl{display:grid;gap:var(--s1);margin:0}
+.starterset dl > div{display:grid;grid-template-columns:150px minmax(0,1fr);gap:var(--s2);font-size:14px;line-height:1.55}
+.starterset dt{color:var(--mute);font-weight:600}
+.starterset dt span{color:var(--dim);font-weight:400;margin-left:4px}
+.starterset dd{margin:0;color:var(--ink)}
+@media (max-width:520px){.starterset dl > div{grid-template-columns:1fr;gap:2px}}

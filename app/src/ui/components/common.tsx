@@ -3,7 +3,7 @@ import { type MethodKey, METHOD_LABELS_KO, type AvailabilityStatus, type FlavorV
 import { STATUS_LABEL_KO, STATUS_SENTENCE_KO } from '../../services/availabilityService';
 import { GLOSSARY, lookupTerm, normalizeTerm } from '../../data/glossary';
 import { useUI } from '../UIContext';
-import { IS_PUBLIC, STARTER_INVENTORY } from '../../config';
+import { IS_PUBLIC, STARTER_INVENTORY, STARTER_GROUPS } from '../../config';
 import { isExampleOn, turnOffExample, keepExampleAsMine, resetInventoryToSeed } from '../../db/migrate';
 import { IconFilter, IconBuild, IconShake, IconStir, IconMuddle, IconBlend, IconLayer, IconSwizzle, IconFloat } from './icons';
 
@@ -335,6 +335,7 @@ export function StarterNotice() {
         지금은 <b>예시로 기본 홈바 세트 {STARTER_INVENTORY.length}가지</b>를 가진 것으로 해 두었어요.
         "만들 수 있는 잔"은 이 예시 기준이에요.
       </p>
+      <StarterSetList />
       <div className="btnrow">
         <button className="btn sm primary" onClick={async () => { await turnOffExample(); notifyExample(); toast('예시를 껐어요'); }}>예시 끄기</button>
         <button className="btn sm" onClick={() => { keepExampleAsMine(); notifyExample(); setCellarSub('stock'); goTab('cellar'); }}>내 재료로 고쳐 쓰기</button>
@@ -347,10 +348,33 @@ export function StarterNotice() {
 const EXAMPLE_EVENT = 'homebar:example';
 export function notifyExample(): void { window.dispatchEvent(new Event(EXAMPLE_EVENT)); }
 
+/**
+ * 기본 홈바 세트가 무엇인지 — 칵테일을 처음 만들 때 흔히 갖추는 술과 재료 41가지.
+ * 특정 사람의 술장이 아니라 예시이고, 이걸로 레시피 210종 가운데 몇 잔이 열리는지 보여 주려고 둔다.
+ */
+export function StarterSetList() {
+  return (
+    <details className="starterset">
+      <summary>기본 홈바 세트가 뭔가요?</summary>
+      <p className="hint">칵테일을 처음 만들어 볼 때 흔히 갖추는 술과 재료 {STARTER_INVENTORY.length}가지를 모은 예시예요.
+        실제로 가진 것이 아니고, 이만큼 있으면 어떤 잔을 만들 수 있는지 미리 보여 드리려고 둔 거예요.</p>
+      <dl>
+        {STARTER_GROUPS.map((g) => (
+          <div key={g.label}>
+            <dt>{g.label} <span>{g.items.length}</span></dt>
+            <dd>{g.items.join(', ')}</dd>
+          </div>
+        ))}
+      </dl>
+    </details>
+  );
+}
+
 /** 아직 아무것도 넣지 않은 사람에게 보여 주는 시작 버튼 */
 export function StartButtons() {
   const { goTab, setCellarSub, openAdd, toast } = useUI();
   return (
+    <>
     <div className="btnrow center">
       <button className="btn primary" onClick={() => { goTab('cellar'); openAdd(); }}>집에 있는 술 넣기</button>
       <button className="btn" onClick={() => { setCellarSub('stock'); goTab('cellar'); }}>가진 재료 체크하기</button>
@@ -358,6 +382,8 @@ export function StartButtons() {
         <button className="btn" onClick={async () => { await resetInventoryToSeed(); notifyExample(); toast('예시 재고를 켰어요'); }}>예시로 둘러보기</button>
       )}
     </div>
+    {IS_PUBLIC && <StarterSetList />}
+    </>
   );
 }
 
