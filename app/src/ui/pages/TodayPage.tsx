@@ -4,7 +4,8 @@
  * 첫 화면이 답해야 할 것은 넷뿐이다: 무엇을 마실까 · 무슨 맛인가 · 지금 만들 수 있나 · 뭘 누르면 되나.
  * 뽑기 후보는 지금 만들 수 있는 잔뿐이다(칩으로 좁혀도 같다). 점수는 여기서 말하지 않는다.
  */
-import { useCallback, useMemo, useState } from 'react';
+import { IconMartini, IconWhisky } from '../components/icons';
+import { useCallback, useMemo, useState, type ReactElement } from 'react';
 import { useUI } from '../UIContext';
 import { useRecommendContext } from '../../hooks/useRecommendContext';
 import { useLogs } from '../../hooks/useData';
@@ -49,10 +50,10 @@ function reelPool(all: RecommendationResult[], mode: RecommendMode): Recommendat
 
 /** 한 잔 고르기의 종류 필터 */
 type Kind = 'all' | 'cocktail' | 'whisky';
-const KINDS: { v: Kind; label: string }[] = [
+const KINDS: { v: Kind; label: string; icon?: () => ReactElement }[] = [
   { v: 'all', label: '전체' },
-  { v: 'cocktail', label: '칵테일' },
-  { v: 'whisky', label: '위스키 한 잔' },
+  { v: 'cocktail', label: '칵테일', icon: IconMartini },
+  { v: 'whisky', label: '위스키 한 잔', icon: IconWhisky },
 ];
 /** 베이스 술 필터 — 레시피에 있는 베이스 순서 그대로 */
 const BASES = allChips([...new Set(referenceRepo.cocktails().map((c) => c.base))], '전체');
@@ -112,9 +113,11 @@ export function TodayPage() {
   const filters = (
     <div className="pickfilters">
       <div className="controls tight">
-        {kind !== 'whisky' && <FilterButton open={openFilter} count={filterCount} onToggle={() => setOpenFilter((v) => !v)} />}
+        {/* 위스키 한 잔일 때도 자리를 지켜 칩이 옆으로 밀리지 않게 한다. 맛·베이스는 칵테일 조건이라 그때는 끈다 */}
+        <FilterButton open={openFilter && kind !== 'whisky'} count={filterCount} disabled={kind === 'whisky'} onToggle={() => setOpenFilter((v) => !v)} />
         {KINDS.map((k) => (
-          <button key={k.v} className="chip" aria-pressed={kind === k.v} onClick={() => setKind(k.v)}>{k.label}</button>
+          <button key={k.v} className={k.icon ? 'chip iconchip' : 'chip'} aria-pressed={kind === k.v} aria-label={k.label} title={k.label}
+            onClick={() => setKind(k.v)}>{k.icon ? <k.icon /> : k.label}</button>
         ))}
       </div>
       {openFilter && kind !== 'whisky' && (
