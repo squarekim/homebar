@@ -32,7 +32,7 @@ export function GuidePopup() {
         <div className="guidecard" onClick={(e) => e.stopPropagation()}>
           <button className="gx" onClick={closeGuide} aria-label="닫기">×</button>
           <p className="gkicker">입문 안내</p>
-          <h2>무엇이 궁금하세요?</h2>
+          <h2>안내서</h2>
           {GUIDE_GROUPS.map((g) => (
             <div key={g.key}>
               <div className="sechead in">{g.title}</div>
@@ -66,9 +66,9 @@ export function GuidePopup() {
           </>
         ) : card.myth ? (
           <>
-            <p className="gtag myth">흔한 오해</p>
+            <p className="gtag myth">오해</p>
             <h2>"{card.myth}"</h2>
-            <p className="gtag fact">실제로는</p>
+            <p className="gtag fact">사실</p>
             {card.body.map((t, i) => <p className="gbody" key={i}>{t}</p>)}
           </>
         ) : (
@@ -88,9 +88,9 @@ export function GuidePopup() {
         <div className="gnav">
           {at >= 0
             ? <button className="btn" onClick={() => setAt(at - 1)}>이전</button>
-            : <button className="btn" onClick={closeGuide}>나중에 볼게요</button>}
+            : <button className="btn" onClick={closeGuide}>닫기</button>}
           {last
-            ? <button className="btn primary" onClick={() => openGuide('menu')}>다른 안내 보기</button>
+            ? <button className="btn primary" onClick={() => openGuide('menu')}>목록</button>
             : <button className="btn primary" onClick={() => setAt(at + 1)}>{at < 0 ? '보기' : '다음'}</button>}
         </div>
       </div>
@@ -111,7 +111,7 @@ export function GuideHint({ tab }: { tab: string }) {
   const done = () => { mark(SEEN_PREFIX + id); setGone(true); };
   return (
     <div className="guidehint">
-      <button className="go" onClick={() => { done(); openGuide(id); }}>처음이라면 <b>{ch.title}</b> 보기 ›</button>
+      <button className="go" onClick={() => { done(); openGuide(id); }}><b>{ch.title}</b> ›</button>
       <button className="x" onClick={done} aria-label="안내 띠 닫기">×</button>
     </div>
   );

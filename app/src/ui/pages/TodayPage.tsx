@@ -1,9 +1,9 @@
 /**
  * TodayPage — '메인'. 오늘의 잔과 입문을 한 화면에 둔다.
- * 샘플 안내 → 오늘의 잔 뽑기 → 고른 잔 → 처음이라면(입문) → 다르게 골라 보기 → 최근 기록 순서다.
+ * 샘플 안내 → 오늘의 잔 뽑기 → 고른 잔 → 다르게 골라 보기 → 최근 기록 순서다.
  * 첫 화면이 답해야 할 것은 넷뿐이다: 무엇을 마실까 · 무슨 맛인가 · 지금 만들 수 있나 · 뭘 누르면 되나.
  * 뽑기 후보는 지금 만들 수 있는 잔뿐이다(칩으로 좁혀도 같다). 점수는 여기서 말하지 않는다.
- * 넓은 PC(1100px 이상)는 카드 뽑기 대신 지면 배치(TodayEditorial)를 쓰고, 아래 입문·기록 칸은 같이 쓴다.
+ * 넓은 PC(1100px 이상)는 카드 뽑기 대신 지면 배치(TodayEditorial)를 쓰고, 아래 기록 칸은 같이 쓴다.
  */
 import { IconMartini, IconWhisky } from '../components/icons';
 import { useCallback, useMemo, useState, type ReactElement } from 'react';
@@ -66,17 +66,6 @@ function reelPool(all: RecommendationResult[], mode: RecommendMode): Recommendat
   return mode === 'whisky' ? ok.slice(0, POOL) : diversePool(ok, POOL);
 }
 
-/** 화면 위 한 줄 — 칵테일 목록·술장과 같은 숫자(바로 가능 / 대체 재료)로 적고, 카드에 담은 수는 따로 밝힌다 */
-function subline(p: { ready: number; sub: number; whisky: number }, inHand: number): string {
-  const parts = [
-    p.ready ? `바로 만들 수 있는 칵테일 ${p.ready}잔` : '',
-    p.sub ? `대체 재료로 ${p.sub}잔` : '',
-    p.whisky ? `가진 위스키 ${p.whisky}병` : '',
-  ].filter(Boolean);
-  const total = p.ready + p.sub + p.whisky;
-  return `${parts.join(' · ')}${total > inHand ? ` 가운데 ${inHand}개를 카드에 담았어요` : ''}`;
-}
-
 /** 한 잔 고르기의 종류 필터 */
 type Kind = 'all' | 'cocktail' | 'whisky';
 const KINDS: { v: Kind; label: string; icon?: () => ReactElement }[] = [
@@ -122,7 +111,7 @@ function OtherWays() {
 
 export function TodayPage() {
   const ctx = useRecommendContext();
-  const { openCocktail, openLog, goTab, goLogs, openGuide } = useUI();
+  const { openCocktail, openLog, goTab, goLogs } = useUI();
   const logs = useLogs();
   const [mode, setMode] = useState<RecommendMode>('available');
   const [kind, setKind] = useState<Kind>('all');
@@ -134,18 +123,6 @@ export function TodayPage() {
     if (kind === 'cocktail' || base !== 'all') all = all.filter((r) => r.kind === 'cocktail');
     if (base !== 'all') all = all.filter((r) => r.base === base);
     return reelPool(all, mode);
-  }, [ctx, mode, kind, base]);
-  // 카드에 담는 후보는 12잔까지라, 화면 위 숫자는 자르기 전의 전체를 센다(칵테일 목록·술장과 같은 기준)
-  const pool = useMemo(() => {
-    const all = kind === 'whisky' ? whatToDrink(ctx, 'whisky', 200) : whatToDrink(ctx, mode, 400)
-      .filter((r) => (kind === 'all' && base === 'all') || r.kind === 'cocktail')
-      .filter((r) => base === 'all' || r.base === base);
-    return {
-      ready: all.filter((r) => r.kind === 'cocktail' && r.status === 'READY').length,
-      sub: all.filter((r) => r.kind === 'cocktail' && r.status === 'SUBSTITUTE').length,
-      // 섞어 볼 때 위스키는 추천에서 4병만 섞이므로, 가진 위스키 수는 따로 센다
-      whisky: kind === 'cocktail' || base !== 'all' ? 0 : whatToDrink(ctx, 'whisky', 200).length,
-    };
   }, [ctx, mode, kind, base]);
   // 넓은 PC의 메뉴 인덱스 — 위 숫자와 같은 범위 전체(만들 수 있는 칵테일 + 가진 위스키), 추천 순서
   const full = useMemo(() => {
@@ -216,16 +193,10 @@ export function TodayPage() {
 
       {wide ? (
         <>
-          <TodayEditorial list={full} subline={picks.length ? subline(pool, full.length) : '고를 수 있는 잔이 아직 없어요'}
-            filters={filters} emptyText={emptyMsg} />
-          <StarterNotice />
+          <TodayEditorial list={full} filters={filters} emptyText={emptyMsg} />
         </>
       ) : (
       <section className={picks.length ? 'today' : 'today none'}>
-        <h2 className="ask">오늘 뭐 마실까요?</h2>
-        <p className="asksub">
-          {picks.length ? subline(pool, picks.length) : '고를 수 있는 잔이 아직 없어요'}
-        </p>
 
         {picks.length > 0 ? (
           <TodayReel picks={picks} onPicked={onPicked}
@@ -246,11 +217,11 @@ export function TodayPage() {
                 })()}
                 <div className="pickbtns">
                   {/* 칵테일은 고른 다음 할 일이 '만들기'라 레시피가 먼저다. 위스키는 따르기만 하면 되니 기록이 먼저다 */}
-                  {picked.kind === 'cocktail' && <button className="btn primary big" onClick={() => open(picked)}>레시피 보기</button>}
+                  {picked.kind === 'cocktail' && <button className="btn primary big" onClick={() => open(picked)}>이 잔 보기</button>}
                   <button className={picked.kind === 'cocktail' ? 'btn ghost big' : 'btn primary big'} onClick={() => made(picked)}>
                     {picked.kind === 'cocktail' ? '만든 잔 남기기' : '마신 잔 남기기'}
                   </button>
-                  <button className="btn ghost big" onClick={again}>다시 고르기</button>
+                  <button className="btn ghost big" onClick={again}>랜덤 추천</button>
                 </div>
               </div>
             )}
@@ -267,30 +238,6 @@ export function TodayPage() {
         <StarterNotice />
       </section>
       )}
-
-      {/* 입문 — 처음 온 사람이 할 수 있는 세 가지. 취향을 이미 정했으면 문구만 바꾼다 */}
-      <div className="sechead">처음이라면</div>
-      <div className="starts">
-        <button onClick={() => goTab('starter')}>
-          <b>{ctx.hasTaste ? '취향 다시 찾기' : '취향 찾기'}</b>
-          <span>입맛에 맞는 첫 잔 찾기</span>
-        </button>
-        {/* 잔이 없을 때는 위 빈 안내에 같은 버튼이 있다 — 두 번 보이지 않게 뺀다 */}
-        {picks.length > 0 && (
-          <button onClick={() => goTab('cellar')}>
-            <b>집에 있는 술 넣기</b>
-            <span>만들 수 있는 잔 계산</span>
-          </button>
-        )}
-        <button onClick={() => openGuide('menu')}>
-          <b>입문 안내서</b>
-          <span>마시는 법 · 첫 병 · 도구 · 보관</span>
-        </button>
-        <button onClick={() => openGuide('health', { skipIntro: true })}>
-          <b>건강한 음주 안내</b>
-          <span>마시기 전에 알아 둘 것</span>
-        </button>
-      </div>
 
       <OtherWays />
 

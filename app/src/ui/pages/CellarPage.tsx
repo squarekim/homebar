@@ -30,7 +30,6 @@ export function CellarPage() {
   const heldIds = useHeldIds();
   const subMap = useSubMap();
   const tally = useMemo(() => tallyStatus(evaluateAll(heldIds, subMap)), [heldIds, subMap]);
-  const totalIngredients = referenceRepo.ingredients().length;
 
   return (
     <>
@@ -38,13 +37,9 @@ export function CellarPage() {
       <GuideHint tab="cellar" />
       <StarterNotice />
 
-      {/* 두 가지 집계를 나눠 적는다 — 병 수와 재료 수는 다른 것이다 */}
       <div className="statline">
-        <div className="cell"><b>{bottles.length}</b><small>가진 술(병)</small></div>
-        <div className="cell"><b>{heldIds.size}<small style={{ fontSize: 14 }}> / {totalIngredients}</small></b><small>가진 재료</small></div>
-        <div className={tally.READY ? 'cell ok' : 'cell'}><b>{tally.READY}</b><small>지금 만들 수 있는 잔</small></div>
-        <div className={tally.SUBSTITUTE ? 'cell alt' : 'cell'}><b>{tally.SUBSTITUTE}</b><small>대체 재료로 가능</small></div>
-        <div className="cell"><b>{tally.MISSING + tally.UNAVAILABLE}</b><small>재료가 모자란 잔</small></div>
+        <div className="cell"><b>{bottles.length}</b><small>보유</small></div>
+        <div className="cell ok"><b>{tally.READY + tally.SUBSTITUTE}</b><small>가능</small></div>
       </div>
 
       <ChipRow value={sub} onChange={setSub} options={SUBS} />

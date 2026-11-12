@@ -281,12 +281,17 @@ export const GUIDE_FOR_TAB: Partial<Record<string, GuideId>> = {
   cellar: 'storage',
 };
 
-/** 레시피 상세의 "만드는 법"에 보여 줄 순서 — '만드는 방법' 장의 같은 내용을 방법 키로 찾는다 */
-const METHOD_CARD: Record<string, string> = {
-  build: '빌드', stir: '스터', shake: '셰이크', muddle: '머들', float: '플로트', layer: '레이어', blend: '블렌드', swizzle: '스위즐',
+/** 레시피 상세에 붙이는 방법별 기본 순서 — 안내서 '만드는 법' 카드의 번호 줄을 동작만 남겨 줄였다 */
+const METHOD_SHORT: Record<string, string[]> = {
+  build: ['잔에 얼음 가득', '재료 붓기', '가볍게 젓기'],
+  stir: ['믹싱 글라스에 재료 + 얼음 2/3', '30~45초 젓기', '걸러서 잔에 따르기'],
+  shake: ['셰이커에 재료 + 얼음 2/3', '12초 흔들기', '걸러서 잔에 따르기'],
+  muddle: ['설탕·비터 넣고 누르기', '얼음 채우기', '술 붓고 가볍게 젓기'],
+  float: ['아래 음료 먼저', '숟가락 등을 잔 벽에 대기', '천천히 부어 띄우기'],
+  layer: ['무거운 재료부터', '숟가락 위로 천천히', '가벼운 재료 마지막, 젓지 않기'],
+  blend: ['재료 + 부순 얼음 갈기'],
+  swizzle: ['잔에 재료 + 부순 얼음', '막대를 비벼 돌리기', '잔에 성에가 낄 때까지'],
 };
 export function methodSteps(key: string): string[] {
-  const word = METHOD_CARD[key];
-  const card = word ? guideById('methods').cards.find((c) => c.title.startsWith(word)) : undefined;
-  return card ? card.body.filter((t) => /^\d\./.test(t)) : [];
+  return METHOD_SHORT[key] ?? [];
 }

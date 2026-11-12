@@ -31,12 +31,12 @@ export function LogList() {
   return (
     <>
       {logs.length > 0 && summary && (
-        <p className="hint">{logs.length}잔 · 평균 {summary.avg.toFixed(1)}점 · 또 마시고 싶은 잔 {summary.retry}</p>
+        <p className="hint">{logs.length}잔 · 평균 {summary.avg.toFixed(1)} · 재음용 {summary.retry}</p>
       )}
 
       {logs.length === 0 ? (
         <div className="empty">
-          <p>레시피 상세나 위스키 상세에서 <b>이 잔 기록하기</b>를 누르면 여기에 남아요.</p>
+          <p>기록 없음</p>
           <div className="btnrow" style={{ justifyContent: 'center' }}>
             <button className="btn" onClick={() => goTab('cocktails')}>칵테일 보러 가기</button>
           </div>
@@ -44,7 +44,7 @@ export function LogList() {
       ) : (
         <>
           <SearchBox value={q} onChange={setQ} placeholder="술 이름·메모 검색" />
-          {rows.length === 0 && <div className="empty">검색 결과가 없어요.</div>}
+          {rows.length === 0 && <div className="empty">검색 결과 없음</div>}
           {rows.map((l) => (
             <LogCard key={l.id} log={l}>
               <div className="btnrow">

@@ -22,14 +22,17 @@ export function TastePage() {
 
   return (
     <>
-      <h2 className="pagetitle" data-k="Tasting Profile">취향<span className="sub">{sum.count ? `마신 기록 ${sum.count}잔` : '아직 기록이 없어요'}</span></h2>
+      <h2 className="pagetitle" data-k="Tasting Profile">취향{sum.count > 0 && <span className="sub">기록 {sum.count}잔</span>}</h2>
 
       <div className="tastecard">
         {set
-          ? <><small>내 술 취향은 이래요</small><b>{words.join(' · ')}</b></>
-          : <><small>내 술 취향</small><b>아직 정해지지 않았어요</b></>}
+          ? <><small>내 취향</small><b>{words.join(' · ')}</b></>
+          : <small>내 취향</small>}
         {!sum.enough && (
-          <p>{TASTE_MIN_LOGS}잔 이상 기록하면 취향을 계산해요. 지금 {sum.count}잔.</p>
+          <div className="tprog">
+            <span>취향 분석까지 {Math.min(sum.count, TASTE_MIN_LOGS)} / {TASTE_MIN_LOGS}잔</span>
+            <progress max={TASTE_MIN_LOGS} value={Math.min(sum.count, TASTE_MIN_LOGS)} />
+          </div>
         )}
         <div className="btnrow">
           {sum.enough && (
@@ -37,7 +40,7 @@ export function TastePage() {
               기록으로 다시 계산
             </button>
           )}
-          <button className={sum.enough ? 'btn' : 'btn primary'} onClick={() => goTab('starter')}>음료로 취향 찾기</button>
+          <button className={sum.enough ? 'btn' : 'btn primary'} onClick={() => goTab('starter')}>취향 찾기</button>
         </div>
       </div>
 
@@ -54,7 +57,7 @@ export function TastePage() {
           <div className="statline">
             <div className="cell"><b>{sum.count}</b><small>마신 잔</small></div>
             <div className="cell"><b>{sum.avg.toFixed(1)}</b><small>평균 점수</small></div>
-            <div className="cell"><b>{sum.retry}</b><small>또 마시고 싶은 잔</small></div>
+            <div className="cell"><b>{sum.retry}</b><small>재음용</small></div>
             <div className="cell"><b>{sum.kinds.cocktail}</b><small>칵테일</small></div>
             <div className="cell"><b>{sum.kinds.whisky}</b><small>위스키</small></div>
           </div>
@@ -82,7 +85,6 @@ export function TastePage() {
       <PeopleManager />
 
       <div className="sechead">설정</div>
-      <p className="hint">테마, 백업</p>
       <div className="btnrow"><button className="btn" onClick={() => goTab('settings')}>설정 열기</button></div>
     </>
   );

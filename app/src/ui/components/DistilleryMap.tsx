@@ -4,7 +4,7 @@
  * 묶음 칩을 누르면 그 묶음이 화면을 채우게 확대하고, 스코틀랜드는 지역 칩이 한 줄 더 붙는다.
  * 지역 소개(regionGuide)와 이 앱 제품의 피트 비율은 기존 싱글몰트 40곳 기준이다. 지도 라이브러리 없이 SVG 하나로 그린다.
  */
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { DISTILLERIES, mapGroupOf, productsOfDistillery } from '../../data/distilleries';
 import { regionGuideById } from '../../data/regionGuide';
 import { normalizeQuery } from '../../data/textMatch';
@@ -94,7 +94,7 @@ function placeLabels(pts: Pt[], unit: number, vb: readonly number[]): Map<string
 
 const placeOf = (d: WorldDistillery) => [d.country, scotchRegionOf(d) ?? d.region, d.place].filter(Boolean).join(' · ');
 
-export function DistilleryMapView({ onBack }: { onBack: () => void }) {
+export function DistilleryMapView({ tabs }: { tabs: ReactNode }) {
   const [view, setView] = useState<MapViewId>('세계');
   const [pickedId, setPickedId] = useState<string | null>(null);
   const [tourOnly, setTourOnly] = useState(false);
@@ -133,7 +133,8 @@ export function DistilleryMapView({ onBack }: { onBack: () => void }) {
 
   return (
     <>
-      <h2 className="pagetitle" data-k="Distillery Atlas">증류소 지도<span className="sub">{WORLD_DISTILLERIES.length}곳 · 묶음을 고르면 확대돼요</span></h2>
+      <h2 className="pagetitle" data-k="Distillery Atlas">증류소 지도</h2>
+      {tabs}
       <SearchBox value={q} onChange={setQ} placeholder="증류소 이름·나라로 찾기" />
       {found.length > 0 && (
         <div className="rowlist">
@@ -173,7 +174,7 @@ export function DistilleryMapView({ onBack }: { onBack: () => void }) {
         <span><i className="t-none" />정규 투어 없음</span><span><i className="t-unk" />확인 안 됨</span>
         <span><i className="stop" />생산 중단 등</span>
       </div>
-      <div className="hint">{view} {shown.length}곳 · 투어 운영 {tourCount}곳. 투어 정보는 2026-10-28 기준이에요.</div>
+      <div className="hint">{shown.length}곳 · 투어 {tourCount}곳 (2026.10 기준)</div>
 
       {picked && <><div className="sechead in">증류소</div><WorldDistilleryCard d={picked} /></>}
 
@@ -219,7 +220,6 @@ export function DistilleryMapView({ onBack }: { onBack: () => void }) {
         </>
       )}
 
-      <div className="btnrow"><button className="btn" onClick={onBack}>← 위스키 목록</button></div>
     </>
   );
 }

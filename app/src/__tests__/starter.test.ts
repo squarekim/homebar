@@ -8,8 +8,8 @@ import {
 import { cardsFor, examplesFor, tasteFromCards, starterRecommend } from '../services/starterService';
 
 describe('입문 취향 찾기 데이터', () => {
-  it('추천 38개는 모두 기준 DB 위스키나 레시피를 가리킨다', () => {
-    expect(STARTER_PICKS).toHaveLength(38);
+  it('추천 37개는 모두 기준 DB 위스키나 레시피를 가리킨다', () => {
+    expect(STARTER_PICKS).toHaveLength(37);
     for (const p of STARTER_PICKS) {
       if (p.kind === 'whisky') expect(liquorMasterById.get(p.id)?.category, p.id).toBe('whisky');
       else expect(referenceRepo.cocktailById(p.id), p.id).toBeDefined();

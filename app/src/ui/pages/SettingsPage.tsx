@@ -44,11 +44,7 @@ export function TasteSetup() {
   return (
     <>
       <div className="sechead">좋아하는 맛</div>
-      <p className="hint">
-        {isNeutralTaste(vector)
-          ? '아직 고르지 않았어요.'
-          : `지금 기준: ${liked.map((a) => FLAVOR_LABELS_KO[a]).join(' · ') || '세부 조정으로 설정됨'}`}
-      </p>
+      {!isNeutralTaste(vector) && !liked.length && <p className="hint">세부 조정 적용 중</p>}
       <div className="controls">
         {QUICK_AXES.map((a) => (
           <button key={a} className="chip" aria-pressed={vector[a] >= 7} onClick={() => toggleLike(a)}>
@@ -64,7 +60,7 @@ export function TasteSetup() {
 
       <div className="more">
         <button onClick={() => setAdvanced((v) => !v)} aria-expanded={advanced}>
-          {advanced ? '세부 취향 조정 접기' : '세부 취향 조정 (14축)'}
+          {advanced ? '세부 조정 접기' : '세부 조정 (14축)'}
         </button>
         {advanced && (
           <div className="inner">
@@ -91,7 +87,6 @@ export function PeopleManager() {
   return (
     <>
       <div className="sechead">함께 마시는 사람</div>
-      <p className="hint">여럿이 마실 잔을 고를 때 써요.</p>
       <div className="people">
         {others.map((p) => (
           <div className="person" key={p.id}>
@@ -102,7 +97,6 @@ export function PeopleManager() {
             <FlavorBars vector={p.vector} compact />
           </div>
         ))}
-        {others.length === 0 && <p className="hint">아직 추가한 사람이 없어요.</p>}
       </div>
       <div className="controls">
         <input type="text" placeholder="이름" value={name} onChange={(e) => setName(e.target.value)} style={{ flex: 1 }} />
@@ -159,7 +153,7 @@ function BackupRestore() {
   return (
     <>
       <div className="sechead">백업 · 복원</div>
-      <p className="hint">데이터는 이 브라우저에만 저장돼요. 파일로 옮겨 둘 수 있어요.</p>
+      <p className="hint">이 브라우저에만 저장됩니다.</p>
       <div className="btnrow">
         <button className="btn primary" onClick={doExport}>JSON 내보내기</button>
         <button className="btn" onClick={() => fileRef.current?.click()}>JSON 복원</button>
@@ -167,7 +161,7 @@ function BackupRestore() {
           onChange={(e) => { const f = e.target.files?.[0]; if (f) doImport(f); e.target.value = ''; }} />
       </div>
       <div className="sechead">버전</div>
-      <p className="hint">지금 보고 있는 화면: <b>{BUILD_STAMP}</b><br />최신이 아니라면 새로고침을 한 번 더 해 주세요.</p>
+      <p className="hint"><b>{BUILD_STAMP}</b> · 최신이 아니면 새로고침을 한 번 더 해 주세요.</p>
     </>
   );
 }
