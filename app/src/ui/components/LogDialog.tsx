@@ -44,7 +44,7 @@ export function LogDialog() {
       memo: memo.trim() || undefined,
     });
     await tasteService.recomputeMe();
-    toast('기록 저장 · 취향 갱신됨');
+    toast('기록을 저장했어요');
     closeLog();
   };
 
@@ -63,7 +63,7 @@ export function LogDialog() {
       <ChipRow value={retry ? 'y' : 'n'} options={RETRY_CHIPS} onChange={(v) => setRetry(v === 'y')} wrap />
 
       <button className="btn ghost" style={{ margin: '6px 0' }} onClick={() => setShowFlavors((v) => !v)}>
-        {showFlavors ? '향미 평가 접기' : '향미 평가 입력 (선택)'}
+        {showFlavors ? '맛 평가 접기' : '맛 평가 입력 (선택)'}
       </button>
       {showFlavors && (
         <div>

@@ -16,7 +16,7 @@ export type FlavorVector = Record<FlavorAxis, number>;
 
 export const FLAVOR_LABELS_KO: Record<FlavorAxis, string> = {
   sweet: '단맛', smoke: '스모크', peat: '피트', fruit: '과일', vanilla: '바닐라',
-  caramel: '카라멜', oak: '오크', spice: '스파이스', floral: '플로럴', herbal: '허브',
+  caramel: '캐러멜', oak: '오크', spice: '스파이스', floral: '플로럴', herbal: '허브',
   citrus: '시트러스', nutty: '견과', chocolate: '초콜릿', body: '바디',
 };
 

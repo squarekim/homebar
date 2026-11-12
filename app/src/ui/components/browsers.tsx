@@ -124,9 +124,9 @@ export function IngredientBrowser() {
     <>
       <SearchBox value={q} onChange={setQ} placeholder="재료 검색" />
       <ChipRow value={cat} options={cats} onChange={setCat}>
-        <ChipToggle label="보유만" cls="ok" on={ownedOnly} onToggle={() => setOwnedOnly((v) => !v)} />
+        <ChipToggle label="가진 것만" cls="ok" on={ownedOnly} onToggle={() => setOwnedOnly((v) => !v)} />
       </ChipRow>
-      <p className="hint">{rows.length}종 · 보유 {rows.filter((r) => heldIds.has(r.id)).length} · 숫자는 그 재료를 쓰는 레시피 수예요. 누르면 어디에 쓰이는지 볼 수 있어요.</p>
+      <p className="hint">{rows.length}종 · 가진 것 {rows.filter((r) => heldIds.has(r.id)).length} · 숫자는 그 재료를 쓰는 레시피 수예요. 누르면 어디에 쓰이는지 볼 수 있어요.</p>
       <div className="items">
         {rows.map((i) => (
           <button className={`it ${heldIds.has(i.id) ? '' : 'off'}`} key={i.id}

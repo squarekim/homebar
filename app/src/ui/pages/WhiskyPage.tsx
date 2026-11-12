@@ -91,7 +91,7 @@ function PersonalNote({ bottleId, initial, onSaved }: { bottleId: string; initia
   const dirty = text !== initial;
   return (
     <>
-      <textarea rows={3} value={text} placeholder="마셔본 느낌을 적어 두세요" onChange={(e) => setText(e.target.value)} />
+      <textarea rows={3} value={text} placeholder="마셔 본 느낌을 적어 두세요" onChange={(e) => setText(e.target.value)} />
       <div className="btnrow">
         <button className="btn sm" disabled={!dirty} onClick={async () => { await bottleNoteRepo.set(bottleId, text); onSaved(); }}>내 메모 저장</button>
       </div>
@@ -118,7 +118,7 @@ function WhiskyDetail({ bottle: w, owned }: { bottle: Bottle; owned?: Bottle | u
         {w.abv && <span className="mi">{w.abv}</span>}
         {w.volumeMl ? <span className="mi">{w.volumeMl}ml</span> : null}
         <span className="mi">{spec ? specTitle(spec) : bottleKindLabel(w)}</span>
-        {w.qty > 1 && <span className="mi">{w.qty}병 보유</span>}
+        {w.qty > 1 && <span className="mi">{w.qty}병 있어요</span>}
       </div>
       <BottleBadges badges={w.badges} />
 
@@ -165,14 +165,14 @@ function WhiskyDetail({ bottle: w, owned }: { bottle: Bottle; owned?: Bottle | u
 
       <div className="more">
         <button onClick={() => setMore((v) => !v)} aria-expanded={more}>
-          {more ? '증류소 · 분류 · 향미 수치 접기' : '증류소 · 생산 지역 · 캐스크 · 분류 · 향미 수치 보기'}
+          {more ? '증류소 · 분류 · 맛 수치 접기' : '증류소 · 생산 지역 · 캐스크 · 분류 · 맛 수치 보기'}
         </button>
         {more && (
           <div className="inner">
             {distillery && <><div className="sechead in">증류소</div><DistilleryCard d={distillery} /></>}
             {spec && <><div className="sechead in">분류</div><SpecView s={spec} /></>}
             {w.note && <p className="hint">{w.note}</p>}
-            <div className="sechead in">향미 프로파일</div>
+            <div className="sechead in">맛 수치</div>
             <FlavorBars vector={w.flavor} compact />
           </div>
         )}
@@ -210,7 +210,7 @@ export function WhiskyPage() {
 
   return (
     <>
-      <h2 className="pagetitle">위스키<span className="sub">{browsing ? `둘러보기 ${CATALOG.length}종 · 사기 전에 맛과 공식 노트를 볼 수 있어요` : `보유 ${whiskies.length}종 · 맛과 공식 노트를 볼 수 있어요`}</span></h2>
+      <h2 className="pagetitle">위스키<span className="sub">{browsing ? `둘러보기 ${CATALOG.length}종 · 사기 전에 맛과 공식 노트를 볼 수 있어요` : `가진 위스키 ${whiskies.length}종 · 맛과 공식 노트를 볼 수 있어요`}</span></h2>
       <GuideHint tab="whisky" />
       <ChipRow value={view} options={VIEWS} onChange={setView} />
       <SearchBox value={q} onChange={setQ} placeholder="이름·분류(셰리/피트/싱글몰트…) 검색" />
@@ -304,7 +304,7 @@ function GapView({ onBack }: { onBack: () => void }) {
       </div>
       <p className="hint">숙성 칸은 병 이름에 적힌 연수로 나눠요. 엔트리는 11년 이하, 스탠다드는 12~17년, 고숙성은 18년 이상이에요. 연수 표시가 없는 병은 빠져요.</p>
 
-      <div className="sechead">분류별 보유</div>
+      <div className="sechead">분류별로 가진 위스키</div>
       {coverage.map((fam) => (
         <div className="grpbox" key={fam.key}>
           <h4>{fam.label} · 빈 칸 {fam.gapCount}</h4>

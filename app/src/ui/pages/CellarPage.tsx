@@ -22,7 +22,7 @@ import { type Bottle } from '../../models/types';
 import { LogList } from './NotesPage';
 import { GarnishStockBox } from '../components/GarnishStockBox';
 
-const SUBS: ChipOption<CellarSub>[] = [{ v: 'bottles', label: '보유 술' }, { v: 'stock', label: '재료 재고' }, { v: 'logs', label: '마신 기록' }];
+const SUBS: ChipOption<CellarSub>[] = [{ v: 'bottles', label: '가진 술' }, { v: 'stock', label: '재료 재고' }, { v: 'logs', label: '마신 기록' }];
 
 export function CellarPage() {
   const { cellarSub: sub, setCellarSub: setSub } = useUI();
@@ -181,8 +181,8 @@ function StockManager() {
       ) : (
         <div className="btnrow">
           <button className="btn sm" onClick={() => setConfirmReset(true)}>재료 체크 모두 끄기</button>
-          <button className="btn sm" onClick={async () => { await resetInventoryToSeed(); notifyExample(); toast(IS_PUBLIC ? '예시로 기본 홈바 세트를 켰어요' : '기본 컬렉션으로 되돌렸어요'); }}>
-            {IS_PUBLIC ? '예시: 기본 홈바 세트' : '기본 컬렉션'}
+          <button className="btn sm" onClick={async () => { await resetInventoryToSeed(); notifyExample(); toast(IS_PUBLIC ? '예시 재고를 켰어요' : '기본 컬렉션으로 되돌렸어요'); }}>
+            {IS_PUBLIC ? '예시 재고 켜기' : '기본 컬렉션'}
           </button>
           <button className="btn sm" onClick={async () => { await inventoryRepo.setAll(true, allIngredients.map((i) => ({ id: i.id, name: i.name }))); toast('모두 켰어요'); }}>모두 켜기</button>
         </div>

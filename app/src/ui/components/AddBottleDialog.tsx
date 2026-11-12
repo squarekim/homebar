@@ -230,7 +230,7 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
             <>
               <div className="sechead in">이름</div>
               <input type="text" value={name} placeholder="예: 라가불린 16년" onChange={(e) => setName(e.target.value)} />
-              <div className="sechead in">종류 <small className="sub">이름에서 자동 추정됨</small></div>
+              <div className="sechead in">종류 <small className="sub">이름을 보고 골랐어요</small></div>
               <ChipRow value={category} options={CATEGORY_CHIPS} onChange={pickCategory} wrap tight />
             </>
           )}

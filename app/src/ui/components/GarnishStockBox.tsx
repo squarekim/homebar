@@ -26,7 +26,7 @@ export function GarnishStockBox({ own }: { own: 'all' | 'owned' | 'missing' }) {
     <div className="grpbox garnishbox">
       <h4>가니시 <small>{rows.filter((r) => held.has(r.id)).length}/{rows.length}</small></h4>
       <p className="hint">
-        가니시가 있든 없든 음료를 만드는 데는 문제가 없어요. 중요한 손님이 온다면 올리는 편이 더 먹음직스러워요.
+        가니시가 없어도 음료는 만들 수 있어요. 손님에게 낼 때는 올리면 보기 좋아요.
         체크해 두면 레시피에 <b>가니시까지 있어요</b>가 붙어요. 만들 수 있는 잔 수는 바뀌지 않아요.
       </p>
       <p className="hint">

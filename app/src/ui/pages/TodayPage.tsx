@@ -1,6 +1,6 @@
 /**
  * TodayPage — '메인'. 오늘의 잔과 입문을 한 화면에 둔다.
- * 샘플 안내 → 오늘의 잔 뽑기 → 고른 잔 → 처음이라면(입문) → 다르게 골라보기 → 최근 기록 순서다.
+ * 샘플 안내 → 오늘의 잔 뽑기 → 고른 잔 → 처음이라면(입문) → 다르게 골라 보기 → 최근 기록 순서다.
  * 첫 화면이 답해야 할 것은 넷뿐이다: 무엇을 마실까 · 무슨 맛인가 · 지금 만들 수 있나 · 뭘 누르면 되나.
  * 뽑기 후보는 지금 만들 수 있는 잔뿐이다(칩으로 좁혀도 같다). 점수는 여기서 말하지 않는다.
  */
@@ -75,7 +75,7 @@ function OtherWays() {
   return (
     <div className="more">
       <button onClick={() => setWay(way ? null : 'group')} aria-expanded={!!way}>
-        {way ? '다르게 골라보기 접기' : '다르게 골라보기'}
+        {way ? '다르게 골라 보기 접기' : '다르게 골라 보기'}
       </button>
       {way && (
         <div className="inner">
@@ -152,7 +152,7 @@ export function TodayPage() {
     <>
       {IS_BETA && (
         <div className="sample">
-          <span><b>샘플 술장</b>으로 둘러보는 중이에요. 바꾼 내용은 이 브라우저에만 저장돼요.</span>
+          <span><b>예시 재고</b>로 둘러보는 중이에요. 바꾼 내용은 이 브라우저에만 저장돼요.</span>
           <button className="btn sm" onClick={() => goTab('cellar')}>술장 채우기</button>
         </div>
       )}
@@ -173,7 +173,7 @@ export function TodayPage() {
                 <p className="taste">{taste(picked)}</p>
                 <p className="why">
                   {ctx.hasTaste && picked.flavorWords[0]
-                    ? `취향에서 높은 ${asTaste(picked.flavorWords[0])}${wa(asTaste(picked.flavorWords[0]))} 가까워요`
+                    ? `좋아하는 ${asTaste(picked.flavorWords[0])}에 가까워요`
                     : picked.kind === 'whisky' ? '가지고 있는 병이에요' : '지금 술장으로 만들 수 있어요'}
                 </p>
                 {state(picked) && <div className={`state s-${state(picked)!.cls}`}>{state(picked)!.text}</div>}

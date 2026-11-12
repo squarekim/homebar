@@ -49,7 +49,7 @@ export function cocktailWords(ck: Cocktail, n = 2): string[] {
 
 const NOTE_WORD: Record<FlavorKey, string> = {
   vanilla: '바닐라', honey: '꿀', apple: '사과', dried: '말린 과일', citrus: '시트러스', chocolate: '초콜릿', nut: '견과', flower: '꽃',
-  spice: '스파이스', sea: '바다', caramel: '카라멜', tropical: '열대 과일', berry: '베리', coffee: '커피', grain: '곡물', herb: '허브', peat: '피트',
+  spice: '스파이스', sea: '바다', caramel: '캐러멜', tropical: '열대 과일', berry: '베리', coffee: '커피', grain: '곡물', herb: '허브', peat: '피트',
 };
 
 /** 위스키 — 공식 노트에 먼저 적힌 맛. 노트가 없으면 향미 값이 큰 축 */

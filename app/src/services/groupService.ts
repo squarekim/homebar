@@ -15,12 +15,12 @@ export interface GroupContext extends StockContext {
 function groupReason(flavor: FlavorVector, penalty: number): string {
   const parts: string[] = [];
   const t = topAxes(flavor, 2);
-  if (t.length) parts.push(`${t.map((a) => FLAVOR_LABELS_KO[a]).join('·')} 프로파일`);
+  if (t.length) parts.push(`주로 나는 맛: ${t.map((a) => FLAVOR_LABELS_KO[a]).join('·')}`);
   if (penalty > 0) {
     // 어떤 축에서 누가 기피하는지 요약
-    parts.push(`일부 취향 상충으로 감점 -${penalty}`);
+    parts.push('싫어하는 맛이 겹치는 사람이 있어요');
   } else {
-    parts.push('전원 무난');
+    parts.push('모두 무난해요');
   }
   return parts.join(' · ');
 }

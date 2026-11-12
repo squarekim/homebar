@@ -146,11 +146,11 @@ function DrinkingGuide() {
       <button onClick={() => setOpen(!open)} aria-expanded={open}>건강한 음주 안내</button>
       {open && (
         <div className="inner guide">
-          <p>마셨다면 운전하지 않아요. 도로교통법상 혈중알코올농도 0.03% 이상이면 운전할 수 없어요.
+          <p>마셨다면 운전하지 마세요. 도로교통법상 혈중알코올농도 0.03% 이상이면 운전할 수 없어요.
             <a href="https://m.easylaw.go.kr/MOB/CsmInfoRetrieve.laf?ccfNo=1&cciNo=1&cnpClsNo=2&csmSeq=684" target="_blank" rel="noreferrer">찾기쉬운 생활법령정보</a></p>
-          <p>임신 중이거나 임신을 계획하고 있다면 마시지 않아요.
+          <p>임신 중이거나 임신을 계획하고 있다면 마시지 마세요.
             <a href="https://cancer.go.kr/download.do?uuid=d0b02241-3714-416c-b5bc-9979f8f74607.pdf" target="_blank" rel="noreferrer">국가암정보센터</a></p>
-          <p>약을 먹는 중이라면 설명서의 음주 관련 주의를 확인해요.
+          <p>약을 먹는 중이라면 설명서의 음주 관련 주의를 확인하세요.
             <a href="https://nedrug.mfds.go.kr/" target="_blank" rel="noreferrer">의약품안전나라</a></p>
           <p>국립암센터는 암 예방을 위해 하루 한두 잔의 소량 음주도 피하라고 안내해요.
             <a href="https://www.ncc.re.kr/main.ncc?uri=manage01_3" target="_blank" rel="noreferrer">국립암센터</a></p>
@@ -177,9 +177,9 @@ function BackupRestore() {
   const doImport = async (file: File) => {
     try {
       await backupService.importJson(await file.text(), 'replace');
-      toast('복원 완료');
+      toast('백업을 불러왔어요');
     } catch (e) {
-      toast('복원 실패: ' + (e as Error).message);
+      toast('백업을 불러오지 못했어요: ' + (e as Error).message);
     }
   };
 
@@ -194,7 +194,7 @@ function BackupRestore() {
           onChange={(e) => { const f = e.target.files?.[0]; if (f) doImport(f); e.target.value = ''; }} />
       </div>
       <div className="sechead">버전</div>
-      <p className="hint">지금 보고 있는 화면: <b>{BUILD_STAMP}</b><br />최신이 아니라면 새로고침을 한 번 더 해주세요.</p>
+      <p className="hint">지금 보고 있는 화면: <b>{BUILD_STAMP}</b><br />최신이 아니라면 새로고침을 한 번 더 해 주세요.</p>
     </>
   );
 }

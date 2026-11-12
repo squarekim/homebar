@@ -135,7 +135,7 @@ export const SIMPLE_ALIASES: Record<string, string[]> = {
   '테킬라 오렌지': ['tequila orange'],
   '아마레토 콕': ['amaretto coke'],
   '엘더플라워 소다': ['elderflower soda'],
-  '스크루드라이버': ['보드카 오렌지'],
+  '스크류드라이버': ['보드카 오렌지'],
 };
 
 /** 재료 이름 → 다른 이름 */

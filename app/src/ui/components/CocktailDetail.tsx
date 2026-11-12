@@ -43,9 +43,9 @@ function WhyPicked({ rec }: { rec: RecommendationResult }) {
       <div className="subscores">
         <span className="ss">총점 <b>{rec.score}</b></span>
         <span className="ss">취향 <b>{rec.tasteScore}</b></span>
-        <span className="ss">가용 <b>{rec.availabilityScore}</b></span>
+        <span className="ss">만들기 <b>{rec.availabilityScore}</b></span>
         <span className="ss">재고 <b>{rec.inventoryScore}</b></span>
-        <span className="ss">신선 <b>{rec.noveltyScore}</b></span>
+        <span className="ss">새로움 <b>{rec.noveltyScore}</b></span>
       </div>
     </>
   );
@@ -161,7 +161,7 @@ export function CocktailDetail({ id }: { id: string }) {
         </div>
       )}
       <div className="guidelinks">
-        <button onClick={() => openGuide('methods')}>만드는 방법</button>
+        <button onClick={() => openGuide('methods')}>만드는 법</button>
         <button onClick={() => openGuide('units')}>단위 읽는 법</button>
         <button onClick={() => openGuide('garnish')}>가니시 준비</button>
         <button onClick={() => openGuide('glasses')}>잔</button>
@@ -179,13 +179,13 @@ export function CocktailDetail({ id }: { id: string }) {
       {/* ⑦ 펼쳐보는 수치·분류·출처 */}
       <div className="more">
         <button onClick={() => setMore((v) => !v)} aria-expanded={more}>
-          {more ? '향미 수치 · 분류 · 출처 접기' : '향미 수치 · 분류 · 출처 보기'}
+          {more ? '맛 수치 · 분류 · 출처 접기' : '맛 수치 · 분류 · 출처 보기'}
         </button>
         {more && (
           <div className="inner">
             {rec && <WhyPicked rec={rec} />}
             {ck.note && <><div className="sechead in">메모</div><p className="hint">{ck.note}</p></>}
-            <div className="sechead in">향미 프로파일</div>
+            <div className="sechead in">맛 수치</div>
             <FlavorBars vector={ck.flavor} compact />
             <div className="sechead in">분류</div>
             <div className="clstags">

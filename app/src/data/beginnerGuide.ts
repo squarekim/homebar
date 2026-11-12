@@ -111,7 +111,7 @@ export const GUIDE_CHAPTERS: readonly GuideChapter[] = [
     ],
   },
   {
-    id: 'methods', group: 'cocktail', title: '만드는 방법 9가지',
+    id: 'methods', group: 'cocktail', title: '만드는 법 9가지',
     intro: '레시피의 "만드는 법"에 적힌 말이 무엇을 하라는 뜻인지, 순서대로 알려 드려요.',
     cards: [
       { title: '빌드: 잔에 바로 붓기', body: ['1. 마실 잔에 얼음을 가득 채워요.', '2. 재료를 잔에 바로 부어요.', '3. 가볍게 저어요.', '쿠바 리브레와 존 콜린스가 이렇게 만들어요.'], sources: [I_CUBA, I_COLLINS, D_ICE] },
@@ -173,7 +173,7 @@ export const GUIDE_CHAPTERS: readonly GuideChapter[] = [
       { title: '체리, 올리브, 칵테일 어니언', body: ['병에서 꺼내 픽에 꽂아 잔에 걸치거나 잔에 넣어요.'], sources: [iba('Manhattan', 'manhattan'), I_MARTINI] },
       { title: '넛맥', body: ['통 넛맥(육두구)을 강판에 갈아 완성한 음료 위에 뿌려요.'], sources: [iba('Alexander', 'alexander')] },
       { title: '가니시가 없을 때', body: [
-        '가니시가 있든 없든 음료를 만드는 데는 문제가 없어요. 중요한 손님이 온다면 올리는 편이 더 먹음직스러워요.',
+        '가니시가 없어도 음료는 만들 수 있어요. 손님에게 낼 때는 올리면 보기 좋아요.',
         '생과일을 늘 두기 어렵다면 말린 레몬·라임·오렌지 칩으로 슬라이스를 대신할 수 있어요. 말린 칩은 보기 좋게 해 주지만 향이나 오일은 더하지 않아요.',
         '사제락, 베스퍼, 불바디에처럼 레시피에 제스트나 필이 적힌 잔은 껍질을 비틀어 오일로 향을 입혀요. 이런 잔에는 생과일 껍질이 있어야 해요.',
         '자른 껍질은 하루 남짓만 가요. 미리 잘라 둘 때는 냉장고에 넣어요.',
@@ -187,9 +187,9 @@ export const GUIDE_CHAPTERS: readonly GuideChapter[] = [
     cards: [
       { title: '진한 시럽 (설탕 2 : 물 1)', body: ['1. 냄비에 물 1컵을 넣고 설탕 2컵을 넣어요. 컵으로 재는 부피 기준이에요.', '2. 약한 불에서 설탕이 다 녹을 때까지 저어요.', '3. 식힌 뒤 깨끗한 병에 담아 냉장고에 넣어요.', '냉장하면 6개월 동안 쓸 수 있어요.'], sources: [D_SYRUP] },
       { title: '기본 시럽 (설탕 1 : 물 1)', body: ['설탕과 물을 같은 부피로 넣고 설탕이 다 녹을 때까지 저어요.', '레시피에 적힌 "설탕시럽"이 어느 쪽인지 정해져 있지 않으면 이 비율로 만들어요. 진한 시럽은 더 달아서 양을 줄여 써요.'], sources: [D_SYRUP] },
-      { title: '허니 시럽 (꿀 3 : 물 1)', body: ['꿀은 그대로 넣으면 잘 섞이지 않아서 물에 풀어 써요.', '1. 꿀을 담고, 꿀 무게의 3분의 1만큼 물을 넣어요.', '2. 따뜻한 물에 그릇째 담가 저어요. 40°C를 넘기지 않아요.', '3. 냉장고에 넣어요.', '며칠 안에 쓸 만큼만 만들어요.'], sources: [D('Honey & honey syrup', 'g/1109/honey-and-honey-syrup'), iba("Bee's Knees", 'bees-knees')] },
-      { title: '그레나딘 (석류 시럽)', body: ['1. 냄비에 석류 주스 1컵을 넣고 설탕 2컵을 조금씩 넣으며 저어요.', '2. 끓지 않게 약한 불에서 설탕이 녹을 때까지 데워요.', '3. 식힌 뒤 걸러서 병에 담아 냉장고에 넣어요.', '냉장해도 1주일쯤 가요. 쓴 석류 주스의 기한도 확인해요.'], sources: [D('Pomegranate / Grenadine syrup', 'encyclopedia/29/cocktails/pomegranate-grenadine-syrup')] },
-      { title: '레몬즙, 라임즙', body: ['과일을 흐르는 물에 씻은 뒤 반으로 잘라 짜요.', "America's Test Kitchen의 시음에서는 짜서 냉장고에 4시간 둔 즙을 넣은 잔을 더 좋아했어요. 6시간이 넘으면 쓴맛이 강해졌어요.", '그래서 마시기 직전에 짜도 되고, 몇 시간 전에 짜서 냉장고에 넣어 둬도 돼요. 6시간을 넘기지는 않아요.'], sources: [{ label: "America's Test Kitchen, When Fresh-Squeezed Isn't Best", url: 'https://www.americastestkitchen.com/how_tos/6429-when-fresh-squeezed-isnt-best' }, { label: '미국 FDA, Juice Safety', url: 'https://www.fda.gov/food/buy-store-serve-safe-food/what-you-need-know-about-juice-safety' }] },
+      { title: '허니 시럽 (꿀 3 : 물 1)', body: ['꿀은 그대로 넣으면 잘 섞이지 않아서 물에 풀어 써요.', '1. 꿀을 담고, 꿀 무게의 3분의 1만큼 물을 넣어요.', '2. 따뜻한 물에 그릇째 담가 저어요. 40°C를 넘기지 마세요.', '3. 냉장고에 넣어요.', '며칠 안에 쓸 만큼만 만들어요.'], sources: [D('Honey & honey syrup', 'g/1109/honey-and-honey-syrup'), iba("Bee's Knees", 'bees-knees')] },
+      { title: '그레나딘 (석류 시럽)', body: ['1. 냄비에 석류 주스 1컵을 넣고 설탕 2컵을 조금씩 넣으며 저어요.', '2. 끓지 않게 약한 불에서 설탕이 녹을 때까지 데워요.', '3. 식힌 뒤 걸러서 병에 담아 냉장고에 넣어요.', '냉장해도 1주일쯤 가요. 쓴 석류 주스의 기한도 확인하세요.'], sources: [D('Pomegranate / Grenadine syrup', 'encyclopedia/29/cocktails/pomegranate-grenadine-syrup')] },
+      { title: '레몬즙, 라임즙', body: ['과일을 흐르는 물에 씻은 뒤 반으로 잘라 짜요.', "America's Test Kitchen의 시음에서는 짜서 냉장고에 4시간 둔 즙을 넣은 잔을 더 좋아했어요. 6시간이 넘으면 쓴맛이 강해졌어요.", '그래서 마시기 직전에 짜도 되고, 몇 시간 전에 짜서 냉장고에 넣어 둬도 돼요. 6시간은 넘기지 마세요.'], sources: [{ label: "America's Test Kitchen, When Fresh-Squeezed Isn't Best", url: 'https://www.americastestkitchen.com/how_tos/6429-when-fresh-squeezed-isnt-best' }, { label: '미국 FDA, Juice Safety', url: 'https://www.fda.gov/food/buy-store-serve-safe-food/what-you-need-know-about-juice-safety' }] },
     ],
   },
   {
@@ -197,7 +197,7 @@ export const GUIDE_CHAPTERS: readonly GuideChapter[] = [
     intro: '위스키 사워처럼 계란 흰자로 거품을 내는 잔이 있어요. 익히지 않고 쓰기 때문에 알아 둘 것이 있어요.',
     cards: [
       { title: '살균한 제품을 써요', body: ['익히지 않고 먹는 음식에는 살균 처리한 달걀이나 살균 난백 제품을 쓰라고 미국 FDA가 안내해요.', '한 잔에는 살균 난백 15ml면 충분해요.'], sources: [FDA_EGG, D_EGG] },
-      { title: '피해야 하는 사람', body: ['어린이, 고령자, 임신부, 면역력이 약한 사람은 살모넬라에 감염되면 더 심하게 앓을 수 있어요.', '이런 경우에는 날계란이 든 잔을 피해요.'], sources: [FDA_EGG] },
+      { title: '피해야 하는 사람', body: ['어린이, 고령자, 임신부, 면역력이 약한 사람은 살모넬라에 감염되면 더 심하게 앓을 수 있어요.', '이런 경우에는 날계란이 든 잔을 피하세요.'], sources: [FDA_EGG] },
       { title: '술이 균을 죽이지는 않아요', body: ['칵테일에 들어가는 술의 도수로는 살모넬라를 죽이지 못해요.'], sources: [D_EGG] },
       { title: '달걀을 만진 뒤', body: ['식품의약품안전처는 달걀을 살 때부터 조리할 때까지 단계마다 위생 수칙을 지키라고 안내해요.'], sources: [MFDS_EGG] },
       { title: '흰자는 빼도 돼요', body: ['국제바텐더협회(IBA) 위스키 사워는 계란 흰자를 "선택"으로 적어요. 넣지 않아도 위스키 사워예요.'], sources: [I_SOUR] },

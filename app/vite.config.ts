@@ -32,9 +32,9 @@ export default defineConfig(({ mode }) => {
         registerType: 'autoUpdate',
         includeAssets: ['favicon.svg'],
         manifest: {
-          name: '홈바 플랫폼',
+          name: '홈바',
           short_name: '홈바',
-          description: '내 취향·재고 기반 위스키/칵테일 홈바 플랫폼',
+          description: '가진 술로 만들 수 있는 칵테일과 취향에 맞는 위스키를 찾아요',
           theme_color: '#1B2427',
           background_color: '#1B2427',
           display: 'standalone',

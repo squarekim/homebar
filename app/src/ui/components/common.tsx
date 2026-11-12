@@ -159,7 +159,7 @@ export function MethodIcon({ keys, raw }: { keys: MethodKey[]; raw?: string }) {
   if (!keys.length) return null;
   const label = raw || keys.map((k) => METHOD_LABELS_KO[k]).join(' + ');
   return (
-    <span className="methods" title={label} aria-label={`조주법 ${label}`}>
+    <span className="methods" title={label} aria-label={`만드는 법 ${label}`}>
       {keys.slice(0, 2).map((k) => {
         const Ic = METHOD_ICONS[k];
         return <span className="mic" key={k}><Ic /></span>;
@@ -211,7 +211,7 @@ export function RecList({ recs, onPick, empty }: {
             <span className="nm">{r.name}</span>
             <div className="taste">{r.flavorWords.join(' · ')}{r.base ? ` · ${r.base}` : ''}</div>
             <div className="foot">
-              {r.status ? <StateLine status={r.status} /> : <span className="mi">보유 중인 병</span>}
+              {r.status ? <StateLine status={r.status} /> : <span className="mi">가진 술</span>}
             </div>
           </div>
         </button>
@@ -344,8 +344,8 @@ export function StarterNotice() {
   return (
     <div className="notice" role="note">
       <p>
-        지금은 <b>예시로 기본 홈바 세트 {STARTER_INVENTORY.length}가지</b>를 가진 것으로 해 두었어요.
-        "만들 수 있는 잔"은 이 예시 기준이에요.
+        지금은 <b>예시 재고 {STARTER_INVENTORY.length}가지</b>를 가진 것으로 해 두었어요.
+        "만들 수 있는 잔"은 이 예시로 계산한 값이에요.
       </p>
       <StarterSetList />
       <div className="btnrow">
@@ -362,12 +362,12 @@ export function notifyExample(): void { window.dispatchEvent(new Event(EXAMPLE_E
 
 /**
  * 기본 홈바 세트가 무엇인지 — 칵테일을 막 시작한 집에 있을 법한 술과 재료.
- * 특정 사람의 술장이 아니라 예시이고, 이걸로 레시피 210종 가운데 몇 잔이 열리는지 보여 주려고 둔다.
+ * 특정 사람의 술장이 아니라 예시이고, 이걸로 레시피 209종 가운데 몇 잔이 열리는지 보여 주려고 둔다.
  */
 export function StarterSetList() {
   return (
     <details className="starterset">
-      <summary>기본 홈바 세트가 뭔가요?</summary>
+      <summary>예시 재고에 뭐가 들어 있나요?</summary>
       <p className="hint">칵테일을 막 시작한 집에 있을 법한 것만 담았어요. 술 세 병, 리큐르 한 병, 마트에서 사는 주스와 탄산까지 모두 {STARTER_INVENTORY.length}가지예요.
         실제로 가진 것이 아니고, 이 정도만 있어도 어떤 잔을 만들 수 있는지 미리 보여 드리려고 둔 예시예요.</p>
       <dl>
