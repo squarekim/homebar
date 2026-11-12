@@ -72,19 +72,14 @@ export function UIProvider({ children }: { children: ReactNode }) {
     const h = window.location.hash.slice(1);
     return (TABS_ALL as readonly string[]).includes(h) ? (h as Tab) : 'today';
   });
+  // 브라우저 기록이 움직인 뒤(뒤로 가기·앱이 되돌린 기록)에는 그 기록의 주소가 예전 화면(#whisky 등)일 수 있다.
+  // 기록이 움직일 때마다 urlTick 을 올려, 지금 보고 있는 화면 기준으로 주소를 다시 적는다.
+  // 주소만 보고 화면을 바꾸지는 않는다 — 기록을 되돌릴 때 예전 주소를 따라 엉뚱한 화면으로 가는 버그가 있었다.
+  const [urlTick, setUrlTick] = useState(0);
   useEffect(() => {
     const url = tab === 'today' ? window.location.pathname + window.location.search : `#${tab}`;
     window.history.replaceState(window.history.state, '', url);
-  }, [tab]);
-  // 주소창에서 #whisky 처럼 직접 바꿨을 때도 그 화면으로 간다
-  useEffect(() => {
-    const onHash = () => {
-      const h = window.location.hash.slice(1);
-      if ((TABS_ALL as readonly string[]).includes(h)) { setTab(h as Tab); setTabTick((n) => n + 1); }
-    };
-    window.addEventListener('hashchange', onHash);
-    return () => window.removeEventListener('hashchange', onHash);
-  }, []);
+  }, [tab, urlTick]);
   const [cellarSub, setCellarSub] = useState<CellarSub>('bottles');
   const [cocktailId, setCocktailId] = useState<string | null>(null);
   const [lastRec, setLastRec] = useState<RecommendationResult | null>(null);
@@ -150,6 +145,7 @@ export function UIProvider({ children }: { children: ReactNode }) {
   }, [depth]);
   useEffect(() => {
     const onPop = () => {
+      setUrlTick((n) => n + 1);
       if (skip.current > 0) { skip.current -= 1; return; }
       if (pushed.current > 0) { pushed.current -= 1; closeTop.current(); }
     };
