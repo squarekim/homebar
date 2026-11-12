@@ -18,7 +18,7 @@ import { referenceRepo } from '../../repositories/referenceRepo';
 import { TodayReel } from '../components/TodayReel';
 import { MODES, GroupRec, PurchaseRec, ClearStockRec } from './RecommendPage';
 import { type RecommendationResult } from '../../models/types';
-import { IS_BETA } from '../../config';
+import { IS_BETA, IS_PUBLIC } from '../../config';
 
 /**
  * 평소와 다를 때만 상태를 적는다.
@@ -48,6 +48,17 @@ function reelPool(all: RecommendationResult[], mode: RecommendMode): Recommendat
   const ok = all.filter((r) => r.kind === 'whisky' || r.status === 'READY' || r.status === 'SUBSTITUTE');
   // '위스키' 칩을 골랐을 때는 일부러 한 종류만 보는 것이라 섞지 않는다
   return mode === 'whisky' ? ok.slice(0, POOL) : diversePool(ok, POOL);
+}
+
+/** 화면 위 한 줄 — 칵테일 목록·술장과 같은 숫자(바로 가능 / 대체 재료)로 적고, 카드에 담은 수는 따로 밝힌다 */
+function subline(p: { ready: number; sub: number; whisky: number }, inHand: number): string {
+  const parts = [
+    p.ready ? `바로 만들 수 있는 칵테일 ${p.ready}잔` : '',
+    p.sub ? `대체 재료로 ${p.sub}잔` : '',
+    p.whisky ? `가진 위스키 ${p.whisky}병` : '',
+  ].filter(Boolean);
+  const total = p.ready + p.sub + p.whisky;
+  return `${parts.join(' · ')}${total > inHand ? ` 가운데 ${inHand}개를 카드에 담았어요` : ''}`;
 }
 
 /** 한 잔 고르기의 종류 필터 */
@@ -108,6 +119,18 @@ export function TodayPage() {
     if (base !== 'all') all = all.filter((r) => r.base === base);
     return reelPool(all, mode);
   }, [ctx, mode, kind, base]);
+  // 카드에 담는 후보는 12잔까지라, 화면 위 숫자는 자르기 전의 전체를 센다(칵테일 목록·술장과 같은 기준)
+  const pool = useMemo(() => {
+    const all = kind === 'whisky' ? whatToDrink(ctx, 'whisky', 200) : whatToDrink(ctx, mode, 400)
+      .filter((r) => (kind === 'all' && base === 'all') || r.kind === 'cocktail')
+      .filter((r) => base === 'all' || r.base === base);
+    return {
+      ready: all.filter((r) => r.kind === 'cocktail' && r.status === 'READY').length,
+      sub: all.filter((r) => r.kind === 'cocktail' && r.status === 'SUBSTITUTE').length,
+      // 섞어 볼 때 위스키는 추천에서 4병만 섞이므로, 가진 위스키 수는 따로 센다
+      whisky: kind === 'cocktail' || base !== 'all' ? 0 : whatToDrink(ctx, 'whisky', 200).length,
+    };
+  }, [ctx, mode, kind, base]);
   // 종류 칩만 바깥에 두고, 맛과 베이스 술은 칵테일 목록처럼 "필터" 안에 모은다
   const tasteOn = mode !== 'available';
   const baseOn = base !== 'all';
@@ -160,7 +183,7 @@ export function TodayPage() {
       <section className={picks.length ? 'today' : 'today none'}>
         <h2 className="ask">오늘 뭐 마실까요?</h2>
         <p className="asksub">
-          {picks.length ? `${kind === 'whisky' ? '가진 위스키' : '지금 술장으로 만들 수 있는'} ${picks.length}잔 중에서 골라요` : '고를 수 있는 잔이 아직 없어요'}
+          {picks.length ? subline(pool, picks.length) : '고를 수 있는 잔이 아직 없어요'}
         </p>
 
         {picks.length > 0 ? (
@@ -181,10 +204,11 @@ export function TodayPage() {
                   return ck && garnishState(ck, heldIds) === 'all' ? <GarnishBadge /> : null;
                 })()}
                 <div className="pickbtns">
-                  <button className="btn primary big" onClick={() => made(picked)}>
+                  {/* 칵테일은 고른 다음 할 일이 '만들기'라 레시피가 먼저다. 위스키는 따르기만 하면 되니 기록이 먼저다 */}
+                  {picked.kind === 'cocktail' && <button className="btn primary big" onClick={() => open(picked)}>레시피 보기</button>}
+                  <button className={picked.kind === 'cocktail' ? 'btn ghost big' : 'btn primary big'} onClick={() => made(picked)}>
                     {picked.kind === 'cocktail' ? '만든 잔 남기기' : '마신 잔 남기기'}
                   </button>
-                  {picked.kind === 'cocktail' && <button className="btn ghost big" onClick={() => open(picked)}>레시피 보기</button>}
                   <button className="btn ghost big" onClick={again}>다시 고르기</button>
                 </div>
               </div>
@@ -199,7 +223,7 @@ export function TodayPage() {
               : baseOn
                 ? <>이 베이스 술로 지금 만들 수 있는 잔이 없어요. 필터를 바꿔 보세요.</>
               : mode === 'available'
-                ? <>아직 넣은 술과 재료로는 만들 수 있는 잔이 없어요. 가진 것을 넣으면 여기서 골라 드려요.</>
+                ? <>집에 있는 술을 넣으면 지금 만들 수 있는 잔을 골라 드려요.{IS_PUBLIC ? ' 먼저 둘러보고 싶다면 예시 재고로 시작해 보세요.' : ''}</>
                 : <>이 맛으로 지금 만들 수 있는 잔이 없어요. 다른 칩을 골라 보세요.</>}
             {(kind === 'whisky' || (mode === 'available' && !baseOn)) && <StartButtons />}
           </div>
@@ -215,10 +239,13 @@ export function TodayPage() {
           <b>{ctx.hasTaste ? '취향 다시 찾기' : '취향 찾기'}</b>
           <span>평소 마시는 음료를 고르면 맞는 위스키와 칵테일을 골라 드려요</span>
         </button>
-        <button onClick={() => goTab('cellar')}>
-          <b>집에 있는 술 넣기</b>
-          <span>가진 술과 재료를 넣으면 지금 만들 수 있는 잔이 나와요</span>
-        </button>
+        {/* 잔이 없을 때는 위 빈 안내에 같은 버튼이 있다 — 두 번 보이지 않게 뺀다 */}
+        {picks.length > 0 && (
+          <button onClick={() => goTab('cellar')}>
+            <b>집에 있는 술 넣기</b>
+            <span>가진 술과 재료를 넣으면 지금 만들 수 있는 잔이 나와요</span>
+          </button>
+        )}
         <button onClick={() => openGuide('menu')}>
           <b>입문 안내서</b>
           <span>위스키와 칵테일로 나눠 마시는 법, 첫 병, 도구, 보관, 흔한 오해를 알려 드려요</span>

@@ -189,7 +189,7 @@ input::placeholder{color:var(--dim)}
 .split{display:block}
 @media (min-width:900px){
   .split{display:grid;grid-template-columns:minmax(340px,400px) 1fr;gap:var(--s5);align-items:start}
-  .split .listpane{max-height:calc(100vh - 140px);overflow:auto;padding-right:4px}
+  .split .listpane{min-width:0} /* 목록은 페이지와 같이 스크롤한다 — 칸마다 따로 스크롤하면 커서 위치에 따라 움직이는 곳이 달라진다 */
   .split .detailpane{position:sticky;top:84px;max-height:calc(100vh - 120px);overflow:auto}
 }
 .detailpane .placeholder{display:none}
@@ -833,3 +833,25 @@ input[type=search]{border-width:0 0 1px;border-color:var(--ink);background:trans
 @media (min-width:1100px){.today > .stage{box-shadow:none;border:1px solid var(--line)}}
 .picked h3,.lead h3{letter-spacing:-.02em}
 .state.s-READY::before{border-radius:0}
+/* 취향 찾기 — 몇 번째 질문인지, 카드마다 좋아요·별로 */
+.stepno{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--mute);margin:calc(-1 * var(--s1)) 0 var(--s2)}
+.tastepick{padding:var(--s1) 0}
+.tastepick .controls{padding:0;flex-wrap:nowrap}
+.notefold{margin-top:var(--s2)}
+.notefold summary{cursor:pointer;font-size:13px;color:var(--mute);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.notefold[open] summary{margin-bottom:var(--s1)}
+.headact .iconbtn{gap:6px;padding:0 10px}
+.headact .iconbtn .lbl{font-size:13px;color:var(--ink)}
+.headact .iconbtn[aria-current=page]{border-bottom:2px solid var(--ink)}
+/* 모바일 상세 — 그림을 줄여 재료와 만드는 법이 첫 화면 가까이 오게 한다(만드는 중에 다시 보기 쉽게) */
+@media (max-width:899px){
+  .detail .art{height:132px;margin-top:var(--s1)}
+  .detail .art svg{width:96px;height:96px}
+  .detail .art svg.cask{width:120px;height:120px}
+}
+.controls.searchrow{flex-wrap:nowrap;align-items:center}
+.controls.searchrow input[type=search]{flex:1 1 auto}
+.controls.searchrow .chip{flex:none}
+@media (max-width:899px){
+  .pagetitle{margin-top:var(--s3);padding-bottom:var(--s2)}
+}

@@ -1,7 +1,8 @@
 /**
  * StarterPage — 입문 취향 찾기 (초안).
  * 술을 얼마나 마시나 → 평소 마시는 것 고르기 → 도수 → 예산 → 위스키·칵테일 추천 순서다.
- * 카드는 한 번 누르면 좋아요, 두 번 누르면 별로, 세 번 누르면 원래대로 돌아간다.
+ * 카드마다 '좋아요'와 '별로' 버튼을 따로 두고, 누른 버튼을 다시 누르면 고르기 전으로 돌아간다.
+ * 음료와 술은 나눠 보여 주고, 맨 위에 몇 번째 질문인지 적는다.
  * 결과는 아직 취향 프로필에 저장하지 않는다.
  */
 import { useMemo, useState } from 'react';
@@ -19,13 +20,19 @@ type Mark = 'like' | 'dislike';
 const STEPS: Step[] = ['habit', 'cards', 'strength', 'budget', 'result'];
 const DIFFICULTY_KO = { 1: '바로 마셔요', 2: '도구 하나', 3: '손이 더 가요' } as const;
 
-function CardChip({ card, mark, onToggle }: { card: TasteCard; mark: Mark | undefined; onToggle: () => void }) {
+function CardRow({ card, mark, onMark }: { card: TasteCard; mark: Mark | undefined; onMark: (m: Mark) => void }) {
   const ex = examplesFor(card, 3);
   return (
-    <button className={`chip ${mark === 'like' ? 'ok' : mark === 'dislike' ? 'no' : ''}`}
-      aria-pressed={!!mark} onClick={onToggle} title={ex.length ? `예: ${ex.join(', ')}` : undefined}>
-      {mark === 'like' ? '좋아요 · ' : mark === 'dislike' ? '별로 · ' : ''}{card.name}
-    </button>
+    <div className="kvrow tastepick">
+      <div>
+        <span className="nm">{card.name}</span>
+        {ex.length > 0 && <small className="sub"> 예: {ex.join(', ')}</small>}
+      </div>
+      <div className="controls tight" role="group" aria-label={`${card.name} 취향`}>
+        <button className="chip ok" aria-pressed={mark === 'like'} onClick={() => onMark('like')}>좋아요</button>
+        <button className="chip no" aria-pressed={mark === 'dislike'} onClick={() => onMark('dislike')}>별로</button>
+      </div>
+    </div>
   );
 }
 
@@ -66,11 +73,10 @@ export function StarterPage() {
     });
   }, [step, habit, marks, strength, budget]);
 
-  const toggle = (id: string) => setMarks((m) => {
+  /** 같은 버튼을 다시 누르면 고르기 전으로 */
+  const mark = (id: string, v: Mark) => setMarks((m) => {
     const next = { ...m };
-    if (!m[id]) next[id] = 'like';
-    else if (m[id] === 'like') next[id] = 'dislike';
-    else delete next[id];
+    if (m[id] === v) delete next[id]; else next[id] = v;
     return next;
   });
 
@@ -84,6 +90,7 @@ export function StarterPage() {
         취향 찾기
         <span className="sub">평소 마시는 걸 고르면 처음 마셔 볼 위스키와 칵테일을 골라 드려요.</span>
       </h2>
+      {step !== 'result' && <p className="stepno">질문 {at + 1} / {STEPS.length - 1}</p>}
 
       {step === 'habit' && (
         <>
@@ -95,10 +102,16 @@ export function StarterPage() {
       {step === 'cards' && (
         <>
           <div className="sechead sm">평소 마시는 걸 골라 주세요</div>
-          <p className="hint">한 번 누르면 좋아요, 두 번 누르면 별로예요. 안 마셔 본 건 그냥 두세요.</p>
-          <div className="controls">
-            {cards.map((c) => <CardChip key={c.id} card={c} mark={marks[c.id]} onToggle={() => toggle(c.id)} />)}
-          </div>
+          <p className="hint">안 마셔 본 건 그냥 두세요. 누른 버튼을 다시 누르면 지워져요.</p>
+          {[['음료', cards.filter((c) => !c.subcategories)], ['술', cards.filter((c) => c.subcategories)]].map(([label, list]) =>
+            (list as TasteCard[]).length > 0 && (
+              <div key={label as string}>
+                <div className="sechead in">{label as string}</div>
+                <div className="rowlist">
+                  {(list as TasteCard[]).map((c) => <CardRow key={c.id} card={c} mark={marks[c.id]} onMark={(v) => mark(c.id, v)} />)}
+                </div>
+              </div>
+            ))}
         </>
       )}
 

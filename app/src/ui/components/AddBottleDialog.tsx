@@ -218,11 +218,21 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
                   자동 분류: {autoClass(picked)}
                 </div>
               )}
-              <div className="sechead in">{noteHeading(MASTER_MAKER_NOTES[picked.id])}</div>
-              <MakerNoteView
-                note={MASTER_MAKER_NOTES[picked.id]}
-                empty="이 술은 확인된 제조사 공식 노트가 없어요. 추가한 뒤 직접 적어 둘 수 있어요."
-              />
+              {/* 노트는 길어서 접어 둔다 — 제품이 맞는지 확인하고 바로 추가할 수 있게 */}
+              <details className="notefold">
+                <summary>{noteHeading(MASTER_MAKER_NOTES[picked.id])} 보기</summary>
+                <MakerNoteView
+                  note={MASTER_MAKER_NOTES[picked.id]}
+                  empty="이 술은 확인된 제조사 공식 노트가 없어요. 추가한 뒤 직접 적어 둘 수 있어요."
+                />
+              </details>
+            </div>
+          )}
+
+          {step === 'confirm' && (
+            <div className="btnrow">
+              <button className="btn primary" onClick={save} disabled={saving}>내 홈바에 추가</button>
+              <button className="btn" onClick={() => setStep('search')}>다시 검색</button>
             </div>
           )}
 
@@ -277,10 +287,12 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
             </>
           )}
 
-          <div className="btnrow">
-            <button className="btn primary" onClick={save} disabled={saving}>내 홈바에 추가</button>
-            <button className="btn" onClick={() => setStep('search')}>다시 검색</button>
-          </div>
+          {step === 'manual' && (
+            <div className="btnrow">
+              <button className="btn primary" onClick={save} disabled={saving}>내 홈바에 추가</button>
+              <button className="btn" onClick={() => setStep('search')}>다시 검색</button>
+            </div>
+          )}
         </>
       )}
     </Modal>

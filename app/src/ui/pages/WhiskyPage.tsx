@@ -5,7 +5,7 @@
  */
 import { GuideHint } from '../components/GuidePopup';
 import { cocktailWords, whiskyWords } from '../../services/tasteWords';
-import { lazy, Suspense, useMemo, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useUI } from '../UIContext';
 import { useWhiskies, useBottles, useBottleNotes, useHeldIds, useSubMap } from '../../hooks/useData';
 import { cocktailsForBottle } from '../../services/pairingService';
@@ -22,7 +22,7 @@ import { DistilleryCard } from '../components/DistilleryCard';
 /** 세계 지도는 데이터·윤곽이 커서(약 320KB) 열 때 불러온다 */
 const DistilleryMapView = lazy(() => import('../components/DistilleryMap').then((m) => ({ default: m.DistilleryMapView })));
 import { bottleKindLabel } from '../../data/bottleIngredients';
-import { FlavorBars, MakerNoteView, noteHeading, noteTag, BottleBadges, Term, ChipRow, SearchBox, allChips, type ChipOption } from '../components/common';
+import { FlavorBars, MakerNoteView, noteHeading, noteTag, BottleBadges, Term, ChipRow, SearchBox, FilterButton, type ChipOption } from '../components/common';
 import { BottleMark } from '../components/Mark';
 import { liquorMasterById, LIQUOR_MASTER } from '../../data/liquorMaster';
 import { previewBottle, isPreviewId } from '../../data/userBottles';
@@ -39,7 +39,13 @@ import { normalize, hits } from '../listUtils';
 import { type Bottle, type WhiskySpec } from '../../models/types';
 import { lookupTerm } from '../../data/glossary';
 
-const CLASS_CHIPS = allChips(CLASS_FILTERS, '분류 전체');
+/** 분류 필터 — 기준이 다른 말을 한 줄에 섞지 않고 원산지 / 종류 / 맛·캐스크로 나눠 보여 준다(고르는 건 하나) */
+const CLASS_GROUPS: { label: string; terms: readonly string[] }[] = [
+  { label: '원산지', terms: ['스카치', '버번', '테네시', '재패니즈', '코리안'] },
+  { label: '종류', terms: ['싱글몰트', '블렌디드'] },
+  { label: '맛·캐스크', terms: ['피티드', '셰리', '캐스크 스트렝스'] },
+];
+if (CLASS_GROUPS.flatMap((g) => g.terms).length !== CLASS_FILTERS.length) throw new Error('분류 필터 묶음이 CLASS_FILTERS 와 다름');
 
 /** 위스키 탭 안의 세 화면 */
 type View = 'list' | 'browse' | 'map' | 'table';
@@ -187,6 +193,7 @@ export function WhiskyPage() {
   const allBottles = useBottles();
   const [q, setQ] = useState('');
   const [cls, setCls] = useState('all');
+  const [openCls, setOpenCls] = useState(false);
   // 넣은 위스키가 없으면 둘러보기부터 연다
   const [view, setView] = useState<View>(() => (whiskies.length ? 'list' : 'browse'));
   const browsing = view === 'browse';
@@ -203,6 +210,15 @@ export function WhiskyPage() {
     });
   }, [whiskies, q, cls, browsing]);
 
+  // 검색·분류를 바꿔 열려 있던 병이 목록에서 빠지면 상세도 닫는다
+  const firstList = useRef(true);
+  useEffect(() => {
+    // 다른 화면에서 병을 열고 들어온 첫 화면은 그대로 둔다(둘러보기에 없는 병일 수 있다)
+    if (firstList.current) { firstList.current = false; return; }
+    if (bottleId && !rows.some((w) => w.id === bottleId)) closeBottle();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [q, cls, browsing]);
+
   const selected = allBottles.find((b) => b.id === bottleId) ?? CATALOG.find((b) => b.id === bottleId);
 
   if (view === 'table') return <GapView onBack={() => setView('list')} />;
@@ -213,8 +229,27 @@ export function WhiskyPage() {
       <h2 className="pagetitle" data-k="Cask Notes">위스키<span className="sub">{browsing ? `둘러보기 ${CATALOG.length}종 · 사기 전에 맛과 공식 노트를 볼 수 있어요` : `가진 위스키 ${whiskies.length}종 · 맛과 공식 노트를 볼 수 있어요`}</span></h2>
       <GuideHint tab="whisky" />
       <ChipRow value={view} options={VIEWS} onChange={setView} />
-      <SearchBox value={q} onChange={setQ} placeholder="이름·분류(셰리/피트/싱글몰트…) 검색" />
-      <ChipRow value={cls} options={CLASS_CHIPS} onChange={setCls} />
+      <SearchBox value={q} onChange={setQ} placeholder="이름·분류(셰리/피트/싱글몰트…) 검색"
+        after={<FilterButton open={openCls} count={cls === 'all' ? 0 : 1} onToggle={() => setOpenCls((v) => !v)} />} />
+      {cls !== 'all' && (
+        <div className="controls tight">
+          <button className="chip" aria-pressed onClick={() => setCls('all')} aria-label={`${cls} 필터 지우기`}>{cls} ✕</button>
+        </div>
+      )}
+      {openCls && (
+        <div className="filterpanel">
+          {CLASS_GROUPS.map((g) => (
+            <div key={g.label}>
+              <div className="hint lbl">{g.label}</div>
+              <div className="controls tight">
+                {g.terms.map((t) => (
+                  <button key={t} className="chip" aria-pressed={cls === t} onClick={() => setCls(cls === t ? 'all' : t)}>{t}</button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
       {cls !== 'all' && lookupTerm(cls) && <p className="hint"><b>{cls}</b> {lookupTerm(cls)}</p>}
 
       <div className="split">

@@ -9,6 +9,7 @@ import { type DrinkType, type ServingStyle, type RecommendationResult } from '..
 import { type GuideId } from '../data/beginnerGuide';
 
 export type Tab = 'today' | 'cocktails' | 'whisky' | 'cellar' | 'taste' | 'settings' | 'starter';
+const TABS_ALL: readonly Tab[] = ['today', 'cocktails', 'whisky', 'cellar', 'taste', 'settings', 'starter'];
 
 export type CellarSub = 'bottles' | 'stock' | 'logs';
 
@@ -63,7 +64,25 @@ interface UIState {
 const Ctx = createContext<UIState | null>(null);
 
 export function UIProvider({ children }: { children: ReactNode }) {
-  const [tab, setTab] = useState<Tab>('today');
+  // 보고 있던 화면을 주소 끝(#cocktails 등)에 적어 두어, 새로고침해도 그 화면으로 돌아온다.
+  // 뒤로 가기 기록은 아래 pushState 가 맡으므로 여기서는 replaceState 로 주소만 바꾼다
+  const [tab, setTab] = useState<Tab>(() => {
+    const h = window.location.hash.slice(1);
+    return (TABS_ALL as readonly string[]).includes(h) ? (h as Tab) : 'today';
+  });
+  useEffect(() => {
+    const url = tab === 'today' ? window.location.pathname + window.location.search : `#${tab}`;
+    window.history.replaceState(window.history.state, '', url);
+  }, [tab]);
+  // 주소창에서 #whisky 처럼 직접 바꿨을 때도 그 화면으로 간다
+  useEffect(() => {
+    const onHash = () => {
+      const h = window.location.hash.slice(1);
+      if ((TABS_ALL as readonly string[]).includes(h)) { setTab(h as Tab); setTabTick((n) => n + 1); }
+    };
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
   const [cellarSub, setCellarSub] = useState<CellarSub>('bottles');
   const [cocktailId, setCocktailId] = useState<string | null>(null);
   const [lastRec, setLastRec] = useState<RecommendationResult | null>(null);

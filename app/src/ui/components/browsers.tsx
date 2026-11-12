@@ -50,7 +50,7 @@ export function SimpleBuildBrowser({ initialQuery, initialOpen }: { initialQuery
       <ChipRow value={grp} options={groups} onChange={setGrp}>
         <ChipToggle label="바로 가능" cls="ok" on={readyOnly} onToggle={() => setReadyOnly((v) => !v)} />
       </ChipRow>
-      <p className="hint">셰이커 없이 <b>잔에 바로 붓는</b> 조합 {all.length}종 중 지금 <b>{readyCount}종</b>을 만들 수 있어요.</p>
+      <p className="hint">셰이커 없이 <b>잔에 바로 붓는</b> 조합 {all.length}종 중 체크한 재료로 지금 <b>{readyCount}종</b>을 만들 수 있어요.</p>
       <div className="rowlist">
         {rows.map(({ b, e }) => {
           const mine = pickMyBottles(b, bottles);
@@ -73,7 +73,10 @@ export function SimpleBuildBrowser({ initialQuery, initialOpen }: { initialQuery
                   <div className="sechead in">내 술로 만들기</div>
                   {mine.length > 0
                     ? <div className="parts">{mine.map((x) => <span key={x.id}>{x.name}{x.abv ? ` ${x.abv}` : ''}</span>)}</div>
-                    : <p className="hint">가진 {b.group}{ga(b.group)} 없어요. 술장에서 추가하면 여기에 나와요.</p>}
+                    : e.status === 'READY' || e.status === 'SUBSTITUTE'
+                      // 만들 수 있는지는 재료 체크로 판정한다. 병을 넣지 않았어도 재료가 체크돼 있으면 만들 수 있다
+                      ? <p className="hint">재료 체크로는 {b.group}{ga(b.group)} 있어서 만들 수 있어요. 술장에 병을 넣으면 어떤 병으로 만들지 여기에 보여 드려요.</p>
+                      : <p className="hint">체크한 재료에 {b.group}{ga(b.group)} 없어요. 술장에서 병을 넣거나 재료를 체크하면 만들 수 있어요.</p>}
                   {b.note && <p className="hint">{b.note}</p>}
                   {b.recipeId && (
                     <div className="btnrow">

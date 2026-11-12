@@ -63,7 +63,8 @@ function Shell() {
           <div className="headact">
             <button className="iconbtn" aria-current={tab === 'settings' ? 'page' : undefined}
               onClick={() => goTab('settings')} aria-label="설정" title="설정">
-              <IconGear />
+              {/* 톱니 아이콘만 두면 테마 전환 버튼처럼 보여서 글자를 함께 둔다 */}
+              <IconGear /><span className="lbl">설정</span>
             </button>
           </div>
         </div>

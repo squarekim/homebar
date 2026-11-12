@@ -8,7 +8,7 @@
  */
 import { GuideHint } from '../components/GuidePopup';
 import { cocktailWords } from '../../services/tasteWords';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useUI } from '../UIContext';
 import { useHeldIds, useSubMap } from '../../hooks/useData';
 import { garnishState } from '../../services/garnishStock';
@@ -67,6 +67,13 @@ export function CocktailsPage() {
       })
       .sort(byReadyThenName((x) => x.e.status, (x) => x.c.name));
   }, [q, ready, base, iba, status, heldIds, subMap]);
+
+  // 검색·필터를 바꿔 열려 있던 잔이 목록에서 빠지면 상세도 닫는다 — 왼쪽은 진 토닉인데 오른쪽은 위스키 사워인 일이 없게
+  const listKey = `${q}|${ready}|${base}|${iba}|${status}`;
+  useEffect(() => {
+    if (cocktailId && !rows.some((x) => x.c.id === cocktailId)) closeCocktail();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listKey]);
 
   // 검색어가 있으면 간단 조합(진 토닉, 위스키 하이볼처럼 잔에 바로 붓는 조합)도 같이 찾는다.
   // 레시피로 이미 있는 조합은 위 목록에 나오므로 뺀다. 필터는 레시피 기준이라, 필터를 켜면 보이지 않는다.

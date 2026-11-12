@@ -320,10 +320,12 @@ export function ChipToggle({ label, on, onToggle, cls }: { label: string; on: bo
 }
 
 /** 목록 위의 검색 입력 — 6개 화면이 같은 마크업을 쓰고 있었다 */
-export function SearchBox({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {
+/** after: 검색창 옆에 붙일 버튼(필터 등) — 한 줄에 두어 목록이 위로 올라오게 한다 */
+export function SearchBox({ value, onChange, placeholder, after }: { value: string; onChange: (v: string) => void; placeholder: string; after?: ReactNode }) {
   return (
-    <div className="controls">
+    <div className={after ? 'controls searchrow' : 'controls'}>
       <input type="search" value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} />
+      {after}
     </div>
   );
 }
