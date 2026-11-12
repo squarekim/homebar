@@ -22,7 +22,7 @@ import { type Bottle } from '../../models/types';
 import { LogList } from './NotesPage';
 import { GarnishStockBox } from '../components/GarnishStockBox';
 
-const SUBS: ChipOption<CellarSub>[] = [{ v: 'bottles', label: '보유 술' }, { v: 'stock', label: '재료 재고' }, { v: 'logs', label: '마신 기록' }];
+const SUBS: ChipOption<CellarSub>[] = [{ v: 'bottles', label: '가진 술' }, { v: 'stock', label: '재료 재고' }, { v: 'logs', label: '마신 기록' }];
 
 export function CellarPage() {
   const { cellarSub: sub, setCellarSub: setSub } = useUI();
@@ -34,7 +34,7 @@ export function CellarPage() {
 
   return (
     <>
-      <h2 className="pagetitle">술장</h2>
+      <h2 className="pagetitle" data-k="My Bar Cabinet">술장</h2>
       <GuideHint tab="cellar" />
       <StarterNotice />
 
@@ -71,17 +71,23 @@ function BottleList({ bottles }: { bottles: Bottle[] }) {
 
   return (
     <>
-      <div className="btnrow">
-        <button className="btn primary" onClick={() => openAdd()}>술 추가</button>
-      </div>
-      <SearchBox value={q} onChange={setQ} placeholder="내 술 이름 검색" />
-      <ChipRow value={grp} options={groups} onChange={setGrp} wrap />
-      {rows.length === 0 && (
+      {/* 넣은 술이 없으면 검색·분류 칩은 쓸 데가 없다 — 빈 안내와 추가 버튼만 둔다 */}
+      {bottles.length === 0 ? (
         <div className="empty">
-          {q.trim() ? '찾는 술이 없어요.' : '아직 넣은 술이 없어요. 위의 술 추가로 시작해 보세요.'}
+          아직 넣은 술이 없어요.
+          <div className="btnrow center"><button className="btn primary" onClick={() => openAdd()}>술 추가</button></div>
         </div>
+      ) : (
+        <>
+          <div className="btnrow">
+            <button className="btn primary" onClick={() => openAdd()}>술 추가</button>
+          </div>
+          <SearchBox value={q} onChange={setQ} placeholder="내 술 이름 검색" />
+          <ChipRow value={grp} options={groups} onChange={setGrp} wrap />
+                    {rows.length === 0 && <div className="empty">찾는 술이 없어요.</div>}
+        </>
       )}
-      <div className="rowlist">
+      {rows.length > 0 && <div className="rowlist">
         {rows.map((b) => {
           const linked = b.ingredientIds
             .map((id) => referenceRepo.ingredientById(id))
@@ -111,8 +117,7 @@ function BottleList({ bottles }: { bottles: Bottle[] }) {
             </div>
           );
         })}
-      </div>
-      <p className="hint">술을 누르면 맛과 공식 노트를 볼 수 있어요. 도수와 용량은 확인된 것만 적어요.</p>
+      </div>}
     </>
   );
 }
@@ -156,8 +161,7 @@ function StockManager() {
   return (
     <>
       <p className="hint">
-        만들 수 있는 잔은 <b>체크한 재료</b>로 계산해요. 체크를 바꾸면 위 숫자도 바로 바뀌어요.
-        지금 {ownedCount}/{allIngredients.length}종을 가지고 있어요.
+        만들 수 있는 잔은 <b>체크한 재료</b>로 계산해요. 지금 {ownedCount}/{allIngredients.length}종.
       </p>
       <ChipRow value={own} onChange={setOwn} options={OWN_FILTERS} wrap />
       <div className="controls tight">
@@ -181,8 +185,8 @@ function StockManager() {
       ) : (
         <div className="btnrow">
           <button className="btn sm" onClick={() => setConfirmReset(true)}>재료 체크 모두 끄기</button>
-          <button className="btn sm" onClick={async () => { await resetInventoryToSeed(); notifyExample(); toast(IS_PUBLIC ? '예시로 기본 홈바 세트를 켰어요' : '기본 컬렉션으로 되돌렸어요'); }}>
-            {IS_PUBLIC ? '예시: 기본 홈바 세트' : '기본 컬렉션'}
+          <button className="btn sm" onClick={async () => { await resetInventoryToSeed(); notifyExample(); toast(IS_PUBLIC ? '예시 재고를 켰어요' : '기본 컬렉션으로 되돌렸어요'); }}>
+            {IS_PUBLIC ? '예시 재고 켜기' : '기본 컬렉션'}
           </button>
           <button className="btn sm" onClick={async () => { await inventoryRepo.setAll(true, allIngredients.map((i) => ({ id: i.id, name: i.name }))); toast('모두 켰어요'); }}>모두 켜기</button>
         </div>

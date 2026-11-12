@@ -13,6 +13,8 @@ import { MASTER_MAKER_NOTES } from '../data/makerNotesMaster';
 import { flavorForBottle } from '../data/flavorLexicon';
 import { referenceRepo } from '../repositories/referenceRepo';
 import { tasteMatch, flavorWords } from './flavorService';
+import { whiskyWords, cocktailWords } from './tasteWords';
+import { previewBottle } from '../data/userBottles';
 import { cocktailStrength } from './recommendationService';
 
 export interface StarterAnswers {
@@ -124,7 +126,9 @@ export function starterRecommend(a: StarterAnswers, perKind = 3): {
     const score = base + (pick.difficulty === 1 ? 4 : pick.difficulty === 2 ? 2 : 0);
     const price = isWhisky ? STARTER_PRICES[pick.id] : undefined;
     results.push({
-      pick, score, name: master?.nameKo ?? ck?.name ?? pick.id, flavorWords: flavorWords(flavor),
+      pick, score, name: master?.nameKo ?? ck?.name ?? pick.id,
+      // 맛 표현은 위스키·칵테일 목록과 같은 함수로 — 위스키는 공식 노트의 맛 단어가 먼저다
+      flavorWords: master ? whiskyWords(previewBottle(master), 3) : ck ? cocktailWords(ck, 3) : flavorWords(flavor),
       abv: master?.abv, priceLabel: price != null ? priceBandLabel(price) : undefined,
     });
   });

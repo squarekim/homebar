@@ -109,7 +109,7 @@ export const noteTag = (n: MakerNote | undefined): string => (isOfficialNote(n) 
 
 export function MakerNoteView({ note, empty }: { note?: MakerNote | undefined; empty?: string | undefined }) {
   if (!note) {
-    return <div className="hint" style={{ margin: '6px 0 0' }}>{empty ?? '제조사 공식 노트가 아직 없는 술이에요. 아래에 직접 적어 두세요.'}</div>;
+    return <div className="hint" style={{ margin: '6px 0 0' }}>{empty ?? '공식 노트가 없어요.'}</div>;
   }
   return (
     <div className="makernote">
@@ -159,7 +159,7 @@ export function MethodIcon({ keys, raw }: { keys: MethodKey[]; raw?: string }) {
   if (!keys.length) return null;
   const label = raw || keys.map((k) => METHOD_LABELS_KO[k]).join(' + ');
   return (
-    <span className="methods" title={label} aria-label={`조주법 ${label}`}>
+    <span className="methods" title={label} aria-label={`만드는 법 ${label}`}>
       {keys.slice(0, 2).map((k) => {
         const Ic = METHOD_ICONS[k];
         return <span className="mic" key={k}><Ic /></span>;
@@ -211,7 +211,7 @@ export function RecList({ recs, onPick, empty }: {
             <span className="nm">{r.name}</span>
             <div className="taste">{r.flavorWords.join(' · ')}{r.base ? ` · ${r.base}` : ''}</div>
             <div className="foot">
-              {r.status ? <StateLine status={r.status} /> : <span className="mi">보유 중인 병</span>}
+              {r.status ? <StateLine status={r.status} /> : <span className="mi">가진 술</span>}
             </div>
           </div>
         </button>
@@ -320,10 +320,12 @@ export function ChipToggle({ label, on, onToggle, cls }: { label: string; on: bo
 }
 
 /** 목록 위의 검색 입력 — 6개 화면이 같은 마크업을 쓰고 있었다 */
-export function SearchBox({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {
+/** after: 검색창 옆에 붙일 버튼(필터 등) — 한 줄에 두어 목록이 위로 올라오게 한다 */
+export function SearchBox({ value, onChange, placeholder, after }: { value: string; onChange: (v: string) => void; placeholder: string; after?: ReactNode }) {
   return (
-    <div className="controls">
+    <div className={after ? 'controls searchrow' : 'controls'}>
       <input type="search" value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} />
+      {after}
     </div>
   );
 }
@@ -344,12 +346,11 @@ export function StarterNotice() {
   return (
     <div className="notice" role="note">
       <p>
-        지금은 <b>예시로 기본 홈바 세트 {STARTER_INVENTORY.length}가지</b>를 가진 것으로 해 두었어요.
-        "만들 수 있는 잔"은 이 예시 기준이에요.
+        <b>예시 재고 {STARTER_INVENTORY.length}가지</b>로 계산한 화면이에요.
       </p>
       <StarterSetList />
       <div className="btnrow">
-        <button className="btn sm primary" onClick={async () => { await turnOffExample(); notifyExample(); toast('예시를 껐어요'); }}>예시 끄기</button>
+        <button className="btn sm" onClick={async () => { await turnOffExample(); notifyExample(); toast('예시를 껐어요'); }}>예시 끄기</button>
         <button className="btn sm" onClick={() => { keepExampleAsMine(); notifyExample(); setCellarSub('stock'); goTab('cellar'); }}>내 재료로 고쳐 쓰기</button>
       </div>
     </div>
@@ -362,14 +363,13 @@ export function notifyExample(): void { window.dispatchEvent(new Event(EXAMPLE_E
 
 /**
  * 기본 홈바 세트가 무엇인지 — 칵테일을 막 시작한 집에 있을 법한 술과 재료.
- * 특정 사람의 술장이 아니라 예시이고, 이걸로 레시피 210종 가운데 몇 잔이 열리는지 보여 주려고 둔다.
+ * 특정 사람의 술장이 아니라 예시이고, 이걸로 레시피 209종 가운데 몇 잔이 열리는지 보여 주려고 둔다.
  */
 export function StarterSetList() {
   return (
     <details className="starterset">
-      <summary>기본 홈바 세트가 뭔가요?</summary>
-      <p className="hint">칵테일을 막 시작한 집에 있을 법한 것만 담았어요. 술 세 병, 리큐르 한 병, 마트에서 사는 주스와 탄산까지 모두 {STARTER_INVENTORY.length}가지예요.
-        실제로 가진 것이 아니고, 이 정도만 있어도 어떤 잔을 만들 수 있는지 미리 보여 드리려고 둔 예시예요.</p>
+      <summary>예시 재고에 뭐가 들어 있나요?</summary>
+      <p className="hint">술 세 병, 리큐르 한 병, 주스와 탄산까지 {STARTER_INVENTORY.length}가지예요.</p>
       <dl>
         {STARTER_GROUPS.map((g) => (
           <div key={g.label}>

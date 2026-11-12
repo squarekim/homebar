@@ -50,19 +50,21 @@ function Shell() {
         <div className="wrap">
           <button className="brand" onClick={() => goTab('today')}>
             <span className="logomark"><IconLogo /></span>
-            <h1>홈바{IS_BETA && <i className="betatag">베타</i>}</h1>
+            <h1>HOMEBAR</h1>
+            <span className="idx">홈바{IS_BETA ? ' · 베타' : ''}</span>
           </button>
           <nav className="topnav">
-            {TABS.map((t) => (
+            {TABS.map((t, n) => (
               <button key={t.id} aria-current={tab === t.id ? 'page' : undefined} onClick={() => goTab(t.id)}>
-                {t.label}
+                <span className="no">{String(n + 1).padStart(2, '0')}.</span>{t.label}
               </button>
             ))}
           </nav>
           <div className="headact">
             <button className="iconbtn" aria-current={tab === 'settings' ? 'page' : undefined}
               onClick={() => goTab('settings')} aria-label="설정" title="설정">
-              <IconGear />
+              {/* 톱니 아이콘만 두면 테마 전환 버튼처럼 보여서 글자를 함께 둔다 */}
+              <IconGear /><span className="lbl">설정</span>
             </button>
           </div>
         </div>

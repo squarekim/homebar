@@ -189,7 +189,7 @@ input::placeholder{color:var(--dim)}
 .split{display:block}
 @media (min-width:900px){
   .split{display:grid;grid-template-columns:minmax(340px,400px) 1fr;gap:var(--s5);align-items:start}
-  .split .listpane{max-height:calc(100vh - 140px);overflow:auto;padding-right:4px}
+  .split .listpane{min-width:0} /* 목록은 페이지와 같이 스크롤한다 — 칸마다 따로 스크롤하면 커서 위치에 따라 움직이는 곳이 달라진다 */
   .split .detailpane{position:sticky;top:84px;max-height:calc(100vh - 120px);overflow:auto}
 }
 .detailpane .placeholder{display:none}
@@ -669,21 +669,24 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 }
 @keyframes pcRise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-/* 넓은 PC(1100px 이상): 메인은 왼쪽에 큰 카드 무대, 오른쪽에 질문·필터·결과 */
+/* 넓은 PC(1100px 이상): 질문을 맨 위 왼쪽에 두고, 그 아래 왼쪽에 카드 무대, 오른쪽에 필터·결과·예시 안내 순서.
+   잔이 없을 때(.none)는 한 줄로 읽히게 그리드를 쓰지 않는다 */
 @media (min-width:1100px){
   .today{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(360px,1fr);column-gap:48px;align-items:start;
-    grid-template-areas:"stage ask" "stage sub" "stage notice" "stage filters" "stage act" "stage .";
+    grid-template-areas:"ask ask" "sub sub" "stage filters" "stage act" "stage notice" "stage .";
     grid-template-rows:auto auto auto auto auto 1fr;text-align:left;margin-top:var(--s5)}
-  .today > .ask{grid-area:ask;margin-top:36px;font-size:44px;line-height:1.15}
-  .today > .asksub{grid-area:sub;font-size:16px}
+  .today > .ask{grid-area:ask;margin-top:0;font-size:44px;line-height:1.15}
+  .today > .asksub{grid-area:sub;font-size:16px;margin-bottom:var(--s4)}
   .today > .notice{grid-area:notice;margin-top:var(--s3)}
   .today > .stage{grid-area:stage;height:520px;margin:0;border-radius:24px;box-shadow:0 40px 80px -40px rgba(0,0,0,.75),inset 0 0 0 1px rgba(255,255,255,.03)}
   .today > .stage .deck{transform:scale(1.65);transform-origin:50% 8%}
-  .today > .pickfilters{grid-area:filters;margin-top:var(--s4)}
+  .today > .pickfilters{grid-area:filters;margin-top:0}
   .today > .pickfilters .controls{justify-content:flex-start}
   .today > .reelact,.today > .picked{grid-area:act;margin:var(--s3) 0 0;max-width:none}
   .today > .reelact .hint{text-align:left}
-  .today > .empty{grid-area:stage}
+  .today.none{display:block}
+  .today.none > .asksub{margin-bottom:var(--s3)}
+  .today.none .controls{justify-content:flex-start}
   .today .picked h3{font-size:40px}
   .today .picked .pickbtns{flex-direction:row;flex-wrap:wrap}
   .today .picked .pickbtns .btn{flex:1 1 140px;width:auto}
@@ -725,3 +728,170 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 /* 흐리게 할 때 카드 전체에 opacity 를 주면 3D 가 납작해져 뒷면 대신 앞면이 보인다. 그래서 면에만 준다 */
 .stage .card.dim{opacity:1}
 .stage .card.dim .face,.stage .card.dim .back{opacity:.5}
+
+/* ═════════════════════════════════════════════════════════════════════
+   에디토리얼 테마 (2026-11-12) — 종이와 잉크, 실선으로 나눈 매거진 지면.
+   위의 규칙을 지우지 않고 이 층이 덮는다. 기본은 종이(라이트), 다크는 같은 지면을 밤에 본 것.
+   · 색: 종이 #F6F4EF · 잉크 #151413 · 실선 #D8D3C8 · 강조는 주홍 #C83E2B 하나(지금 가능·주 동작·선택 표시)
+   · 글꼴: 제목은 Noto Serif KR, 영문 이름은 Cormorant Garamond 이탤릭, 라벨·숫자는 IBM Plex Mono
+   · 모양: 모서리 없음. 면 대신 실선으로 구역을 나눈다. 잔·오크통 그림은 그대로 둔다(GlassArt·CaskArt).
+   ═════════════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#F6F4EF; --panel:#ECE8DF; --raise:#E4DFD3; --line:#D8D3C8; --control:#151413;
+  --ink:#151413; --mute:#6E6962; --dim:#857F77;
+  --accent:#C83E2B; --on-accent:#F6F4EF;
+  --primary:#151413; --on-primary:#F6F4EF;
+  --ok:#1E6B43; --sub:#A3501A; --no:#B42318;
+  --ok-bg:#E3EEE5; --sub-bg:#F4E6D6; --no-bg:#F6E1DD; --accent-bg:#ECE8DF;
+  --glow:255,226,170;
+  --display:'Noto Serif KR','Nanum Myeongjo',serif;
+  --latin:'Cormorant Garamond','Noto Serif KR',serif;
+  --mono:'IBM Plex Mono','IBM Plex Sans KR',monospace;
+  --r:0px; --r-sm:0px;
+  color-scheme:light;
+}
+:root[data-theme=dark]{
+  --bg:#151413; --panel:#1E1C1A; --raise:#272421; --line:#3A3632; --control:#F1EEE7;
+  --ink:#F1EEE7; --mute:#A39D94; --dim:#8E887F;
+  --accent:#E0644F; --on-accent:#151413;
+  --primary:#F1EEE7; --on-primary:#151413;
+  --ok:#6CC38F; --sub:#E59A5B; --no:#E5726F;
+  --ok-bg:#1C2B22; --sub-bg:#33261A; --no-bg:#382020; --accent-bg:#1E1C1A;
+  color-scheme:dark;
+}
+/* 라이트 값은 :root 가 이미 갖고 있다 — 예전 라이트 블록이 덮어쓰지 않게 같은 값을 다시 둔다 */
+:root[data-theme=light]{
+  --bg:#F6F4EF; --panel:#ECE8DF; --raise:#E4DFD3; --line:#D8D3C8; --control:#151413;
+  --ink:#151413; --mute:#6E6962; --dim:#857F77;
+  --accent:#C83E2B; --on-accent:#F6F4EF; --primary:#151413; --on-primary:#F6F4EF;
+  --ok:#1E6B43; --sub:#A3501A; --no:#B42318;
+  --ok-bg:#E3EEE5; --sub-bg:#F4E6D6; --no-bg:#F6E1DD; --accent-bg:#ECE8DF;
+}
+::selection{background:var(--ink);color:var(--bg)}
+body{-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-weight:500}
+
+/* 셸 — 머리기사(마스트헤드)와 번호 붙은 목차 */
+header{background:color-mix(in srgb,var(--bg) 95%,transparent);backdrop-filter:blur(4px)}
+header .wrap{min-height:56px}
+.brand{align-items:baseline}
+.brand .logomark{display:none}
+.brand h1{font-family:var(--latin);font-size:24px;font-weight:500;letter-spacing:-.01em}
+.brand .idx{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--mute);text-transform:uppercase}
+@media (min-width:900px){
+  .topnav{gap:28px;margin-left:40px}
+  .topnav button{padding:18px 0 16px;border-radius:0;font-size:14px;background:none;border-bottom:2px solid transparent}
+  .topnav button .no{font-family:var(--mono);font-size:11px;margin-right:6px;color:var(--dim)}
+  .topnav button[aria-current=page]{background:none;border-bottom-color:var(--ink);font-weight:500}
+}
+.iconbtn{border-radius:0}
+nav.tabbar button[aria-selected=true]{color:var(--accent)}
+
+/* 지면 제목 — 위에 영문 모노 라벨, 아래 잉크 실선 */
+.pagetitle{font-family:var(--display);font-weight:500;padding-bottom:var(--s3);border-bottom:1px solid var(--ink)}
+.pagetitle[data-k]::before{content:attr(data-k);display:block;font-family:var(--mono);font-size:10px;font-weight:400;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--mute);margin-bottom:6px}
+.pagetitle::after{display:none!important}
+.pagetitle .sub{font-family:var(--body);font-size:14px}
+.sechead{font-family:var(--display);font-weight:500;padding-bottom:var(--s1);border-bottom:1px solid var(--ink)}
+.sechead.in,.sechead.sm,.grpbox h4{font-family:var(--mono);font-size:10.5px;font-weight:400;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--mute);border-bottom:1px solid var(--line);padding-bottom:6px}
+.today .ask,.picked h3,.lead h3,.detail h2,.modal h2{font-family:var(--display);font-weight:500}
+
+/* 면 → 실선. 패널은 바탕을 지우고 위아래 실선만 남긴다 */
+.empty,.makernote,.notice,.statline,.filterpanel,.sample,.shortage,.tastecard,.person,.stat .box,.detail .steps,.card,.starts button{
+  background:transparent;border:1px solid var(--line);border-radius:0}
+.statline{border-width:1px 0;padding-left:0;padding-right:0}
+.statline .cell b{font-family:var(--mono);font-weight:500}
+.starts{gap:0}
+.starts button{border-width:0 0 1px;padding:var(--s3) 0}
+@media (min-width:700px){.starts button{border-width:0 1px 1px 0;padding:var(--s3)}.starts button:first-child{padding-left:0}}
+.starts button:hover{background:var(--panel)}
+.starts button b{font-family:var(--display);font-weight:500}
+.mark{background:var(--panel);border:1px solid var(--line);border-radius:0}
+.rowitem[aria-current=true]{background:var(--panel)}
+.rowitem[aria-current=true]::before,.rowitem[aria-current=true]::after{background:var(--accent)!important}
+.rowitem .nm,.kvrow .nm{font-family:var(--display);font-weight:500}
+
+/* 버튼·칩·입력 — 각진 상자, 주 동작은 잉크로 채운다 */
+.btn,.chip,input[type=search],input[type=text],input[type=number],textarea,select{border-radius:0}
+.btn{border-color:var(--line)}
+.btn:hover{background:var(--panel)}
+.btn.primary{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.btn.primary:hover{background:var(--accent);border-color:var(--accent);color:var(--on-accent);opacity:1}
+.btn.ghost{border-color:var(--line)}
+.chip{border-color:var(--line);font-size:13px;min-height:36px;padding:6px 14px}
+.chip[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+input[type=search]{border-width:0 0 1px;border-color:var(--ink);background:transparent;padding-left:2px}
+.state.s-READY{color:var(--accent)}
+.stage{border-radius:0!important}
+.lnk,a{text-decoration-color:var(--line)}
+/* 남은 둥근 모서리 — 버튼·태그·팝업·목록 줄도 각지게. 진행 막대와 카드 뒷면·상태 점은 그대로 둔다 */
+.btn.big,.sheetcard,.firstrun .sheetcard,.guidecard,.guidecard .gtag,.bdg,.cltag,.ss,.pill,.parts span,.toast,
+.rowitem,.iconbtn,.kvrow,.grpbox label,.chip.iconchip{border-radius:0!important}
+.parts span,.cltag,.ss,.pill{background:transparent;border:1px solid var(--line)}
+@media (min-width:1100px){.today > .stage{box-shadow:none;border:1px solid var(--line)}}
+.picked h3,.lead h3{letter-spacing:-.02em}
+.state.s-READY::before{border-radius:0}
+/* 취향 찾기 — 몇 번째 질문인지, 카드마다 좋아요·별로 */
+.stepno{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--mute);margin:calc(-1 * var(--s1)) 0 var(--s2)}
+.tastepick{padding:var(--s1) 0}
+.tastepick .controls{padding:0;flex-wrap:nowrap}
+.notefold{margin-top:var(--s2)}
+.notefold summary{cursor:pointer;font-size:13px;color:var(--mute);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.notefold[open] summary{margin-bottom:var(--s1)}
+.headact .iconbtn{gap:6px;padding:0 10px}
+.headact .iconbtn .lbl{font-size:13px;color:var(--ink)}
+.headact .iconbtn[aria-current=page]{border-bottom:2px solid var(--ink)}
+/* 모바일 상세 — 그림을 줄여 재료와 만드는 법이 첫 화면 가까이 오게 한다(만드는 중에 다시 보기 쉽게) */
+@media (max-width:899px){
+  .detail .art{height:132px;margin-top:var(--s1)}
+  .detail .art svg{width:96px;height:96px}
+  .detail .art svg.cask{width:120px;height:120px}
+}
+.controls.searchrow{flex-wrap:nowrap;align-items:center}
+.controls.searchrow input[type=search]{flex:1 1 auto}
+.controls.searchrow .chip{flex:none}
+@media (max-width:899px){
+  .pagetitle{margin-top:var(--s3);padding-bottom:var(--s2)}
+}
+
+/* ── 넓은 PC 메인: 에디토리얼 지면 (TodayEditorial) ── 왼쪽 7칸 고른 잔, 오른쪽 5칸 인덱스·술장·다음 재료 */
+.ed{margin-top:var(--s4)}
+.ed-top{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--s4);padding-bottom:var(--s3);border-bottom:1px solid var(--ink)}
+.ed-top .ask{font-size:40px;line-height:1.15}
+.ed-top .asksub{font-size:15px;color:var(--mute);margin-top:6px}
+.ed-tools{display:flex;align-items:center;gap:var(--s2)}
+.ed-tools .pickfilters{position:relative}
+.ed-tools .pickfilters .filterpanel{position:absolute;right:0;top:calc(100% + 6px);z-index:5;width:360px;background:var(--bg);text-align:left}
+.ed-grid{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);align-items:start}
+.ed-main{padding:var(--s4) 40px var(--s5) 0;border-right:1px solid var(--line);min-width:0}
+.ed-main .detail{margin:0}
+.ed-main .detail > .art{height:300px}
+.ed-side{padding:var(--s4) 0 var(--s5) 40px;display:flex;flex-direction:column;gap:40px;min-width:0}
+.ed-head{padding-bottom:var(--s1);border-bottom:1px solid var(--ink);margin-bottom:var(--s1)}
+.ed-head .k{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute)}
+.ed-head h3{font-family:var(--display);font-size:18px;font-weight:500;margin-top:2px}
+.ed-head h3 small{font-family:var(--mono);font-size:12px;color:var(--mute);margin-left:6px}
+.ed-index{list-style:none;border-bottom:1px solid var(--line);max-height:none}
+.ed-index li + li{border-top:1px solid var(--line)}
+.ed-index button{display:grid;grid-template-columns:28px minmax(0,1fr) auto;column-gap:12px;align-items:baseline;width:100%;
+  text-align:left;padding:12px 8px}
+.ed-index button:hover{background:var(--panel)}
+.ed-index button[aria-current=true]{background:var(--panel)}
+.ed-index .no{font-family:var(--mono);font-size:11px;color:var(--mute)}
+.ed-index button[aria-current=true] .no{color:var(--accent);font-weight:500}
+.ed-index .nm{font-family:var(--display);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ed-index .sub{grid-column:2;font-size:12px;color:var(--mute)}
+.ed-index .st{grid-column:3;grid-row:1;font-size:12px;color:var(--ink);font-weight:500;white-space:nowrap}
+.ed-index .st.alt{color:var(--sub)}
+.ed-cab{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;padding:var(--s1) 0 var(--s2)}
+.ed-cab span{white-space:nowrap;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:4px}
+.ed-cab .more{color:var(--mute);text-decoration:none}
+.ed-next{list-style:none}
+.ed-next li{display:flex;align-items:center;justify-content:space-between;gap:var(--s2);padding:12px 0;border-bottom:1px solid var(--line)}
+.ed-next b{font-weight:500}
+.ed-next .plus{font-family:var(--mono);font-size:11px;color:var(--accent);margin-left:6px}
+.ed-next .sub{font-size:12px;color:var(--mute);margin-top:2px}
+.ed-main .empty{text-align:center}
+@media (min-width:1100px){.starts{grid-template-columns:repeat(auto-fit,minmax(0,1fr));grid-auto-flow:column}}

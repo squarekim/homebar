@@ -42,7 +42,7 @@ export const REGION_GUIDES: readonly RegionGuide[] = [
   },
   {
     id: '섬', country: '스코틀랜드',
-    legal: '법정 지역은 하이랜드예요. 법령의 보호 지역 목록에 섬은 따로 없어서, 앱에서 보기 쉽게 묶었어요.',
+    legal: '법정 지역은 하이랜드예요. 법령의 보호 지역 목록에 섬은 따로 없어요. 이 앱은 찾기 쉽게 섬을 따로 묶어 보여 줘요.',
     facts: [
       '스카이(탈리스커), 오크니(하이랜드 파크), 아란(로크란자)을 묶었어요. 아일라는 따로 보여 줘요.',
       '아란에는 로크란자와 라그, 증류소가 두 곳 있어요.',
@@ -95,7 +95,7 @@ export const REGION_GUIDES: readonly RegionGuide[] = [
   },
   {
     id: '한국', country: '한국',
-    legal: '위스키 생산 지역을 정한 기준은 이번 조사에서 확인하지 못했어요.',
+    legal: '위스키 생산 지역을 나누는 기준은 확인되지 않았어요.',
     facts: ['기원 증류소는 경기도 남양주시 화도읍에 있고, 2020년에 세워졌어요.'],
     sources: ['https://threesocieties.co.kr/kor'],
   },

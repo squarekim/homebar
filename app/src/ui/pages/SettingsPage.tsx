@@ -21,9 +21,8 @@ const QUICK_AXES: FlavorAxis[] = ['sweet', 'citrus', 'fruit', 'smoke', 'peat', '
 export function SettingsPage() {
   return (
     <>
-      <h2 className="pagetitle">설정</h2>
+      <h2 className="pagetitle" data-k="Settings">설정</h2>
       <ScreenSetup />
-      <DrinkingGuide />
       <BackupRestore />
     </>
   );
@@ -47,7 +46,7 @@ export function TasteSetup() {
       <div className="sechead">좋아하는 맛</div>
       <p className="hint">
         {isNeutralTaste(vector)
-          ? '아직 고르지 않았어요. 고르기 전에는 가진 재료만 보고 골라 드려요.'
+          ? '아직 고르지 않았어요.'
           : `지금 기준: ${liked.map((a) => FLAVOR_LABELS_KO[a]).join(' · ') || '세부 조정으로 설정됨'}`}
       </p>
       <div className="controls">
@@ -92,7 +91,7 @@ export function PeopleManager() {
   return (
     <>
       <div className="sechead">함께 마시는 사람</div>
-      <p className="hint">여럿이 마실 잔을 고를 때 써요. 한 명이라도 싫어하는 맛이 강한 잔은 뒤로 미뤄요.</p>
+      <p className="hint">여럿이 마실 잔을 고를 때 써요.</p>
       <div className="people">
         {others.map((p) => (
           <div className="person" key={p.id}>
@@ -117,7 +116,7 @@ export function PeopleManager() {
   );
 }
 
-const THEMES: { v: Theme; label: string }[] = [{ v: 'dark', label: '다크' }, { v: 'light', label: '라이트' }];
+const THEMES: { v: Theme; label: string }[] = [{ v: 'light', label: '라이트' }, { v: 'dark', label: '다크' }];
 
 function ScreenSetup() {
   const [theme, setTheme] = useState<Theme>(savedTheme);
@@ -131,32 +130,6 @@ function ScreenSetup() {
         ))}
       </div>
     </>
-  );
-}
-
-/** 건강한 음주 안내 — 찾아서 열 때만 보인다. 형량·g 단위 음주량은 법과 기준이 바뀌면 틀려서 넣지 않는다 */
-/** 메인의 "건강한 음주 안내"에서 들어오면 펼친 채로 보여 준다 */
-export const OPEN_HEALTH_KEY = 'homebar.openHealthGuide';
-function DrinkingGuide() {
-  const [open, setOpen] = useState(() => {
-    try { const v = sessionStorage.getItem(OPEN_HEALTH_KEY) === '1'; sessionStorage.removeItem(OPEN_HEALTH_KEY); return v; } catch { return false; }
-  });
-  return (
-    <div className="more">
-      <button onClick={() => setOpen(!open)} aria-expanded={open}>건강한 음주 안내</button>
-      {open && (
-        <div className="inner guide">
-          <p>마셨다면 운전하지 않아요. 도로교통법상 혈중알코올농도 0.03% 이상이면 운전할 수 없어요.
-            <a href="https://m.easylaw.go.kr/MOB/CsmInfoRetrieve.laf?ccfNo=1&cciNo=1&cnpClsNo=2&csmSeq=684" target="_blank" rel="noreferrer">찾기쉬운 생활법령정보</a></p>
-          <p>임신 중이거나 임신을 계획하고 있다면 마시지 않아요.
-            <a href="https://cancer.go.kr/download.do?uuid=d0b02241-3714-416c-b5bc-9979f8f74607.pdf" target="_blank" rel="noreferrer">국가암정보센터</a></p>
-          <p>약을 먹는 중이라면 설명서의 음주 관련 주의를 확인해요.
-            <a href="https://nedrug.mfds.go.kr/" target="_blank" rel="noreferrer">의약품안전나라</a></p>
-          <p>국립암센터는 암 예방을 위해 하루 한두 잔의 소량 음주도 피하라고 안내해요.
-            <a href="https://www.ncc.re.kr/main.ncc?uri=manage01_3" target="_blank" rel="noreferrer">국립암센터</a></p>
-        </div>
-      )}
-    </div>
   );
 }
 
@@ -177,16 +150,16 @@ function BackupRestore() {
   const doImport = async (file: File) => {
     try {
       await backupService.importJson(await file.text(), 'replace');
-      toast('복원 완료');
+      toast('백업을 불러왔어요');
     } catch (e) {
-      toast('복원 실패: ' + (e as Error).message);
+      toast('백업을 불러오지 못했어요: ' + (e as Error).message);
     }
   };
 
   return (
     <>
       <div className="sechead">백업 · 복원</div>
-      <p className="hint">술장, 기록, 취향을 파일로 내보내고 다시 불러올 수 있어요. 데이터는 이 브라우저에만 저장돼요.</p>
+      <p className="hint">데이터는 이 브라우저에만 저장돼요. 파일로 옮겨 둘 수 있어요.</p>
       <div className="btnrow">
         <button className="btn primary" onClick={doExport}>JSON 내보내기</button>
         <button className="btn" onClick={() => fileRef.current?.click()}>JSON 복원</button>
@@ -194,7 +167,7 @@ function BackupRestore() {
           onChange={(e) => { const f = e.target.files?.[0]; if (f) doImport(f); e.target.value = ''; }} />
       </div>
       <div className="sechead">버전</div>
-      <p className="hint">지금 보고 있는 화면: <b>{BUILD_STAMP}</b><br />최신이 아니라면 새로고침을 한 번 더 해주세요.</p>
+      <p className="hint">지금 보고 있는 화면: <b>{BUILD_STAMP}</b><br />최신이 아니라면 새로고침을 한 번 더 해 주세요.</p>
     </>
   );
 }

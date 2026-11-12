@@ -25,9 +25,9 @@ const ROWS: Row[] = [
   ['cragganmore', '크라간모어', 'Cragganmore', '스코틀랜드', '스페이사이드', null],
   ['benriach', '벤리악', 'The BenRiach', '스코틀랜드', '스페이사이드', null],
   ['dufftown', '더프타운', 'Dufftown', '스코틀랜드', '스페이사이드', null,
-    '싱글톤은 판매 지역마다 원액 증류소가 다르다. 기준 DB 제품은 이름에 더프타운이 적힌 것'],
+    '싱글톤은 판매 지역마다 원액을 만드는 증류소가 달라요. 이 앱의 싱글톤은 더프타운 원액이에요'],
   ['cardhu', '카듀', 'Cardhu', '스코틀랜드', '스페이사이드', null],
-  ['glenburgie', '글렌버기', 'Glenburgie', '스코틀랜드', '스페이사이드', null, '발렌타인 싱글몰트 시리즈의 원액 증류소'],
+  ['glenburgie', '글렌버기', 'Glenburgie', '스코틀랜드', '스페이사이드', null, '발렌타인 싱글몰트 시리즈의 원액을 만들어요'],
   // ── 하이랜드 ──
   ['glenmorangie', '글렌모렌지', 'Glenmorangie', '스코틀랜드', '하이랜드', null],
   ['glendronach', '글렌드로낙', 'The GlenDronach', '스코틀랜드', '하이랜드', null],
@@ -35,11 +35,11 @@ const ROWS: Row[] = [
   ['glengoyne', '글렌고인', 'Glengoyne', '스코틀랜드', '하이랜드', null],
   ['oban', '오반', 'Oban', '스코틀랜드', '하이랜드', '해안'],
   ['clynelish', '클라이넬리쉬', 'Clynelish', '스코틀랜드', '하이랜드', '해안'],
-  ['pulteney', '올드 풀트니', 'Pulteney', '스코틀랜드', '하이랜드', '해안', '증류소 이름은 풀트니, 제품 이름은 올드 풀트니'],
+  ['pulteney', '올드 풀트니', 'Pulteney', '스코틀랜드', '하이랜드', '해안', '증류소 이름은 풀트니이고 제품 이름은 올드 풀트니예요'],
   ['talisker', '탈리스커', 'Talisker', '스코틀랜드', '하이랜드', '섬 · 스카이'],
   ['highlandpark', '하이랜드 파크', 'Highland Park', '스코틀랜드', '하이랜드', '섬 · 오크니'],
   ['lochranza', '아란 로크란자', 'Lochranza (Isle of Arran)', '스코틀랜드', '하이랜드', '섬 · 아란',
-    '아란은 증류소가 둘(로크란자·라그)이다. 아란 10년은 로크란자 원액'],
+    '아란에는 증류소가 두 곳(로크란자, 라그) 있어요. 아란 10년은 로크란자 원액이에요'],
   // ── 아일라 ──
   ['lagavulin', '라가불린', 'Lagavulin', '스코틀랜드', '아일라', null],
   ['laphroaig', '라프로익', 'Laphroaig', '스코틀랜드', '아일라', null],
@@ -47,21 +47,21 @@ const ROWS: Row[] = [
   ['bowmore', '보모어', 'Bowmore', '스코틀랜드', '아일라', null],
   ['caolila', '카올 일라', 'Caol Ila', '스코틀랜드', '아일라', null],
   ['bunnahabhain', '부나하벤', 'Bunnahabhain', '스코틀랜드', '아일라', null],
-  ['bruichladdich', '브룩라디', 'Bruichladdich', '스코틀랜드', '아일라', null, '포트 샬롯(피티드)도 여기서 만든다'],
+  ['bruichladdich', '브룩라디', 'Bruichladdich', '스코틀랜드', '아일라', null, '피트를 쓴 포트 샬롯도 여기서 만들어요'],
   // ── 캠벨타운 ──
   ['springbank', '스프링뱅크', 'Springbank', '스코틀랜드', '캠벨타운', null],
-  ['glengyle', '글렌가일', 'Glengyle', '스코틀랜드', '캠벨타운', null, '제품 이름은 킬커란'],
+  ['glengyle', '글렌가일', 'Glengyle', '스코틀랜드', '캠벨타운', null, '제품 이름은 킬커란이에요'],
   // ── 로우랜드 ──
   ['glenkinchie', '글렌킨치', 'Glenkinchie', '스코틀랜드', '로우랜드', null],
   ['auchentoshan', '오켄토션', 'Auchentoshan', '스코틀랜드', '로우랜드', null],
   // ── 아일랜드 · 일본 · 한국 (세부 위치는 출처 확인 후) ──
   ['bushmills', '부시밀즈', 'Old Bushmills', '아일랜드', null, null],
-  ['cooley', '쿨리', 'Cooley', '아일랜드', null, null, '제품 이름은 코네마라'],
+  ['cooley', '쿨리', 'Cooley', '아일랜드', null, null, '제품 이름은 코네마라예요'],
   ['yamazaki', '야마자키', 'Yamazaki', '일본', null, null],
   ['hakushu', '하쿠슈', 'Hakushu', '일본', null, null],
   ['yoichi', '요이치', 'Yoichi', '일본', null, null],
   ['miyagikyo', '미야기쿄', 'Miyagikyo', '일본', null, null],
-  ['threesocieties', '쓰리소사이어티스', 'Three Societies', '한국', null, null, '제품 이름은 기원'],
+  ['threesocieties', '쓰리소사이어티스', 'Three Societies', '한국', null, null, '제품 이름은 기원이에요'],
 ];
 
 /** 좌표 — Wikidata 항목(P625). 2026-09-28 조회, 쿨리는 2026-10-27 두 조사가 같은 항목을 찾았다 */

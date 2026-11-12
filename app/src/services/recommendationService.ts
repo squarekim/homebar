@@ -103,19 +103,19 @@ function modeFlavorBonus(mode: RecommendMode, flavor: FlavorVector): number {
 }
 
 function reasonFor(
-  ck: Cocktail, taste: FlavorVector, avail: AvailabilityResult, cov: number,
+  ck: Cocktail, taste: FlavorVector, avail: AvailabilityResult,
 ): string {
   const shared = topAxes(ck.flavor, 5).filter((a) => taste[a] >= 6).slice(0, 2);
   const parts: string[] = [];
-  if (shared.length) parts.push(`${shared.map((a) => FLAVOR_LABELS_KO[a]).join('·')} 선호와 잘 맞음`);
+  if (shared.length) parts.push(`취향에 맞는 맛: ${shared.map((a) => FLAVOR_LABELS_KO[a]).join('·')}`);
   else {
     const t = topAxes(ck.flavor, 2);
-    if (t.length) parts.push(`${t.map((a) => FLAVOR_LABELS_KO[a]).join('·')} 중심 프로파일`);
+    if (t.length) parts.push(`주로 나는 맛: ${t.map((a) => FLAVOR_LABELS_KO[a]).join('·')}`);
   }
-  if (avail.status === 'READY') parts.push('현재 재료로 바로 제조 가능');
-  else if (avail.status === 'SUBSTITUTE') parts.push('대체재로 제조 가능');
-  else if (avail.status === 'MISSING') parts.push(`재고 ${cov}% (${avail.lack.slice(0, 2).join(', ')} 부족)`);
-  else parts.push(`핵심 재료 부족(${avail.missingCore.slice(0, 2).join(', ')})`);
+  if (avail.status === 'READY') parts.push('지금 바로 만들 수 있어요');
+  else if (avail.status === 'SUBSTITUTE') parts.push('대체 재료로 만들 수 있어요');
+  else if (avail.status === 'MISSING') parts.push(`없는 재료: ${avail.lack.slice(0, 2).join(', ')}`);
+  else parts.push(`베이스 술이 없어요: ${avail.missingCore.slice(0, 2).join(', ')}`);
   return parts.join(' · ');
 }
 
@@ -155,7 +155,7 @@ export function recommendCocktails(
     out.push({
       kind: 'cocktail', id: ck.id, name: ck.name, score,
       tasteScore, inventoryScore, availabilityScore, noveltyScore: nov,
-      status: avail.status, reason: reasonFor(ck, ctx.taste, avail, inventoryScore),
+      status: avail.status, reason: reasonFor(ck, ctx.taste, avail),
       flavorWords: cocktailWords(ck), base: ck.base,
     });
   }
@@ -167,12 +167,12 @@ function whiskyReason(w: Bottle, taste: FlavorVector): string {
   const shared = topAxes(w.flavor, 5).filter((a) => taste[a] >= 6).slice(0, 2);
   const style: string[] = [];
   if (w.flavor.peat >= 6) style.push('피트');
-  if (w.flavor.smoke >= 6) style.push('스모키');
-  if (w.flavor.fruit >= 6) style.push('셰리/과일');
-  if (w.flavor.vanilla >= 5) style.push('버번풍 바닐라');
+  if (w.flavor.smoke >= 6) style.push('스모크');
+  if (w.flavor.fruit >= 6) style.push('과일');
+  if (w.flavor.vanilla >= 5) style.push('바닐라');
   const parts: string[] = [];
-  if (shared.length) parts.push(`${shared.map((a) => FLAVOR_LABELS_KO[a]).join('·')} 선호와 부합`);
-  if (style.length) parts.push(`${style.join('·')} 캐릭터`);
+  if (shared.length) parts.push(`취향에 맞는 맛: ${shared.map((a) => FLAVOR_LABELS_KO[a]).join('·')}`);
+  if (style.length) parts.push(`${style.join('·')} 향이 뚜렷해요`);
   parts.push(`도수 ${w.abv}`);
   return parts.join(' · ');
 }

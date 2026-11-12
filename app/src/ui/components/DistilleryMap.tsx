@@ -133,7 +133,7 @@ export function DistilleryMapView({ onBack }: { onBack: () => void }) {
 
   return (
     <>
-      <h2 className="pagetitle">증류소 지도<span className="sub">{WORLD_DISTILLERIES.length}곳 · 묶음을 고르면 확대돼요</span></h2>
+      <h2 className="pagetitle" data-k="Distillery Atlas">증류소 지도<span className="sub">{WORLD_DISTILLERIES.length}곳 · 묶음을 고르면 확대돼요</span></h2>
       <SearchBox value={q} onChange={setQ} placeholder="증류소 이름·나라로 찾기" />
       {found.length > 0 && (
         <div className="rowlist">
@@ -173,7 +173,7 @@ export function DistilleryMapView({ onBack }: { onBack: () => void }) {
         <span><i className="t-none" />정규 투어 없음</span><span><i className="t-unk" />확인 안 됨</span>
         <span><i className="stop" />생산 중단 등</span>
       </div>
-      <div className="hint">{view} {shown.length}곳 · 투어 운영 {tourCount}곳. 투어 정보는 2026-10-28 조사 기준이라 가기 전에 공식 안내를 확인해 주세요.</div>
+      <div className="hint">{view} {shown.length}곳 · 투어 운영 {tourCount}곳. 투어 정보는 2026-10-28 기준이에요.</div>
 
       {picked && <><div className="sechead in">증류소</div><WorldDistilleryCard d={picked} /></>}
 

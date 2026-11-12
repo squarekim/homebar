@@ -20,7 +20,7 @@ function seedHeld(): Set<string> {
 describe('seed adapters', () => {
   it('원본 건수 유지', () => {
     expect(ingredients.length).toBe(130); // 원본 128 + 오렌지 큐라소(마이 타이 IBA 교정) + 셰리(셰리 코블러)
-    expect(cocktails.length).toBe(210); // 원본 202 + 현행 IBA 8종(addIbaRecipes)
+    expect(cocktails.length).toBe(209); // 원본 202 + 현행 IBA 8종(addIbaRecipes) − 겹친 1종(rewordRecipeText)
     expect(bottles.length).toBe(82); // 원본 81 + 클라이넬리쉬 14년 추가
     expect(whiskies.length).toBeGreaterThan(0);
     expect(bottles.some((b) => b.id === 'clynelish14')).toBe(true);
@@ -124,7 +124,7 @@ describe('availability', () => {
     const t = tallyStatus(all);
     // 원본 재고 기준 정규 121 (레시피의 [대체] 표시를 걷어낸 뒤)
     expect(t.READY).toBeGreaterThan(50);
-    expect(t.READY + t.SUBSTITUTE + t.MISSING + t.UNAVAILABLE).toBe(210);
+    expect(t.READY + t.SUBSTITUTE + t.MISSING + t.UNAVAILABLE).toBe(209);
   });
   it('빈 재고면 대부분 불가', () => {
     const empty = new Set<string>();
@@ -213,10 +213,11 @@ describe('레시피 note 위생 — 재고 서술 분리', () => {
     const byName = (n: string) => cocktails.find((c) => c.name === n)!;
     expect(byName('카이피리냐').note).toContain('럼으로 대신할 수 없어요');   // 일반 대체 안내
     expect(byName('피나 콜라다').garnish).toContain('체리');                   // 가니시는 별도 필드로
-    expect(byName('비외 카레').note).toContain('베네딕틴 1바스푼');            // 만들 때 필요한 스펙
+    expect(byName('다이키리').note).toContain('정제 설탕');                    // 만들 때 필요한 스펙
+    expect(byName('비외 카레').note).toBeUndefined();                          // 재료 칸을 되풀이한 메모는 지웠다
     expect(byName('갓파더').note).toContain('3.5cl : 3.5cl');                  // 레시피 스펙 설명
-    // 출처 이름만 적혀 있던 메모 11건은 출처 칸으로 옮겼다
-    expect(cocktails.filter((c) => c.note && c.note.length > 0).length).toBeGreaterThanOrEqual(138);
+    // 출처 이름만 적혀 있던 메모 11건은 출처 칸으로 옮겼고, 재료 칸을 되풀이한 메모 57건은 지웠다(rewordRecipeText)
+    expect(cocktails.filter((c) => c.note && c.note.length > 0).length).toBeGreaterThanOrEqual(83);
   });
 
   it('판정은 note 가 아니라 재고 변화에만 반응한다', () => {
@@ -374,7 +375,7 @@ describe('설명란 구조화 — 변형 레시피 · 출처 · 코멘터리', (
     // 출처 표기가 설명란에 섞여 있지 않다
     const SOURCE_IN_NOTE = /사용자 제공|커뮤니티 표준|교차 확인|배합비 준용/;
     expect(cocktails.filter((c) => SOURCE_IN_NOTE.test(c.note ?? ''))).toHaveLength(0);
-    expect(cocktails.filter((c) => c.sourceName).length).toBeGreaterThanOrEqual(40);
+    expect(cocktails.filter((c) => c.sourceName).length).toBeGreaterThanOrEqual(30); // '클래식 레시피'와 커뮤니티 출처 표기를 지운 뒤(rewordRecipeText)
   });
 
   it('IBA 등재 연혁은 배지가 말하므로 설명란에서 빠진다', () => {
@@ -458,11 +459,11 @@ describe('재구매 업적', () => {
       return repeatBadges(rows).get(`ub_${count - 1}`);
     };
     expect(tier(1)).toBeUndefined();                    // 한 병이면 재구매가 아니다
-    expect(tier(2)?.label).toBe('마셔보니 좋더라');
+    expect(tier(2)?.label).toBe('다시 산 술');
     expect(tier(2)?.detail).toBe('재구매 1회');
-    expect(tier(3)?.label).toBe('이제 상비품');
-    expect(tier(4)?.label).toBe('없으니 못 살겠다');
-    expect(tier(9)?.label).toBe('없으니 못 살겠다');
+    expect(tier(3)?.label).toBe('여러 번 산 술');
+    expect(tier(4)?.label).toBe('늘 두는 술');
+    expect(tier(9)?.label).toBe('늘 두는 술');
   });
 
   it('뱃지는 가장 최근에 들인 병에만 붙는다', () => {
@@ -486,7 +487,7 @@ describe('재구매 업적', () => {
     // 시드의 조니워커 블랙 라벨은 선물로 1병 늘어 2병이다
     const jw = bottles.find((b) => b.id === 'jw_black')!;
     expect(jw.qty).toBe(2);
-    expect(repeatBadges([jw]).get('jw_black')?.label).toBe('마셔보니 좋더라');
+    expect(repeatBadges([jw]).get('jw_black')?.label).toBe('다시 산 술');
   });
 
   it('믹서는 재구매를 세지 않는다', () => {

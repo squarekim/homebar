@@ -61,9 +61,9 @@ export function milestoneBadges(bottles: readonly Bottle[]): Map<string, BottleB
  * 같은 제품을 고르면 같은 것으로 세진다.
  */
 const REPEAT_TIERS: Array<[min: number, label: string]> = [
-  [3, '없으니 못 살겠다'],
-  [2, '이제 상비품'],
-  [1, '마셔보니 좋더라'],
+  [3, '늘 두는 술'],
+  [2, '여러 번 산 술'],
+  [1, '다시 산 술'],
 ];
 
 function productKey(b: Bottle): string {

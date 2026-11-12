@@ -49,7 +49,7 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, { error: E
       <Failure
         title="화면을 그리는 중에 문제가 생겼어요"
         detail={this.state.error.message}
-        hint={<>저장된 데이터는 그대로 있어요. 다시 시도해도 같은 화면이면 알려주세요.</>}
+        hint={<>저장된 데이터는 그대로 있어요. 다시 시도해도 같은 화면이면 페이지를 새로고침해 보세요.</>}
       />
     );
   }

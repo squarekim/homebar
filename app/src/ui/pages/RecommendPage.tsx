@@ -1,5 +1,5 @@
 /**
- * 추천 조각들 — '오늘' 화면 아래의 '다르게 골라보기'에서 펼쳐 쓴다.
+ * 추천 조각들 — '오늘' 화면 아래의 '다르게 골라 보기'에서 펼쳐 쓴다.
  * 점수 계산은 서비스가 그대로 하고, 여기서는 목록 모양만 맞춘다.
  */
 import { useMemo, useState } from 'react';
@@ -43,7 +43,7 @@ export function GroupRec() {
 
   return (
     <>
-      <div className="hint">함께 마실 사람을 골라 주세요. 한 명이라도 많이 싫어하는 맛이 강한 잔은 뒤로 미뤄요. 사람은 취향 탭에서 추가해요.</div>
+      <div className="hint">함께 마실 사람을 고르세요. 누군가 싫어하는 맛이 강한 잔은 뒤로 가요.</div>
       <ChipMulti options={profileChips} values={[...selected]} onToggle={toggle} />
       <ChipRow value={onlyAvail ? 'avail' : 'all'} options={AVAIL_CHIPS} onChange={(v) => setOnlyAvail(v === 'avail')} wrap />
       {chosen.length < 2 && <div className="hint">두 명 이상 고르면 모두가 마실 만한 잔을 찾아 드려요. 지금은 {chosen.length}명이에요.</div>}
@@ -58,7 +58,7 @@ export function ClearStockRec() {
   const recs = useMemo(() => recommendCocktails(ctx, 'clearstock', 30), [ctx]);
   return (
     <>
-      <div className="hint">조금 남은 재료를 쓰는 잔부터 보여 드려요. 남은 양은 술장의 재료 재고에서 적어요.</div>
+      <div className="hint">조금 남은 재료를 쓰는 잔부터 보여 드려요.</div>
       <RecList recs={recs} onPick={(r) => openCocktail(r.id)} />
     </>
   );
@@ -70,7 +70,7 @@ export function PurchaseRec() {
   const max = Math.max(1, ...buys.map((b) => b.addedRecipes));
   return (
     <>
-      <div className="hint">하나만 더 사면 새로 만들 수 있는 잔이 많은 순서예요.</div>
+      <div className="hint">새로 열리는 잔이 많은 순서예요.</div>
       {buys.map((b) => (
         <div className="rank" key={b.ingredientId}>
           <b>+{b.addedRecipes}</b>
