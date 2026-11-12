@@ -71,17 +71,24 @@ function BottleList({ bottles }: { bottles: Bottle[] }) {
 
   return (
     <>
-      <div className="btnrow">
-        <button className="btn primary" onClick={() => openAdd()}>술 추가</button>
-      </div>
-      <SearchBox value={q} onChange={setQ} placeholder="내 술 이름 검색" />
-      <ChipRow value={grp} options={groups} onChange={setGrp} wrap />
-      {rows.length === 0 && (
+      {/* 넣은 술이 없으면 검색·분류 칩은 쓸 데가 없다 — 빈 안내와 추가 버튼만 둔다 */}
+      {bottles.length === 0 ? (
         <div className="empty">
-          {q.trim() ? '찾는 술이 없어요.' : '아직 넣은 술이 없어요. 위의 술 추가로 시작해 보세요.'}
+          아직 넣은 술이 없어요. 가진 술을 넣으면 만들 수 있는 잔을 계산해 드려요.
+          <div className="btnrow center"><button className="btn primary" onClick={() => openAdd()}>술 추가</button></div>
         </div>
+      ) : (
+        <>
+          <div className="btnrow">
+            <button className="btn primary" onClick={() => openAdd()}>술 추가</button>
+          </div>
+          <SearchBox value={q} onChange={setQ} placeholder="내 술 이름 검색" />
+          <ChipRow value={grp} options={groups} onChange={setGrp} wrap />
+          <p className="hint">술을 누르면 맛과 공식 노트를 볼 수 있어요. 도수와 용량은 확인된 것만 적어요.</p>
+          {rows.length === 0 && <div className="empty">찾는 술이 없어요.</div>}
+        </>
       )}
-      <div className="rowlist">
+      {rows.length > 0 && <div className="rowlist">
         {rows.map((b) => {
           const linked = b.ingredientIds
             .map((id) => referenceRepo.ingredientById(id))
@@ -111,8 +118,7 @@ function BottleList({ bottles }: { bottles: Bottle[] }) {
             </div>
           );
         })}
-      </div>
-      <p className="hint">술을 누르면 맛과 공식 노트를 볼 수 있어요. 도수와 용량은 확인된 것만 적어요.</p>
+      </div>}
     </>
   );
 }

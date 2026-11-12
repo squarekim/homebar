@@ -349,7 +349,7 @@ export function StarterNotice() {
       </p>
       <StarterSetList />
       <div className="btnrow">
-        <button className="btn sm primary" onClick={async () => { await turnOffExample(); notifyExample(); toast('예시를 껐어요'); }}>예시 끄기</button>
+        <button className="btn sm" onClick={async () => { await turnOffExample(); notifyExample(); toast('예시를 껐어요'); }}>예시 끄기</button>
         <button className="btn sm" onClick={() => { keepExampleAsMine(); notifyExample(); setCellarSub('stock'); goTab('cellar'); }}>내 재료로 고쳐 쓰기</button>
       </div>
     </div>

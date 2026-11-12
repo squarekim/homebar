@@ -157,12 +157,11 @@ export function TodayPage() {
         </div>
       )}
 
-      <section className="today">
+      <section className={picks.length ? 'today' : 'today none'}>
         <h2 className="ask">오늘 뭐 마실까요?</h2>
         <p className="asksub">
           {picks.length ? `${kind === 'whisky' ? '가진 위스키' : '지금 술장으로 만들 수 있는'} ${picks.length}잔 중에서 골라요` : '고를 수 있는 잔이 아직 없어요'}
         </p>
-        <StarterNotice />
 
         {picks.length > 0 ? (
           <TodayReel picks={picks} onPicked={onPicked}
@@ -206,6 +205,7 @@ export function TodayPage() {
           </div>
           </>
         )}
+        <StarterNotice />
       </section>
 
       {/* 입문 — 처음 온 사람이 할 수 있는 세 가지. 취향을 이미 정했으면 문구만 바꾼다 */}

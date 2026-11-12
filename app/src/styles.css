@@ -669,21 +669,24 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 }
 @keyframes pcRise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-/* 넓은 PC(1100px 이상): 메인은 왼쪽에 큰 카드 무대, 오른쪽에 질문·필터·결과 */
+/* 넓은 PC(1100px 이상): 질문을 맨 위 왼쪽에 두고, 그 아래 왼쪽에 카드 무대, 오른쪽에 필터·결과·예시 안내 순서.
+   잔이 없을 때(.none)는 한 줄로 읽히게 그리드를 쓰지 않는다 */
 @media (min-width:1100px){
   .today{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(360px,1fr);column-gap:48px;align-items:start;
-    grid-template-areas:"stage ask" "stage sub" "stage notice" "stage filters" "stage act" "stage .";
+    grid-template-areas:"ask ask" "sub sub" "stage filters" "stage act" "stage notice" "stage .";
     grid-template-rows:auto auto auto auto auto 1fr;text-align:left;margin-top:var(--s5)}
-  .today > .ask{grid-area:ask;margin-top:36px;font-size:44px;line-height:1.15}
-  .today > .asksub{grid-area:sub;font-size:16px}
+  .today > .ask{grid-area:ask;margin-top:0;font-size:44px;line-height:1.15}
+  .today > .asksub{grid-area:sub;font-size:16px;margin-bottom:var(--s4)}
   .today > .notice{grid-area:notice;margin-top:var(--s3)}
   .today > .stage{grid-area:stage;height:520px;margin:0;border-radius:24px;box-shadow:0 40px 80px -40px rgba(0,0,0,.75),inset 0 0 0 1px rgba(255,255,255,.03)}
   .today > .stage .deck{transform:scale(1.65);transform-origin:50% 8%}
-  .today > .pickfilters{grid-area:filters;margin-top:var(--s4)}
+  .today > .pickfilters{grid-area:filters;margin-top:0}
   .today > .pickfilters .controls{justify-content:flex-start}
   .today > .reelact,.today > .picked{grid-area:act;margin:var(--s3) 0 0;max-width:none}
   .today > .reelact .hint{text-align:left}
-  .today > .empty{grid-area:stage}
+  .today.none{display:block}
+  .today.none > .asksub{margin-bottom:var(--s3)}
+  .today.none .controls{justify-content:flex-start}
   .today .picked h3{font-size:40px}
   .today .picked .pickbtns{flex-direction:row;flex-wrap:wrap}
   .today .picked .pickbtns .btn{flex:1 1 140px;width:auto}
