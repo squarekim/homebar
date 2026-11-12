@@ -75,8 +75,8 @@ export function SimpleBuildBrowser({ initialQuery, initialOpen }: { initialQuery
                     ? <div className="parts">{mine.map((x) => <span key={x.id}>{x.name}{x.abv ? ` ${x.abv}` : ''}</span>)}</div>
                     : e.status === 'READY' || e.status === 'SUBSTITUTE'
                       // 만들 수 있는지는 재료 체크로 판정한다. 병을 넣지 않았어도 재료가 체크돼 있으면 만들 수 있다
-                      ? <p className="hint">재료 체크로는 {b.group}{ga(b.group)} 있어서 만들 수 있어요. 술장에 병을 넣으면 어떤 병으로 만들지 여기에 보여 드려요.</p>
-                      : <p className="hint">체크한 재료에 {b.group}{ga(b.group)} 없어요. 술장에서 병을 넣거나 재료를 체크하면 만들 수 있어요.</p>}
+                      ? <p className="hint">재료 체크로는 {b.group}{ga(b.group)} 있어서 만들 수 있어요.</p>
+                      : <p className="hint">체크한 재료에 {b.group}{ga(b.group)} 없어요.</p>}
                   {b.note && <p className="hint">{b.note}</p>}
                   {b.recipeId && (
                     <div className="btnrow">
@@ -129,7 +129,7 @@ export function IngredientBrowser() {
       <ChipRow value={cat} options={cats} onChange={setCat}>
         <ChipToggle label="가진 것만" cls="ok" on={ownedOnly} onToggle={() => setOwnedOnly((v) => !v)} />
       </ChipRow>
-      <p className="hint">{rows.length}종 · 가진 것 {rows.filter((r) => heldIds.has(r.id)).length} · 숫자는 그 재료를 쓰는 레시피 수예요. 누르면 어디에 쓰이는지 볼 수 있어요.</p>
+      <p className="hint">{rows.length}종 · 가진 것 {rows.filter((r) => heldIds.has(r.id)).length} · 숫자는 쓰이는 레시피 수</p>
       <div className="items">
         {rows.map((i) => (
           <button className={`it ${heldIds.has(i.id) ? '' : 'off'}`} key={i.id}

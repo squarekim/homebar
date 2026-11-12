@@ -47,7 +47,7 @@ export function TasteSetup() {
       <div className="sechead">좋아하는 맛</div>
       <p className="hint">
         {isNeutralTaste(vector)
-          ? '아직 고르지 않았어요. 고르기 전에는 가진 재료만 보고 골라 드려요.'
+          ? '아직 고르지 않았어요.'
           : `지금 기준: ${liked.map((a) => FLAVOR_LABELS_KO[a]).join(' · ') || '세부 조정으로 설정됨'}`}
       </p>
       <div className="controls">
@@ -92,7 +92,7 @@ export function PeopleManager() {
   return (
     <>
       <div className="sechead">함께 마시는 사람</div>
-      <p className="hint">여럿이 마실 잔을 고를 때 써요. 한 명이라도 싫어하는 맛이 강한 잔은 뒤로 미뤄요.</p>
+      <p className="hint">여럿이 마실 잔을 고를 때 써요.</p>
       <div className="people">
         {others.map((p) => (
           <div className="person" key={p.id}>
@@ -186,7 +186,7 @@ function BackupRestore() {
   return (
     <>
       <div className="sechead">백업 · 복원</div>
-      <p className="hint">술장, 기록, 취향을 파일로 내보내고 다시 불러올 수 있어요. 데이터는 이 브라우저에만 저장돼요.</p>
+      <p className="hint">데이터는 이 브라우저에만 저장돼요. 파일로 옮겨 둘 수 있어요.</p>
       <div className="btnrow">
         <button className="btn primary" onClick={doExport}>JSON 내보내기</button>
         <button className="btn" onClick={() => fileRef.current?.click()}>JSON 복원</button>

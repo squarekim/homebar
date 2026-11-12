@@ -102,7 +102,7 @@ export function StarterPage() {
       {step === 'cards' && (
         <>
           <div className="sechead sm">평소 마시는 걸 골라 주세요</div>
-          <p className="hint">안 마셔 본 건 그냥 두세요. 누른 버튼을 다시 누르면 지워져요.</p>
+          <p className="hint">안 마셔 본 건 두세요.</p>
           {[['음료', cards.filter((c) => !c.subcategories)], ['술', cards.filter((c) => c.subcategories)]].map(([label, list]) =>
             (list as TasteCard[]).length > 0 && (
               <div key={label as string}>

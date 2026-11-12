@@ -138,7 +138,7 @@ export function CocktailsPage() {
       <div className="split">
         <div className="listpane">
           <div className="hint">{rows.length + simpleRows.length}종 · <button className="lnk" onClick={() => setView('simple')}>간단 조합</button> · <button className="lnk" onClick={() => setView('ingredient')}>재료 목록</button></div>
-          {rows.length === 0 && simpleRows.length === 0 && <div className="empty">조건에 맞는 레시피가 없어요. 검색어나 필터를 지워 보세요.</div>}
+          {rows.length === 0 && simpleRows.length === 0 && <div className="empty">조건에 맞는 레시피가 없어요.</div>}
           {groups.map((g) => g.rows.length > 0 && (
             <div key={g.title}>
               <div className="sechead sm">{g.title} <small className="sub">{g.rows.length}</small></div>
@@ -196,7 +196,7 @@ export function CocktailsPage() {
                 <CocktailDetail key={selected.id} id={selected.id} />
               </div>
             )
-            : <div className="placeholder">목록에서 한 잔을 고르면 여기에 레시피가 열려요.</div>}
+            : <div className="placeholder">목록에서 한 잔을 고르세요.</div>}
         </div>
       </div>
     </>

@@ -44,7 +44,6 @@ export function FirstRun() {
               {wk && <CaskArt bottle={wk} size={96} />}
             </div>
             <p className="lead1">칵테일은 잔으로, 위스키는 오크통으로 보여 드려요.</p>
-            <p className="hint">잔 모양과 술 색, 통의 나무색은 레시피와 캐스크 정보로 그려요.</p>
             <button className="btn primary big" onClick={() => setStep(2)}>다음</button>
           </>
         )}

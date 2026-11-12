@@ -19,7 +19,7 @@ import { referenceRepo } from '../../repositories/referenceRepo';
 import { TodayReel } from '../components/TodayReel';
 import { MODES, GroupRec, PurchaseRec, ClearStockRec } from './RecommendPage';
 import { type RecommendationResult } from '../../models/types';
-import { IS_BETA, IS_PUBLIC } from '../../config';
+import { IS_BETA } from '../../config';
 import { TodayEditorial } from './TodayEditorial';
 import { useEffect } from 'react';
 
@@ -92,9 +92,9 @@ const TASTES = MODES.filter((m) => m.v !== 'whisky').map((m) => (m.v === 'availa
 
 type Way = 'group' | 'purchase' | 'clearstock';
 const WAYS: { v: Way; label: string; hint: string }[] = [
-  { v: 'group', label: '함께 마실 사람', hint: '여러 명의 취향을 함께 봐요.' },
-  { v: 'purchase', label: '뭘 사면 좋을까', hint: '한 병 더 샀을 때 새로 만들 수 있는 잔 수로 순서를 매겨요.' },
-  { v: 'clearstock', label: '재고 소진', hint: '조금 남은 재료를 먼저 써요.' },
+  { v: 'group', label: '함께 마실 사람', hint: '' },
+  { v: 'purchase', label: '뭘 사면 좋을까', hint: '' },
+  { v: 'clearstock', label: '재고 소진', hint: '' },
 ];
 
 /** 다른 기준으로 고르기 — 기존 추천 기능을 한 자리에 접어 둔다 */
@@ -162,12 +162,12 @@ export function TodayPage() {
   const baseOn = base !== 'all';
   const emptyMsg = (
     <>{kind === 'whisky'
-              ? <>아직 넣은 위스키가 없어요. 가진 위스키를 넣으면 여기서 골라 드려요.</>
+              ? <>아직 넣은 위스키가 없어요.</>
               : baseOn
-                ? <>이 베이스 술로 지금 만들 수 있는 잔이 없어요. 필터를 바꿔 보세요.</>
+                ? <>이 베이스 술로 만들 수 있는 잔이 없어요.</>
               : mode === 'available'
-                ? <>집에 있는 술을 넣으면 지금 만들 수 있는 잔을 골라 드려요.{IS_PUBLIC ? ' 먼저 둘러보고 싶다면 예시 재고로 시작해 보세요.' : ''}</>
-                : <>이 맛으로 지금 만들 수 있는 잔이 없어요. 다른 칩을 골라 보세요.</>}</>
+                ? <>집에 있는 술을 넣으면 만들 수 있는 잔을 골라 드려요.</>
+                : <>이 맛으로 만들 수 있는 잔이 없어요.</>}</>
   );
   const filterCount = (kind !== 'whisky' && tasteOn ? 1 : 0) + (kind !== 'whisky' && baseOn ? 1 : 0);
   const filters = (
@@ -210,7 +210,7 @@ export function TodayPage() {
     <>
       {IS_BETA && (
         <div className="sample">
-          <span><b>예시 재고</b>로 둘러보는 중이에요. 바꾼 내용은 이 브라우저에만 저장돼요.</span>
+          <span><b>예시 재고</b>로 둘러보는 중이에요.</span>
           <button className="btn sm" onClick={() => goTab('cellar')}>술장 채우기</button>
         </div>
       )}
@@ -274,22 +274,22 @@ export function TodayPage() {
       <div className="starts">
         <button onClick={() => goTab('starter')}>
           <b>{ctx.hasTaste ? '취향 다시 찾기' : '취향 찾기'}</b>
-          <span>평소 마시는 음료를 고르면 맞는 위스키와 칵테일을 골라 드려요</span>
+          <span>입맛에 맞는 첫 잔 찾기</span>
         </button>
         {/* 잔이 없을 때는 위 빈 안내에 같은 버튼이 있다 — 두 번 보이지 않게 뺀다 */}
         {picks.length > 0 && (
           <button onClick={() => goTab('cellar')}>
             <b>집에 있는 술 넣기</b>
-            <span>가진 술과 재료를 넣으면 지금 만들 수 있는 잔이 나와요</span>
+            <span>만들 수 있는 잔 계산</span>
           </button>
         )}
         <button onClick={() => openGuide('menu')}>
           <b>입문 안내서</b>
-          <span>위스키와 칵테일로 나눠 마시는 법, 첫 병, 도구, 보관, 흔한 오해를 알려 드려요</span>
+          <span>마시는 법 · 첫 병 · 도구 · 보관</span>
         </button>
         <button onClick={() => { try { sessionStorage.setItem(OPEN_HEALTH_KEY, '1'); } catch { /* 저장이 막혀도 이동은 한다 */ } goTab('settings'); }}>
           <b>건강한 음주 안내</b>
-          <span>마시기 전에 알아 둘 것을 설정에 모아 두었어요</span>
+          <span>마시기 전에 알아 둘 것</span>
         </button>
       </div>
 
@@ -297,7 +297,7 @@ export function TodayPage() {
 
       <div className="sechead">최근 기록</div>
       {recent.length === 0
-        ? <div className="empty">아직 기록이 없어요. 고른 잔을 만들고 <b>만든 잔 남기기</b>를 누르면 여기에 쌓여요.</div>
+        ? <div className="empty">아직 기록이 없어요.</div>
         : (
           <>
             {recent.map((l) => <LogCard key={l.id} log={l} />)}

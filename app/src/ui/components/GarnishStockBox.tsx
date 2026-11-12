@@ -26,13 +26,10 @@ export function GarnishStockBox({ own }: { own: 'all' | 'owned' | 'missing' }) {
     <div className="grpbox garnishbox">
       <h4>가니시 <small>{rows.filter((r) => held.has(r.id)).length}/{rows.length}</small></h4>
       <p className="hint">
-        가니시가 없어도 음료는 만들 수 있어요. 손님에게 낼 때는 올리면 보기 좋아요.
-        체크해 두면 레시피에 <b>가니시까지 있어요</b>가 붙어요. 만들 수 있는 잔 수는 바뀌지 않아요.
+        체크하면 레시피에 <b>가니시까지 있어요</b>가 붙어요.
       </p>
       <p className="hint">
-        생과일을 늘 챙기기 어렵다면 말린 레몬·라임·오렌지 칩으로 슬라이스를 대신할 수 있어요.
-        말린 칩은 보기 좋게 해 주지만 향이나 오일은 더하지 않아요. 그래서 사제락, 베스퍼, 불바디에처럼
-        껍질을 비틀어 오일을 뿌리는 잔에는 생과일 껍질이 있어야 해요.{' '}
+        말린 칩은 슬라이스만 대신해요(향은 없어요).{' '}
         <button className="lnk" onClick={() => openGuide('garnish')}>가니시 준비</button>
       </p>
       <div className="items">

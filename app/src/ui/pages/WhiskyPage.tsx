@@ -226,7 +226,7 @@ export function WhiskyPage() {
 
   return (
     <>
-      <h2 className="pagetitle" data-k="Cask Notes">위스키<span className="sub">{browsing ? `둘러보기 ${CATALOG.length}종 · 사기 전에 맛과 공식 노트를 볼 수 있어요` : `가진 위스키 ${whiskies.length}종 · 맛과 공식 노트를 볼 수 있어요`}</span></h2>
+      <h2 className="pagetitle" data-k="Cask Notes">위스키<span className="sub">{browsing ? `둘러보기 ${CATALOG.length}종` : `가진 위스키 ${whiskies.length}종`}</span></h2>
       <GuideHint tab="whisky" />
       <ChipRow value={view} options={VIEWS} onChange={setView} />
       <SearchBox value={q} onChange={setQ} placeholder="이름·분류(셰리/피트/싱글몰트…) 검색"
@@ -258,7 +258,7 @@ export function WhiskyPage() {
           {rows.length === 0 && (browsing || whiskies.length > 0) && <div className="empty">조건에 맞는 위스키가 없어요.</div>}
           {!browsing && whiskies.length === 0 && (
             <div className="empty">
-              아직 넣은 위스키가 없어요. 처음이라면 아래에서 시작해 보세요.
+              아직 넣은 위스키가 없어요.
               <div className="btnrow center">
                 <button className="btn primary" onClick={() => goTab('starter')}>내 입맛에 맞는 위스키 찾기</button>
                 <button className="btn" onClick={() => openGuide('drink')}>위스키 마시는 법</button>
@@ -298,7 +298,7 @@ export function WhiskyPage() {
                   owned={selected.productId && isPreviewId(selected.id) ? ownedByProduct.get(selected.productId) : undefined} />
               </div>
             )
-            : <div className="placeholder">목록에서 한 병을 고르면 맛 설명과 공식 노트가 열려요.</div>}
+            : <div className="placeholder">목록에서 한 병을 고르세요.</div>}
         </div>
       </div>
     </>
@@ -337,7 +337,7 @@ function GapView({ onBack }: { onBack: () => void }) {
           </tbody>
         </table>
       </div>
-      <p className="hint">숙성 칸은 병 이름에 적힌 연수로 나눠요. 엔트리는 11년 이하, 스탠다드는 12~17년, 고숙성은 18년 이상이에요. 연수 표시가 없는 병은 빠져요.</p>
+      <p className="hint">엔트리 11년 이하 · 스탠다드 12~17년 · 고숙성 18년 이상. 연수 표시가 없는 병은 빠져요.</p>
 
       <div className="sechead">분류별로 가진 위스키</div>
       {coverage.map((fam) => (
@@ -352,7 +352,6 @@ function GapView({ onBack }: { onBack: () => void }) {
       ))}
 
       <div className="sechead">이 병을 더하면</div>
-      <div className="hint">후보를 더했을 때 새로 채워지는 칸을 계산해요.</div>
       <div className="rowlist">
         {sims.map(({ c, sim }) => (
           <div className="rowitem" key={c.id}>

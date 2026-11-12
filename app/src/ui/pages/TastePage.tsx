@@ -29,7 +29,7 @@ export function TastePage() {
           ? <><small>내 술 취향은 이래요</small><b>{words.join(' · ')}</b></>
           : <><small>내 술 취향</small><b>아직 정해지지 않았어요</b></>}
         {!sum.enough && (
-          <p>마신 잔을 {TASTE_MIN_LOGS}잔 이상 남기면 기록으로 취향을 계산해 드려요. 지금은 {sum.count}잔이에요.</p>
+          <p>{TASTE_MIN_LOGS}잔 이상 기록하면 취향을 계산해요. 지금 {sum.count}잔.</p>
         )}
         <div className="btnrow">
           {sum.enough && (
@@ -82,7 +82,7 @@ export function TastePage() {
       <PeopleManager />
 
       <div className="sechead">설정</div>
-      <p className="hint">화면 테마, 건강한 음주 안내, 백업과 복원은 설정에 있어요.</p>
+      <p className="hint">테마, 음주 안내, 백업</p>
       <div className="btnrow"><button className="btn" onClick={() => goTab('settings')}>설정 열기</button></div>
     </>
   );

@@ -74,7 +74,7 @@ export function TodayEditorial({ list, subline, filters, emptyText }: {
               <LeadArt kind="whisky" bottleId={sel.id} size={160} />
               <h2>{sel.name}</h2>
               <p className="taste">{sel.flavorWords.join(' · ')}</p>
-              <p className="hint">가지고 있는 병이에요. 니트로 따라 마셔 보세요.</p>
+              <p className="hint">가지고 있는 병이에요.</p>
               <div className="btnrow">
                 <button className="btn primary" onClick={() => openLog({ drinkId: sel.id, drinkType: 'whisky', drinkName: sel.name, servingStyle: 'neat' })}>마신 잔 남기기</button>
                 <button className="btn" onClick={() => openBottle(sel.id)}>위스키 상세 보기</button>
@@ -88,7 +88,7 @@ export function TodayEditorial({ list, subline, filters, emptyText }: {
           <div className="ed-block">
             <div className="ed-head"><span className="k">Menu Index</span><h3>지금 만들 수 있는 잔 <small>{list.length}</small></h3></div>
             {list.length === 0
-              ? <p className="hint">재료를 체크하면 여기에 번호를 붙여 늘어놓아요.</p>
+              ? <p className="hint">아직 없어요.</p>
               : (
                 <ol className="ed-index">
                   {list.slice(0, 24).map((r, i) => (
@@ -117,7 +117,7 @@ export function TodayEditorial({ list, subline, filters, emptyText }: {
           <div className="ed-block">
             <div className="ed-head"><span className="k">Next Addition</span><h3>하나만 더 들이면</h3></div>
             {buys.length === 0
-              ? <p className="hint">지금 재료에 하나만 더해서 새로 열리는 잔이 없어요.</p>
+              ? <p className="hint">없어요.</p>
               : (
                 <ul className="ed-next">
                   {buys.map((b) => (
