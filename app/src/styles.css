@@ -491,7 +491,7 @@ th{color:var(--mute);font-size:12px;font-weight:500}
   box-shadow:inset 0 0 0 5px #F6EEDC,inset 0 0 0 6px rgba(94,26,38,.45),0 6px 14px rgba(8,12,14,.35)}
 .stage .face .art{display:block;line-height:0}
 .stage .face .art svg{width:72px;height:72px;display:block}
-.stage .cardname{font-family:'Gowun Batang',var(--display);font-weight:400;font-size:13px;line-height:1.25;letter-spacing:.02em;text-align:center;
+.stage .cardname{font-family:var(--display);font-weight:500;font-size:13px;line-height:1.25;letter-spacing:.02em;text-align:center;
   max-width:100%;word-break:keep-all;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
 .stage .back{transform:rotateY(180deg);display:flex;align-items:center;justify-content:center;
   /* 클래식 카드 뒷면: 크림색 흰 테두리(실제 카드처럼 너비의 약 8%) 안에 와인색 바탕과 가는 마름모 격자 */

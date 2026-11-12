@@ -47,10 +47,16 @@ export default defineConfig(({ mode }) => {
           ]
         },
         workbox: {
-          globPatterns: ['**/*.{js,css,html,svg,png,webp,woff2}'],
+          // 글꼴(woff2)은 미리 받아 두지 않는다 — 한글 글꼴 파일이 수백 개라, 쓰인 글자의 파일만 그때그때 받아 저장한다
+          globPatterns: ['**/*.{js,css,html,svg,png,webp}'],
           // 웹 글꼴(Google Fonts)도 기기에 저장한다. 저장하지 않으면 설치한 앱·오프라인·느린 망에서
           // 글꼴을 못 받아 휴대폰에 설정한 글꼴(system-ui)로 보인다.
           runtimeCaching: [
+            {
+              urlPattern: ({ request, sameOrigin }) => sameOrigin && request.destination === 'font',
+              handler: 'CacheFirst',
+              options: { cacheName: 'app-fonts', expiration: { maxEntries: 600, maxAgeSeconds: 60 * 60 * 24 * 365 } },
+            },
             {
               urlPattern: ({ url }) => url.origin === 'https://fonts.googleapis.com',
               handler: 'StaleWhileRevalidate',

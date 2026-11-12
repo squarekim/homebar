@@ -1,0 +1,17 @@
+/*
+ * fonts.css — 앱에 함께 넣은 웹 글꼴(2026-11-12). 출처: npm Fontsource 패키지 5.3.x, 각 폴더의 LICENSE(SIL OFL 1.1).
+ * Google Fonts 에서 받아 오면 느린 망·설치 앱·오프라인에서 글꼴을 못 받아 휴대폰에 설정한 글꼴로 보인다
+ * (갤럭시 + 삼성 인터넷에서 확인된 증상). 같은 주소에서 내려보내고, 서비스 워커가 한 번 받은 파일을 저장한다.
+ * 한글 글꼴은 글자 묶음별 파일(unicode-range)이라 화면에 쓰인 글자의 파일만 받는다. 원본의 .woff 대체 파일은 뺐다.
+ *   IBM Plex Sans KR 400·500·600(본문) · Noto Serif KR 500(제목·이름) · IBM Plex Mono 400·500(영문 라벨·숫자)
+ *   Cormorant Garamond 500·이탤릭 400(머리글 HOMEBAR) · Great Vibes 400(카드 뒷면) — 라틴 글자만
+ */
+@import './ibm-plex-sans-kr/400.css';
+@import './ibm-plex-sans-kr/500.css';
+@import './ibm-plex-sans-kr/600.css';
+@import './noto-serif-kr/500.css';
+@import './ibm-plex-mono/400.css';
+@import './ibm-plex-mono/500.css';
+@import './cormorant-garamond/500.css';
+@import './cormorant-garamond/400-italic.css';
+@import './great-vibes/400.css';
