@@ -94,7 +94,7 @@ export function CocktailsPage() {
   if (view !== 'recipe') {
     return (
       <>
-        <h2 className="pagetitle">{view === 'simple' ? '간단 조합' : '재료'}</h2>
+        <h2 className="pagetitle" data-k="Recipe Index">{view === 'simple' ? '간단 조합' : '재료'}</h2>
         <div className="btnrow"><button className="btn ghost" onClick={() => { setView('recipe'); setSimpleOpen(null); }}>← 칵테일 레시피로</button></div>
         {view === 'simple'
           ? <SimpleBuildBrowser initialQuery={simpleOpen?.q} initialOpen={simpleOpen?.id} />
@@ -105,7 +105,7 @@ export function CocktailsPage() {
 
   return (
     <>
-      <h2 className="pagetitle">칵테일<span className="sub">레시피 {referenceRepo.cocktails().length}종</span></h2>
+      <h2 className="pagetitle" data-k="Recipe Index">칵테일<span className="sub">레시피 {referenceRepo.cocktails().length}종</span></h2>
       <GuideHint tab="cocktails" />
 
       <SearchBox value={q} onChange={setQ} placeholder="칵테일 또는 재료 검색" />

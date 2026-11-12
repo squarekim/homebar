@@ -80,7 +80,7 @@ export function StarterPage() {
 
   return (
     <>
-      <h2 className="pagetitle">
+      <h2 className="pagetitle" data-k="First Pour">
         취향 찾기
         <span className="sub">평소 마시는 걸 고르면 처음 마셔 볼 위스키와 칵테일을 골라 드려요.</span>
       </h2>

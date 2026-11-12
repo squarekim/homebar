@@ -210,7 +210,7 @@ export function WhiskyPage() {
 
   return (
     <>
-      <h2 className="pagetitle">위스키<span className="sub">{browsing ? `둘러보기 ${CATALOG.length}종 · 사기 전에 맛과 공식 노트를 볼 수 있어요` : `가진 위스키 ${whiskies.length}종 · 맛과 공식 노트를 볼 수 있어요`}</span></h2>
+      <h2 className="pagetitle" data-k="Cask Notes">위스키<span className="sub">{browsing ? `둘러보기 ${CATALOG.length}종 · 사기 전에 맛과 공식 노트를 볼 수 있어요` : `가진 위스키 ${whiskies.length}종 · 맛과 공식 노트를 볼 수 있어요`}</span></h2>
       <GuideHint tab="whisky" />
       <ChipRow value={view} options={VIEWS} onChange={setView} />
       <SearchBox value={q} onChange={setQ} placeholder="이름·분류(셰리/피트/싱글몰트…) 검색" />
@@ -282,7 +282,7 @@ function GapView({ onBack }: { onBack: () => void }) {
 
   return (
     <>
-      <h2 className="pagetitle">위스키 분류 표<span className="sub">가진 위스키로 채운 표 · 빈 칸 {totalGaps}</span></h2>
+      <h2 className="pagetitle" data-k="Cask Notes">위스키 분류 표<span className="sub">가진 위스키로 채운 표 · 빈 칸 {totalGaps}</span></h2>
       <div className="btnrow"><button className="btn ghost" onClick={onBack}>← 위스키 목록으로</button></div>
 
       <div className="sechead">스카치 싱글몰트 · 지역 × 숙성</div>

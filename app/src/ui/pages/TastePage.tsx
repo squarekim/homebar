@@ -22,7 +22,7 @@ export function TastePage() {
 
   return (
     <>
-      <h2 className="pagetitle">취향<span className="sub">{sum.count ? `마신 기록 ${sum.count}잔` : '아직 기록이 없어요'}</span></h2>
+      <h2 className="pagetitle" data-k="Tasting Profile">취향<span className="sub">{sum.count ? `마신 기록 ${sum.count}잔` : '아직 기록이 없어요'}</span></h2>
 
       <div className="tastecard">
         {set

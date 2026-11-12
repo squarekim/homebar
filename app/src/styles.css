@@ -728,3 +728,108 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 /* 흐리게 할 때 카드 전체에 opacity 를 주면 3D 가 납작해져 뒷면 대신 앞면이 보인다. 그래서 면에만 준다 */
 .stage .card.dim{opacity:1}
 .stage .card.dim .face,.stage .card.dim .back{opacity:.5}
+
+/* ═════════════════════════════════════════════════════════════════════
+   에디토리얼 테마 (2026-11-12) — 종이와 잉크, 실선으로 나눈 매거진 지면.
+   위의 규칙을 지우지 않고 이 층이 덮는다. 기본은 종이(라이트), 다크는 같은 지면을 밤에 본 것.
+   · 색: 종이 #F6F4EF · 잉크 #151413 · 실선 #D8D3C8 · 강조는 주홍 #C83E2B 하나(지금 가능·주 동작·선택 표시)
+   · 글꼴: 제목은 Noto Serif KR, 영문 이름은 Cormorant Garamond 이탤릭, 라벨·숫자는 IBM Plex Mono
+   · 모양: 모서리 없음. 면 대신 실선으로 구역을 나눈다. 잔·오크통 그림은 그대로 둔다(GlassArt·CaskArt).
+   ═════════════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#F6F4EF; --panel:#ECE8DF; --raise:#E4DFD3; --line:#D8D3C8; --control:#151413;
+  --ink:#151413; --mute:#6E6962; --dim:#857F77;
+  --accent:#C83E2B; --on-accent:#F6F4EF;
+  --primary:#151413; --on-primary:#F6F4EF;
+  --ok:#1E6B43; --sub:#A3501A; --no:#B42318;
+  --ok-bg:#E3EEE5; --sub-bg:#F4E6D6; --no-bg:#F6E1DD; --accent-bg:#ECE8DF;
+  --glow:255,226,170;
+  --display:'Noto Serif KR','Nanum Myeongjo',serif;
+  --latin:'Cormorant Garamond','Noto Serif KR',serif;
+  --mono:'IBM Plex Mono','IBM Plex Sans KR',monospace;
+  --r:0px; --r-sm:0px;
+  color-scheme:light;
+}
+:root[data-theme=dark]{
+  --bg:#151413; --panel:#1E1C1A; --raise:#272421; --line:#3A3632; --control:#F1EEE7;
+  --ink:#F1EEE7; --mute:#A39D94; --dim:#8E887F;
+  --accent:#E0644F; --on-accent:#151413;
+  --primary:#F1EEE7; --on-primary:#151413;
+  --ok:#6CC38F; --sub:#E59A5B; --no:#E5726F;
+  --ok-bg:#1C2B22; --sub-bg:#33261A; --no-bg:#382020; --accent-bg:#1E1C1A;
+  color-scheme:dark;
+}
+/* 라이트 값은 :root 가 이미 갖고 있다 — 예전 라이트 블록이 덮어쓰지 않게 같은 값을 다시 둔다 */
+:root[data-theme=light]{
+  --bg:#F6F4EF; --panel:#ECE8DF; --raise:#E4DFD3; --line:#D8D3C8; --control:#151413;
+  --ink:#151413; --mute:#6E6962; --dim:#857F77;
+  --accent:#C83E2B; --on-accent:#F6F4EF; --primary:#151413; --on-primary:#F6F4EF;
+  --ok:#1E6B43; --sub:#A3501A; --no:#B42318;
+  --ok-bg:#E3EEE5; --sub-bg:#F4E6D6; --no-bg:#F6E1DD; --accent-bg:#ECE8DF;
+}
+::selection{background:var(--ink);color:var(--bg)}
+body{-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-weight:500}
+
+/* 셸 — 머리기사(마스트헤드)와 번호 붙은 목차 */
+header{background:color-mix(in srgb,var(--bg) 95%,transparent);backdrop-filter:blur(4px)}
+header .wrap{min-height:56px}
+.brand{align-items:baseline}
+.brand .logomark{display:none}
+.brand h1{font-family:var(--latin);font-size:24px;font-weight:500;letter-spacing:-.01em}
+.brand .idx{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--mute);text-transform:uppercase}
+@media (min-width:900px){
+  .topnav{gap:28px;margin-left:40px}
+  .topnav button{padding:18px 0 16px;border-radius:0;font-size:14px;background:none;border-bottom:2px solid transparent}
+  .topnav button .no{font-family:var(--mono);font-size:11px;margin-right:6px;color:var(--dim)}
+  .topnav button[aria-current=page]{background:none;border-bottom-color:var(--ink);font-weight:500}
+}
+.iconbtn{border-radius:0}
+nav.tabbar button[aria-selected=true]{color:var(--accent)}
+
+/* 지면 제목 — 위에 영문 모노 라벨, 아래 잉크 실선 */
+.pagetitle{font-family:var(--display);font-weight:500;padding-bottom:var(--s3);border-bottom:1px solid var(--ink)}
+.pagetitle[data-k]::before{content:attr(data-k);display:block;font-family:var(--mono);font-size:10px;font-weight:400;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--mute);margin-bottom:6px}
+.pagetitle::after{display:none!important}
+.pagetitle .sub{font-family:var(--body);font-size:14px}
+.sechead{font-family:var(--display);font-weight:500;padding-bottom:var(--s1);border-bottom:1px solid var(--ink)}
+.sechead.in,.sechead.sm,.grpbox h4{font-family:var(--mono);font-size:10.5px;font-weight:400;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--mute);border-bottom:1px solid var(--line);padding-bottom:6px}
+.today .ask,.picked h3,.lead h3,.detail h2,.modal h2{font-family:var(--display);font-weight:500}
+
+/* 면 → 실선. 패널은 바탕을 지우고 위아래 실선만 남긴다 */
+.empty,.makernote,.notice,.statline,.filterpanel,.sample,.shortage,.tastecard,.person,.stat .box,.detail .steps,.card,.starts button{
+  background:transparent;border:1px solid var(--line);border-radius:0}
+.statline{border-width:1px 0;padding-left:0;padding-right:0}
+.statline .cell b{font-family:var(--mono);font-weight:500}
+.starts{gap:0}
+.starts button{border-width:0 0 1px;padding:var(--s3) 0}
+@media (min-width:700px){.starts button{border-width:0 1px 1px 0;padding:var(--s3)}.starts button:first-child{padding-left:0}}
+.starts button:hover{background:var(--panel)}
+.starts button b{font-family:var(--display);font-weight:500}
+.mark{background:var(--panel);border:1px solid var(--line);border-radius:0}
+.rowitem[aria-current=true]{background:var(--panel)}
+.rowitem[aria-current=true]::before,.rowitem[aria-current=true]::after{background:var(--accent)!important}
+.rowitem .nm,.kvrow .nm{font-family:var(--display);font-weight:500}
+
+/* 버튼·칩·입력 — 각진 상자, 주 동작은 잉크로 채운다 */
+.btn,.chip,input[type=search],input[type=text],input[type=number],textarea,select{border-radius:0}
+.btn{border-color:var(--line)}
+.btn:hover{background:var(--panel)}
+.btn.primary{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.btn.primary:hover{background:var(--accent);border-color:var(--accent);color:var(--on-accent);opacity:1}
+.btn.ghost{border-color:var(--line)}
+.chip{border-color:var(--line);font-size:13px;min-height:36px;padding:6px 14px}
+.chip[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+input[type=search]{border-width:0 0 1px;border-color:var(--ink);background:transparent;padding-left:2px}
+.state.s-READY{color:var(--accent)}
+.stage{border-radius:0!important}
+.lnk,a{text-decoration-color:var(--line)}
+/* 남은 둥근 모서리 — 버튼·태그·팝업·목록 줄도 각지게. 진행 막대와 카드 뒷면·상태 점은 그대로 둔다 */
+.btn.big,.sheetcard,.firstrun .sheetcard,.guidecard,.guidecard .gtag,.bdg,.cltag,.ss,.pill,.parts span,.toast,
+.rowitem,.iconbtn,.kvrow,.grpbox label,.chip.iconchip{border-radius:0!important}
+.parts span,.cltag,.ss,.pill{background:transparent;border:1px solid var(--line)}
+@media (min-width:1100px){.today > .stage{box-shadow:none;border:1px solid var(--line)}}
+.picked h3,.lead h3{letter-spacing:-.02em}
+.state.s-READY::before{border-radius:0}

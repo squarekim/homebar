@@ -34,7 +34,7 @@ export function CellarPage() {
 
   return (
     <>
-      <h2 className="pagetitle">술장</h2>
+      <h2 className="pagetitle" data-k="My Bar Cabinet">술장</h2>
       <GuideHint tab="cellar" />
       <StarterNotice />
 

@@ -1,14 +1,14 @@
 /**
- * theme — 화면 테마. 다크가 기본이고 라이트는 설정에서 고른다.
- * 기기 설정(prefers-color-scheme)은 따르지 않는다. 바 조명 아래 잔처럼 보이는 다크가 이 앱의 기본 얼굴이다.
- * 고른 값은 이 브라우저에만 둔다(저장이 막혀 있으면 매번 다크로 시작).
+ * theme — 화면 테마. 종이 지면(라이트)이 기본이고 다크는 설정에서 고른다(2026-11-12 에디토리얼 개편).
+ * 기기 설정(prefers-color-scheme)은 따르지 않는다.
+ * 고른 값은 이 브라우저에만 둔다(저장이 막혀 있으면 매번 라이트로 시작).
  */
 export type Theme = 'dark' | 'light';
 const KEY = 'homebar.theme';
-const BAR: Record<Theme, string> = { dark: '#1B2427', light: '#F3F5F3' };
+const BAR: Record<Theme, string> = { dark: '#151413', light: '#F6F4EF' };
 
 export function savedTheme(): Theme {
-  try { return localStorage.getItem(KEY) === 'light' ? 'light' : 'dark'; } catch { return 'dark'; }
+  try { return localStorage.getItem(KEY) === 'dark' ? 'dark' : 'light'; } catch { return 'light'; }
 }
 
 export function applyTheme(t: Theme, save = false): void {

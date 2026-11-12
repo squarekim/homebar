@@ -21,7 +21,7 @@ const QUICK_AXES: FlavorAxis[] = ['sweet', 'citrus', 'fruit', 'smoke', 'peat', '
 export function SettingsPage() {
   return (
     <>
-      <h2 className="pagetitle">설정</h2>
+      <h2 className="pagetitle" data-k="Settings">설정</h2>
       <ScreenSetup />
       <DrinkingGuide />
       <BackupRestore />
@@ -117,7 +117,7 @@ export function PeopleManager() {
   );
 }
 
-const THEMES: { v: Theme; label: string }[] = [{ v: 'dark', label: '다크' }, { v: 'light', label: '라이트' }];
+const THEMES: { v: Theme; label: string }[] = [{ v: 'light', label: '라이트' }, { v: 'dark', label: '다크' }];
 
 function ScreenSetup() {
   const [theme, setTheme] = useState<Theme>(savedTheme);
