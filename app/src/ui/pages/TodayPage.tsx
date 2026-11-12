@@ -19,7 +19,7 @@ import { TodayReel } from '../components/TodayReel';
 import { MODES, GroupRec, PurchaseRec, ClearStockRec } from './RecommendPage';
 import { type RecommendationResult } from '../../models/types';
 import { IS_BETA } from '../../config';
-import { TodayEditorial } from './TodayEditorial';
+import { TodayEditorial, StartLinks } from './TodayEditorial';
 import { useEffect } from 'react';
 
 /** 넓은 PC(1100px 이상)인지 — 메인 지면 배치를 바꾸는 데만 쓴다 */
@@ -236,6 +236,7 @@ export function TodayPage() {
           </>
         )}
         <StarterNotice />
+        <StartLinks />
       </section>
       )}
 

@@ -25,12 +25,11 @@ export function TastePage() {
       <h2 className="pagetitle" data-k="Tasting Profile">취향{sum.count > 0 && <span className="sub">기록 {sum.count}잔</span>}</h2>
 
       <div className="tastecard">
-        {set
-          ? <><small>내 취향</small><b>{words.join(' · ')}</b></>
-          : <small>내 취향</small>}
+        <div className="sechead">내 취향</div>
+        {set && <b>{words.join(' · ')}</b>}
         {!sum.enough && (
           <div className="tprog">
-            <span>취향 분석까지 {Math.min(sum.count, TASTE_MIN_LOGS)} / {TASTE_MIN_LOGS}잔</span>
+            <div className="tprog-row"><span>취향 분석까지</span><span>{Math.min(sum.count, TASTE_MIN_LOGS)} / {TASTE_MIN_LOGS}잔</span></div>
             <progress max={TASTE_MIN_LOGS} value={Math.min(sum.count, TASTE_MIN_LOGS)} />
           </div>
         )}

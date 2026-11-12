@@ -8,7 +8,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useUI } from '../UIContext';
 import { useRecommendContext } from '../../hooks/useRecommendContext';
-import { useHeldIds } from '../../hooks/useData';
+import { useHeldIds, useBottles } from '../../hooks/useData';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { inventoryRepo } from '../../repositories/inventoryRepo';
 import { calculatePurchases } from '../../services/purchaseService';
@@ -21,7 +21,6 @@ import { LeadArt } from '../components/Mark';
 import { FlavorBars, notifyExample } from '../components/common';
 import { type Cocktail, type RecommendationResult } from '../../models/types';
 
-const two = (n: number) => String(n).padStart(2, '0');
 /** 받침 따라 '을/를' */
 const eul = (w: string) => { const c = w.charCodeAt(w.length - 1) - 0xac00; return c >= 0 && c % 28 ? '을' : '를'; };
 
@@ -29,6 +28,26 @@ const eul = (w: string) => { const c = w.charCodeAt(w.length - 1) - 0xac00; retu
 export function enName(url: string | undefined): string {
   const m = url?.match(/iba-world\.com\/iba-cocktail\/([^/?#]+)/);
   return m ? m[1]!.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : '';
+}
+
+/**
+ * 시작하기 — 처음 온 사람이 할 일 세 줄. 메인 넓은 화면은 인덱스 위, 모바일은 카드 뽑기 아래에 둔다.
+ * 취향을 이미 정했으면 '다시 찾기'로, 술을 넣은 적이 있으면 '술 넣기' 줄은 뺀다.
+ */
+export function StartLinks() {
+  const { goTab, openAdd, openGuide } = useUI();
+  const ctx = useRecommendContext();
+  const bottles = useBottles();
+  return (
+    <div className="ed-block startlinks">
+      <div className="ed-head"><span className="k">Start</span><small>시작하기</small></div>
+      <ul>
+        <li><button onClick={() => goTab('starter')}>{ctx.hasTaste ? '취향 다시 찾기' : '취향 찾기'}<span aria-hidden="true">→</span></button></li>
+        <li><button onClick={() => openGuide('menu')}>입문 안내서<span aria-hidden="true">→</span></button></li>
+        {bottles.length === 0 && <li><button onClick={() => { goTab('cellar'); openAdd(); }}>집에 있는 술 넣기<span aria-hidden="true">→</span></button></li>}
+      </ul>
+    </div>
+  );
 }
 
 /** 왼쪽 스펙 시트 — 이름 · 잔 · 재료 비율 · 맛 프로필 */
@@ -136,16 +155,17 @@ export function TodayEditorial({ list, filters, emptyText }: {
 
         {/* 오른쪽 — 인덱스 · 술장 · 추가 추천 */}
         <aside className="ed-side">
+          <StartLinks />
           {list.length > 0 && (
             <div className="ed-block">
               <div className="ed-head"><span className="k">Menu Index</span><small>{list.length}</small></div>
               <ol className="ed-index">
-                {list.slice(0, 24).map((r, i) => {
+                {list.slice(0, 24).map((r) => {
                   const en = r.kind === 'cocktail' ? enName(referenceRepo.cocktailById(r.id)?.url) : '';
                   return (
                     <li key={r.id}>
                       <button aria-current={sel?.id === r.id} onClick={() => setSelId(r.id)}>
-                        <span className="no">{two(i + 1)}</span>
+                        <span className="no">{r.kind === 'whisky' ? '위스키' : r.base ?? ''}</span>
                         <span className="nm">{r.name}{en && <em>{en}</em>}</span>
                         <span className={`st ${r.status === 'SUBSTITUTE' ? 'alt' : ''}`}>{r.status === 'SUBSTITUTE' ? '대체' : '가능'}</span>
                       </button>

@@ -40,7 +40,7 @@ body{
   background:var(--bg); color:var(--ink);
   font-family:var(--body);
   font-size:16px; line-height:1.6; font-variant-numeric:tabular-nums;
-  padding-bottom:calc(72px + env(safe-area-inset-bottom));
+  padding-bottom:calc(88px + env(safe-area-inset-bottom));
   -webkit-tap-highlight-color:transparent;
   word-break:keep-all; overflow-wrap:break-word;
 }
@@ -51,7 +51,7 @@ a:hover{text-decoration-color:currentColor}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 h1,h2,h3,h4{letter-spacing:-.02em;line-height:1.25;font-weight:600}
-.brand h1,.pagetitle,.lead h3,.detail h2,.modal h2,.today .ask,.picked h3,.firstrun .lead1{font-family:var(--display);font-weight:700;letter-spacing:-.01em}
+.brand h1,.pagetitle,.lead h3,.detail h2,.modal h2,.today .ask,.picked h3{font-family:var(--display);font-weight:700;letter-spacing:-.01em}
 
 .wrap{max-width:1180px;margin:0 auto;padding:0 16px}
 @media (min-width:900px){
@@ -201,7 +201,7 @@ input::placeholder{color:var(--dim)}
 .filterpanel{background:var(--panel);border-radius:var(--r);padding:var(--s2) var(--s3);margin-top:var(--s1)}
 /* 모바일 상세 — 화면 전체 */
 .sheet{position:fixed;inset:0;z-index:45;background:var(--bg);overflow:auto;
-  padding:0 16px calc(90px + env(safe-area-inset-bottom))}
+  padding:0 16px calc(88px + env(safe-area-inset-bottom))}
 .sheet .sheetbar{position:sticky;top:0;z-index:2;background:var(--bg);
   display:flex;align-items:center;gap:var(--s1);margin:0 -16px;padding:16px 12px;border-bottom:1px solid var(--line)}
 .sheet .sheetbar b{font-size:15px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -528,13 +528,6 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 .guide p{font-size:15px;line-height:1.6;margin-bottom:var(--s2)}
 .guide a{display:block;font-size:13px;color:var(--mute);margin-top:2px}
 
-/* ── 첫 실행 안내 — 하단 한 줄 배너(화면을 막지 않는다) ── */
-.firstrun{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom));z-index:40;
-  width:min(560px,calc(100% - 32px));display:flex;align-items:center;gap:var(--s2);padding:10px 8px 10px 16px;
-  background:var(--panel);border:1px solid var(--line);border-radius:var(--r-sm)}
-.firstrun p{flex:1;font-size:14px;word-break:keep-all}
-.firstrun .skip{min-width:40px;min-height:40px;color:var(--mute)}
-@media (min-width:900px){.firstrun{bottom:24px}}
 /* 취향 화면의 맨 위 카드 */
 .tastecard{background:var(--panel);border-radius:var(--r);padding:var(--s3);margin-top:var(--s2)}
 .tastecard small{display:block;font-size:13px;color:var(--mute)}
@@ -570,7 +563,7 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 
 /* 레시피 상세: 방법별 기본 순서와 안내 바로가기 */
 .detail .steps{background:var(--panel);border-radius:var(--r);padding:var(--s3);margin-top:var(--s2)}
-.detail .steps .stepshead{font-size:13px;color:var(--mute);margin-bottom:var(--s1)}
+.detail .steps .stepshead{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:var(--s1)}
 .detail .steps ol{margin:0;padding-left:1.3em;line-height:1.7;font-size:15px}
 .detail .guidelinks{display:flex;flex-wrap:wrap;gap:var(--s1);margin-top:var(--s2)}
 .detail .guidelinks button{font-size:13px;color:var(--mute);text-decoration:underline;min-height:36px;padding:0 var(--s1)}
@@ -644,7 +637,7 @@ th{color:var(--mute);font-size:12px;font-weight:500}
   .detailpane{scrollbar-width:thin}
 
   /* 안내 팝업과 첫 실행: 나타날 때 */
-  .guidecard,.firstrun .sheetcard{animation:pcRise .25s cubic-bezier(.2,.7,.2,1);box-shadow:0 30px 80px -30px rgba(0,0,0,.7)}
+  .guidecard{animation:pcRise .25s cubic-bezier(.2,.7,.2,1);box-shadow:0 30px 80px -30px rgba(0,0,0,.7)}
 }
 @keyframes pcRise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
@@ -680,7 +673,7 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 }
 
 @media (prefers-reduced-motion:reduce){
-  .detailpane .detail,.guidecard,.firstrun .sheetcard{animation:none}
+  .detailpane .detail,.guidecard{animation:none}
   .rowitem:hover{transform:none}
 }
 .detail .art .mark{background:transparent}
@@ -801,7 +794,7 @@ input[type=search]{border-width:0 0 1px;border-color:var(--ink);background:trans
 .stage{border-radius:0!important}
 .lnk,a{text-decoration-color:var(--line)}
 /* 남은 둥근 모서리 — 버튼·태그·팝업·목록 줄도 각지게. 진행 막대와 카드 뒷면·상태 점은 그대로 둔다 */
-.btn.big,.sheetcard,.firstrun .sheetcard,.guidecard,.guidecard .gtag,.bdg,.cltag,.ss,.pill,.parts span,.toast,
+.btn.big,.sheetcard,.guidecard,.guidecard .gtag,.bdg,.cltag,.ss,.pill,.parts span,.toast,
 .rowitem,.iconbtn,.kvrow,.grpbox label,.chip.iconchip{border-radius:0!important}
 .parts span,.cltag,.ss,.pill{background:transparent;border:1px solid var(--line)}
 @media (min-width:1100px){.today > .stage{box-shadow:none;border:1px solid var(--line)}}
@@ -861,9 +854,9 @@ input[type=search]{border-width:0 0 1px;border-color:var(--ink);background:trans
 .ed-head small{font-family:var(--mono);font-size:11px;color:var(--mute);white-space:nowrap}
 .ed-index{list-style:none}
 .ed-index li{border-bottom:1px solid var(--line)}
-.ed-index button{display:grid;grid-template-columns:28px minmax(0,1fr) auto;column-gap:12px;align-items:baseline;width:100%;text-align:left;padding:12px 4px}
+.ed-index button{display:grid;grid-template-columns:56px minmax(0,1fr) auto;column-gap:12px;align-items:baseline;width:100%;text-align:left;padding:12px 4px}
 .ed-index button:hover,.ed-index button[aria-current=true]{background:var(--panel)}
-.ed-index .no{font-family:var(--mono);font-size:11px;color:var(--mute)}
+.ed-index .no{font-size:11px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ed-index button[aria-current=true] .no{color:var(--accent);font-weight:500}
 .ed-index .nm{font-family:var(--display);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ed-index .nm em{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:14px;color:var(--mute);margin-left:8px}
@@ -898,18 +891,46 @@ p,li,td,dd,label,.hint,.recipe .ing,.it span,.rowitem .nm,.taste{word-break:keep
 .rrow{display:flex;justify-content:space-between;gap:var(--s3);padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
 .rrow .rk{white-space:nowrap}
 .rrow .rv{text-align:right;word-break:keep-all}
-.rrow .rv.na{color:var(--dim)}
+.rrow .rv.na{color:var(--dim);opacity:.6}
 .rlist .cltag{border:0;padding:0;background:none;border-radius:0;font-size:inherit}
-/* 취향 분석 진행 바 */
-.tprog{display:flex;flex-direction:column;gap:6px;margin-top:var(--s2);font-size:13px;color:var(--mute)}
-.tprog progress{appearance:none;width:100%;height:2px;border:0;background:var(--line)}
+/* 내 취향 — 상자 대신 다른 칸처럼 머리글 실선 아래에 둔다(왼쪽 선을 페이지와 맞춘다) */
+.tastecard{background:none;border:0;border-radius:0;padding:0;margin-top:0}
+.tastecard > .sechead{margin-top:var(--s5)}
+.tastecard > b{font-size:22px;margin:0 0 var(--s2)}
+.tastecard .btnrow{margin-top:var(--s3)}
+/* 취향 분석 진행 바 — 맛 프로필과 같은 3px 선 */
+.tprog{display:flex;flex-direction:column;gap:8px;margin-top:var(--s2)}
+.tprog-row{display:flex;justify-content:space-between;font-size:13px;color:var(--mute)}
+.tprog-row span + span{font-family:var(--mono);color:var(--ink);white-space:nowrap}
+.tprog progress{appearance:none;-webkit-appearance:none;display:block;width:100%;height:3px;border:0;background:var(--line)}
 .tprog progress::-webkit-progress-bar{background:var(--line)}
 .tprog progress::-webkit-progress-value{background:var(--accent)}
 .tprog progress::-moz-progress-bar{background:var(--accent)}
-/* 칵테일 상세 — 제조 요소 한 줄, 재료·맛 프로필 2단(좁으면 위아래), 분류·출처 각주 */
-.specline{font-family:var(--body);font-size:13px;color:var(--mute);margin-top:var(--s1);word-break:keep-all}
-.specline .gnhave{margin-left:8px;font-family:var(--body);font-weight:600;color:var(--ok);white-space:nowrap}
-.dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--s2) var(--s5);margin-top:var(--s2)}
-.dgrid .recipe{margin-top:var(--s1)}
-.dfoot{margin-top:var(--s5);padding-top:var(--s2);border-top:1px solid var(--line);font-size:12px;color:var(--mute);display:flex;flex-direction:column;gap:var(--s1)}
-.dfoot .clstags .cltag{font-size:11px}
+/* 시작하기 — 실선 링크 세 줄(다른 칸과 같은 내어쓰기) */
+.startlinks ul{list-style:none}
+.startlinks li{border-bottom:1px solid var(--line)}
+.startlinks button{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;padding:12px 4px;
+  font-family:var(--display);font-size:15px;color:var(--ink);white-space:nowrap}
+.startlinks button span{color:var(--mute);transition:transform .15s}
+.startlinks button:hover{background:var(--panel)}
+.startlinks button:hover span{transform:translateX(3px);color:var(--accent)}
+.today .startlinks{margin-top:var(--s5)}
+/* 증류소 지도 확대 — 휠·끌기·두 손가락, 오른쪽 위 버튼 */
+.mapwrap{position:relative;max-width:720px}
+@media (min-width:900px){.mapwrap{max-width:none}}
+.mapwrap .distmap{touch-action:none;cursor:grab;user-select:none;width:100%;max-width:none;height:min(64vh,560px);max-height:none}
+@media (max-width:599px){.mapwrap .distmap{height:min(58vh,440px)}}
+.mapwrap .distmap:active{cursor:grabbing}
+.mapzoom{position:absolute;top:calc(var(--s2) + 8px);right:8px;display:flex;flex-direction:column;border:1px solid var(--line);background:var(--bg)}
+.mapzoom button{width:36px;height:36px;font-size:18px;line-height:1;color:var(--ink)}
+.mapzoom button + button{border-top:1px solid var(--line)}
+.mapzoom button:disabled{color:var(--dim)}
+/* 맨 아래 각주 — 건전한 음주 안내 한 줄 */
+.sitefoot{margin-top:56px;padding-top:var(--s2);border-top:1px solid var(--line);font-size:12px;color:var(--dim)}
+/* 예시 재고 안내 — 한 줄 */
+.notice.exnote{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s1) var(--s2);padding:10px 14px}
+.notice.exnote .starterset{margin:0;flex:1 1 220px}
+.notice.exnote .starterset summary{text-decoration:none;font-size:14px;min-height:32px}
+.notice.exnote .starterset summary span{color:var(--mute);text-decoration:underline;text-underline-offset:3px}
+.notice.exnote .btnrow{margin:0}
+.statusline{font-size:13px;color:var(--mute);margin:var(--s1) 0}

@@ -139,7 +139,7 @@ function BackupRestore() {
     a.href = url; a.download = `homebar-backup-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    toast('백업 파일 내보내기');
+    toast('백업 파일을 만들었어요');
   };
   const doImport = async (file: File) => {
     try {
@@ -155,13 +155,13 @@ function BackupRestore() {
       <div className="sechead">백업 · 복원</div>
       <p className="hint">이 브라우저에만 저장됩니다.</p>
       <div className="btnrow">
-        <button className="btn primary" onClick={doExport}>JSON 내보내기</button>
-        <button className="btn" onClick={() => fileRef.current?.click()}>JSON 복원</button>
+        <button className="btn primary" onClick={doExport}>백업 파일 만들기</button>
+        <button className="btn" onClick={() => fileRef.current?.click()}>백업 파일로 복원하기</button>
         <input ref={fileRef} type="file" accept="application/json" hidden
           onChange={(e) => { const f = e.target.files?.[0]; if (f) doImport(f); e.target.value = ''; }} />
       </div>
       <div className="sechead">버전</div>
-      <p className="hint"><b>{BUILD_STAMP}</b> · 최신이 아니면 새로고침을 한 번 더 해 주세요.</p>
+      <p className="hint"><b>{BUILD_STAMP}</b> · 최신 화면이 아니면 새로고침해 주세요.</p>
     </>
   );
 }
