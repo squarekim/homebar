@@ -20,7 +20,7 @@ function seedHeld(): Set<string> {
 describe('seed adapters', () => {
   it('원본 건수 유지', () => {
     expect(ingredients.length).toBe(130); // 원본 128 + 오렌지 큐라소(마이 타이 IBA 교정) + 셰리(셰리 코블러)
-    expect(cocktails.length).toBe(209); // 원본 202 + 현행 IBA 8종(addIbaRecipes) − 겹친 1종(rewordRecipeText)
+    expect(cocktails.length).toBe(221); // 원본 202 + 현행 IBA 8종(addIbaRecipes) − 겹친 1종(rewordRecipeText) + 믹서 조합 12종(addMixerRecipes)
     expect(bottles.length).toBe(82); // 원본 81 + 클라이넬리쉬 14년 추가
     expect(whiskies.length).toBeGreaterThan(0);
     expect(bottles.some((b) => b.id === 'clynelish14')).toBe(true);
@@ -124,7 +124,7 @@ describe('availability', () => {
     const t = tallyStatus(all);
     // 원본 재고 기준 정규 121 (레시피의 [대체] 표시를 걷어낸 뒤)
     expect(t.READY).toBeGreaterThan(50);
-    expect(t.READY + t.SUBSTITUTE + t.MISSING + t.UNAVAILABLE).toBe(209);
+    expect(t.READY + t.SUBSTITUTE + t.MISSING + t.UNAVAILABLE).toBe(221);
   });
   it('빈 재고면 대부분 불가', () => {
     const empty = new Set<string>();
@@ -263,56 +263,16 @@ describe('가니시 분리 · 개정 이력 제거 · 조주법', () => {
   });
 });
 
-describe('간단 조합(빌드) 모음', () => {
-  it('믹서 조합표와 Build 레시피를 합치고 이름 중복은 레시피를 남긴다', async () => {
-    const { simpleBuilds } = await import('../services/simpleBuildService');
-    const rows = simpleBuilds();
-    expect(rows.length).toBeGreaterThan(60);
-    // 조합표 믹서는 상비 4종(플레인 탄산수·토닉·콜라·오렌지)으로만 간다
-    const pairingMixers = new Set(rows.filter((r) => r.kind === 'pairing').map((r) => r.parts[1]));
-    expect([...pairingMixers].sort()).toEqual(['오렌지 주스', '콜라', '클럽소다', '토닉워터']);
-    expect(new Set(rows.map((r) => r.name)).size).toBe(rows.length); // 이름 중복 없음
-    const recipeRows = rows.filter((r) => r.kind === 'recipe');
-    expect(recipeRows.every((r) => r.cocktail!.methodKeys[0] === 'build')).toBe(true);
-    expect(recipeRows.every((r) => r.cocktail!.ingredients.filter((i) => !i.optional).length <= 3)).toBe(true);
-    expect(rows.some((r) => r.kind === 'pairing' && r.ratio)).toBe(true);
-  });
-
-  it('조합표는 기주 카테고리 + 믹서 보유로 판정한다', async () => {
-    const { simpleBuilds, evaluateSimpleBuild } = await import('../services/simpleBuildService');
-    const pairing = simpleBuilds().find((r) => r.kind === 'pairing' && r.group === '위스키')!;
-    expect(evaluateSimpleBuild(pairing, new Set()).status).toBe('UNAVAILABLE');
-    const held = new Set(ingredients.filter((i) => i.seedOwned).map((i) => i.id));
-    expect(evaluateSimpleBuild(pairing, held).status).toBe('READY');
-    // 믹서만 빼면 기주는 있으므로 일부부족
-    const noMixer = new Set([...held].filter((id) => id !== pairing.mixerIngredientId));
-    expect(evaluateSimpleBuild(pairing, noMixer).status).toBe('MISSING');
-  });
-});
-
-
-describe('내 술 기반 추천 · 보유 재료', () => {
-  it('조합표 권장은 고정 제품명이 아니라 내가 가진 술에서 고른다', async () => {
-    const { simpleBuilds, pickMyBottles } = await import('../services/simpleBuildService');
-    const jackCoke = simpleBuilds().find((r) => r.name === '잭콕')!;
-    // 이름이 겹치는 병을 먼저 고른다
-    const withJack = pickMyBottles(jackCoke, bottles);
-    expect(withJack.some((b) => b.name.includes('잭 다니엘'))).toBe(true);
-    // 그 병이 없으면 같은 대분류(위스키)에서 고른다
-    const noJack = bottles.filter((b) => !b.name.includes('잭 다니엘'));
-    const fallback = pickMyBottles(jackCoke, noJack);
-    expect(fallback.length).toBeGreaterThan(0);
-    expect(fallback.every((b) => b.isWhisky)).toBe(true);
-    // 가진 술이 하나도 없으면 빈 배열 → 화면은 "추가하세요" 안내를 띄운다
-    expect(pickMyBottles(jackCoke, [])).toHaveLength(0);
-  });
-
-  it('진 조합은 진 병만 추천한다', async () => {
-    const { simpleBuilds, pickMyBottles } = await import('../services/simpleBuildService');
-    const gt = simpleBuilds().find((r) => r.name === '진 토닉')!;
-    const mine = pickMyBottles(gt, bottles);
-    expect(mine.length).toBeGreaterThan(0);
-    expect(mine.every((b) => b.group === '진')).toBe(true);
+describe('믹서 조합표에서 옮긴 레시피 (addMixerRecipes)', () => {
+  it('간단 조합 칸에만 있던 조합이 일반 레시피로 있다', () => {
+    const by = (n: string) => cocktails.find((c) => c.name === n);
+    for (const n of ['진 토닉', '잭콕', '럼 콕', '보드카 토닉', '카시스 소다']) expect(by(n), n).toBeDefined();
+    const gt = by('진 토닉')!;
+    expect(gt.iba).toBe('비IBA');
+    expect(gt.methodKeys[0]).toBe('build');
+    expect(gt.ingredients.map((i) => i.raw)).toEqual(['런던 드라이 진 45ml', '토닉워터 135ml']);
+    // 원래 주인의 병에 묶인 조합과, 이미 있는 레시피와 같은 조합은 옮기지 않았다
+    for (const n of ['가쿠 하이볼', '캄파리 토닉']) expect(by(n), n).toBeUndefined();
   });
 });
 

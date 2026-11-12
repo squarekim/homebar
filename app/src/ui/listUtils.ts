@@ -7,7 +7,7 @@ import { useMemo, useState } from 'react';
 import { statusRank } from '../services/availabilityService';
 import { allChips, type ChipOption } from './components/common';
 import { type AvailabilityStatus, type Cocktail } from '../models/types';
-import { SPELLING, QUERY_TERMS, COCKTAIL_ALIASES, SIMPLE_ALIASES, INGREDIENT_ALIASES, ibaEnglishName } from '../data/searchAliases';
+import { SPELLING, QUERY_TERMS, COCKTAIL_ALIASES, INGREDIENT_ALIASES, ibaEnglishName } from '../data/searchAliases';
 
 /** 검색어를 한 번만 다듬는다 (빈 문자열이면 "전부 통과") */
 export function normalize(q: string): string {
@@ -66,17 +66,6 @@ export function cocktailKey(c: Cocktail): string {
   return k;
 }
 export const ingredientAliases = (name: string): string[] => INGREDIENT_ALIASES[name] ?? [];
-export const simpleAliases = (name: string): string[] => SIMPLE_ALIASES[name] ?? [];
-const sbKeys = new Map<string, string>();
-/** 간단 조합 검색 문자열 — 이름, 다른 이름, 구성 재료와 그 다른 이름 */
-export function simpleKey(b: { id: string; name: string; parts: string[] }): string {
-  let k = sbKeys.get(b.id);
-  if (k === undefined) {
-    k = searchKey(b.name, ...simpleAliases(b.name), ...b.parts, ...b.parts.flatMap(ingredientAliases));
-    sbKeys.set(b.id, k);
-  }
-  return k;
-}
 
 /** 만들 수 있는 것부터, 같은 상태면 가나다순 */
 export function byReadyThenName<T>(

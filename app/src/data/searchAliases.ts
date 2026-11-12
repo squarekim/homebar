@@ -4,7 +4,6 @@
  * SPELLING  같은 말의 다른 표기를 한 표기로 모은다. 검색어와 이름 양쪽에 똑같이 적용하므로,
  *           어느 쪽으로 모으든 결과는 같다. 띄어쓰기를 지운 뒤의 글자에 적용한다.
  * COCKTAIL_ALIASES   칵테일 이름 → 흔히 부르는 다른 이름(영어 이름, 줄임말, 별명)
- * SIMPLE_ALIASES     간단 조합 이름 → 다른 이름
  * INGREDIENT_ALIASES 재료 이름 → 다른 이름(제품명 통칭 포함)
  *
  * IBA 레시피의 영어 이름은 레시피 주소(iba-world.com/iba-cocktail/<이름>/)에서 자동으로 뽑으므로 여기 적지 않는다.
@@ -43,7 +42,7 @@ export const COCKTAIL_ALIASES: Record<string, string[]> = {
   '위스키 사워': ['whisky sour', 'whiskey sour'],
   '갓파더': ['대부', 'godfather'],
   '갓마더': ['대모', 'godmother'],
-  '위스키 하이볼': ['하이볼', '위스키 소다', '스카치 소다', 'highball', 'whisky highball'],
+  '위스키 하이볼': ['하이볼', '위스키 소다', '스카치 소다', 'highball', 'whisky highball', '가쿠빈 하이볼', '산토리 하이볼', 'kaku highball'],
   '위스키 콜린스': ['whisky collins'],
   '러스티 네일': ['rusty nail'],
   '맨해튼': ['manhattan'],
@@ -117,25 +116,20 @@ export const COCKTAIL_ALIASES: Record<string, string[]> = {
   '머디 슬라이드': ['mudslide'],
   '멜론 볼': ['melon ball'],
   '미도리 일루젼': ['미도리 일루전', 'midori illusion'],
-};
-
-/** 간단 조합 이름 → 다른 이름 */
-export const SIMPLE_ALIASES: Record<string, string[]> = {
+  // 믹서 조합표에서 옮긴 레시피(addMixerRecipes.mjs)
   '진 토닉': ['진토닉', '지앤티', 'gin tonic', 'gin and tonic', 'g&t'],
   '진 소다': ['gin soda'],
   '보드카 토닉': ['vodka tonic'],
   '잭콕': ['잭 앤 콕', '잭다니엘 콕', '위스키 콕', 'jack and coke', 'jack coke'],
   '버번 콕': ['bourbon coke'],
   '럼 콕': ['럼콕', 'rum coke'],
-  '가쿠 하이볼': ['가쿠빈 하이볼', '산토리 하이볼', '각 하이볼', 'kaku highball'],
-  '캄파리 토닉': ['campari tonic'],
   '카시스 소다': ['cassis soda'],
   '미도리 소다': ['midori soda'],
   '말리부 오렌지': ['malibu orange'],
   '테킬라 오렌지': ['tequila orange'],
   '아마레토 콕': ['amaretto coke'],
   '엘더플라워 소다': ['elderflower soda'],
-  '스크류드라이버': ['보드카 오렌지'],
+  '밀라노 토닉': ['캄파리 토닉', 'campari tonic'],
 };
 
 /** 재료 이름 → 다른 이름 */

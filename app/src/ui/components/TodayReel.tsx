@@ -8,6 +8,8 @@
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { LeadArt } from './Mark';
 import { weightedPick } from '../../services/pickService';
+/** 뒷면 필기체 글자는 그림이다 — 휴대폰 글꼴 설정에 따라 바뀌지 않게(scripts/card_back_word.cjs 로 만든다) */
+import backWord from '../../assets/cardback/homebar-word.png';
 import { type RecommendationResult } from '../../models/types';
 
 const HAND = 7;  // 펼쳐 보이는 카드 수(후보가 더 많아도 7장)
@@ -164,7 +166,7 @@ export function TodayReel({ picks, onPicked, between, children }: {
               }}>
                 <span className="lift">
                   <span className="face"><Face r={r} /></span>
-                  <span className="back"><span>Homebar</span></span>
+                  <span className="back"><img src={backWord} alt="" width={91} height={30} draggable={false} /></span>
                 </span>
               </button>
             );

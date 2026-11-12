@@ -1,97 +1,13 @@
 /**
- * browsers.tsx — 칵테일 화면이 곁들여 쓰는 두 목록.
- * 간단 조합(셰이커 없이 잔에 바로 붓는 것)과 재료 목록. 둘 다 같은 행 규칙을 따른다.
+ * browsers.tsx — 칵테일 화면이 곁들여 쓰는 재료 목록.
  * 칵테일·위스키·보유 술 목록은 각 화면(pages/)이 직접 들고 있다.
  */
 import { useMemo, useState } from 'react';
 import { useUI } from '../UIContext';
 import { useHeldIds, useSubMap, useBottles } from '../../hooks/useData';
 import { referenceRepo } from '../../repositories/referenceRepo';
-import { simpleBuilds, evaluateSimpleBuild, pickMyBottles } from '../../services/simpleBuildService';
-import { StateLine, ChipRow, ChipToggle, SearchBox, allChips } from './common';
-import { normalize, hits, hitsKey, simpleKey, ingredientAliases, byReadyThenName, useGroupChips } from '../listUtils';
-
-/**
- * SimpleBuildBrowser — 믹서 조합표와 Build 계열 레시피를 합쳐 기주별로 보여준다.
- */
-/** 받침 따라 '이/가' */
-const ga = (w: string) => { const c = w.charCodeAt(w.length - 1) - 0xac00; return c >= 0 && c % 28 ? '이' : '가'; };
-
-/** initialQuery·initialOpen: 칵테일 검색에서 넘어올 때 그 조합을 찾아 펼쳐 둔다 */
-export function SimpleBuildBrowser({ initialQuery, initialOpen }: { initialQuery?: string | undefined; initialOpen?: string | undefined } = {}) {
-  const heldIds = useHeldIds();
-  const subMap = useSubMap();
-  const bottles = useBottles();
-  const { openCocktail } = useUI();
-  const [q, setQ] = useState(initialQuery ?? '');
-  const [grp, setGrp] = useState('all');
-  const [readyOnly, setReadyOnly] = useState(false);
-  const [open, setOpen] = useState<string | null>(initialOpen ?? null);
-
-  const all = useMemo(() => simpleBuilds(), []);
-  const groups = useGroupChips(all, (b) => b.group);
-  const judged = useMemo(() => all.map((b) => ({ b, e: evaluateSimpleBuild(b, heldIds, subMap) })), [all, heldIds, subMap]);
-  const readyCount = useMemo(() => judged.filter(({ e }) => e.status === 'READY').length, [judged]);
-
-  const rows = useMemo(() => {
-    const t = normalize(q);
-    return judged
-      .filter(({ b, e }) => {
-        if (grp !== 'all' && b.group !== grp) return false;
-        if (readyOnly && e.status !== 'READY') return false;
-        return hitsKey(t, simpleKey(b));
-      })
-      .sort(byReadyThenName((x) => x.e.status, (x) => x.b.name));
-  }, [judged, q, grp, readyOnly]);
-
-  return (
-    <>
-      <SearchBox value={q} onChange={setQ} placeholder="하이볼·토닉 등 이름·재료 검색" />
-      <ChipRow value={grp} options={groups} onChange={setGrp}>
-        <ChipToggle label="바로 가능" cls="ok" on={readyOnly} onToggle={() => setReadyOnly((v) => !v)} />
-      </ChipRow>
-      <p className="hint">셰이커 없이 <b>잔에 바로 붓는</b> 조합 {all.length}종 중 체크한 재료로 지금 <b>{readyCount}종</b>을 만들 수 있어요.</p>
-      <div className="rowlist">
-        {rows.map(({ b, e }) => {
-          const mine = pickMyBottles(b, bottles);
-          const isOpen = open === b.id;
-          return (
-            <div key={b.id}>
-              <button className="rowitem" aria-current={isOpen} onClick={() => setOpen(isOpen ? null : b.id)}>
-                <div className="body">
-                  <span className="nm">{b.name}</span>
-                  <div className="taste">{b.parts.join(' · ')}{b.ratio ? ` · ${b.ratio}` : ''}</div>
-                  <div className="foot">
-                    {e.status !== 'READY' && <StateLine status={e.status} lack={e.lack} />}
-                    {b.glass && <span className="mi">{b.glass} 잔</span>}
-                    {mine.length > 0 && <span className="mi">내 술 {mine.length}종</span>}
-                  </div>
-                </div>
-              </button>
-              {isOpen && (
-                <div style={{ padding: '0 2px 14px' }}>
-                  <div className="sechead in">내 술로 만들기</div>
-                  {mine.length > 0
-                    ? <div className="parts">{mine.map((x) => <span key={x.id}>{x.name}{x.abv ? ` ${x.abv}` : ''}</span>)}</div>
-                    : e.status === 'READY' || e.status === 'SUBSTITUTE'
-                      // 만들 수 있는지는 재료 체크로 판정한다. 병을 넣지 않았어도 재료가 체크돼 있으면 만들 수 있다
-                      ? <p className="hint">재료 체크로는 {b.group}{ga(b.group)} 있어서 만들 수 있어요.</p>
-                      : <p className="hint">체크한 재료에 {b.group}{ga(b.group)} 없어요.</p>}
-                  {b.note && <p className="hint">{b.note}</p>}
-                  {b.recipeId && (
-                    <div className="btnrow">
-                      <button className="btn sm primary" onClick={() => openCocktail(b.recipeId!)}>레시피 상세</button>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </>
-  );
-}
+import { ChipRow, ChipToggle, SearchBox, allChips } from './common';
+import { normalize, hits, ingredientAliases } from '../listUtils';
 
 /** 재료 목록 — 항목을 누르면 활용 레시피·보유 여부·대체재를 보여준다 */
 export function IngredientBrowser() {

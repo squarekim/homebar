@@ -1,15 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { cocktails } from '../data/adapters';
-import { simpleBuilds } from '../services/simpleBuildService';
 import { searchLiquor } from '../services/liquorSearchService';
 import { LIQUOR_ALIASES } from '../data/liquorAliases';
 import { liquorMasterById } from '../data/liquorMaster';
-import { COCKTAIL_ALIASES, INGREDIENT_ALIASES, SIMPLE_ALIASES } from '../data/searchAliases';
-import { hits, normalize, hitsKey, cocktailKey, simpleKey } from '../ui/listUtils';
+import { COCKTAIL_ALIASES, INGREDIENT_ALIASES } from '../data/searchAliases';
+import { hits, normalize, hitsKey, cocktailKey } from '../ui/listUtils';
 import { ingredients } from '../data/adapters';
 
 const ck = (q: string) => cocktails.filter((c) => hitsKey(normalize(q), cocktailKey(c))).map((c) => c.name);
-const sb = (q: string) => simpleBuilds().filter((b) => hitsKey(normalize(q), simpleKey(b))).map((b) => b.name);
 const top = (q: string, n = 3) => searchLiquor(q, { limit: n }).map((h) => h.item.nameKo);
 
 describe('칵테일을 다른 이름으로 찾는다', () => {
@@ -35,9 +33,9 @@ describe('재료를 다른 이름으로 찾는다', () => {
   it.each(cases)('%s → %s', (q, name) => expect(ck(q)).toContain(name));
 });
 
-describe('간단 조합', () => {
-  it.each([['진토닉', '진 토닉'], ['g&t', '진 토닉'], ['잭앤콕', '잭콕'], ['가쿠빈 하이볼', '가쿠 하이볼'], ['보드카 오렌지', '스크류드라이버']])(
-    '%s → %s', (q, name) => expect(sb(q)).toContain(name));
+describe('잔에 바로 붓는 조합', () => {
+  it.each([['진토닉', '진 토닉'], ['g&t', '진 토닉'], ['잭앤콕', '잭콕'], ['가쿠빈 하이볼', '위스키 하이볼'], ['보드카 오렌지', '스크류드라이버']])(
+    '%s → %s', (q, name) => expect(ck(q)).toContain(name));
 });
 
 describe('술 추가 검색', () => {
@@ -57,8 +55,6 @@ describe('별칭 표의 이름이 실제로 있다', () => {
   it('칵테일·조합·재료·제품', () => {
     const names = new Set(cocktails.map((c) => c.name));
     expect(Object.keys(COCKTAIL_ALIASES).filter((n) => !names.has(n))).toEqual([]);
-    const sbn = new Set(simpleBuilds().map((b) => b.name));
-    expect(Object.keys(SIMPLE_ALIASES).filter((n) => !sbn.has(n))).toEqual([]);
     const ings = new Set(ingredients.map((i) => i.name));
     expect(Object.keys(INGREDIENT_ALIASES).filter((n) => !ings.has(n))).toEqual([]);
     expect(Object.keys(LIQUOR_ALIASES).filter((id) => !liquorMasterById.has(id))).toEqual([]);
