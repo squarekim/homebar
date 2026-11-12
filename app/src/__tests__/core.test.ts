@@ -375,7 +375,7 @@ describe('설명란 구조화 — 변형 레시피 · 출처 · 코멘터리', (
     // 출처 표기가 설명란에 섞여 있지 않다
     const SOURCE_IN_NOTE = /사용자 제공|커뮤니티 표준|교차 확인|배합비 준용/;
     expect(cocktails.filter((c) => SOURCE_IN_NOTE.test(c.note ?? ''))).toHaveLength(0);
-    expect(cocktails.filter((c) => c.sourceName).length).toBeGreaterThanOrEqual(40);
+    expect(cocktails.filter((c) => c.sourceName).length).toBeGreaterThanOrEqual(30); // '클래식 레시피'와 커뮤니티 출처 표기를 지운 뒤(rewordRecipeText)
   });
 
   it('IBA 등재 연혁은 배지가 말하므로 설명란에서 빠진다', () => {
