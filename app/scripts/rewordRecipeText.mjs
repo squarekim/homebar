@@ -5,7 +5,8 @@
  *  1. note: 바로 위 재료 칸을 문장으로 다시 읽은 메모와, 재료 이름만 되풀이한 맛 설명을 지운다.
  *     남길 사실이 있는 것은 그 사실만 남겨 고쳐 쓴다(NOTES 표: null = 삭제, 문자열 = 교체).
  *  2. v: '치환형·대입·파생형·등량' 같은 개조식을 "무엇을 무엇으로 바꿨는지" 풀어 쓴 해요체로(VARIANTS 표, 42종 전부).
- *  3. s: 출처가 아닌 '클래식 레시피' 표기를 지운다.
+ *  3. s: 출처가 아닌 '클래식 레시피' 표기와 커뮤니티 출처 표기(루리웹·디시·마실랭·나무위키·만개의레시피·'커뮤니티 표준')를 지운다.
+ *     출처 URL(u)은 그대로 둔다.
  *  4. 똑같은 레시피가 두 이름으로 들어 있던 '블루 마르가리타 (진)'을 지운다('블루 마르가리타 (진 버전)'이 남는다).
  *  5. mixers: 메모를 해요체로 고치고, 원래 주인의 재고 메모("1L 보유", "★… 상시 확보로 가능")를 지운다.
  *     '스크루드라이버'는 레시피 이름과 같은 표기('스크류드라이버')로 맞춰 간단 조합에 두 번 나오지 않게 한다.
@@ -101,6 +102,9 @@ export const VARIANTS = {
 const DUPLICATES = ['블루 마르가리타 (진)'];
 /** 출처가 아닌 표기 */
 const EMPTY_SOURCES = ['클래식 레시피'];
+/** 커뮤니티 출처 표기 — 표기 전체를 지운다. 다른 출처와 함께 적힌 것은 SOURCE_REWRITES 로 그 부분만 뺀다 */
+const COMMUNITY = /루리웹|디시|마실랭|나무위키|만개의레시피|커뮤니티/;
+const SOURCE_REWRITES = { '린치버그 레모네이드': "Jack Daniel's 시그니처 칵테일 (린치버그=증류소 소재지)" };
 
 /** 간단 조합 메모 — 키는 '이름|기주'. null 은 삭제(원래 주인의 재고 메모) */
 export const MIXER_NOTES = {
@@ -164,7 +168,8 @@ export function reword({ dry = false } = {}) {
       if (!next) throw new Error(`변형 설명이 표에 없음: ${r.n}`);
       if (r.v[1] !== next) { r.v = [r.v[0], next]; changed.variants++; }
     }
-    if (r.s && EMPTY_SOURCES.includes(r.s)) { delete r.s; changed.sources++; }
+    if (r.s && SOURCE_REWRITES[r.n] && r.s !== SOURCE_REWRITES[r.n]) { r.s = SOURCE_REWRITES[r.n]; changed.sources++; }
+    else if (r.s && (EMPTY_SOURCES.includes(r.s) || COMMUNITY.test(r.s))) { delete r.s; changed.sources++; }
   }
 
   for (const m of data.mixers) {
