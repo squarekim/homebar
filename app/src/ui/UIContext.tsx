@@ -53,7 +53,9 @@ interface UIState {
   termInfo: TermInfo | null;
   /** 입문 안내 팝업 — 'menu' 는 안내 목록 */
   guide: GuideId | 'menu' | null;
-  openGuide: (id: GuideId | 'menu') => void;
+  /** skipIntro: 소개 장을 건너뛰고 첫 장부터 연다 */
+  openGuide: (id: GuideId | 'menu', opts?: { skipIntro?: boolean }) => void;
+  guideSkipIntro: boolean;
   closeGuide: () => void;
   openAdd: (query?: string) => void;
   closeAdd: () => void;
@@ -92,6 +94,8 @@ export function UIProvider({ children }: { children: ReactNode }) {
   const [termInfo, setTermInfo] = useState<TermInfo | null>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [guide, setGuide] = useState<GuideId | 'menu' | null>(null);
+  const [guideSkipIntro, setGuideSkipIntro] = useState(false);
+  const openGuide = useCallback((id: GuideId | 'menu', opts?: { skipIntro?: boolean }) => { setGuideSkipIntro(!!opts?.skipIntro); setGuide(id); }, []);
   const [addQuery, setAddQuery] = useState('');
 
   const [tabTick, setTabTick] = useState(0);
@@ -162,7 +166,7 @@ export function UIProvider({ children }: { children: ReactNode }) {
       toastMsg, toast,
       termInfo, showTerm, closeTerm: () => setTermInfo(null),
       addOpen, addQuery, openAdd, closeAdd,
-      guide, openGuide: setGuide, closeGuide: () => setGuide(null),
+      guide, openGuide, guideSkipIntro, closeGuide: () => setGuide(null),
     }}>
       {children}
     </Ctx.Provider>

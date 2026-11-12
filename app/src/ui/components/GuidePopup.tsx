@@ -13,10 +13,10 @@ const read = (k: string): boolean => { try { return localStorage.getItem(k) === 
 const mark = (k: string): void => { try { localStorage.setItem(k, '1'); } catch { /* 저장이 막혀도 계속 */ } };
 
 export function GuidePopup() {
-  const { guide, openGuide, closeGuide } = useUI();
+  const { guide, openGuide, closeGuide, guideSkipIntro } = useUI();
   const [at, setAt] = useState(-1); // -1 = 소개 장
 
-  useEffect(() => { setAt(-1); }, [guide]);
+  useEffect(() => { setAt(guideSkipIntro ? 0 : -1); }, [guide, guideSkipIntro]);
   useEffect(() => {
     if (!guide) return;
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') closeGuide(); };

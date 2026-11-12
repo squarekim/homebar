@@ -286,7 +286,7 @@ export function TodayPage() {
           <b>입문 안내서</b>
           <span>마시는 법 · 첫 병 · 도구 · 보관</span>
         </button>
-        <button onClick={() => openGuide('health')}>
+        <button onClick={() => openGuide('health', { skipIntro: true })}>
           <b>건강한 음주 안내</b>
           <span>마시기 전에 알아 둘 것</span>
         </button>
