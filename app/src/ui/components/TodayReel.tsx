@@ -1,7 +1,7 @@
 /**
  * TodayReel — '오늘의 잔' 카드 고르기.
  * 후보 잔이 뒷면 카드로 펠트 위에 넓게 펼쳐져 있고, 마음에 드는 카드를 직접 누르면 그 카드가 앞으로 나와 뒤집힌다.
- * "대신 골라 주기" 버튼은 카드를 한 번 모았다 다시 펼친 뒤 아무 카드나 대신 골라 준다.
+ * "랜덤 추천" 버튼은 카드를 한 번 모았다 다시 펼친 뒤 아무 카드나 대신 골라 준다.
  * 어느 카드를 눌러도 나오는 잔은 추천 순서에 따른 가중 무작위다(pickService). 무작위는 '어느 잔을 고르나'에만 쓴다.
  * 카드 앞면 그림은 LeadArt(GlassArt·NeatPour) 그대로다. 움직임은 CSS transition 으로만 한다.
  */
@@ -177,12 +177,8 @@ export function TodayReel({ picks, onPicked, between, children }: {
       {phase === 'done' && children ? children(again) : (
         <div className="reelact">
           <button className="btn primary big" onClick={pick} disabled={!k}>
-            {phase === 'shuffle' ? '바로 보기' : '대신 골라 주기'}
+            {phase === 'shuffle' ? '이 잔 보기' : '랜덤 추천'}
           </button>
-          <p className="hint">{phase === 'shuffle' ? '카드를 뒤집는 중이에요' : (picks.length > k
-              // 카드는 7장까지만 펼치지만, 어느 카드를 눌러도 후보 전체에서 한 잔을 고른다
-              ? `카드를 한 장 고르세요. ${picks.length}잔 중 한 잔이 나와요`
-              : '카드를 한 장 고르세요')}</p>
         </div>
       )}
     </>

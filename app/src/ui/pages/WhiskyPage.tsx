@@ -5,7 +5,7 @@
  */
 import { GuideHint } from '../components/GuidePopup';
 import { cocktailWords, whiskyWords } from '../../services/tasteWords';
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useUI } from '../UIContext';
 import { useWhiskies, useBottles, useBottleNotes, useHeldIds, useSubMap } from '../../hooks/useData';
 import { cocktailsForBottle } from '../../services/pairingService';
@@ -206,17 +206,18 @@ function WhiskyDetail({ bottle: w, owned }: { bottle: Bottle; owned?: Bottle | u
         </>
       )}
 
+      <div className="sechead in">맛 프로필</div>
+      <FlavorBars vector={w.flavor} compact />
+
       <div className="more">
         <button onClick={() => setMore((v) => !v)} aria-expanded={more}>
-          {more ? '증류소 · 분류 · 맛 수치 접기' : '증류소 · 생산 지역 · 캐스크 · 분류 · 맛 수치 보기'}
+          {more ? '증류소 · 분류 접기' : '증류소 · 지역 · 캐스크 · 분류'}
         </button>
         {more && (
           <div className="inner">
             {distillery && <><div className="sechead in">증류소</div><DistilleryCard d={distillery} /></>}
             {spec && <><div className="sechead in">분류</div><SpecView s={spec} /></>}
             {w.note && <p className="hint">{w.note}</p>}
-            <div className="sechead in">맛 수치</div>
-            <FlavorBars vector={w.flavor} compact />
           </div>
         )}
       </div>
@@ -258,14 +259,15 @@ export function WhiskyPage() {
 
   const selected = allBottles.find((b) => b.id === bottleId) ?? CATALOG.find((b) => b.id === bottleId);
 
-  if (view === 'table') return <GapView onBack={() => setView('list')} />;
-  if (view === 'map') return <Suspense fallback={<div className="hint">지도를 불러오는 중이에요</div>}><DistilleryMapView onBack={() => setView('list')} /></Suspense>;
+  const tabs = <ChipRow value={view} options={VIEWS} onChange={setView} />;
+  if (view === 'table') return <GapView tabs={tabs} />;
+  if (view === 'map') return <Suspense fallback={tabs}><DistilleryMapView tabs={tabs} /></Suspense>;
 
   return (
     <>
       <h2 className="pagetitle" data-k="Cask Notes">위스키<span className="sub">{browsing ? `둘러보기 ${CATALOG.length}종` : `가진 위스키 ${whiskies.length}종`}</span></h2>
       <GuideHint tab="whisky" />
-      <ChipRow value={view} options={VIEWS} onChange={setView} />
+      {tabs}
       <SearchBox value={q} onChange={setQ} placeholder="이름·분류(셰리/피트/싱글몰트…) 검색"
         after={<FilterButton open={openCls} count={cls === 'all' ? 0 : 1} onToggle={() => setOpenCls((v) => !v)} />} />
       {cls !== 'all' && (
@@ -343,7 +345,7 @@ export function WhiskyPage() {
 }
 
 /** 위스키 분류 표 — 보유 위스키를 지역·숙성·분류별로 놓고, 아직 없는 칸을 보여 준다 */
-function GapView({ onBack }: { onBack: () => void }) {
+function GapView({ tabs }: { tabs: ReactNode }) {
   const whiskies = useWhiskies();
   const coverage = useMemo(() => computeCoverage(whiskies), [whiskies]);
   const matrix = useMemo(() => computeRegionMaturityMatrix(whiskies), [whiskies]);
@@ -354,37 +356,33 @@ function GapView({ onBack }: { onBack: () => void }) {
 
   return (
     <>
-      <h2 className="pagetitle" data-k="Cask Notes">위스키 분류 표<span className="sub">가진 위스키로 채운 표 · 빈 칸 {totalGaps}</span></h2>
-      <div className="btnrow"><button className="btn ghost" onClick={onBack}>← 위스키 목록으로</button></div>
+      <h2 className="pagetitle" data-k="Cask Notes">위스키 분류 표<span className="sub">빈 칸 {totalGaps}</span></h2>
+      {tabs}
 
       <div className="sechead">스카치 싱글몰트 · 지역 × 숙성</div>
-      <div style={{ overflowX: 'auto' }}>
-        <table>
-          <thead><tr><th>지역</th>{MATRIX_TIERS.map((t) => <th key={t}>{t}</th>)}</tr></thead>
-          <tbody>
-            {matrix.map((row) => (
-              <tr key={row.region}>
-                <td style={{ whiteSpace: 'nowrap' }}><Term label={row.region} /></td>
-                {MATRIX_TIERS.map((t) => {
-                  const list = row.cells[t];
-                  return <td key={t}>{list.length === 0 ? <span className="tag-na">없음</span> : list.map((n, i) => <div key={i} className="tag-ok">{n}</div>)}</td>;
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <p className="hint">엔트리 11년 이하 · 스탠다드 12~17년 · 고숙성 18년 이상. 연수 표시가 없는 병은 빠져요.</p>
+      {matrix.map((row) => (
+        <div className="rlist" key={row.region}>
+          <h4><Term label={row.region} /></h4>
+          {MATRIX_TIERS.map((t) => (
+            <div className="rrow" key={t}>
+              <span className="rk">{t}</span>
+              <span className={row.cells[t].length ? 'rv' : 'rv na'}>{row.cells[t].join(', ') || '—'}</span>
+            </div>
+          ))}
+        </div>
+      ))}
+      <p className="hint">엔트리 ~11년 · 스탠다드 12~17년 · 고숙성 18년+ · 연수 미표기 제외</p>
 
-      <div className="sechead">분류별로 가진 위스키</div>
+      <div className="sechead">분류별</div>
       {coverage.map((fam) => (
-        <div className="grpbox" key={fam.key}>
-          <h4>{fam.label} · 빈 칸 {fam.gapCount}</h4>
-          <div className="clstags">
-            {fam.cells.map((c) => (
-              <Term key={c.value} term={c.value} label={`${c.value}${c.gap ? ' · 없음' : ` · ${c.count}`}`} className={c.gap ? 'gap' : 'have'} />
-            ))}
-          </div>
+        <div className="rlist" key={fam.key}>
+          <h4>{fam.label} <small>빈 칸 {fam.gapCount}</small></h4>
+          {fam.cells.map((c) => (
+            <div className="rrow" key={c.value}>
+              <span className="rk"><Term term={c.value} label={c.value} /></span>
+              <span className={c.gap ? 'rv na' : 'rv'}>{c.gap ? '—' : c.count}</span>
+            </div>
+          ))}
         </div>
       ))}
 

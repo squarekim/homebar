@@ -220,6 +220,14 @@ const BUBBLY = ['샴페인', '프로세코'];
 const CREAMY = ['생크림', '우유', '코코넛 크림', '아이리시 크림(베일리스)'];
 const HOT = ['뜨거운 커피'];
 
+/** 잔 이름 — 스펙 시트의 메타 줄에 쓴다 */
+export const GLASS_LABEL_KO: Record<GlassKind, string> = {
+  coupe: '쿠프', martini: '마티니 글라스', highball: '하이볼', rocks: '록스', flute: '플루트',
+  hurricane: '허리케인', shot: '샷', mug: '머그', wine: '와인 글라스', wineice: '와인 글라스',
+};
+/** 그림에 얼음이 들어 있는 잔 — 서빙 방식(얼음 위 / 얼음 없이)을 그림과 같게 적는다 */
+export const GLASS_ICE = new Set<GlassKind>(['rocks', 'highball', 'hurricane', 'wineice']);
+
 /** 잔 — 조주법과 구성에서 고른다 */
 const GLASS_KINDS = new Set<GlassKind>(['coupe', 'martini', 'highball', 'rocks', 'flute', 'hurricane', 'shot', 'mug', 'wine', 'wineice']);
 export function glassOf(ck: Cocktail): GlassKind {

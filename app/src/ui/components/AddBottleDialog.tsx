@@ -167,9 +167,7 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
       {step === 'search' && (
         <>
           <h2>술 추가</h2>
-          <p className="hint sub">
-            이름만 넣으면 나머지는 채워 드려요.
-          </p>
+          <p className="hint sub">이름으로 검색 · 나머지 자동 입력</p>
           <input type="search" autoFocus value={q} placeholder="예: 발베니 12 / 조니블랙 / Absolut" onChange={(e) => setQ(e.target.value)} />
                     {q.trim() !== '' && (
             <div className="list" style={{ marginTop: 10 }}>
@@ -186,7 +184,7 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
                   </div>
                 </button>
               ))}
-              {hits.length === 0 && <div className="hint">찾는 술이 없어요. 아래 <b>직접 추가</b>로 넣어 주세요.</div>}
+              {hits.length === 0 && <div className="hint">검색 결과 없음 · 아래 <b>직접 추가</b></div>}
             </div>
           )}
           <div className="btnrow">
@@ -222,7 +220,7 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
                 <summary>{noteHeading(MASTER_MAKER_NOTES[picked.id])} 보기</summary>
                 <MakerNoteView
                   note={MASTER_MAKER_NOTES[picked.id]}
-                  empty="공식 노트가 없어요."
+                  empty="공식 노트 없음"
                 />
               </details>
             </div>
@@ -239,7 +237,7 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
             <>
               <div className="sechead in">이름</div>
               <input type="text" value={name} placeholder="예: 라가불린 16년" onChange={(e) => setName(e.target.value)} />
-              <div className="sechead in">종류 <small className="sub">이름을 보고 골랐어요</small></div>
+              <div className="sechead in">종류 <small className="sub">자동 분류</small></div>
               <ChipRow value={category} options={CATEGORY_CHIPS} onChange={pickCategory} wrap tight />
             </>
           )}
@@ -247,7 +245,7 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
           <div className="sechead in">칵테일 재료 연결</div>
           <label className="it" style={{ marginBottom: 6 }}>
             <input type="checkbox" checked={link} onChange={(e) => setLink(e.target.checked)} />
-            <span>이 술을 칵테일 재료로도 쓸게요</span>
+            <span>칵테일 재료로도 사용</span>
           </label>
           <IngredientLink value={ingName} onChange={(v) => { setIngName(v); setLink(!!v); }} />
 

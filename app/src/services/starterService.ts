@@ -1,6 +1,6 @@
 /**
  * starterService — 입문 취향 찾기.
- * 고른 음료·술 카드로 취향 벡터를 만들고, 입문 추천 38개 안에서 위스키와 칵테일을 고른다.
+ * 고른 음료·술 카드로 취향 벡터를 만들고, 입문 추천 37개 안에서 위스키와 칵테일을 고른다.
  * 저장하지 않는 순수 계산이다. 결과를 취향 프로필에 반영할지는 화면이 정한다.
  */
 import { type FlavorVector, FLAVOR_AXES, zeroVector } from '../models/types';

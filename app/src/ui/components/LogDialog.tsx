@@ -52,7 +52,7 @@ export function LogDialog() {
     <Modal open onClose={closeLog}>
       <h2>기록: {logPrefill.drinkName}</h2>
 
-      <div className="sechead">어떻게 마셨나요?</div>
+      <div className="sechead">서빙 방식</div>
       <ChipRow value={style} options={SERVING_CHIPS} onChange={setStyle} />
 
       <div className="slider">
@@ -63,7 +63,7 @@ export function LogDialog() {
       <ChipRow value={retry ? 'y' : 'n'} options={RETRY_CHIPS} onChange={(v) => setRetry(v === 'y')} wrap />
 
       <button className="btn ghost" style={{ margin: '6px 0' }} onClick={() => setShowFlavors((v) => !v)}>
-        {showFlavors ? '맛 평가 접기' : '맛 평가 입력 (선택)'}
+        {showFlavors ? '맛 평가 접기' : '맛 평가 (선택)'}
       </button>
       {showFlavors && (
         <div>
@@ -78,7 +78,7 @@ export function LogDialog() {
       )}
 
       <div className="sechead">메모</div>
-      <textarea rows={2} value={memo} placeholder="느낀 점" onChange={(e) => setMemo(e.target.value)} />
+      <textarea rows={2} value={memo} placeholder="향, 여운, 어울렸던 안주 등" onChange={(e) => setMemo(e.target.value)} />
 
       <div className="btnrow">
         <button className="btn primary" onClick={save}>저장</button>

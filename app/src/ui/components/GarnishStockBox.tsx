@@ -3,7 +3,6 @@ import { useHeldIds, inventoryRepo } from '../../hooks/useData';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { ingredientIdOf } from '../../data/adapters';
 import { GARNISH_STOCK, garnishUsage } from '../../services/garnishStock';
-import { useUI } from '../UIContext';
 
 /** 재료에도 있는 가니시 — 같은 체크를 쓴다 */
 const SHARED_ROWS = ['민트 잎', '칵테일 어니언'];
@@ -14,24 +13,16 @@ const SHARED_ROWS = ['민트 잎', '칵테일 어니언'];
  */
 export function GarnishStockBox({ own }: { own: 'all' | 'owned' | 'missing' }) {
   const held = useHeldIds();
-  const { openGuide } = useUI();
   const usage = useMemo(() => garnishUsage(referenceRepo.cocktails()), []);
   const rows = [
     ...GARNISH_STOCK.map((g) => ({ id: g.id, name: g.name, hint: g.hint, shared: false })),
-    ...SHARED_ROWS.map((n) => ({ id: ingredientIdOf(n), name: n, hint: '재료 체크와 같이 바뀌어요.', shared: true })),
+    ...SHARED_ROWS.map((n) => ({ id: ingredientIdOf(n), name: n, hint: '', shared: true })),
   ].filter((r) => own === 'all' || (own === 'owned' ? held.has(r.id) : !held.has(r.id)));
   if (!rows.length) return null;
 
   return (
     <div className="grpbox garnishbox">
       <h4>가니시 <small>{rows.filter((r) => held.has(r.id)).length}/{rows.length}</small></h4>
-      <p className="hint">
-        체크하면 레시피에 <b>가니시까지 있어요</b>가 붙어요.
-      </p>
-      <p className="hint">
-        말린 칩은 슬라이스만 대신해요(향은 없어요).{' '}
-        <button className="lnk" onClick={() => openGuide('garnish')}>가니시 준비</button>
-      </p>
       <div className="items">
         {rows.map((r) => {
           const owned = held.has(r.id);
@@ -41,7 +32,7 @@ export function GarnishStockBox({ own }: { own: 'all' | 'owned' | 'missing' }) {
                 <input type="checkbox" checked={owned} onChange={(e) => inventoryRepo.setOwned(r.id, r.name, e.target.checked)} />
                 <span>
                   {r.name}
-                  {r.hint && <b className="bmine">{r.hint}</b>}
+                  {r.hint && ` (${r.hint})`}
                 </span>
                 <small>{usage.get(r.id) ?? 0}</small>
               </div>

@@ -74,7 +74,7 @@ export interface StarterPick {
   difficulty: 1 | 2 | 3;
 }
 
-/** 입문 추천 38개 (위스키 18 · 칵테일 20) */
+/** 입문 추천 37개 (위스키 17 · 칵테일 20). 산토리 토키는 국내에서 구하기 어려워 뺐다 */
 export const STARTER_PICKS: readonly StarterPick[] = [
   { kind: 'whisky', id: 'm_macallan12dc', difficulty: 1, reason: '꿀, 바닐라, 말린 과일의 단맛이 나요. 셰리 캐스크 위스키를 처음 마셔 볼 때 고르기 좋아요.' },
   { kind: 'whisky', id: 'm_glenfiddich12', difficulty: 1, reason: '서양배 같은 과일 향과 은은한 오크 향이 나고 끝맛이 깔끔해요.' },
@@ -89,7 +89,6 @@ export const STARTER_PICKS: readonly StarterPick[] = [
   { kind: 'whisky', id: 'm_wildturkey101', difficulty: 1, reason: '도수 50.5%로 높아요. 진한 캐러멜, 바닐라, 오크 향신료 맛이 나요. 얼음이나 탄산수를 섞어도 맛이 흐려지지 않아요.' },
   { kind: 'whisky', id: 'm_woodford', difficulty: 1, reason: '구운 곡물, 나무, 달콤한 향신료, 과일과 꽃 향이 나요.' },
   { kind: 'whisky', id: 'm_kakubin', difficulty: 1, reason: '단 향과 드라이한 마무리가 있어서 탄산수와 섞으면 청량해요. 일본식 하이볼에 많이 써요.' },
-  { kind: 'whisky', id: 'm_toki', difficulty: 1, reason: '청사과와 바질 같은 산뜻한 향에 바닐라와 향신료 여운이 나는 일본 블렌디드 위스키예요.' },
   { kind: 'whisky', id: 'm_hibiki_harmony', difficulty: 1, reason: '장미, 리치, 오렌지 껍질, 화이트초콜릿 향이 나요. 자극이 적어 스트레이트로 마시기 좋아요.' },
   { kind: 'whisky', id: 'm_jameson', difficulty: 1, reason: '3번 증류한 아이리시 위스키예요. 도수 40%이고 견과, 바닐라, 은은한 셰리 단맛이 나요. 니트나 진저에일 하이볼로 마시기 좋아요.' },
   { kind: 'whisky', id: 'm_bushmills', difficulty: 1, reason: '3번 증류한 몰트와 그레인 위스키를 섞었어요. 도수 40%이고 가벼운 과일 향과 바닐라, 꿀 단맛이 나요.' },
@@ -119,13 +118,13 @@ export const STARTER_PICKS: readonly StarterPick[] = [
 /**
  * 입문 위스키의 평균 가격(원, 2026-10-26 국내 판매처 기준).
  * 두 조사의 하한·상한 평균이고, 상한이 하한의 2.5배를 넘는 값과 DB 와 다른 용량의 가격은 뺐다.
- * 산토리 토키와 와일드 터키 101 은 재조사 중이라 없다.
+ * 와일드 터키 101 은 데일리샷 판매가 한 곳(39,900원, 2026-11-12 확인)이라 평균이 아니다.
  */
 export const STARTER_PRICES: Readonly<Record<string, number>> = {
   m_macallan12dc: 115200, m_glenfiddich12: 89300, m_balvenie12dw: 103500, m_glenmorangie12: 79800,
   m_talisker10: 84500, m_jw_black: 52200, m_ballantine_f: 31400, m_monkeyshoulder: 58800,
   m_makers: 45900, m_buffalotrace: 47000, m_woodford: 84000, m_kakubin: 39400,
-  m_hibiki_harmony: 197200, m_jameson: 37100, m_bushmills: 40700, m_redbreast12: 95500,
+  m_hibiki_harmony: 197200, m_jameson: 37100, m_bushmills: 40700, m_redbreast12: 95500, m_wildturkey101: 39900,
 };
 
 /** "4~5만 원". 10만 원 미만은 1만 원, 50만 원 미만은 5만 원, 그 위는 10만 원 단위로 묶는다. */
@@ -140,23 +139,23 @@ export type StrengthPref = 'light' | 'medium' | 'strong' | 'unknown';
 export type BudgetKey = 'u3' | 'u7' | 'u15' | 'over15' | 'unknown';
 
 export const HABITS: readonly { v: DrinkHabit; label: string }[] = [
-  { v: 'often', label: '좋아해요' },
-  { v: 'sometimes', label: '가끔 마셔요' },
-  { v: 'rarely', label: '잘 안 마셔요' },
+  { v: 'often', label: '자주' },
+  { v: 'sometimes', label: '가끔' },
+  { v: 'rarely', label: '거의 안 마심' },
 ];
 
 export const STRENGTHS: readonly { v: StrengthPref; label: string }[] = [
   { v: 'light', label: '가볍게' },
   { v: 'medium', label: '보통' },
   { v: 'strong', label: '진하게' },
-  { v: 'unknown', label: '모르겠어요' },
+  { v: 'unknown', label: '상관없음' },
 ];
 
-/** 한 병에 이 정도까지는 쓸 수 있어요 */
+/** 예산대 — 한 병 기준 */
 export const BUDGETS: readonly { v: BudgetKey; label: string; max: number | null }[] = [
   { v: 'u3', label: '3만 원 이하', max: 30000 },
   { v: 'u7', label: '3~7만 원', max: 70000 },
   { v: 'u15', label: '7~15만 원', max: 150000 },
   { v: 'over15', label: '15만 원 이상', max: null },
-  { v: 'unknown', label: '모르겠어요', max: null },
+  { v: 'unknown', label: '상관없음', max: null },
 ];

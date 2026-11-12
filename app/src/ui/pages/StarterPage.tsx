@@ -88,21 +88,19 @@ export function StarterPage() {
     <>
       <h2 className="pagetitle" data-k="First Pour">
         취향 찾기
-        <span className="sub">평소 마시는 걸 고르면 처음 마셔 볼 위스키와 칵테일을 골라 드려요.</span>
       </h2>
       {step !== 'result' && <p className="stepno">질문 {at + 1} / {STEPS.length - 1}</p>}
 
       {step === 'habit' && (
         <>
-          <div className="sechead sm">술 좋아하세요?</div>
+          <div className="sechead sm">음주 빈도</div>
           <ChipRow value={habit} options={HABITS} onChange={setHabit} />
         </>
       )}
 
       {step === 'cards' && (
         <>
-          <div className="sechead sm">평소 마시는 걸 골라 주세요</div>
-          <p className="hint">안 마셔 본 건 두세요.</p>
+          <div className="sechead sm">평소 마시는 것</div>
           {[['음료', cards.filter((c) => !c.subcategories)], ['술', cards.filter((c) => c.subcategories)]].map(([label, list]) =>
             (list as TasteCard[]).length > 0 && (
               <div key={label as string}>
@@ -117,21 +115,21 @@ export function StarterPage() {
 
       {step === 'strength' && (
         <>
-          <div className="sechead sm">술은 어느 정도로 마시고 싶어요?</div>
+          <div className="sechead sm">선호 도수</div>
           <ChipRow value={strength} options={STRENGTHS} onChange={setStrength} />
         </>
       )}
 
       {step === 'budget' && (
         <>
-          <div className="sechead sm">한 병에 이 정도까지는 쓸 수 있어요</div>
+          <div className="sechead sm">예산대</div>
           <ChipRow value={budget} options={BUDGETS} onChange={setBudget} />
         </>
       )}
 
       {step === 'result' && result && (
         <>
-          {!result.taste && <p className="hint">고른 게 없어서 처음 마시기 쉬운 것부터 보여 드려요.</p>}
+          {!result.taste && <p className="hint">입문용 기본 추천</p>}
           {habit === 'rarely' ? (
             <>
               <div className="sechead">칵테일</div>
@@ -143,7 +141,7 @@ export function StarterPage() {
             <>
               <div className="sechead">위스키</div>
               {result.whiskies.length === 0
-                ? <div className="empty">이 예산에 맞는 입문 위스키가 아직 없어요.</div>
+                ? <div className="empty">이 예산대의 입문 위스키 없음</div>
                 : <div className="rowlist">{result.whiskies.map((r) => <ResultRow key={r.pick.id} r={r} />)}</div>}
               <div className="sechead">칵테일</div>
               <div className="rowlist">{result.cocktails.map((r) => <ResultRow key={r.pick.id} r={r} onOpen={() => openCocktail(r.pick.id)} />)}</div>

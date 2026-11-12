@@ -180,18 +180,13 @@ export function FlavorBars({ vector, compact }: { vector: FlavorVector; compact?
   const top = axes.reduce((m, a) => (vector[a] > vector[m] ? a : m), axes[0]);
   return (
     <div className="flavbars">
-      <div className="fbscale"><span>0</span><span>5</span><span>10</span></div>
       {axes.map((a) => (
         <div className={`fb ${a === top ? 'lead' : ''}`} key={a}>
           <span className="lb">{FLAVOR_LABELS_KO[a]}</span>
-          <span className="track">
-            <i className="tick" /><i className="tick mid" />
-            <span className="fill" style={{ width: `${Math.min(100, vector[a] * 10)}%` }} />
-          </span>
-          <span className="vv">{Math.round(vector[a])}</span>
+          <span className="track"><span className="fill" style={{ width: `${Math.min(100, vector[a] * 10)}%` }} /></span>
+          <span className="vv">{Math.round(vector[a])} <small>/ 10</small></span>
         </div>
       ))}
-      <div className="fbfoot">10점 만점</div>
     </div>
   );
 }
