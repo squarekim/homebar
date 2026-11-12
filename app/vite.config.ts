@@ -35,8 +35,8 @@ export default defineConfig(({ mode }) => {
           name: '홈바',
           short_name: '홈바',
           description: '가진 술로 만들 수 있는 칵테일과 취향에 맞는 위스키를 찾아요',
-          theme_color: '#1B2427',
-          background_color: '#1B2427',
+          theme_color: '#F6F4EF',
+          background_color: '#F6F4EF',
           display: 'standalone',
           orientation: 'portrait',
           start_url: './',
@@ -47,7 +47,25 @@ export default defineConfig(({ mode }) => {
           ]
         },
         workbox: {
-          globPatterns: ['**/*.{js,css,html,svg,png,webp,woff2}']
+          globPatterns: ['**/*.{js,css,html,svg,png,webp,woff2}'],
+          // 웹 글꼴(Google Fonts)도 기기에 저장한다. 저장하지 않으면 설치한 앱·오프라인·느린 망에서
+          // 글꼴을 못 받아 휴대폰에 설정한 글꼴(system-ui)로 보인다.
+          runtimeCaching: [
+            {
+              urlPattern: ({ url }) => url.origin === 'https://fonts.googleapis.com',
+              handler: 'StaleWhileRevalidate',
+              options: { cacheName: 'google-fonts-css' },
+            },
+            {
+              urlPattern: ({ url }) => url.origin === 'https://fonts.gstatic.com',
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'google-fonts-files',
+                expiration: { maxEntries: 400, maxAgeSeconds: 60 * 60 * 24 * 365 },
+                cacheableResponse: { statuses: [0, 200] },
+              },
+            },
+          ],
         }
       })
     ],
