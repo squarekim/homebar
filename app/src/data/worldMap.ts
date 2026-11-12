@@ -83,7 +83,18 @@ function decode(rings: readonly string[], unit: number): [number, number][][] {
     });
   });
 }
-const WORLD_RINGS = decode(WORLD_LAND, 0.1);
+/**
+ * 날짜변경선(경도 ±180°)을 넘는 고리는 한쪽으로 몰아 둔다. 그대로 두면 추코트카처럼 180°에서 -180°로 건너뛰는
+ * 점 사이에 지도를 가로지르는 선이 생긴다. 고리의 무게중심 쪽으로 반대편 점을 ±360° 옮긴다(옮긴 부분은 화면 밖).
+ */
+function unwrap(ring: [number, number][]): [number, number][] {
+  const crosses = ring.some(([x], i) => i > 0 && Math.abs(x - ring[i - 1]![0]) > 180);
+  if (!crosses) return ring;
+  const east = ring.filter(([x]) => x > 0).length >= ring.length / 2;
+  // 날짜변경선 근처(반대편 90° 너머)만 옮긴다 — 유라시아 고리의 포르투갈·스페인(서경)은 그대로 둔다
+  return ring.map(([x, y]) => [east ? (x < -90 ? x + 360 : x) : (x > 90 ? x - 360 : x), y]);
+}
+const WORLD_RINGS = decode(WORLD_LAND, 0.1).map(unwrap);
 const ISLES_RINGS = decode(ISLES_LAND, 0.01);
 
 /** 점들이 모두 들어오는 경위도 범위. 너무 좁으면 최소 폭을 둔다 */

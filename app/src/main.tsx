@@ -5,6 +5,7 @@ import { ensureSeeded } from './db/migrate';
 import { App } from './ui/App';
 import { ErrorBoundary, StorageBlocked } from './ui/Boot';
 import { applyTheme, savedTheme } from './ui/theme';
+import './assets/fonts/fonts.css';
 import './styles.css';
 
 applyTheme(savedTheme());

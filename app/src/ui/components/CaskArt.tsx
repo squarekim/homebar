@@ -61,7 +61,7 @@ export function CaskArt({ bottle, size = 56 }: { bottle: Bottle; size?: number }
     {/* 앞면 — 라벨 표시 연수, 캐스크 스트렝스. 마구리의 기울기에 맞춰 눕히고 나뭇결 아래에 깔아 판자에 찍힌 낙인처럼 보이게 한다 */}
     {text && (v.age !== null || v.caskStrength) &&
       <g transform={`translate(${cx.toFixed(2)} ${cy.toFixed(2)}) skewY(-7) scale(.74 1)`} textAnchor="middle" fontWeight="700" fill={ink}
-        opacity={light ? .82 : .9} stroke={mixed ? '#2A1A10' : 'none'} strokeWidth=".8" paintOrder="stroke" style={{ fontFamily: "'Hahmlet', 'Gowun Batang', serif" }}>
+        opacity={light ? .82 : .9} stroke={mixed ? '#2A1A10' : 'none'} strokeWidth=".8" paintOrder="stroke" style={{ fontFamily: "'Noto Serif KR', serif" }}>
         {v.age !== null && <text x="0" y={v.caskStrength ? 2 : 6} fontSize="17" letterSpacing="-.2">{v.age}</text>}
         {v.caskStrength && <text x="0" y={v.age !== null ? 11.5 : 4.5} fontSize={v.age !== null ? 7 : 12} letterSpacing="1">CS</text>}
       </g>}
