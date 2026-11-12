@@ -339,11 +339,8 @@ export function StarterNotice() {
   }, []);
   if (!on) return null;
   return (
-    <div className="notice" role="note">
-      <p>
-        <b>예시 재고 {STARTER_INVENTORY.length}가지</b>로 계산한 화면이에요.
-      </p>
-      <StarterSetList />
+    <div className="notice exnote" role="note">
+      <StarterSetList summary={<><b>예시 재고 적용 중</b> · <span>구성 보기</span></>} />
       <div className="btnrow">
         <button className="btn sm" onClick={async () => { await turnOffExample(); notifyExample(); toast('예시를 껐어요'); }}>예시 끄기</button>
         <button className="btn sm" onClick={() => { keepExampleAsMine(); notifyExample(); setCellarSub('stock'); goTab('cellar'); }}>내 재료로 고쳐 쓰기</button>
@@ -360,11 +357,11 @@ export function notifyExample(): void { window.dispatchEvent(new Event(EXAMPLE_E
  * 기본 홈바 세트가 무엇인지 — 칵테일을 막 시작한 집에 있을 법한 술과 재료.
  * 특정 사람의 술장이 아니라 예시이고, 이걸로 레시피 209종 가운데 몇 잔이 열리는지 보여 주려고 둔다.
  */
-export function StarterSetList() {
+export function StarterSetList({ summary }: { summary?: ReactNode }) {
   return (
     <details className="starterset">
-      <summary>예시 재고에 뭐가 들어 있나요?</summary>
-      <p className="hint">술 세 병, 리큐르 한 병, 주스와 탄산까지 {STARTER_INVENTORY.length}가지예요.</p>
+      <summary>{summary ?? '예시 재고 구성'}</summary>
+      <p className="hint">술 세 병 · 리큐르 한 병 · 주스와 탄산 · 총 {STARTER_INVENTORY.length}가지</p>
       <dl>
         {STARTER_GROUPS.map((g) => (
           <div key={g.label}>

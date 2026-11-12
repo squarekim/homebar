@@ -43,10 +43,9 @@ export function GroupRec() {
 
   return (
     <>
-      <div className="hint">함께 마실 사람을 고르세요. 누군가 싫어하는 맛이 강한 잔은 뒤로 가요.</div>
       <ChipMulti options={profileChips} values={[...selected]} onToggle={toggle} />
       <ChipRow value={onlyAvail ? 'avail' : 'all'} options={AVAIL_CHIPS} onChange={(v) => setOnlyAvail(v === 'avail')} wrap />
-      {chosen.length < 2 && <div className="hint">두 명 이상 고르면 모두가 마실 만한 잔을 찾아 드려요. 지금은 {chosen.length}명이에요.</div>}
+      <p className="statusline">{chosen.length}명 선택 · 비선호 맛 후순위{onlyAvail ? ' · 만들 수 있는 잔만' : ''}</p>
       <RecList recs={recs} onPick={(r) => openCocktail(r.id)} />
     </>
   );
@@ -58,7 +57,7 @@ export function ClearStockRec() {
   const recs = useMemo(() => recommendCocktails(ctx, 'clearstock', 30), [ctx]);
   return (
     <>
-      <div className="hint">조금 남은 재료를 쓰는 잔부터 보여 드려요.</div>
+      <p className="statusline">남은 재료 소진 순</p>
       <RecList recs={recs} onPick={(r) => openCocktail(r.id)} />
     </>
   );
@@ -70,7 +69,7 @@ export function PurchaseRec() {
   const max = Math.max(1, ...buys.map((b) => b.addedRecipes));
   return (
     <>
-      <div className="hint">새로 열리는 잔이 많은 순서예요.</div>
+      <p className="statusline">새로 열리는 잔 많은 순</p>
       {buys.map((b) => (
         <div className="rank" key={b.ingredientId}>
           <b>+{b.addedRecipes}</b>

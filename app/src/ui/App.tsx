@@ -9,7 +9,6 @@ import { UIProvider, useUI, type Tab } from './UIContext';
 import { LogDialog } from './components/LogDialog';
 import { AddBottleDialog } from './components/AddBottleDialog';
 import { Modal } from './components/common';
-import { FirstRun } from './components/FirstRun';
 import { GuidePopup } from './components/GuidePopup';
 import { TodayPage } from './pages/TodayPage';
 import { CocktailsPage } from './pages/CocktailsPage';
@@ -79,6 +78,8 @@ function Shell() {
         {tab === 'taste' && <TastePage />}
         {tab === 'settings' && <SettingsPage />}
         {tab === 'starter' && <StarterPage />}
+        {/* 건전한 음주 안내 — 화면을 막지 않게 맨 아래 각주 한 줄로만 둔다 */}
+        <p className="sitefoot">홈바는 건전한 음주 문화를 지향합니다.</p>
         <div className="tailspace" />
       </main>
 
@@ -100,7 +101,6 @@ function Shell() {
       </Modal>
       {toastMsg && <div className="toast">{toastMsg}</div>}
       <GuidePopup />
-      <FirstRun />
     </>
   );
 }

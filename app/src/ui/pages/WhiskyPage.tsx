@@ -352,18 +352,20 @@ function GapView({ tabs }: { tabs: ReactNode }) {
   const sims = useMemo(() => CANDIDATE_WHISKIES
     .map((c) => ({ c, sim: simulateAdd(c.cls, whiskies) }))
     .sort((a, b) => b.sim.gain - a.sim.gain), [whiskies]);
-  const totalGaps = coverage.reduce((s, f) => s + f.gapCount, 0);
 
   return (
     <>
-      <h2 className="pagetitle" data-k="Cask Notes">위스키 분류 표<span className="sub">빈 칸 {totalGaps}</span></h2>
+      <h2 className="pagetitle" data-k="Cask Notes">위스키 분류 표</h2>
       {tabs}
 
       <div className="sechead">스카치 싱글몰트 · 지역 × 숙성</div>
       {matrix.map((row) => (
         <div className="rlist" key={row.region}>
           <h4><Term label={row.region} /></h4>
-          {MATRIX_TIERS.map((t) => (
+          {/* 한 병도 없는 지역은 빈 줄 세 개 대신 한 줄로 */}
+          {MATRIX_TIERS.every((t) => row.cells[t].length === 0)
+            ? <div className="rrow"><span className="rv na">보유 없음</span></div>
+            : MATRIX_TIERS.map((t) => (
             <div className="rrow" key={t}>
               <span className="rk">{t}</span>
               <span className={row.cells[t].length ? 'rv' : 'rv na'}>{row.cells[t].join(', ') || '—'}</span>
@@ -376,7 +378,7 @@ function GapView({ tabs }: { tabs: ReactNode }) {
       <div className="sechead">분류별</div>
       {coverage.map((fam) => (
         <div className="rlist" key={fam.key}>
-          <h4>{fam.label} <small>빈 칸 {fam.gapCount}</small></h4>
+          <h4>{fam.label}</h4>
           {fam.cells.map((c) => (
             <div className="rrow" key={c.value}>
               <span className="rk"><Term term={c.value} label={c.value} /></span>

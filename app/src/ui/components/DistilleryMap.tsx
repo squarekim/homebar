@@ -4,7 +4,7 @@
  * 묶음 칩을 누르면 그 묶음이 화면을 채우게 확대하고, 스코틀랜드는 지역 칩이 한 줄 더 붙는다.
  * 지역 소개(regionGuide)와 이 앱 제품의 피트 비율은 기존 싱글몰트 40곳 기준이다. 지도 라이브러리 없이 SVG 하나로 그린다.
  */
-import { useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { DISTILLERIES, mapGroupOf, productsOfDistillery } from '../../data/distilleries';
 import { regionGuideById } from '../../data/regionGuide';
 import { normalizeQuery } from '../../data/textMatch';
@@ -71,7 +71,7 @@ const overlaps = (a: Box, b: Box) => a[0] < b[2] && b[0] < a[2] && a[1] < b[3] &
 function placeLabels(pts: Pt[], unit: number, vb: readonly number[]): Map<string, { x: number; y: number; anchor: 'start' | 'end' }> {
   const frame: Box = [vb[0]!, vb[1]!, vb[0]! + vb[2]!, vb[1]! + vb[3]!];
   const inside = (b: Box) => b[0] >= frame[0] && b[1] >= frame[1] && b[2] <= frame[2] && b[3] <= frame[3];
-  const fs = unit * 2.8, r = unit * 1.6;
+  const fs = unit * 2.3, r = unit * 1.6;
   const dots: Box[] = pts.map(({ x, y }) => [x - r, y - r, x + r, y + r]);
   const placed: Box[] = [];
   const out = new Map<string, { x: number; y: number; anchor: 'start' | 'end' }>();
@@ -92,6 +92,22 @@ function placeLabels(pts: Pt[], unit: number, vb: readonly number[]): Map<string
   return out;
 }
 
+/** 확대 — 묶음 화면(vb) 안의 한 부분을 본다. k 배율, (cx, cy) 가운데. 화면 밖으로 나가지 않게 가둔다 */
+type Zoom = { k: number; cx: number; cy: number };
+const MAX_ZOOM = 16;
+function clampZoom(z: Zoom, vb: readonly number[]): Zoom {
+  const k = Math.min(MAX_ZOOM, Math.max(1, z.k));
+  const w = vb[2]! / k, h = vb[3]! / k;
+  const lim = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+  return { k, cx: lim(z.cx, vb[0]! + w / 2, vb[0]! + vb[2]! - w / 2), cy: lim(z.cy, vb[1]! + h / 2, vb[1]! + vb[3]! - h / 2) };
+}
+/** 점 (px, py) 를 그 자리에 둔 채 f 배 확대·축소 */
+function zoomAt(z: Zoom, f: number, px: number, py: number, vb: readonly number[]): Zoom {
+  const k = Math.min(MAX_ZOOM, Math.max(1, z.k * f));
+  const g = z.k / k;
+  return clampZoom({ k, cx: px + (z.cx - px) * g, cy: py + (z.cy - py) * g }, vb);
+}
+
 const placeOf = (d: WorldDistillery) => [d.country, scotchRegionOf(d) ?? d.region, d.place].filter(Boolean).join(' · ');
 
 export function DistilleryMapView({ tabs }: { tabs: ReactNode }) {
@@ -108,10 +124,81 @@ export function DistilleryMapView({ tabs }: { tabs: ReactNode }) {
   // 확대 범위는 필터와 상관없이 묶음 전체로 잡는다. 필터를 바꿀 때 지도가 움직이지 않게
   const proj = useMemo(() => projectionFor(view, WORLD_DISTILLERIES.filter((d) => inView(d, view)).filter(located)), [view]);
   const vb = proj.box;
-  const unit = vb[2] / (view === '세계' ? 160 : 100); // 확대해도 점과 글자가 화면에서 같은 크기로 보이게
+  const full: Zoom = { k: 1, cx: vb[0] + vb[2] / 2, cy: vb[1] + vb[3] / 2 };
+  const [zoom, setZoom] = useState<Zoom>(full);
+  // 묶음을 바꾸면 그 묶음 전체로 돌아간다
+  useEffect(() => { setZoom({ k: 1, cx: vb[0] + vb[2] / 2, cy: vb[1] + vb[3] / 2 }); }, [vb]);
+  // 지도 틀의 화면 크기 — 보이는 범위를 틀 비율에 맞춰 넓히고, 점·글자 크기를 화면 픽셀로 정한다
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [frame, setFrame] = useState({ w: 720, h: 480 });
+  useEffect(() => {
+    const el = svgRef.current;
+    if (!el || typeof ResizeObserver !== 'function') return;
+    const ro = new ResizeObserver(([e]) => { const r = e!.contentRect; if (r.width && r.height) setFrame({ w: r.width, h: r.height }); });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  /** 확대 상태 z 에서 화면에 보이는 범위 [x, y, w, h] — 묶음 범위를 틀 비율에 맞게 넓힌다 */
+  const viewOf = (z: Zoom): [number, number, number, number] => {
+    let w = vb[2] / z.k, h = vb[3] / z.k;
+    const a = frame.w / frame.h;
+    if (w / h < a) w = h * a; else h = w / a;
+    return [z.cx - w / 2, z.cy - h / 2, w, h];
+  };
+  const zc = clampZoom(zoom, vb); // 묶음을 바꾼 첫 화면에서도 범위 안에 둔다
+  const cur = viewOf(zc);
+  const unit = (cur[2] / frame.w) * (frame.w < 600 ? 5 : 6); // 점 반지름 ≈ 6~7px, 확대해도 화면에서 같은 크기
   const pts = useMemo(() => spread(shown.filter(located).map((d) => { const [x, y] = proj.project(d.lat, d.lng); return { d, x, y }; }), unit), [shown, proj, unit]);
   const hitR = useMemo(() => tapRadii(pts, unit), [pts, unit]);
-  const labels = useMemo(() => (view === '세계' ? new Map() : placeLabels(pts, unit, vb)), [pts, unit, vb, view]);
+  // 세계 지도는 점이 빽빽해 처음엔 이름을 달지 않고, 2.5배 넘게 확대하면 단다
+  // 이름표 자리는 화면에 보이는 점만 놓고 따진다(끌 때 느려지지 않게)
+  const labels = useMemo(() => (view === '세계' && zoom.k < 2.5 ? new Map() : placeLabels(
+    pts.filter(({ x, y }) => x >= cur[0] && x <= cur[0] + cur[2] && y >= cur[1] && y <= cur[1] + cur[3]), unit, cur)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [pts, unit, cur[0], cur[1], cur[2], view, zoom.k]);
+
+  // 휠 · 끌기 · 두 손가락으로 확대하고 옮긴다. 끌고 난 뒤의 클릭은 점 고르기로 치지 않는다
+  const ptrs = useRef(new Map<number, { x: number; y: number }>());
+  const dragged = useRef(false);
+  const toSvg = (clientX: number, clientY: number, z: Zoom) => {
+    const r = svgRef.current!.getBoundingClientRect();
+    const [x, y, w, h] = viewOf(z);
+    return [x + ((clientX - r.left) / r.width) * w, y + ((clientY - r.top) / r.height) * h] as const;
+  };
+  useEffect(() => {
+    const el = svgRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      setZoom((z) => { const [px, py] = toSvg(e.clientX, e.clientY, z); // 휠을 굴린 양만큼(트랙패드의 작은 값도) 부드럽게. 한 번에 2배를 넘지 않게 묶는다
+        const f = Math.min(2, Math.max(0.5, Math.exp(-e.deltaY * 0.0025)));
+        return zoomAt(z, f, px, py, vb); });
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vb, frame.w, frame.h]);
+  const onPointerDown = (e: React.PointerEvent) => { ptrs.current.set(e.pointerId, { x: e.clientX, y: e.clientY }); if (ptrs.current.size === 1) dragged.current = false; };
+  const onPointerMove = (e: React.PointerEvent) => {
+    const prev = ptrs.current.get(e.pointerId);
+    if (!prev) return;
+    const others = [...ptrs.current.entries()].filter(([id]) => id !== e.pointerId).map(([, p]) => p);
+    const r = svgRef.current!.getBoundingClientRect();
+    if (others.length === 0) {
+      const dx = e.clientX - prev.x, dy = e.clientY - prev.y;
+      if (Math.abs(dx) + Math.abs(dy) > 3) dragged.current = true;
+      if (dragged.current) setZoom((z) => { const [, , w, h] = viewOf(z); return clampZoom({ ...z, cx: z.cx - (dx / r.width) * w, cy: z.cy - (dy / r.height) * h }, vb); });
+    } else {
+      // 두 손가락 — 사이 거리의 변화만큼 가운데를 기준으로 확대
+      const o = others[0]!;
+      const before = Math.hypot(prev.x - o.x, prev.y - o.y), after = Math.hypot(e.clientX - o.x, e.clientY - o.y);
+      dragged.current = true;
+      if (before > 0) setZoom((z) => { const [px, py] = toSvg((e.clientX + o.x) / 2, (e.clientY + o.y) / 2, z); return zoomAt(z, after / before, px, py, vb); });
+    }
+    ptrs.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  };
+  const onPointerUp = (e: React.PointerEvent) => { ptrs.current.delete(e.pointerId); };
+  const zoomBy = (f: number) => setZoom((z) => zoomAt(z, f, z.cx, z.cy, vb));
 
   const picked = WORLD_DISTILLERIES.find((d) => d.id === pickedId) ?? null;
   const guide = regionGuideById.get(view);
@@ -152,8 +239,11 @@ export function DistilleryMapView({ tabs }: { tabs: ReactNode }) {
         <ChipToggle label="생산 중인 곳만" on={producingOnly} onToggle={() => setProducingOnly(!producingOnly)} />
       </div>
 
-      <svg className="distmap" viewBox={vb.join(' ')} role="img" aria-label={`${view} 증류소 지도`}>
-        <rect className="sea" x={vb[0]} y={vb[1]} width={vb[2]} height={vb[3]} />
+      <div className="mapwrap">
+      <svg ref={svgRef} className="distmap" viewBox={cur.join(' ')} role="img" aria-label={`${view} 증류소 지도`}
+        onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp} onPointerLeave={onPointerUp}
+        onClickCapture={(e) => { if (dragged.current) { e.stopPropagation(); dragged.current = false; } }}>
+        <rect className="sea" x={cur[0]} y={cur[1]} width={cur[2]} height={cur[3]} />
         {proj.land.map((d, i) => <path key={i} className="land" d={d} strokeWidth={unit * 0.2} />)}
         {pts.map(({ d, x, y }) => {
           const on = pickedId === d.id;
@@ -164,11 +254,17 @@ export function DistilleryMapView({ tabs }: { tabs: ReactNode }) {
               onClick={() => setPickedId(d.id)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setPickedId(d.id); }}>
               <circle className="hit" cx={x} cy={y} r={hitR.get(d.id) ?? unit * 1.1} />
               <circle cx={x} cy={y} r={unit * (on ? 1.8 : 1.1)} strokeWidth={unit * 0.35} strokeDasharray={notProducing(d) ? `${unit * 0.6} ${unit * 0.4}` : undefined} />
-              {label && <text x={label.x} y={label.y} textAnchor={label.anchor} fontSize={unit * 2.8} strokeWidth={unit * 0.6}>{d.ko}</text>}
+              {label && <text x={label.x} y={label.y} textAnchor={label.anchor} fontSize={unit * 2.3} strokeWidth={unit * 0.5}>{d.ko}</text>}
             </g>
           );
         })}
       </svg>
+      <div className="mapzoom">
+        <button type="button" aria-label="확대" onClick={() => zoomBy(1.6)} disabled={zoom.k >= MAX_ZOOM}>+</button>
+        <button type="button" aria-label="축소" onClick={() => zoomBy(1 / 1.6)} disabled={zoom.k <= 1}>−</button>
+        <button type="button" aria-label="전체 보기" onClick={() => setZoom(full)} disabled={zoom.k <= 1}>⤢</button>
+      </div>
+      </div>
       <div className="maplegend" aria-hidden="true">
         <span><i className="t-on" />투어 운영</span><span><i className="t-pause" />투어 중단</span>
         <span><i className="t-none" />정규 투어 없음</span><span><i className="t-unk" />확인 안 됨</span>
