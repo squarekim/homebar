@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { recommendWhiskies, type RecommendContext } from '../services/recommendationService';
-import { simpleBuilds } from '../services/simpleBuildService';
-import { fold, hits } from '../ui/listUtils';
+import { cocktails } from '../data/adapters';
+import { normalize, hitsKey, cocktailKey } from '../ui/listUtils';
 import { userBottleToDomain } from '../data/userBottles';
 import { neutralVector } from '../hooks/useData';
 import { type UserBottle } from '../models/types';
@@ -17,15 +17,15 @@ describe('사용자가 넣은 위스키', () => {
   });
 });
 
-describe('칵테일 검색이 간단 조합도 찾는다', () => {
-  const find = (q: string) => simpleBuilds().filter((b) => !b.recipeId && hits(fold(q), b.name, b.parts.join(' '))).map((b) => b.name);
+describe('칵테일 검색이 잔에 바로 붓는 조합도 찾는다', () => {
+  const find = (q: string) => cocktails.filter((c) => hitsKey(normalize(q), cocktailKey(c))).map((c) => c.name);
   it('진토닉은 띄어 써도 붙여 써도 찾는다', () => {
     expect(find('진토닉')).toContain('진 토닉');
     expect(find('gin tonic')).toContain('진 토닉');
   });
-  it('레시피로 있는 조합(위스키 하이볼)은 레시피 목록에 맡기고, 조합표에만 있는 것을 더한다', () => {
-    expect(find('하이볼')).toEqual(expect.arrayContaining(['가쿠 하이볼', 'CS 하이볼']));
-    expect(find('하이볼')).not.toContain('위스키 하이볼');
+  it('가쿠빈 하이볼은 위스키 하이볼로, 캄파리 토닉은 밀라노 토닉으로 찾는다', () => {
+    expect(find('가쿠빈 하이볼')).toContain('위스키 하이볼');
+    expect(find('캄파리 토닉')).toContain('밀라노 토닉');
   });
 });
 

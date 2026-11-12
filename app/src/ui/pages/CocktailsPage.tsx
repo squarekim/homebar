@@ -15,11 +15,10 @@ import { garnishState } from '../../services/garnishStock';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { evaluateCocktail } from '../../services/availabilityService';
 import { CocktailDetail } from '../components/CocktailDetail';
-import { SimpleBuildBrowser, IngredientBrowser } from '../components/browsers';
-import { simpleBuilds, evaluateSimpleBuild } from '../../services/simpleBuildService';
+import { IngredientBrowser } from '../components/browsers';
 import { ChipRow, ChipToggle, SearchBox, StateLine, MethodIcon, type ChipOption, FilterButton, GarnishBadge } from '../components/common';
 import { CocktailMark } from '../components/Mark';
-import { normalize, hitsKey, cocktailKey, simpleKey, byReadyThenName, useGroupChips } from '../listUtils';
+import { normalize, hitsKey, cocktailKey, byReadyThenName, useGroupChips } from '../listUtils';
 import { type AvailabilityStatus } from '../../models/types';
 
 type StatusFilter = 'all' | AvailabilityStatus;
@@ -35,7 +34,7 @@ const IBA_FILTERS: ChipOption<string>[] = [
   { v: '구IBA', label: '예전 공식' }, { v: '비IBA', label: '그 밖' },
 ];
 
-type View = 'recipe' | 'simple' | 'ingredient';
+type View = 'recipe' | 'ingredient';
 
 export function CocktailsPage() {
   const { cocktailId, openCocktail, closeCocktail } = useUI();
@@ -48,11 +47,11 @@ export function CocktailsPage() {
   const [base, setBase] = useState('all');
   const [iba, setIba] = useState('all');
   const [status, setStatus] = useState<StatusFilter>('all');
-  /** 간단 조합으로 넘어갈 때 펼쳐 둘 조합 */
-  const [simpleOpen, setSimpleOpen] = useState<{ q: string; id: string } | null>(null);
+  /** 잔에 바로 붓는 레시피만(예전 '간단 조합' 칸을 대신한다) */
+  const [buildOnly, setBuildOnly] = useState(false);
 
   const bases = useGroupChips(referenceRepo.cocktails(), (c) => c.base, '베이스 술 전체');
-  const filterCount = (base !== 'all' ? 1 : 0) + (iba !== 'all' ? 1 : 0) + (status !== 'all' ? 1 : 0);
+  const filterCount = (base !== 'all' ? 1 : 0) + (iba !== 'all' ? 1 : 0) + (status !== 'all' ? 1 : 0) + (buildOnly ? 1 : 0);
 
   const rows = useMemo(() => {
     const t = normalize(q);
@@ -63,29 +62,18 @@ export function CocktailsPage() {
         if (base !== 'all' && c.base !== base) return false;
         if (iba !== 'all' && c.iba !== iba) return false;
         if (status !== 'all' && e.status !== status) return false;
+        if (buildOnly && c.methodKeys[0] !== 'build') return false;
         return hitsKey(t, cocktailKey(c));
       })
       .sort(byReadyThenName((x) => x.e.status, (x) => x.c.name));
-  }, [q, ready, base, iba, status, heldIds, subMap]);
+  }, [q, ready, base, iba, status, buildOnly, heldIds, subMap]);
 
   // 검색·필터를 바꿔 열려 있던 잔이 목록에서 빠지면 상세도 닫는다 — 왼쪽은 진 토닉인데 오른쪽은 위스키 사워인 일이 없게
-  const listKey = `${q}|${ready}|${base}|${iba}|${status}`;
+  const listKey = `${q}|${ready}|${base}|${iba}|${status}|${buildOnly}`;
   useEffect(() => {
     if (cocktailId && !rows.some((x) => x.c.id === cocktailId)) closeCocktail();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listKey]);
-
-  // 검색어가 있으면 간단 조합(진 토닉, 위스키 하이볼처럼 잔에 바로 붓는 조합)도 같이 찾는다.
-  // 레시피로 이미 있는 조합은 위 목록에 나오므로 뺀다. 필터는 레시피 기준이라, 필터를 켜면 보이지 않는다.
-  const simpleRows = useMemo(() => {
-    const t = normalize(q);
-    if (!t || filterCount > 0) return [];
-    return simpleBuilds()
-      .filter((b) => !b.recipeId && hitsKey(t, simpleKey(b)))
-      .map((b) => ({ b, e: evaluateSimpleBuild(b, heldIds, subMap) }))
-      .filter(({ e }) => !ready || e.status === 'READY' || e.status === 'SUBSTITUTE')
-      .sort(byReadyThenName((x) => x.e.status, (x) => x.b.name));
-  }, [q, ready, filterCount, heldIds, subMap]);
 
   // 만들 수 있는 잔과 재료가 모자란 잔을 두 묶음으로 나눠 보여 준다
   const groups = useMemo(() => {
@@ -101,11 +89,9 @@ export function CocktailsPage() {
   if (view !== 'recipe') {
     return (
       <>
-        <h2 className="pagetitle" data-k="Recipe Index">{view === 'simple' ? '간단 조합' : '재료'}</h2>
-        <div className="btnrow"><button className="btn ghost" onClick={() => { setView('recipe'); setSimpleOpen(null); }}>← 칵테일 레시피로</button></div>
-        {view === 'simple'
-          ? <SimpleBuildBrowser initialQuery={simpleOpen?.q} initialOpen={simpleOpen?.id} />
-          : <IngredientBrowser />}
+        <h2 className="pagetitle" data-k="Recipe Index">재료</h2>
+        <div className="btnrow"><button className="btn ghost" onClick={() => setView('recipe')}>← 칵테일 레시피로</button></div>
+        <IngredientBrowser />
       </>
     );
   }
@@ -129,16 +115,18 @@ export function CocktailsPage() {
           <ChipRow value={iba} options={IBA_FILTERS} onChange={setIba} wrap tight />
           <div className="hint lbl">만들 수 있는지</div>
           <ChipRow value={status} options={STATUS_FILTERS} onChange={setStatus} wrap tight />
+          <div className="hint lbl">만드는 법</div>
+          <div className="controls tight"><ChipToggle label="잔에 바로 붓기" on={buildOnly} onToggle={() => setBuildOnly((v) => !v)} /></div>
           <div className="btnrow">
-            <button className="btn sm ghost" onClick={() => { setBase('all'); setIba('all'); setStatus('all'); }}>필터 비우기</button>
+            <button className="btn sm ghost" onClick={() => { setBase('all'); setIba('all'); setStatus('all'); setBuildOnly(false); }}>필터 비우기</button>
           </div>
         </div>
       )}
 
       <div className="split">
         <div className="listpane">
-          <div className="hint">{rows.length + simpleRows.length}종 · <button className="lnk" onClick={() => setView('simple')}>간단 조합</button> · <button className="lnk" onClick={() => setView('ingredient')}>재료 목록</button></div>
-          {rows.length === 0 && simpleRows.length === 0 && <div className="empty">조건에 맞는 레시피가 없어요.</div>}
+          <div className="hint">{rows.length}종 · <button className="lnk" onClick={() => setView('ingredient')}>재료 목록</button></div>
+          {rows.length === 0 && <div className="empty">조건에 맞는 레시피가 없어요.</div>}
           {groups.map((g) => g.rows.length > 0 && (
             <div key={g.title}>
               <div className="sechead sm">{g.title} <small className="sub">{g.rows.length}</small></div>
@@ -166,23 +154,6 @@ export function CocktailsPage() {
               </div>
             </div>
           ))}
-          {simpleRows.length > 0 && (
-            <div>
-              <div className="sechead sm">간단 조합 <small className="sub">{simpleRows.length}</small></div>
-              <div className="rowlist">
-                {simpleRows.map(({ b, e }) => (
-                  <button className="rowitem" key={b.id}
-                    onClick={() => { setSimpleOpen({ q: b.name, id: b.id }); setView('simple'); }}>
-                    <div className="body">
-                      <span className="nm">{b.name}</span>
-                      <div className="taste">{b.parts.join(' · ')}{b.ratio ? ` · ${b.ratio}` : ''} · 잔에 바로 붓기</div>
-                      {e.status !== 'READY' && <div className="foot"><StateLine status={e.status} lack={e.lack} /></div>}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
         <div className="detailpane">

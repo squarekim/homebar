@@ -36,7 +36,8 @@ const masterNames = (id: string | undefined): string[] => {
   return m ? [m.nameEn, m.brand, ...m.aliases] : [];
 };
 import { normalize, hits } from '../listUtils';
-import { type Bottle, type WhiskySpec } from '../../models/types';
+import { type Bottle, type WhiskySpec, type ServingStyle } from '../../models/types';
+import { guideById } from '../../data/beginnerGuide';
 import { lookupTerm } from '../../data/glossary';
 
 /** 분류 필터 — 기준이 다른 말을 한 줄에 섞지 않고 원산지 / 종류 / 맛·캐스크로 나눠 보여 준다(고르는 건 하나) */
@@ -89,6 +90,37 @@ function SpecView({ s }: { s: WhiskySpec }) {
     <div className="makernote">
       {rows.filter(([, v]) => v).map(([k, v]) => <p className="mn-line" key={k}><b>{k}</b> {v}</p>)}
     </div>
+  );
+}
+
+/**
+ * 마시는 법 고르기 — 입문 안내서 '위스키 마시는 법' 다섯 장(니트·워터드롭·온더록·미즈와리·하이볼)을 그대로 쓴다.
+ * 고른 방법은 기록할 때 마신 방식으로 넘어간다. 예전 '간단 조합'의 가쿠 하이볼·CS 하이볼 같은 병별 조합을 대신한다.
+ */
+const DRINK_WAYS = guideById('drink').cards;
+/** 받침 따라 '로/으로' (ㄹ 받침은 '로') */
+const ro = (w: string) => { const c = (w.charCodeAt(w.length - 1) - 0xac00) % 28; return c > 0 && c !== 8 ? '으로' : '로'; };
+const WAY_STYLE: Record<string, ServingStyle> = { 니트: 'neat', 워터드롭: 'neat', 온더록: 'rocks', 하이볼: 'highball' };
+function HowToDrink({ w, canLog = true }: { w: Bottle; canLog?: boolean }) {
+  const { openLog } = useUI();
+  const [at, setAt] = useState(0);
+  const way = DRINK_WAYS[at]!;
+  const short = way.title.split(' (')[0]!;
+  return (
+    <>
+      <div className="sechead in">마시는 법</div>
+      <div className="controls tight">
+        {DRINK_WAYS.map((c, i) => (
+          <button key={c.title} className="chip" aria-pressed={i === at} onClick={() => setAt(i)}>{c.title.split(' (')[0]}</button>
+        ))}
+      </div>
+      <p className="hint">{way.body.join(' ')}</p>
+      {canLog && <div className="btnrow">
+        <button className="btn primary" onClick={() => openLog({ drinkId: w.id, drinkType: 'whisky', drinkName: w.name, servingStyle: WAY_STYLE[short] ?? 'other' })}>
+          {short}{ro(short)} 마신 잔 기록하기
+        </button>
+      </div>}
+    </>
   );
 }
 
@@ -150,22 +182,27 @@ function WhiskyDetail({ bottle: w, owned }: { bottle: Bottle; owned?: Bottle | u
       )}
 
       {preview ? (
-        // 둘러보기: 아직 술장에 없는 병이라 메모·기록 대신 넣기를 보여 준다
+        // 둘러보기: 아직 술장에 없는 병이라 메모·기록 대신 넣기를 보여 준다. 마시는 법은 고를 수 있다
+        <>
+        {w.isWhisky && <HowToDrink w={w} canLog={false} />}
         <div className="btnrow">
           {owned
             ? <button className="btn" onClick={() => openBottle(owned.id)}>가지고 있어요 · 내 병 보기</button>
             : <button className="btn primary" onClick={() => openAdd(w.name)}>내 술장에 넣기</button>}
         </div>
+        </>
       ) : (
         <>
           <div className="sechead in">내 메모 <small className="sub">공식 노트와 따로 저장돼요</small></div>
           <PersonalNote bottleId={w.id} initial={notes.get(w.id) ?? ''} onSaved={() => toast('메모를 저장했어요')} />
 
-          <div className="btnrow">
-            <button className="btn primary" onClick={() => openLog({ drinkId: w.id, drinkType: w.isWhisky ? 'whisky' : 'spirit', drinkName: w.name, servingStyle: 'neat' })}>
-              이 잔 기록하기
-            </button>
-          </div>
+          {w.isWhisky ? <HowToDrink w={w} /> : (
+            <div className="btnrow">
+              <button className="btn primary" onClick={() => openLog({ drinkId: w.id, drinkType: 'spirit', drinkName: w.name, servingStyle: 'neat' })}>
+                이 잔 기록하기
+              </button>
+            </div>
+          )}
         </>
       )}
 
