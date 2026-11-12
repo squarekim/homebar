@@ -82,7 +82,7 @@ export function TastePage() {
       <PeopleManager />
 
       <div className="sechead">설정</div>
-      <p className="hint">테마, 음주 안내, 백업</p>
+      <p className="hint">테마, 백업</p>
       <div className="btnrow"><button className="btn" onClick={() => goTab('settings')}>설정 열기</button></div>
     </>
   );

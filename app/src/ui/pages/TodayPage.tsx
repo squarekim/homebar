@@ -5,7 +5,6 @@
  * 뽑기 후보는 지금 만들 수 있는 잔뿐이다(칩으로 좁혀도 같다). 점수는 여기서 말하지 않는다.
  * 넓은 PC(1100px 이상)는 카드 뽑기 대신 지면 배치(TodayEditorial)를 쓰고, 아래 입문·기록 칸은 같이 쓴다.
  */
-import { OPEN_HEALTH_KEY } from './SettingsPage';
 import { IconMartini, IconWhisky } from '../components/icons';
 import { useCallback, useMemo, useState, type ReactElement } from 'react';
 import { useUI } from '../UIContext';
@@ -287,7 +286,7 @@ export function TodayPage() {
           <b>입문 안내서</b>
           <span>마시는 법 · 첫 병 · 도구 · 보관</span>
         </button>
-        <button onClick={() => { try { sessionStorage.setItem(OPEN_HEALTH_KEY, '1'); } catch { /* 저장이 막혀도 이동은 한다 */ } goTab('settings'); }}>
+        <button onClick={() => openGuide('health')}>
           <b>건강한 음주 안내</b>
           <span>마시기 전에 알아 둘 것</span>
         </button>

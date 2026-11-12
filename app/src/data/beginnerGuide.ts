@@ -10,7 +10,7 @@
  *  - 칵테일 만들기(방법·단위·잔·얼음·가니시·설탕시럽·날계란·기본 구조)와 칵테일 오해 3~10번:
  *    '칵테일 입문_GPT', '칵테일 입문_Gemini'(2026-11-10)를 대조하고 원문을 열어 확인한 것만 옮겼다.
  *    결정과 보류 항목은 드라이브 '칵테일 입문 안내서 (검토 반영)'에 적었다.
- * 건강 안내는 설정의 '건강한 음주 안내'에 따로 있어 여기에는 두지 않는다.
+ * 건강 안내('마시기 전에')도 여기 둔다(2026-11-12, 설정에서 옮김). 형량·g 단위 음주량은 법과 기준이 바뀌면 틀려서 넣지 않는다.
  */
 export interface GuideSource { label: string; url: string; }
 export interface GuideCard {
@@ -20,10 +20,11 @@ export interface GuideCard {
   body: string[];
   sources: GuideSource[];
 }
-export type GuideId = 'drink' | 'firstbottle' | 'tools' | 'storage' | 'myths-whisky' | 'myths-cocktail'
+export type GuideId = 'health' | 'drink' | 'firstbottle' | 'tools' | 'storage' | 'myths-whisky' | 'myths-cocktail'
   | 'methods' | 'units' | 'glasses' | 'ice' | 'garnish' | 'syrup' | 'egg' | 'families';
-export type GuideGroup = 'whisky' | 'cocktail';
+export type GuideGroup = 'health' | 'whisky' | 'cocktail';
 export const GUIDE_GROUPS: ReadonlyArray<{ key: GuideGroup; title: string }> = [
+  { key: 'health', title: '마시기 전에' },
   { key: 'whisky', title: '위스키 안내서' },
   { key: 'cocktail', title: '칵테일 안내서' },
 ];
@@ -59,6 +60,20 @@ const I_OF = iba('Old Fashioned', 'old-fashioned'), I_MARTINI = iba('Dry Martini
 const I_NEGRONI = iba('Negroni', 'negroni');
 
 export const GUIDE_CHAPTERS: readonly GuideChapter[] = [
+  {
+    id: 'health', group: 'health', title: '건강한 음주 안내',
+    intro: '마시기 전에 알아 둘 네 가지예요.',
+    cards: [
+      { title: '운전', body: ['마셨다면 운전하지 마세요.', '도로교통법상 혈중알코올농도 0.03% 이상이면 운전할 수 없어요.'],
+        sources: [{ label: '찾기쉬운 생활법령정보', url: 'https://m.easylaw.go.kr/MOB/CsmInfoRetrieve.laf?ccfNo=1&cciNo=1&cnpClsNo=2&csmSeq=684' }] },
+      { title: '임신', body: ['임신 중이거나 임신을 계획하고 있다면 마시지 마세요.'],
+        sources: [{ label: '국가암정보센터', url: 'https://cancer.go.kr/download.do?uuid=d0b02241-3714-416c-b5bc-9979f8f74607.pdf' }] },
+      { title: '약', body: ['약을 먹는 중이라면 설명서의 음주 관련 주의를 확인하세요.'],
+        sources: [{ label: '의약품안전나라', url: 'https://nedrug.mfds.go.kr/' }] },
+      { title: '소량 음주', body: ['국립암센터는 암 예방을 위해 하루 한두 잔의 소량 음주도 피하라고 안내해요.'],
+        sources: [{ label: '국립암센터', url: 'https://www.ncc.re.kr/main.ncc?uri=manage01_3' }] },
+    ],
+  },
   {
     id: 'drink', group: 'whisky', title: '위스키 마시는 법',
     intro: '같은 위스키도 마시는 방법에 따라 느낌이 달라요. 많이 쓰는 다섯 가지예요.',
