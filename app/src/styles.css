@@ -501,8 +501,8 @@ th{color:var(--mute);font-size:12px;font-weight:500}
     radial-gradient(ellipse at 50% 50%,rgba(255,255,255,.08),transparent 70%);
   box-shadow:inset 0 0 0 7px #F2E7D0,inset 0 0 0 8px rgba(94,26,38,.6),inset 0 0 0 11px #5E1A26,
     inset 0 0 0 12px rgba(242,231,208,.55),0 6px 14px rgba(8,12,14,.35)}
-.stage .back span{font-family:'Great Vibes',cursive;font-weight:400;font-size:24px;line-height:1;color:#F2E7D0;
-  transform:rotate(-8deg);text-shadow:0 0 6px #5E1A26,0 0 3px #5E1A26,0 1px 0 rgba(0,0,0,.4)}
+/* 뒷면 글자 'Homebar'는 그림(assets/cardback/homebar-word.png). 색·그림자는 그림에 들어 있고 기울기만 준다 */
+.stage .back img{display:block;width:91px;height:auto;transform:rotate(-8deg);pointer-events:none;user-select:none}
 /* 딜러가 카드를 펼치는 펠트 */
 .stage .deck::before{content:'';position:absolute;left:2%;right:2%;top:96px;height:170px;border-radius:50%;
   background:radial-gradient(ellipse at 50% 36%,#3C7059 0%,#25503F 30%,#173529 58%,rgba(23,53,41,0) 72%);opacity:.95}
