@@ -3,6 +3,7 @@
  * 샘플 안내 → 오늘의 잔 뽑기 → 고른 잔 → 처음이라면(입문) → 다르게 골라 보기 → 최근 기록 순서다.
  * 첫 화면이 답해야 할 것은 넷뿐이다: 무엇을 마실까 · 무슨 맛인가 · 지금 만들 수 있나 · 뭘 누르면 되나.
  * 뽑기 후보는 지금 만들 수 있는 잔뿐이다(칩으로 좁혀도 같다). 점수는 여기서 말하지 않는다.
+ * 넓은 PC(1100px 이상)는 카드 뽑기 대신 지면 배치(TodayEditorial)를 쓰고, 아래 입문·기록 칸은 같이 쓴다.
  */
 import { OPEN_HEALTH_KEY } from './SettingsPage';
 import { IconMartini, IconWhisky } from '../components/icons';
@@ -19,6 +20,22 @@ import { TodayReel } from '../components/TodayReel';
 import { MODES, GroupRec, PurchaseRec, ClearStockRec } from './RecommendPage';
 import { type RecommendationResult } from '../../models/types';
 import { IS_BETA, IS_PUBLIC } from '../../config';
+import { TodayEditorial } from './TodayEditorial';
+import { useEffect } from 'react';
+
+/** 넓은 PC(1100px 이상)인지 — 메인 지면 배치를 바꾸는 데만 쓴다 */
+function useWide(): boolean {
+  const q = '(min-width: 1100px)';
+  const [wide, setWide] = useState(() => typeof matchMedia === 'function' && matchMedia(q).matches);
+  useEffect(() => {
+    if (typeof matchMedia !== 'function') return;
+    const m = matchMedia(q);
+    const on = () => setWide(m.matches);
+    m.addEventListener('change', on);
+    return () => m.removeEventListener('change', on);
+  }, []);
+  return wide;
+}
 
 /**
  * 평소와 다를 때만 상태를 적는다.
@@ -131,9 +148,27 @@ export function TodayPage() {
       whisky: kind === 'cocktail' || base !== 'all' ? 0 : whatToDrink(ctx, 'whisky', 200).length,
     };
   }, [ctx, mode, kind, base]);
+  // 넓은 PC의 메뉴 인덱스 — 위 숫자와 같은 범위 전체(만들 수 있는 칵테일 + 가진 위스키), 추천 순서
+  const full = useMemo(() => {
+    const ok = (r: RecommendationResult) => r.kind === 'whisky' || r.status === 'READY' || r.status === 'SUBSTITUTE';
+    if (kind === 'whisky') return whatToDrink(ctx, 'whisky', 200);
+    const cks = whatToDrink(ctx, mode, 400).filter((r) => r.kind === 'cocktail' && ok(r)).filter((r) => base === 'all' || r.base === base);
+    const wks = kind === 'all' && base === 'all' ? whatToDrink(ctx, 'whisky', 200) : [];
+    return [...cks, ...wks].sort((x, y) => y.score - x.score);
+  }, [ctx, mode, kind, base]);
+  const wide = useWide();
   // 종류 칩만 바깥에 두고, 맛과 베이스 술은 칵테일 목록처럼 "필터" 안에 모은다
   const tasteOn = mode !== 'available';
   const baseOn = base !== 'all';
+  const emptyMsg = (
+    <>{kind === 'whisky'
+              ? <>아직 넣은 위스키가 없어요. 가진 위스키를 넣으면 여기서 골라 드려요.</>
+              : baseOn
+                ? <>이 베이스 술로 지금 만들 수 있는 잔이 없어요. 필터를 바꿔 보세요.</>
+              : mode === 'available'
+                ? <>집에 있는 술을 넣으면 지금 만들 수 있는 잔을 골라 드려요.{IS_PUBLIC ? ' 먼저 둘러보고 싶다면 예시 재고로 시작해 보세요.' : ''}</>
+                : <>이 맛으로 지금 만들 수 있는 잔이 없어요. 다른 칩을 골라 보세요.</>}</>
+  );
   const filterCount = (kind !== 'whisky' && tasteOn ? 1 : 0) + (kind !== 'whisky' && baseOn ? 1 : 0);
   const filters = (
     <div className="pickfilters">
@@ -180,6 +215,13 @@ export function TodayPage() {
         </div>
       )}
 
+      {wide ? (
+        <>
+          <TodayEditorial list={full} subline={picks.length ? subline(pool, full.length) : '고를 수 있는 잔이 아직 없어요'}
+            filters={filters} emptyText={emptyMsg} />
+          <StarterNotice />
+        </>
+      ) : (
       <section className={picks.length ? 'today' : 'today none'}>
         <h2 className="ask">오늘 뭐 마실까요?</h2>
         <p className="asksub">
@@ -218,19 +260,14 @@ export function TodayPage() {
           <>
           {filters}
           <div className="empty">
-            {kind === 'whisky'
-              ? <>아직 넣은 위스키가 없어요. 가진 위스키를 넣으면 여기서 골라 드려요.</>
-              : baseOn
-                ? <>이 베이스 술로 지금 만들 수 있는 잔이 없어요. 필터를 바꿔 보세요.</>
-              : mode === 'available'
-                ? <>집에 있는 술을 넣으면 지금 만들 수 있는 잔을 골라 드려요.{IS_PUBLIC ? ' 먼저 둘러보고 싶다면 예시 재고로 시작해 보세요.' : ''}</>
-                : <>이 맛으로 지금 만들 수 있는 잔이 없어요. 다른 칩을 골라 보세요.</>}
+            {emptyMsg}
             {(kind === 'whisky' || (mode === 'available' && !baseOn)) && <StartButtons />}
           </div>
           </>
         )}
         <StarterNotice />
       </section>
+      )}
 
       {/* 입문 — 처음 온 사람이 할 수 있는 세 가지. 취향을 이미 정했으면 문구만 바꾼다 */}
       <div className="sechead">처음이라면</div>
