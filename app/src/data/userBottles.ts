@@ -30,6 +30,7 @@ export function userBottleToDomain(stored: UserBottle): Bottle {
   const noteParts = [ub.subcategory, ub.note ?? ''].filter(Boolean);
   return {
     id: ub.id,
+    userCategory: ub.masterId ? undefined : ub.category,
     group: ub.group,
     name: ub.name,
     node: ub.masterId ? `master.${ub.category ?? 'spirit'}` : 'user.added',

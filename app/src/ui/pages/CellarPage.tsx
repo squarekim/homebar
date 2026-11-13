@@ -14,11 +14,14 @@ import { evaluateAll, tallyStatus } from '../../services/availabilityService';
 import { bottleService } from '../../services/bottleService';
 import { resetInventoryToSeed } from '../../db/migrate';
 import { isUserBottle } from '../../data/userBottles';
+import { userBottleRepo } from '../../repositories/userBottleRepo';
+import { CATEGORY_GROUP, CATEGORY_LABELS, CATEGORY_ORDER, CATEGORY_DEFAULT_INGREDIENT } from '../../data/liquorCategory';
+import { ingredientIdOf } from '../../data/adapters';
 import { bottleKindLabel, groupLabel } from '../../data/bottleIngredients';
 import { ChipRow, ChipToggle, SearchBox, BottleBadges, type ChipOption, StarterNotice, notifyExample } from '../components/common';
 import { normalize, hits, useGroupChips } from '../listUtils';
 import { IS_PUBLIC } from '../../config';
-import { type Bottle } from '../../models/types';
+import { type Bottle, type LiquorCategory } from '../../models/types';
 import { LogList } from './NotesPage';
 import { GarnishStockBox } from '../components/GarnishStockBox';
 
@@ -53,6 +56,19 @@ function BottleList({ bottles }: { bottles: Bottle[] }) {
   const { openAdd, openBottle, toast } = useUI();
   const heldIds = useHeldIds();
   const [q, setQ] = useState('');
+  /** 직접 넣은 병의 종류 바꾸기. 재료 연결은 비어 있거나 예전 종류의 기본 재료였을 때만 새 종류의 기본 재료로 바꾼다 */
+  const changeKind = async (b: Bottle, c: LiquorCategory) => {
+    const oldDefault = b.userCategory && CATEGORY_DEFAULT_INGREDIENT[b.userCategory];
+    const linked = b.ingredientIds[0];
+    const keepLink = linked && (!oldDefault || linked !== ingredientIdOf(oldDefault));
+    const def = CATEGORY_DEFAULT_INGREDIENT[c];
+    await userBottleRepo.update(b.id, {
+      category: c, group: CATEGORY_GROUP[c],
+      ...(keepLink ? {} : { ingredientId: def ? ingredientIdOf(def) : undefined, ingredientName: def }),
+      ...(c === 'whisky' ? {} : { whiskyClass: undefined }),
+    });
+    toast(`종류 변경: ${CATEGORY_LABELS[c]}`);
+  };
   const [grp, setGrp] = useState('all');
   const rawGroups = useGroupChips(bottles, (b) => b.group);
   const groups = useMemo(() => rawGroups.map((g) => ({ ...g, label: groupLabel(g.label) })), [rawGroups]);
@@ -106,7 +122,15 @@ function BottleList({ bottles }: { bottles: Bottle[] }) {
               <div className="num">
                 {b.qty > 1 ? `${b.qty}병` : '1병'}
                 {isUserBottle(b.id) && (
-                  <div><button className="btn sm ghost" onClick={async () => { await bottleService.remove(b.id); toast('지웠어요'); }}>삭제</button></div>
+                  <div className="ubactions">
+                    {/* 직접 넣은 병만 — 기준 DB에서 고른 병은 종류를 DB가 정한다 */}
+                    {b.userCategory && (
+                      <select aria-label={`${b.name} 종류 바꾸기`} value={b.userCategory} onChange={(e) => changeKind(b, e.target.value as LiquorCategory)}>
+                        {CATEGORY_ORDER.map((c) => <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>)}
+                      </select>
+                    )}
+                    <button className="btn sm ghost" onClick={async () => { await bottleService.remove(b.id); toast('지웠어요'); }}>삭제</button>
+                  </div>
                 )}
               </div>
             </div>

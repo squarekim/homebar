@@ -930,3 +930,6 @@ p,li,td,dd,label,.hint,.recipe .ing,.it span,.rowitem .nm,.taste{word-break:keep
 .notice.exnote .starterset summary span{color:var(--mute);text-decoration:underline;text-underline-offset:3px}
 .notice.exnote .btnrow{margin:0}
 .statusline{font-size:13px;color:var(--mute);margin:var(--s1) 0}
+/* 직접 넣은 병 — 종류 바꾸기 · 삭제 */
+.ubactions{display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:4px}
+.ubactions select{font-size:12px;padding:4px 6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);max-width:120px}

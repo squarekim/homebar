@@ -5,6 +5,7 @@
  * 시드 병은 분류 경로(node)가 재료와 일대일에 가까워 그 매핑을 여기 한곳에 둔다.
  * 사용자가 추가한 병은 등록할 때 이미 표준 재료를 고르므로 그 값을 그대로 쓴다.
  */
+import { liquorMasterById } from './liquorMaster';
 
 /** 시드 병의 node → 이 병으로 충당되는 표준 재료명(재료 마스터 130종 기준) */
 export const NODE_TO_INGREDIENTS: Record<string, string[]> = {
@@ -82,7 +83,15 @@ const KIND_LABELS: Record<string, string> = {
 };
 
 /** 카드 우측에 적는 술 종류 (럼·데킬라·브랜디 묶음 대신 '데킬라'처럼 실제 종류로) */
-export function bottleKindLabel(b: { node: string; group: string }): string {
+/** 중국 백주는 우리말로 흔히 부르는 '고량주'로 적는다(병 모양·색 규칙은 bottleKind 그대로) */
+function isBaijiu(b: { node: string; name?: string; productId?: string | undefined }): boolean {
+  return b.node === 'cn.baijiu'
+    || !!(b.productId && liquorMasterById.get(b.productId)?.subcategory.includes('백주'))
+    || /고량주|백주|baijiu/i.test(b.name ?? '');
+}
+
+export function bottleKindLabel(b: { node: string; group: string; name?: string; productId?: string | undefined }): string {
+  if (isBaijiu(b)) return '고량주';
   return groupLabel(KIND_LABELS[bottleKind(b)] ?? b.group);
 }
 
