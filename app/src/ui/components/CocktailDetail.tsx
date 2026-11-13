@@ -12,7 +12,7 @@ import { garnishState } from '../../services/garnishStock';
 import { cocktailAbvLabel } from '../../services/cocktailStrength';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { evaluateCocktail, STATUS_LEAD_KO } from '../../services/availabilityService';
-import { FlavorBars, MethodIcon, Term } from './common';
+import { FlavorBars, Term } from './common';
 import { GlassArt } from './GlassArt';
 import { glassOf, GLASS_LABEL_KO } from '../../data/drinkVisual';
 import { methodSteps } from '../../data/beginnerGuide';
@@ -106,7 +106,7 @@ export function CocktailDetail({ id }: { id: string }) {
   return (
     <article className="detail">
       {/* ① 이름 · 제조 요소 한 줄 · 이미지 */}
-      <h2 className="withmethod">{ck.name}<MethodIcon keys={ck.methodKeys} raw={ck.method} /></h2>
+      <h2>{ck.name}</h2>
       <p className="specline">
         {cocktailSpecLine(ck)}
         {/* 가니시까지 갖췄을 때만 알린다(가니시는 없어도 만들 수 있다) */}

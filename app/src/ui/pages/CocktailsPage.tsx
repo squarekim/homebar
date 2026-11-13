@@ -16,7 +16,7 @@ import { referenceRepo } from '../../repositories/referenceRepo';
 import { evaluateCocktail } from '../../services/availabilityService';
 import { CocktailDetail } from '../components/CocktailDetail';
 import { IngredientBrowser } from '../components/browsers';
-import { ChipRow, ChipToggle, SearchBox, StateLine, MethodIcon, type ChipOption, FilterButton, GarnishBadge } from '../components/common';
+import { ChipRow, ChipToggle, SearchBox, StateLine, type ChipOption, FilterButton, GarnishBadge } from '../components/common';
 import { CocktailMark } from '../components/Mark';
 import { normalize, hitsKey, cocktailKey, byReadyThenName, useGroupChips } from '../listUtils';
 import { type AvailabilityStatus } from '../../models/types';
@@ -136,10 +136,7 @@ export function CocktailsPage() {
                 onClick={() => openCocktail(c.id)}>
                 <CocktailMark base={c.base} cocktailId={c.id} size="sm" />
                 <div className="body">
-                  <span className="nm withmethod">
-                    <span className="nmwrap">{c.name}</span>
-                    <MethodIcon keys={c.methodKeys} raw={c.method} />
-                  </span>
+                  <span className="nm">{c.name}</span>
                   <div className="taste">{cocktailWords(c).join(' · ')} · {c.base}</div>
                   {/* 묶음 제목이 이미 '지금 만들 수 있어요'라서, 그대로 만들 수 있는 잔에는 상태를 다시 적지 않는다 */}
                   {(e.status !== 'READY' || garnishState(c, heldIds) === 'all') && (
