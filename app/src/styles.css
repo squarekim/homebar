@@ -308,10 +308,6 @@ input::placeholder{color:var(--dim)}
 .cltag.new{color:var(--ok);background:var(--ok-bg);font-weight:600}
 .cltag.ov{color:var(--mute)}
 .cltag.term{cursor:help;text-decoration:underline dotted;text-underline-offset:3px}
-.methods{display:inline-flex;align-items:center;gap:3px;margin-left:6px;vertical-align:-3px;color:var(--mute)}
-.mic{display:inline-flex}
-.withmethod{display:flex;align-items:center;gap:2px;flex-wrap:wrap}
-.nmwrap{display:inline-flex;align-items:center;min-width:0}
 
 /* ── 맛 프로필 — 3px 선형 게이지 + '9 / 10'. 칵테일·위스키 상세와 메인 스펙 시트가 같이 쓴다 ── */
 .flavbars{display:flex;flex-direction:column;gap:12px;margin-top:var(--s2)}
@@ -415,9 +411,6 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 .vnote{flex-basis:100%;margin:2px 0 0;font-size:14px;color:var(--mute);line-height:1.55}
 
 /* ── 추천 근거(점수)·구매 랭킹 ── */
-.subscores{display:flex;gap:var(--s1);margin-top:var(--s1);flex-wrap:wrap}
-.ss{font-size:12px;color:var(--mute);background:var(--panel);padding:3px 10px;border-radius:999px}
-.ss b{color:var(--ink);font-weight:600}
 .rank{display:flex;gap:var(--s2);padding:var(--s2) 0;border-bottom:1px solid var(--line)}
 .rank>b{font-size:19px;font-weight:500;color:var(--ink);min-width:52px}
 .pill{font-size:12px;color:var(--mute);background:var(--panel);border-radius:999px;padding:2px 8px;margin-left:6px}
@@ -571,9 +564,6 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 /* 휴대폰: 상세가 열려도 아래 탭은 보이게 */
 @media (max-width:899px){.sheet{bottom:calc(58px + env(safe-area-inset-bottom))}}
 /* 탭 위쪽 안내 띠 */
-.guidehint{display:flex;align-items:center;gap:var(--s1);background:var(--panel);border-radius:var(--r);margin:0 0 var(--s3);padding:0 var(--s1) 0 var(--s3)}
-.guidehint .go{flex:1;text-align:left;min-height:44px;font-size:14px;color:var(--ink)}
-.guidehint .x{width:44px;height:44px;font-size:20px;color:var(--mute)}
 
 /* 한 잔 고르기 필터: 종류 줄과 맛 줄 */
 .pickfilters{display:grid;gap:var(--s1)}
@@ -934,3 +924,37 @@ p,li,td,dd,label,.hint,.recipe .ing,.it span,.rowitem .nm,.taste{word-break:keep
 .notice.exnote .starterset summary span{color:var(--mute);text-decoration:underline;text-underline-offset:3px}
 .notice.exnote .btnrow{margin:0}
 .statusline{font-size:13px;color:var(--mute);margin:var(--s1) 0}
+/* 직접 넣은 병 — 종류 바꾸기 · 삭제 */
+.ubactions{display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:4px}
+.ubactions select{font-size:12px;padding:4px 6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);max-width:120px}
+/* 칵테일 상세 — 제조 요소 한 줄, 재료·맛 프로필 2단(좁으면 위아래), 분류·출처 각주 */
+.specline{font-family:var(--body);font-size:13px;color:var(--mute);margin-top:var(--s1);word-break:keep-all}
+.specline .gnhave{margin-left:8px;font-family:var(--body);font-weight:600;color:var(--ok);white-space:nowrap}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--s2) var(--s5);margin-top:var(--s2)}
+.dgrid .recipe{margin-top:0;border-top:0}
+.dfoot{margin-top:var(--s5);padding-top:var(--s2);border-top:1px solid var(--line);font-size:12px;color:var(--mute);display:flex;flex-direction:column;gap:var(--s1)}
+.dfoot p,.dfoot .hint{font-size:12px;line-height:1.6;color:var(--mute);margin:0}
+.dfoot .clstags .cltag{font-size:11px}
+/* 뽑은 뒤 버튼 — 주 버튼 하나만 크게, 나머지는 한 줄에 작게 */
+.pickbtns{flex-direction:row;flex-wrap:wrap;align-items:center}
+.pickbtns .btn.big{flex:1 1 100%}
+.pickbtns .btn.sm{flex:1 1 0}
+/* 상세 그림 틀 — 회색 판 대신 1px 선 틀 하나(메인 스펙 시트와 같은 방식) */
+.detail .art{background:transparent;border:1px solid var(--line);border-radius:0}
+.detail .art .mark{border:0;background:transparent}
+/* 오크통 그림은 80칸 안에서 아래쪽(y 23~72)에 그려져 있다 — 틀 가운데에 오도록 그 차이(약 9.5%)만큼 올린다 */
+.detail .art svg.cask{transform:translateY(-9.5%)}
+/* Q&A — 안내서 카드 한 장이 질문 하나. 누르면 펼쳐진다 */
+.qa-chapter{margin-bottom:var(--s4)}
+.qa-chapter h3{font-family:var(--body);font-weight:600;font-size:13px;color:var(--mute);margin:var(--s3) 0 var(--s1)}
+.qa{border-bottom:1px solid var(--line)}
+.qa:first-of-type{border-top:1px solid var(--line)}
+.qa summary{cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:8px;padding:12px 28px 12px 0;position:relative;font-size:15px;word-break:keep-all}
+.qa summary::-webkit-details-marker{display:none}
+.qa summary::after{content:'+';position:absolute;right:4px;top:12px;color:var(--mute)}
+.qa[open] summary::after{content:'−'}
+.qa-body{padding:0 0 var(--s2)}
+.qa-body p{font-size:14px;line-height:1.7;margin:0 0 var(--s1);word-break:keep-all}
+.qa-tag{flex:none;font-size:11px;font-weight:600;color:var(--sub);border:1px solid currentColor;padding:0 6px;white-space:nowrap}
+.qa-tag.fact{display:inline-block;color:var(--ok);margin-bottom:var(--s1)}
+.qa-src{font-size:12px!important;color:var(--mute)}

@@ -138,12 +138,12 @@ export function TodayPage() {
   const baseOn = base !== 'all';
   const emptyMsg = (
     <>{kind === 'whisky'
-              ? <>아직 넣은 위스키가 없어요.</>
+              ? <>넣은 위스키 없음</>
               : baseOn
-                ? <>이 베이스 술로 만들 수 있는 잔이 없어요.</>
+                ? <>이 베이스 술로 만들 수 있는 잔 없음</>
               : mode === 'available'
-                ? <>집에 있는 술을 넣으면 만들 수 있는 잔을 골라 드려요.</>
-                : <>이 맛으로 만들 수 있는 잔이 없어요.</>}</>
+                ? <>술장에 술을 넣으면 만들 수 있는 잔이 여기 나옵니다.</>
+                : <>이 맛으로 만들 수 있는 잔 없음</>}</>
   );
   const filterCount = (kind !== 'whisky' && tasteOn ? 1 : 0) + (kind !== 'whisky' && baseOn ? 1 : 0);
   const filters = (
@@ -186,7 +186,7 @@ export function TodayPage() {
     <>
       {IS_BETA && (
         <div className="sample">
-          <span><b>예시 재고</b>로 둘러보는 중이에요.</span>
+          <span><b>예시 재고</b>로 보는 중</span>
           <button className="btn sm" onClick={() => goTab('cellar')}>술장 채우기</button>
         </div>
       )}
@@ -208,7 +208,7 @@ export function TodayPage() {
                 <p className="why">
                   {ctx.hasTaste && picked.flavorWords[0]
                     ? `좋아하는 ${asTaste(picked.flavorWords[0])}에 가까워요`
-                    : picked.kind === 'whisky' ? '가지고 있는 병이에요' : '지금 술장으로 만들 수 있어요'}
+                    : picked.kind === 'whisky' ? '보유 중' : '지금 만들 수 있음'}
                 </p>
                 {state(picked) && <div className={`state s-${state(picked)!.cls}`}>{state(picked)!.text}</div>}
                 {picked.kind === 'cocktail' && (() => {
@@ -218,10 +218,10 @@ export function TodayPage() {
                 <div className="pickbtns">
                   {/* 칵테일은 고른 다음 할 일이 '만들기'라 레시피가 먼저다. 위스키는 따르기만 하면 되니 기록이 먼저다 */}
                   {picked.kind === 'cocktail' && <button className="btn primary big" onClick={() => open(picked)}>이 잔 보기</button>}
-                  <button className={picked.kind === 'cocktail' ? 'btn ghost big' : 'btn primary big'} onClick={() => made(picked)}>
+                  <button className={picked.kind === 'cocktail' ? 'btn sm ghost' : 'btn primary big'} onClick={() => made(picked)}>
                     {picked.kind === 'cocktail' ? '만든 잔 남기기' : '마신 잔 남기기'}
                   </button>
-                  <button className="btn ghost big" onClick={again}>랜덤 추천</button>
+                  <button className="btn sm ghost" onClick={again}>랜덤 추천</button>
                 </div>
               </div>
             )}
@@ -244,7 +244,7 @@ export function TodayPage() {
 
       <div className="sechead">최근 기록</div>
       {recent.length === 0
-        ? <div className="empty">아직 기록이 없어요.</div>
+        ? <div className="empty">기록 없음</div>
         : (
           <>
             {recent.map((l) => <LogCard key={l.id} log={l} />)}

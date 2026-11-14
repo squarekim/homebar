@@ -334,7 +334,7 @@ function WorldDistilleryCard({ d }: { d: WorldDistillery }) {
         {d.tourUrl && d.tour ? <a href={d.tourUrl} target="_blank" rel="noopener">{tourLabel(d)} ↗</a> : <span>{tourLabel(d)}</span>}
         {d.tour && <small className="sub"> (2026-10-28 확인)</small>}
       </p>
-      {d.coord === '마을' && <p className="mn-line"><small className="sub">점은 증류소가 있는 마을 위치예요(Wikidata)</small></p>}
+      {d.coord === '마을' && <p className="mn-line"><small className="sub">점은 증류소가 있는 마을 위치 (Wikidata 기준)</small></p>}
       {d.src && <a className="mn-src" href={d.src} target="_blank" rel="noopener">출처 ↗</a>}
       {located(d) && (
         <> · <a className="mn-src" href={`https://www.openstreetmap.org/?mlat=${d.lat}&mlon=${d.lng}#map=11/${d.lat}/${d.lng}`} target="_blank" rel="noopener">지도에서 보기 ↗</a></>

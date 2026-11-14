@@ -8,8 +8,8 @@ import { createContext, useContext, useState, useEffect, useRef, type ReactNode,
 import { type DrinkType, type ServingStyle, type RecommendationResult } from '../models/types';
 import { type GuideId } from '../data/beginnerGuide';
 
-export type Tab = 'today' | 'cocktails' | 'whisky' | 'cellar' | 'taste' | 'settings' | 'starter';
-const TABS_ALL: readonly Tab[] = ['today', 'cocktails', 'whisky', 'cellar', 'taste', 'settings', 'starter'];
+export type Tab = 'today' | 'cocktails' | 'whisky' | 'cellar' | 'taste' | 'settings' | 'starter' | 'qna';
+const TABS_ALL: readonly Tab[] = ['today', 'cocktails', 'whisky', 'cellar', 'taste', 'settings', 'starter', 'qna'];
 
 export type CellarSub = 'bottles' | 'stock' | 'logs';
 

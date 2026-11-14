@@ -12,7 +12,7 @@ import { garnishState } from '../../services/garnishStock';
 import { cocktailAbvLabel } from '../../services/cocktailStrength';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { evaluateCocktail, STATUS_LEAD_KO } from '../../services/availabilityService';
-import { FlavorBars, MethodIcon, Term } from './common';
+import { FlavorBars, Term } from './common';
 import { GlassArt } from './GlassArt';
 import { glassOf, GLASS_LABEL_KO } from '../../data/drinkVisual';
 import { methodSteps } from '../../data/beginnerGuide';
@@ -43,21 +43,9 @@ export function cocktailSpecLine(ck: Cocktail): string {
   ].filter(Boolean).join(' · ');
 }
 
-/** 이 잔을 왜 골랐는지 — 추천에서 들어왔을 때만 보여준다(점수는 여기서만) */
+/** 이 잔을 왜 골랐는지 — 추천에서 들어왔을 때만, 이유 한 줄(점수 칸은 두지 않는다) */
 function WhyPicked({ rec }: { rec: RecommendationResult }) {
-  return (
-    <>
-      <div className="sechead in">추천 이유</div>
-      <p className="hint" style={{ margin: 0 }}>{rec.reason}</p>
-      <div className="subscores">
-        <span className="ss">총점 <b>{rec.score}</b></span>
-        <span className="ss">취향 <b>{rec.tasteScore}</b></span>
-        <span className="ss">만들기 <b>{rec.availabilityScore}</b></span>
-        <span className="ss">재고 <b>{rec.inventoryScore}</b></span>
-        <span className="ss">새로움 <b>{rec.noveltyScore}</b></span>
-      </div>
-    </>
-  );
+  return <p>추천 이유 · {rec.reason}</p>;
 }
 
 /** 원형·변형 이동 */
@@ -106,7 +94,7 @@ export function CocktailDetail({ id }: { id: string }) {
   return (
     <article className="detail">
       {/* ① 이름 · 제조 요소 한 줄 · 이미지 */}
-      <h2 className="withmethod">{ck.name}<MethodIcon keys={ck.methodKeys} raw={ck.method} /></h2>
+      <h2>{ck.name}</h2>
       <p className="specline">
         {cocktailSpecLine(ck)}
         {/* 가니시까지 갖췄을 때만 알린다(가니시는 없어도 만들 수 있다) */}

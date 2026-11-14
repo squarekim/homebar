@@ -220,6 +220,8 @@ export const BOTTLE_BADGE_KINDS: BottleBadgeKind[] = ['first', 'repeat', 'gift',
 /** 실물 보유병 (기존 bottles). id 원본 그대로 재사용 */
 export interface Bottle {
   id: string;
+  /** 직접 추가한 병의 종류(마스터에서 고른 병·시드 병은 없음) — '종류 바꾸기'에 쓴다 */
+  userCategory?: LiquorCategory | undefined;
   group: string;   // 원본 g
   name: string;    // 원본 ko
   node: string;    // 원본 node (분류 경로)

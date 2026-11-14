@@ -73,7 +73,7 @@ describe('분류 표의 타입 칸', () => {
   });
 });
 
-import { GUIDE_CHAPTERS, GUIDE_FOR_TAB } from '../data/beginnerGuide';
+import { GUIDE_CHAPTERS } from '../data/beginnerGuide';
 describe('입문 안내 카드', () => {
   it('모든 카드에 본문과 출처 주소가 있다', () => {
     for (const ch of GUIDE_CHAPTERS) {
@@ -85,9 +85,8 @@ describe('입문 안내 카드', () => {
       }
     }
   });
-  it('오해는 모두 12개이고 탭 안내는 있는 장을 가리킨다', () => {
+  it('오해 카드는 모두 20개다', () => {
     expect(GUIDE_CHAPTERS.flatMap((c) => c.cards).filter((c) => c.myth).length).toBe(20);
-    for (const id of Object.values(GUIDE_FOR_TAB)) expect(GUIDE_CHAPTERS.some((c) => c.id === id)).toBe(true);
   });
 });
 

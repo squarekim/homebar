@@ -6,7 +6,6 @@
  * 상단에는 자주 쓰는 것만 둔다 — 검색, '지금 만들 수 있는 것', 필터.
  * 기주·IBA·상태는 필터 안으로 모았고 기능은 그대로다.
  */
-import { GuideHint } from '../components/GuidePopup';
 import { cocktailWords } from '../../services/tasteWords';
 import { useEffect, useMemo, useState } from 'react';
 import { useUI } from '../UIContext';
@@ -16,7 +15,7 @@ import { referenceRepo } from '../../repositories/referenceRepo';
 import { evaluateCocktail } from '../../services/availabilityService';
 import { CocktailDetail } from '../components/CocktailDetail';
 import { IngredientBrowser } from '../components/browsers';
-import { ChipRow, ChipToggle, SearchBox, StateLine, MethodIcon, type ChipOption, FilterButton, GarnishBadge } from '../components/common';
+import { ChipRow, ChipToggle, SearchBox, StateLine, type ChipOption, FilterButton, GarnishBadge } from '../components/common';
 import { CocktailMark } from '../components/Mark';
 import { normalize, hitsKey, cocktailKey, byReadyThenName, useGroupChips } from '../listUtils';
 import { type AvailabilityStatus } from '../../models/types';
@@ -79,8 +78,8 @@ export function CocktailsPage() {
   const groups = useMemo(() => {
     const can = rows.filter((x) => x.e.status === 'READY' || x.e.status === 'SUBSTITUTE');
     return [
-      { title: '지금 만들 수 있어요', rows: can },
-      { title: '재료가 부족해요', rows: rows.filter((x) => !can.includes(x)) },
+      { title: '지금 가능', rows: can },
+      { title: '재료 부족', rows: rows.filter((x) => !can.includes(x)) },
     ];
   }, [rows]);
 
@@ -99,7 +98,6 @@ export function CocktailsPage() {
   return (
     <>
       <h2 className="pagetitle" data-k="Recipe Index">칵테일<span className="sub">레시피 {referenceRepo.cocktails().length}종</span></h2>
-      <GuideHint tab="cocktails" />
 
       <SearchBox value={q} onChange={setQ} placeholder="칵테일 또는 재료 검색" />
       <div className="controls tight">
@@ -126,7 +124,7 @@ export function CocktailsPage() {
       <div className="split">
         <div className="listpane">
           <div className="hint">{rows.length}종 · <button className="lnk" onClick={() => setView('ingredient')}>재료 목록</button></div>
-          {rows.length === 0 && <div className="empty">조건에 맞는 레시피가 없어요.</div>}
+          {rows.length === 0 && <div className="empty">조건에 맞는 레시피 없음</div>}
           {groups.map((g) => g.rows.length > 0 && (
             <div key={g.title}>
               <div className="sechead sm">{g.title} <small className="sub">{g.rows.length}</small></div>
@@ -136,12 +134,9 @@ export function CocktailsPage() {
                 onClick={() => openCocktail(c.id)}>
                 <CocktailMark base={c.base} cocktailId={c.id} size="sm" />
                 <div className="body">
-                  <span className="nm withmethod">
-                    <span className="nmwrap">{c.name}</span>
-                    <MethodIcon keys={c.methodKeys} raw={c.method} />
-                  </span>
+                  <span className="nm">{c.name}</span>
                   <div className="taste">{cocktailWords(c).join(' · ')} · {c.base}</div>
-                  {/* 묶음 제목이 이미 '지금 만들 수 있어요'라서, 그대로 만들 수 있는 잔에는 상태를 다시 적지 않는다 */}
+                  {/* 묶음 제목이 이미 '지금 가능'이라서, 그대로 만들 수 있는 잔에는 상태를 다시 적지 않는다 */}
                   {(e.status !== 'READY' || garnishState(c, heldIds) === 'all') && (
                     <div className="foot">
                       {e.status !== 'READY' && <StateLine status={e.status} lack={e.lack} />}

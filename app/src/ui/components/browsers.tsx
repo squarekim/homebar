@@ -31,10 +31,10 @@ export function IngredientBrowser() {
     const subs = (subMap.get(id) ?? []).map((sid) => referenceRepo.ingredientById(sid)?.name).filter(Boolean) as string[];
     const mine = bottles.filter((b) => b.ingredientIds.includes(id));
     const lines = [
-      `${category} · 레시피 ${usage}회 사용 · ${heldIds.has(id) ? '가지고 있어요' : '없어요'}`,
+      `${category} · 레시피 ${usage}회 사용 · ${heldIds.has(id) ? '보유' : '없음'}`,
       mine.length ? `내 술: ${mine.map((b) => `${b.name}${b.abv ? ` (${b.abv})` : ''}`).join(', ')}` : '',
       subs.length ? `대체 가능: ${subs.join(', ')}` : '',
-      uses.length ? `쓰이는 레시피: ${uses.slice(0, 12).join(', ')}${uses.length > 12 ? ` 외 ${uses.length - 12}종` : ''}` : '이 재료를 쓰는 레시피가 없어요.',
+      uses.length ? `쓰이는 레시피: ${uses.slice(0, 12).join(', ')}${uses.length > 12 ? ` 외 ${uses.length - 12}종` : ''}` : '이 재료를 쓰는 레시피 없음',
     ].filter(Boolean);
     showTerm(name, lines.join('\n\n'));
   };

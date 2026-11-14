@@ -9,7 +9,7 @@ const SHARED_ROWS = ['민트 잎', '칵테일 어니언'];
 
 /**
  * 술장 › 재료 재고 맨 아래의 '가니시' 묶음.
- * 여기 체크는 만들 수 있는 잔 수를 바꾸지 않는다. 레시피에 '가니시까지 있어요'만 붙인다.
+ * 여기 체크는 만들 수 있는 잔 수를 바꾸지 않는다. 레시피에 '가니시 있음'만 붙인다.
  */
 export function GarnishStockBox({ own }: { own: 'all' | 'owned' | 'missing' }) {
   const held = useHeldIds();

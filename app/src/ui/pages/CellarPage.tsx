@@ -5,7 +5,6 @@
  * 개별 제품(병)과 표준 재료는 서로 다른 집계라 한 줄에 섞지 않고 나눠 적는다.
  * 제품 소개는 위스키 화면이 맡고, 여기서는 보유 수량·용량·잔량·재료 연결만 다룬다.
  */
-import { GuideHint } from '../components/GuidePopup';
 import { useMemo, useState } from 'react';
 import { useUI, type CellarSub } from '../UIContext';
 import { useBottles, useHeldIds, useSubMap, useInventory, inventoryRepo } from '../../hooks/useData';
@@ -14,11 +13,14 @@ import { evaluateAll, tallyStatus } from '../../services/availabilityService';
 import { bottleService } from '../../services/bottleService';
 import { resetInventoryToSeed } from '../../db/migrate';
 import { isUserBottle } from '../../data/userBottles';
+import { userBottleRepo } from '../../repositories/userBottleRepo';
+import { CATEGORY_GROUP, CATEGORY_LABELS, CATEGORY_ORDER, CATEGORY_DEFAULT_INGREDIENT } from '../../data/liquorCategory';
+import { ingredientIdOf } from '../../data/adapters';
 import { bottleKindLabel, groupLabel } from '../../data/bottleIngredients';
 import { ChipRow, ChipToggle, SearchBox, BottleBadges, type ChipOption, StarterNotice, notifyExample } from '../components/common';
 import { normalize, hits, useGroupChips } from '../listUtils';
 import { IS_PUBLIC } from '../../config';
-import { type Bottle } from '../../models/types';
+import { type Bottle, type LiquorCategory } from '../../models/types';
 import { LogList } from './NotesPage';
 import { GarnishStockBox } from '../components/GarnishStockBox';
 
@@ -34,7 +36,6 @@ export function CellarPage() {
   return (
     <>
       <h2 className="pagetitle" data-k="My Bar Cabinet">술장</h2>
-      <GuideHint tab="cellar" />
       <StarterNotice />
 
       <div className="statline">
@@ -53,6 +54,19 @@ function BottleList({ bottles }: { bottles: Bottle[] }) {
   const { openAdd, openBottle, toast } = useUI();
   const heldIds = useHeldIds();
   const [q, setQ] = useState('');
+  /** 직접 넣은 병의 종류 바꾸기. 재료 연결은 비어 있거나 예전 종류의 기본 재료였을 때만 새 종류의 기본 재료로 바꾼다 */
+  const changeKind = async (b: Bottle, c: LiquorCategory) => {
+    const oldDefault = b.userCategory && CATEGORY_DEFAULT_INGREDIENT[b.userCategory];
+    const linked = b.ingredientIds[0];
+    const keepLink = linked && (!oldDefault || linked !== ingredientIdOf(oldDefault));
+    const def = CATEGORY_DEFAULT_INGREDIENT[c];
+    await userBottleRepo.update(b.id, {
+      category: c, group: CATEGORY_GROUP[c],
+      ...(keepLink ? {} : { ingredientId: def ? ingredientIdOf(def) : undefined, ingredientName: def }),
+      ...(c === 'whisky' ? {} : { whiskyClass: undefined }),
+    });
+    toast(`종류 변경: ${CATEGORY_LABELS[c]}`);
+  };
   const [grp, setGrp] = useState('all');
   const rawGroups = useGroupChips(bottles, (b) => b.group);
   const groups = useMemo(() => rawGroups.map((g) => ({ ...g, label: groupLabel(g.label) })), [rawGroups]);
@@ -79,7 +93,7 @@ function BottleList({ bottles }: { bottles: Bottle[] }) {
           </div>
           <SearchBox value={q} onChange={setQ} placeholder="내 술 이름 검색" />
           <ChipRow value={grp} options={groups} onChange={setGrp} wrap />
-                    {rows.length === 0 && <div className="empty">찾는 술이 없어요.</div>}
+                    {rows.length === 0 && <div className="empty">검색 결과 없음</div>}
         </>
       )}
       {rows.length > 0 && <div className="rowlist">
@@ -106,7 +120,15 @@ function BottleList({ bottles }: { bottles: Bottle[] }) {
               <div className="num">
                 {b.qty > 1 ? `${b.qty}병` : '1병'}
                 {isUserBottle(b.id) && (
-                  <div><button className="btn sm ghost" onClick={async () => { await bottleService.remove(b.id); toast('지웠어요'); }}>삭제</button></div>
+                  <div className="ubactions">
+                    {/* 직접 넣은 병만 — 기준 DB에서 고른 병은 종류를 DB가 정한다 */}
+                    {b.userCategory && (
+                      <select aria-label={`${b.name} 종류 바꾸기`} value={b.userCategory} onChange={(e) => changeKind(b, e.target.value as LiquorCategory)}>
+                        {CATEGORY_ORDER.map((c) => <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>)}
+                      </select>
+                    )}
+                    <button className="btn sm ghost" onClick={async () => { await bottleService.remove(b.id); toast('지웠어요'); }}>삭제</button>
+                  </div>
                 )}
               </div>
             </div>
@@ -167,8 +189,8 @@ function StockManager() {
 
       {confirmReset ? (
         <div className="confirm">
-          <p>재료 체크를 <b>전부 꺼요</b>. 지금 켜져 있는 {ownedCount}종이 모두 꺼져요.</p>
-          <p className="sub">마신 기록, 취향, 추가한 술은 지워지지 않아요.</p>
+          <p>재료 체크를 <b>모두 끄기</b>. 지금 켜져 있는 {ownedCount}종이 모두 꺼져요.</p>
+          <p className="sub">마신 기록, 취향, 추가한 술은 그대로 둡니다.</p>
           <div className="btnrow">
             <button className="btn danger" onClick={async () => {
               await inventoryRepo.setAll(false, allIngredients.map((i) => ({ id: i.id, name: i.name })));

@@ -1,12 +1,12 @@
 import { isOfficialNote, noteSourceLabel } from '../../data/makerNoteSource';
 import { useEffect, useState, type ReactNode, type SyntheticEvent } from 'react';
-import { type MethodKey, METHOD_LABELS_KO, type AvailabilityStatus, type FlavorVector, FLAVOR_AXES, FLAVOR_LABELS_KO, type RecommendationResult, type MakerNote, type BottleBadge, type WhiskyClass, type DrinkLog, SERVING_LABELS_KO } from '../../models/types';
+import { type AvailabilityStatus, type FlavorVector, FLAVOR_AXES, FLAVOR_LABELS_KO, type RecommendationResult, type MakerNote, type BottleBadge, type WhiskyClass, type DrinkLog, SERVING_LABELS_KO } from '../../models/types';
 import { STATUS_LABEL_KO, STATUS_SENTENCE_KO } from '../../services/availabilityService';
 import { GLOSSARY, lookupTerm, normalizeTerm } from '../../data/glossary';
 import { useUI } from '../UIContext';
 import { IS_PUBLIC, STARTER_INVENTORY, STARTER_GROUPS } from '../../config';
 import { isExampleOn, turnOffExample, keepExampleAsMine, resetInventoryToSeed } from '../../db/migrate';
-import { IconFilter, IconBuild, IconShake, IconStir, IconMuddle, IconBlend, IconLayer, IconSwizzle, IconFloat } from './icons';
+import { IconFilter } from './icons';
 
 /**
  * 모달 껍데기 — 스크림 · 닫기 버튼 · ESC 닫기 · 배경 스크롤 잠금.
@@ -109,7 +109,7 @@ export const noteTag = (n: MakerNote | undefined): string => (isOfficialNote(n) 
 
 export function MakerNoteView({ note, empty }: { note?: MakerNote | undefined; empty?: string | undefined }) {
   if (!note) {
-    return <div className="hint" style={{ margin: '6px 0 0' }}>{empty ?? '공식 노트가 없어요.'}</div>;
+    return <div className="hint" style={{ margin: '6px 0 0' }}>{empty ?? '공식 노트 없음'}</div>;
   }
   return (
     <div className="makernote">
@@ -140,7 +140,7 @@ export function StateLine({ status, lack }: { status: AvailabilityStatus; lack?:
 
 /** 재료도 가니시도 다 있는 잔 — 만들 수 있는지 판정과는 따로 붙는 표시 */
 export function GarnishBadge() {
-  return <span className="gnbadge">가니시까지 있어요</span>;
+  return <span className="gnbadge">가니시 있음</span>;
 }
 
 /** 필터 칩·통계처럼 자리가 좁은 곳에서 쓰는 짧은 판정명 */
@@ -149,25 +149,6 @@ export function StatusBadge({ status }: { status: AvailabilityStatus }) {
 }
 
 /** 향미 14축 막대 (0 인 축 생략 옵션) */
-/** 조주법 아이콘 — 이름 옆에 붙어 만드는 방식을 글자 없이 알려준다 */
-const METHOD_ICONS: Record<MethodKey, () => JSX.Element> = {
-  build: IconBuild, shake: IconShake, stir: IconStir, muddle: IconMuddle,
-  blend: IconBlend, layer: IconLayer, swizzle: IconSwizzle, float: IconFloat,
-};
-
-export function MethodIcon({ keys, raw }: { keys: MethodKey[]; raw?: string }) {
-  if (!keys.length) return null;
-  const label = raw || keys.map((k) => METHOD_LABELS_KO[k]).join(' + ');
-  return (
-    <span className="methods" title={label} aria-label={`만드는 법 ${label}`}>
-      {keys.slice(0, 2).map((k) => {
-        const Ic = METHOD_ICONS[k];
-        return <span className="mic" key={k}><Ic /></span>;
-      })}
-    </span>
-  );
-}
-
 /**
  * 향미 프로파일 — 14축 각 0~10점.
  * 눈으로 강도가 바로 읽히도록 눈금(0·5·10)을 깔고, 가장 센 축을 진하게 준다.
