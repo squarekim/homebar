@@ -1,34 +1,7 @@
 /**
- * seed.ts — 기존 홈바 레지스트리 V54 원본 데이터.
- * index.html 의 const DATA 를 스크립트로 무손실 추출한 것. 이름/ID 원본 유지.
- * 이 파일은 "읽기 전용 시드"다. 손으로 고치지 않고, 변환이 필요하면 scripts/ 의 스크립트로만 일괄 처리한다.
- *
- * 적용된 변환
- *  - scripts/refineRecipeData.mjs  : 가니시를 note 에서 g 필드로 분리하고, 엑셀 개정 이력(V33/[V48]/전수 대조 등)을 제거.
- *  - scripts/cleanRecipeNotes.mjs : 레시피 note 의 "특정 사용자 재고" 문장과 재료 표기의 '[없음]' 마커 제거.
- *    제조 가능 판정은 ingredientId × 재고로만 계산되므로(services/availabilityService.ts) 중복이자,
- *    다른 사용자에겐 거짓이 되는 서술이었다. 맛·기법·역사·가니시·IBA 규격·일반 대체 안내는 보존.
- *  - scripts/structureRecipeNotes.mjs : 설명란(note) 한 칸에 섞여 있던 네 가지를 분리.
- *    출처 표기 → s, 변형 관계(원형 레시피 + 무엇을 바꿨는지) → v, IBA 등재 연혁 → 삭제(화면의 IBA 배지와 중복),
- *    나머지 코멘터리는 한 문장만 남긴다. 재료·비율·가니시·출처 URL 은 건드리지 않는다.
- *  - scripts/structureBottleNotes.mjs : 병(note) 에 섞여 있던 개인 이력을 분리.
- *    마일스톤("첫 피트 싱글몰트")과 입수 경위("★신규", "선물") → 뱃지 t, 가격·구매처 → buy, 용량 → ml.
- *    남이 읽어도 뜻이 통하는 제품 사실만 note 에 남는다. "N종 해금"처럼 앱이 실시간 계산하는 값은 삭제.
- *  - scripts/restoreOriginalRecipes.mjs : 재료 줄의 [대체] 표시 제거(32줄·28레시피).
- *    원본(IBA 공식 스펙)과 대조하니 30줄은 이미 원본과 같은 재료였고, 표시는 오너의 술장 사정이었다.
- *    그게 판정에 먹혀 진짜 코냑을 가진 사람에게도 '대체 재료로 가능'이 떴다. 대체는 재고 매핑이 맡는다.
- *    실제로 원본과 달랐던 2줄(브랜디 크러스타·포르토 플립)은 코냑 → 포도 브랜디로 고쳤다.
- *  - scripts/markIbaFloats.mjs : IBA 원문이 띄우라고 적은 2종(뉴욕 사워·다크 앤 스토미)의 조주법에 (Float) 표시.
- *  - scripts/fixIbaMaiTai.mjs : 마이 타이의 블루 큐라소 → IBA 원문대로 오렌지 큐라소. 재료 마스터에 오렌지 큐라소 추가.
- *  - scripts/alignIbaRecipes.mjs : IBA 원문 대조로 16종의 재료·용량·조주법 교정(없는 재료는 가까운 기존 재료 + 원문 이름 병기),
- *    재료별 사용 레시피 수(q) 재계산.
- *  - scripts/alignIbaGlassGarnish.mjs : IBA 원문의 잔(gl) 23종·빠진 가니시 22종, 공식 목록에서 빠진 5종 '구IBA' 전환.
- *  - scripts/addIbaRecipes.mjs : 현행 IBA 중 빠져 있던 8종 추가(202 → 210종), 재료 셰리(아몬티야도) 추가.
- *  - scripts/rewordRecipeText.mjs : 문구 교정. 재료 칸을 되풀이한 메모 삭제, 변형 설명(v) 42종을 해요체로, 출처가 아닌 '클래식 레시피' 삭제,
- *    겹쳐 있던 '블루 마르가리타 (진)' 삭제(210 → 209종), 간단 조합 메모에서 원래 주인의 재고 메모 삭제.
- *  - scripts/addMixerRecipes.mjs : 믹서 조합표에만 있던 12개를 레시피로 옮김(209 → 221종). '간단 조합' 칸을 없애면서.
- *  - scripts/addEnglishNames.mjs : 레시피 전부에 영문명(en). IBA 공식 표기 우선, 국내 창작 레시피는 로마자.
- *  - scripts/mergeGodfather.mjs : 비율만 다르던 '갓파더 (아마레토)'를 갓파더에 합침(221 → 220종), 3:1 비율은 갓파더 메모로.
+ * seed.ts — 홈바 레시피·재료 원본 데이터(V54에서 추출).
+ * 손으로 고치지 않는다. 바꿀 때는 scripts/ 에 변환 스크립트를 만들어 실행하고,
+ * 무엇을 왜 바꿨는지는 그 스크립트 머리말에 적는다.
  */
 export interface RawIngredient { n: string; c: string; q: number; own: 0 | 1; }
 export type RawRecipeIngredient = [name: string, raw: string, optional: 0 | 1, substitute: 0 | 1];
