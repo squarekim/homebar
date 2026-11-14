@@ -959,3 +959,4 @@ p,li,td,dd,label,.hint,.recipe .ing,.it span,.rowitem .nm,.taste{word-break:keep
 .qa-tag{flex:none;font-size:11px;font-weight:600;color:var(--sub);border:1px solid currentColor;padding:0 6px;white-space:nowrap}
 .qa-tag.fact{display:inline-block;color:var(--ok);margin-bottom:var(--s1)}
 .qa-src{font-size:12px!important;color:var(--mute)}
+.rowitem .nm .en{margin-left:6px;font-family:var(--body);font-size:12px;font-weight:400;color:var(--mute);letter-spacing:.01em}

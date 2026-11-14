@@ -134,7 +134,7 @@ export function CocktailsPage() {
                 onClick={() => openCocktail(c.id)}>
                 <CocktailMark base={c.base} cocktailId={c.id} size="sm" />
                 <div className="body">
-                  <span className="nm">{c.name}</span>
+                  <span className="nm">{c.name}{c.nameEn && <small className="en">{c.nameEn}</small>}</span>
                   <div className="taste">{cocktailWords(c).join(' · ')} · {c.base}</div>
                   {/* 묶음 제목이 이미 '지금 가능'이라서, 그대로 만들 수 있는 잔에는 상태를 다시 적지 않는다 */}
                   {(e.status !== 'READY' || garnishState(c, heldIds) === 'all') && (

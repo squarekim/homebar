@@ -170,7 +170,7 @@ function WhiskyDetail({ bottle: w, owned }: { bottle: Bottle; owned?: Bottle | u
               <button className="rowitem" key={c.id} onClick={() => openCocktail(c.id)}>
                 <CocktailMark base={c.base} cocktailId={c.id} size="sm" />
                 <div className="body">
-                  <span className="nm">{c.name}</span>
+                  <span className="nm">{c.name}{c.nameEn && <small className="en">{c.nameEn}</small>}</span>
                   <div className="taste">{cocktailWords(c).join(' · ')}</div>
                   <div className="foot"><span className={`state s-${status}`}>{STATUS_LEAD_KO[status]}</span></div>
                 </div>

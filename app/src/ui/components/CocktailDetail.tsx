@@ -35,7 +35,7 @@ export function amountOf(raw: string, name: string): string {
 export function cocktailSpecLine(ck: Cocktail): string {
   const abv = cocktailAbvLabel(ck);
   return [
-    ck.base,
+    `기주 ${ck.base}`,
     abv && `도수 ${abv}`,
     ck.methodKeys.map((k) => METHOD_LABELS_KO[k]).join('·'),
     GLASS_LABEL_KO[glassOf(ck)],
