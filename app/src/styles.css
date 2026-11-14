@@ -961,3 +961,5 @@ p,li,td,dd,label,.hint,.recipe .ing,.it span,.rowitem .nm,.taste{word-break:keep
 .qa-src{font-size:12px!important;color:var(--mute)}
 .rowitem .nm .en{display:block;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;font-weight:400;color:var(--mute);line-height:1.2}
 .rowitem>.base{flex:none;align-self:center;font-size:12px;color:var(--mute);white-space:nowrap}
+.recipe .ing.gn .amt{font-size:12px;letter-spacing:.04em}
+.detail .tline{margin-top:4px;font-size:14px;color:var(--sub);line-height:1.5;word-break:keep-all}

@@ -8,13 +8,13 @@
 import { cocktailWords } from '../../services/tasteWords';
 import { useUI } from '../UIContext';
 import { useHeldIds, useSubMap } from '../../hooks/useData';
-import { garnishState } from '../../services/garnishStock';
+import { garnishState, idsForPart } from '../../services/garnishStock';
 import { cocktailAbvLabel } from '../../services/cocktailStrength';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { evaluateCocktail, STATUS_LEAD_KO } from '../../services/availabilityService';
 import { FlavorBars, Term } from './common';
 import { GlassArt } from './GlassArt';
-import { glassOf, GLASS_LABEL_KO } from '../../data/drinkVisual';
+import { glassOf, garnishParts, GLASS_LABEL_KO } from '../../data/drinkVisual';
 import { methodSteps } from '../../data/beginnerGuide';
 import { METHOD_LABELS_KO, type Cocktail, type RecommendationResult } from '../../models/types';
 
@@ -105,6 +105,7 @@ export function CocktailDetail({ id }: { id: string }) {
 
       {/* ② 맛 설명과 제조 가능 상태 */}
       <p className="taste">{words.join(' · ')}</p>
+      {ck.tasteLine && <p className="tline">{ck.tasteLine}</p>}
       <div className={`state s-${ev.status}`}>
         {ev.status === 'READY' && garnishState(ck, heldIds) === 'missing' ? '가니시 제외 제조 가능' : STATUS_LEAD_KO[ev.status]}{ev.lack.length > 0 && ` · 없는 재료: ${ev.lack.join(', ')}`}
       </div>
@@ -130,6 +131,21 @@ export function CocktailDetail({ id }: { id: string }) {
                     {ing.optional && <span className="opt">선택</span>}
                   </span>
                   <span className="amt">{amountOf(ing.raw, ing.ingredientName) || '적당량'}</span>
+                </div>
+              );
+            })}
+            {/* 가니시 — 없어도 만들 수 있어서 재료 판정과 따로, 같은 칸에 표시만 다르게 */}
+            {garnishParts(ck.garnish).map((p, i) => {
+              const ids = idsForPart(p);
+              const off = ids.length > 0 && !ids.some((id) => heldIds.has(id));
+              return (
+                <div className={`ing gn ${off ? 'off' : ''}`.trim()} key={`g${i}`}>
+                  <span>
+                    {p.text}
+                    {off && <span className="lackmark">없음</span>}
+                    {p.optional && <span className="opt">선택</span>}
+                  </span>
+                  <span className="amt">가니시</span>
                 </div>
               );
             })}

@@ -64,6 +64,7 @@ export interface Cocktail {
   id: string;
   name: string;      // 원본 n
   nameEn?: string | undefined; // 영문명
+  tasteLine?: string | undefined; // 맛 한 줄평
   base: string;      // 원본 b (기주)
   iba: string;       // 원본 iba
   method: string;    // 원본 m ("Shake + Build" 등 원문 유지)
