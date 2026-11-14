@@ -1,9 +1,6 @@
 /**
  * addTasteLines.mjs — 레시피마다 맛 한 줄평(tl)을 음슴체로 붙인다.
- * 원문: scripts/data/tasteLines.json — Gemini('맛 한줄평_gemini')·GPT('맛 한줄평_gpt') 조사(2026-11-14)를 맞대어
- * 전문 용어를 빼고 누구나 떠올릴 수 있는 말로 다듬은 tl. 두 원문(gemini·gpt)도 같이 남긴다.
- * 재료·만드는 법은 빼고 맛·향·질감·여운만 적었다. 출처(src)는 Difford's Guide·IBA 등 URL,
- * 근거를 못 찾은 잔(국내 창작 레시피 등)은 '추정'.
+ * 문장은 scripts/data/tasteLines.json (이름 → 한 줄평). 맛·향·질감·여운만 적는다.
  * 원본 seed.ts 는 손으로 고치지 않는다. 사용: node scripts/addTasteLines.mjs [--dry]
  */
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -13,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 const SEED = resolve(dirname(fileURLToPath(import.meta.url)), '../src/data/seed.ts');
 
 const LINES = JSON.parse(readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), 'data/tasteLines.json'), 'utf8'));
-export const TL = Object.fromEntries(Object.entries(LINES).map(([k, v]) => [k, v.tl]));
+export const TL = LINES;
 
 export function addTasteLines({ dry = false } = {}) {
   const text = readFileSync(SEED, 'utf8');
