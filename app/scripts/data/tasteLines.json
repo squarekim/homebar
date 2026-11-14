@@ -1,882 +1,1322 @@
 {
  "올드 패션드": {
-  "tl": "묵직한 오크향과 은은한 단맛 뒤에 쌉싸름한 향신료 여운이 길게 남음",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/5853/bourbon-old-fashioned"
+  "tl": "달큰한 나무 향이 먼저 퍼지고 따뜻한 향신료와 은은한 쓴맛으로 끝남",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/5853/bourbon-old-fashioned",
+  "gemini": "묵직한 오크향과 은은한 단맛 뒤에 쌉싸름한 향신료 여운이 길게 남음",
+  "gpt": "달큰한 나무 향이 먼저 퍼지고 따뜻한 향신료와 잔잔한 쓴맛으로 끝남"
  },
  "위스키 사워": {
-  "tl": "톡 쏘는 산미와 부드러운 단맛이 어우러지고 고소한 곡물 풍미가 뒤따름",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2083/whiskey-sour-diffords-recipe"
+  "tl": "새콤한 첫맛을 부드러운 단맛이 받치고 끝에 고소한 향이 남음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2083/whiskey-sour-diffords-recipe",
+  "gemini": "톡 쏘는 산미와 부드러운 단맛이 어우러지고 고소한 곡물 풍미가 뒤따름",
+  "gpt": "선명한 산미를 둥근 단맛이 받치고 끝에 따뜻한 나무 향이 남음"
  },
  "러스티 네일": {
-  "tl": "훈연향과 농밀한 허브 단맛이 겹쳐지며 따뜻하고 묵직하게 마무리됨",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1721/rusty-nail"
+  "tl": "꿀 같은 묵직한 단맛 뒤로 은은한 허브 향이 따뜻하게 남음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1721/rusty-nail",
+  "gemini": "훈연향과 농밀한 허브 단맛이 겹쳐지며 따뜻하고 묵직하게 마무리됨",
+  "gpt": "꿀을 닮은 묵직한 단맛 뒤로 마른 나무와 허브의 쌉싸래함이 따라옴"
  },
  "갓파더": {
-  "tl": "스모키한 몰트 풍미를 고소한 견과류 단맛이 감싸며 매끄럽게 넘어감",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/864/godfather"
+  "tl": "고소한 견과 단맛이 감싸며 묵직하고 매끄럽게 넘어감",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/864/godfather",
+  "gemini": "스모키한 몰트 풍미를 고소한 견과류 단맛이 감싸며 매끄럽게 넘어감",
+  "gpt": "구운 견과를 닮은 묵직한 단향이 번지고 뒤로 나무 향이 올라옴"
  },
  "위스키 하이볼": {
-  "tl": "청량한 기포 사이로 드라이한 곡물향과 가벼운 스모크가 깔끔하게 퍼짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/4794/scotch-whisky-highball"
+  "tl": "가벼운 기포 사이로 고소한 곡물 향이 비치고 끝이 깔끔함",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/4794/scotch-whisky-highball",
+  "gemini": "청량한 기포 사이로 드라이한 곡물향과 가벼운 스모크가 깔끔하게 퍼짐",
+  "gpt": "가벼운 기포 사이로 곡물과 나무 향이 비치며 마무리가 산뜻함"
  },
  "위스키 콜린스": {
-  "tl": "상쾌한 시트러스 산미와 탄산감이 묵직한 오크 풍미를 산뜻하게 풀어냄",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2080/whiskey-collins"
+  "tl": "새콤달콤한 첫맛을 기포가 들어 올리고 끝에 은은한 나무 향이 남음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2080/whiskey-collins",
+  "gemini": "상쾌한 시트러스 산미와 탄산감이 묵직한 오크 풍미를 산뜻하게 풀어냄",
+  "gpt": "새콤달콤한 첫맛을 기포가 들어 올리고 끝에 구운 나무 향이 남음"
  },
  "뉴욕": {
-  "tl": "날카로운 신맛과 붉은 과실의 단맛이 어우러져 새콤달콤하고 단단하게 떨어짐",
-  "src": "추정"
+  "tl": "또렷한 신맛에 붉은 과일 단맛이 붙어 새콤달콤하게 떨어짐",
+  "src": "https:/​/​www.​epicurious.​com/​recipes/​food/​views/​new-​york-​200041",
+  "gemini": "날카로운 신맛과 붉은 과실의 단맛이 어우러져 새콤달콤하고 단단하게 떨어짐",
+  "gpt": "입안을 조이는 산미에 붉은 과실의 단맛이 붙고 나무 향으로 잦아듦"
  },
  "글렌알라키 CS 하이볼": {
-  "tl": "강렬한 셰리 과실향과 진한 바디감이 탄산에 실려 굵직하게 뻗어 나감",
-  "src": "추정"
+  "tl": "건과일 같은 진한 단향이 탄산을 타고 굵직하게 뻗어 나감",
+  "src": "추정",
+  "gemini": "강렬한 셰리 과실향과 진한 바디감이 탄산에 실려 굵직하게 뻗어 나감",
+  "gpt": "탄산이 가볍게 스치는 가운데 구수한 곡물 단향과 진한 온기가 드러남"
  },
  "기원 하이볼": {
-  "tl": "화사한 향신료와 바닐라 뉘앙스가 가벼운 기포와 만나 산뜻하게 열림",
-  "src": "추정"
+  "tl": "고소한 곡물 향과 은은한 바닐라가 가벼운 기포 사이로 피어남",
+  "src": "추정",
+  "gemini": "화사한 향신료와 바닐라 뉘앙스가 가벼운 기포와 만나 산뜻하게 열림",
+  "gpt": "곡물의 고소한 향이 기포 사이로 피어나고 은은한 단향이 남음"
  },
  "싱글몰트 사워": {
-  "tl": "몰트 특유의 구수하고 묵직한 결에 쨍한 산미가 더해져 입안을 조여줌",
-  "src": "추정"
+  "tl": "보리 엿 같은 고소한 단향 위로 또렷한 신맛이 지나감",
+  "src": "추정",
+  "gemini": "몰트 특유의 구수하고 묵직한 결에 쨍한 산미가 더해져 입안을 조여줌",
+  "gpt": "보리 엿을 닮은 고소한 단향 위로 도드라진 산미가 지나감"
  },
  "몬테 카를로": {
-  "tl": "깊은 오크 바디에 허브와 향신료의 달콤함이 겹쳐지며 묵직한 여운을 남김",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2506/monte-carlo"
+  "tl": "따뜻한 나무 향에 진한 허브 단맛이 얹혀 묵직하게 남음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2506/monte-carlo",
+  "gemini": "깊은 오크 바디에 허브와 향신료의 달콤함이 겹쳐지며 묵직한 여운을 남김",
+  "gpt": "따뜻한 나무 향에 짙은 허브 단맛이 얹히고 마른 향신료로 마무리됨"
  },
  "팬시 프리": {
-  "tl": "바닐라 풍미 위로 은은한 꽃향과 견과류 뉘앙스가 퍼지며 의외로 드라이함",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/738/fancy-free"
+  "tl": "바닐라 향 위로 체리 같은 과일 향이 스치고 끝은 의외로 드라이함",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/738/fancy-free",
+  "gemini": "바닐라 풍미 위로 은은한 꽃향과 견과류 뉘앙스가 퍼지며 의외로 드라이함",
+  "gpt": "달큰한 핵과의 향이 나무 풍미를 타고 퍼지고 끝에 껍질 쓴맛이 남음"
  },
  "버번 리뉴얼": {
-  "tl": "진한 검은 베리류의 새콤달콤함이 묵직한 바디와 맞물려 풍성하게 감김",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2318/bourbon-renewal"
+  "tl": "검은 베리의 새콤달콤함이 묵직한 단맛과 어우러져 풍성함",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2318/bourbon-renewal",
+  "gemini": "진한 검은 베리류의 새콤달콤함이 묵직한 바디와 맞물려 풍성하게 감김",
+  "gpt": "검붉은 베리 향이 나무의 따뜻한 풍미에 녹고 밝은 산미로 갈무리됨"
  },
  "시나몬 올드 패션드": {
-  "tl": "알싸하고 따뜻한 향신료와 달콤한 바닐라가 진하게 엉기며 화끈하게 넘어감",
-  "src": "추정"
+  "tl": "달큰한 계피 향이 입안을 채우고 따뜻한 여운이 오래 감",
+  "src": "추정",
+  "gemini": "알싸하고 따뜻한 향신료와 달콤한 바닐라가 진하게 엉기며 화끈하게 넘어감",
+  "gpt": "달큰한 향신료가 입안을 채우고 구운 나무의 포근한 향이 오래 감"
  },
  "피넛버터 올드 패션드": {
-  "tl": "볶은 견과류의 진한 고소함과 쌉쌀한 향신료가 묵직하고 달콤하게 조화됨",
-  "src": "추정"
+  "tl": "볶은 땅콩의 고소한 단맛이 진하고 끝에 은근한 쌉쌀함이 감돎",
+  "src": "추정",
+  "gemini": "볶은 견과류의 진한 고소함과 쌉쌀한 향신료가 묵직하고 달콤하게 조화됨",
+  "gpt": "볶은 견과의 고소한 단향이 진하고 끝에 따끈한 쌉싸래함이 감돎"
  },
  "피넛버터 & 아마레토": {
-  "tl": "고소한 견과류 풍미가 이중으로 겹쳐지며 크리미하고 달콤한 끝맛을 냄",
-  "src": "추정"
+  "tl": "고소한 견과 맛이 두 겹으로 쌓여 달콤하고 크리미함",
+  "src": "추정",
+  "gemini": "고소한 견과류 풍미가 이중으로 겹쳐지며 크리미하고 달콤한 끝맛을 냄",
+  "gpt": "묵직한 견과 단맛에 달콤쌉싸래한 씨앗 향이 더해져 여운이 김"
  },
  "피넛버터 카카오": {
-  "tl": "구수한 견과류향과 다크한 로스팅 단맛이 어우러져 디저트처럼 진하게 감김",
-  "src": "추정"
+  "tl": "볶은 땅콩과 초콜릿 맛이 겹쳐 디저트처럼 진하게 남음",
+  "src": "추정",
+  "gemini": "구수한 견과류향과 다크한 로스팅 단맛이 어우러져 디저트처럼 진하게 감김",
+  "gpt": "볶은 견과와 쌉달한 디저트 풍미가 겹치고 입안에 진하게 남음"
  },
  "린치버그 레모네이드": {
-  "tl": "부드러운 바닐라 결에 상큼한 감귤향과 톡 쏘는 기포가 가볍게 어우러짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1211/lynchburg-lemonade"
+  "tl": "시원한 기포와 상큼한 레모네이드 맛 뒤로 바닐라 향이 살짝 남음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1211/lynchburg-lemonade",
+  "gemini": "부드러운 바닐라 결에 상큼한 감귤향과 톡 쏘는 기포가 가볍게 어우러짐",
+  "gpt": "시원한 기포와 밝은 산미 뒤로 감귤 단향과 은근한 나무 향이 이어짐"
  },
  "테네시 사워": {
-  "tl": "숯불에 그을린 듯한 부드러운 단맛과 맑은 산미가 균형 있게 맞물림",
-  "src": "추정"
+  "tl": "새콤함과 부드러운 단맛이 또렷하고 끝에 은은한 스모키함이 감돎",
+  "src": "https:/​/​www.​diffordsguide.​com/​cocktails/​recipe/​3497/​tennessee-​sour",
+  "gemini": "숯불에 그을린 듯한 부드러운 단맛과 맑은 산미가 균형 있게 맞물림",
+  "gpt": "산미와 단맛이 또렷하고 마신 뒤에는 가벼운 나무 향이 감돎"
  },
  "기원 올드 패션드": {
-  "tl": "톡 쏘는 스파이스와 단단한 오크향에 은근한 단맛이 더해져 묵직하게 남음",
-  "src": "추정"
+  "tl": "고소한 몰트 향에 둥근 단맛이 감기고 끝에 향신료가 살짝 비침",
+  "src": "추정",
+  "gemini": "톡 쏘는 스파이스와 단단한 오크향에 은근한 단맛이 더해져 묵직하게 남음",
+  "gpt": "고소한 몰트 향에 둥근 단맛이 감기고 끝에 향신료 쓴맛이 비침"
  },
  "기원 사워": {
-  "tl": "화사한 향신료 결 위로 또렷한 산미와 단맛이 겹쳐지며 경쾌하게 넘어감",
-  "src": "추정"
+  "tl": "또렷한 신맛이 먼저 오고 고소한 곡물 여운이 포근하게 남음",
+  "src": "추정",
+  "gemini": "화사한 향신료 결 위로 또렷한 산미와 단맛이 겹쳐지며 경쾌하게 넘어감",
+  "gpt": "곡물의 포근한 여운을 남기면서 첫맛은 산미가 또렷하게 이끎"
  },
  "맨해튼": {
-  "tl": "매콤한 곡물 풍미와 진한 허브 단맛이 어우러져 묵직하고 쌉싸름하게 맺힘",
-  "src": "https://iba-world.com/iba-cocktail/manhattan/"
+  "tl": "알싸한 향신료에 붉은 과일의 진한 단맛이 감기고 여운이 김",
+  "src": "https://iba-world.com/iba-cocktail/manhattan/",
+  "gemini": "매콤한 곡물 풍미와 진한 허브 단맛이 어우러져 묵직하고 쌉싸름하게 맺힘",
+  "gpt": "마른 향신료의 알싸함에 붉은 과실의 진한 단향이 감기고 끝맛이 김"
  },
  "불바디에": {
-  "tl": "강렬한 쌉싸름함이 먼저 치고 오크의 단맛과 허브 여운이 길게 이어짐",
-  "src": "https://iba-world.com/iba-cocktail/boulevardier/"
+  "tl": "쌉싸름함이 먼저 오고 따뜻한 단맛과 허브 여운이 길게 이어짐",
+  "src": "https://iba-world.com/iba-cocktail/boulevardier/",
+  "gemini": "강렬한 쌉싸름함이 먼저 치고 오크의 단맛과 허브 여운이 길게 이어짐",
+  "gpt": "따뜻한 나무 향에 허브 쓴맛이 두텁게 실리고 뒤로 은근한 단맛이 남음"
  },
  "위스키 애플": {
-  "tl": "아삭하고 달콤한 과즙이 바닐라 풍미를 감싸며 부담 없이 부드럽게 넘어감",
-  "src": "추정"
+  "tl": "달콤한 사과 맛이 앞서고 은은한 바닐라 향이 부드럽게 따라옴",
+  "src": "추정",
+  "gemini": "아삭하고 달콤한 과즙이 바닐라 풍미를 감싸며 부담 없이 부드럽게 넘어감",
+  "gpt": "잘 익은 과수원 과일의 단맛이 앞서고 구운 나무 향은 뒤에서 감돎"
  },
  "롭 로이": {
-  "tl": "은은한 피트감과 붉은 과실의 달콤쌉쌀함이 겹쳐지며 벨벳처럼 감김",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1681/rob-roy"
+  "tl": "고소한 몰트 향에 말린 과일 단맛이 포개지고 벨벳처럼 부드러움",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1681/rob-roy",
+  "gemini": "은은한 피트감과 붉은 과실의 달콤쌉쌀함이 겹쳐지며 벨벳처럼 감김",
+  "gpt": "몰트의 고소함에 말린 과실 단향이 포개지고 끝에 향신료가 남음"
  },
  "민트 줄립": {
-  "tl": "시원한 청량감이 코끝을 스친 뒤 바닐라의 단맛과 묵직한 바디가 퍼짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1330/mint-julep"
+  "tl": "화한 청량감이 먼저 퍼지고 달콤하고 묵직한 맛이 뒤따름",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1330/mint-julep",
+  "gemini": "시원한 청량감이 코끝을 스친 뒤 바닐라의 단맛과 묵직한 바디가 퍼짐",
+  "gpt": "서늘한 풀 향이 먼저 퍼지고 뒤따르는 나무 단향에 입안이 따뜻함"
  },
  "페니실린": {
-  "tl": "스모키한 향과 알싸한 매운맛, 농밀한 단맛과 산미가 입체적으로 어우러짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2539/penicillin"
+  "tl": "은은한 훈연 향 위로 꿀 같은 단맛과 알싸한 생강 느낌, 새콤함이 겹침",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2539/penicillin",
+  "gemini": "스모키한 향과 알싸한 매운맛, 농밀한 단맛과 산미가 입체적으로 어우러짐",
+  "gpt": "밝은 산미에 꿀 같은 단맛과 알싸한 온기가 겹치고 은근한 훈연 향이 남음"
  },
  "뉴욕 사워": {
-  "tl": "부드러운 거품과 새콤달콤한 바디 위로 떫은 과실미와 타닌감이 겹쳐짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/3398/new-york-sour"
+  "tl": "새콤달콤한 맛 위로 와인 같은 떫은 여운이 얇게 얹힘",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/3398/new-york-sour",
+  "gemini": "부드러운 거품과 새콤달콤한 바디 위로 떫은 과실미와 타닌감이 겹쳐짐",
+  "gpt": "산뜻한 새콤달콤함 위로 붉은 과실의 떫은 여운이 얇게 얹힘"
  },
  "페이퍼 플레인": {
-  "tl": "산뜻한 시트러스 산미와 달콤쌉쌀한 허브 풍미가 빈틈없이 맞물려 떨어짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/3630/paper-plane"
+  "tl": "상큼한 신맛과 달콤쌉쌀한 맛이 빈틈없이 맞물림",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/3630/paper-plane",
+  "gemini": "산뜻한 시트러스 산미와 달콤쌉쌀한 허브 풍미가 빈틈없이 맞물려 떨어짐",
+  "gpt": "즙이 많은 감귤 같은 산미에 산뜻한 단맛과 약한 허브 쓴맛이 맞물림"
  },
  "리멤버 더 메인": {
-  "tl": "매콤한 바디에 검붉은 과실의 단맛과 화한 허브 잔향이 짙게 깔림",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1668/remember-the-maine"
+  "tl": "검붉은 체리 같은 단맛에 화한 허브 잔향이 짙게 깔림",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1668/remember-the-maine",
+  "gemini": "매콤한 바디에 검붉은 과실의 단맛과 화한 허브 잔향이 짙게 깔림",
+  "gpt": "검붉은 핵과의 단향에 달큰한 허브 향이 감돌고 알싸한 잔향이 남음"
  },
  "비외 카레": {
-  "tl": "묵직한 과실향과 스파이스, 달콤한 허브가 겹겹이 쌓이며 길게 여운이 남음",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2048/vieux-carre-cocktail"
+  "tl": "말린 과일 단맛 아래로 향신료와 허브가 겹겹이 쌓여 여운이 김",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2048/vieux-carre-cocktail",
+  "gemini": "묵직한 과실향과 스파이스, 달콤한 허브가 겹겹이 쌓이며 길게 여운이 남음",
+  "gpt": "말린 과실의 단맛 밑으로 향신료와 나무 향이 길게 깔림"
  },
  "트리니다드 사워": {
-  "tl": "강렬한 향신료와 쌉싸름함을 고소한 단맛과 산미가 감싸며 독특하게 풀림",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/3328/trinidad-sour"
+  "tl": "혀를 누르는 강한 향신료 쓴맛을 고소한 단맛과 신맛이 감싸는 독특한 맛",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/3328/trinidad-sour",
+  "gemini": "강렬한 향신료와 쌉싸름함을 고소한 단맛과 산미가 감싸며 독특하게 풀림",
+  "gpt": "혀를 누르는 쌉싸래함에 고소한 단맛과 날카로운 산미가 맞섬"
  },
  "버번 피치 티": {
-  "tl": "달콤한 핵과류 향과 쌉쌀한 찻잎 타닌이 바닐라 바디와 어우러져 깔끔함",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/6230/bourbon-peach-tea"
+  "tl": "달콤한 복숭아 향이 퍼지고 끝에 홍차 같은 은은한 떫은맛이 걸림",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/6230/bourbon-peach-tea",
+  "gemini": "달콤한 핵과류 향과 쌉쌀한 찻잎 타닌이 바닐라 바디와 어우러져 깔끔함",
+  "gpt": "말랑한 핵과의 단향이 가볍게 번지고 끝에는 은은한 떫은맛이 걸림"
  },
  "위스키 스매시": {
-  "tl": "상쾌한 풀향과 짜릿한 산미가 묵직한 바닐라 풍미를 시원하게 띄워줌",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/3347/whiskey-smash"
+  "tl": "상큼한 신맛과 시원한 풀 향이 묵직한 단맛을 가볍게 띄워 줌",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/3347/whiskey-smash",
+  "gemini": "상쾌한 풀향과 짜릿한 산미가 묵직한 바닐라 풍미를 시원하게 띄워줌",
+  "gpt": "잘 익은 나무의 단향을 산미가 끊고 서늘한 풀 향이 코에 남음"
  },
  "김렛": {
-  "tl": "칼칼한 보태니컬 향에 날 선 시트러스 산미가 더해져 깔끔하고 드라이함",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/831/gimlet-diffords-recipe"
+  "tl": "날 선 신맛 속에서 솔잎 같은 상쾌한 향이 선명함",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/831/gimlet-diffords-recipe",
+  "gemini": "칼칼한 보태니컬 향에 날 선 시트러스 산미가 더해져 깔끔하고 드라이함",
+  "gpt": "푸른 감귤을 닮은 날 선 산미 속에서 솔잎 같은 향이 선명함"
  },
  "존 콜린스": {
-  "tl": "맑은 시트러스 산미와 탄산이 보태니컬 향을 가볍게 살려내며 청량하게 끝남",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1069/john-collins"
+  "tl": "맑은 기포와 상큼한 신맛이 먼저 닿고 풀 내음이 짧게 스침",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1069/john-collins",
+  "gemini": "맑은 시트러스 산미와 탄산이 보태니컬 향을 가볍게 살려내며 청량하게 끝남",
+  "gpt": "맑은 기포와 밝은 산미가 먼저 닿고 풀 내음이 짧게 스쳐 감"
  },
  "화이트 레이디": {
-  "tl": "매끄러운 질감 속에 화사한 감귤향과 쨍한 산미가 드라이하게 정리됨",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2091/white-lady"
+  "tl": "짙은 오렌지 향이 새콤달콤함을 오가고 끝은 깔끔하고 드라이함",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2091/white-lady",
+  "gemini": "매끄러운 질감 속에 화사한 감귤향과 쨍한 산미가 드라이하게 정리됨",
+  "gpt": "짙은 감귤 향이 단맛과 산미를 오가고 끝은 향긋하고 산뜻함"
  },
  "핑크 레이디": {
-  "tl": "새콤한 시트러스에 붉은 과실의 달콤함이 더해져 화사하고 부드럽게 감김",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1548/pink-lady"
+  "tl": "붉은 과일 같은 단맛에 새콤함이 더해져 화사하고 부드러움",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1548/pink-lady",
+  "gemini": "새콤한 시트러스에 붉은 과실의 달콤함이 더해져 화사하고 부드럽게 감김",
+  "gpt": "붉은 과일을 닮은 단향이 살짝 비치고 풀 향 섞인 산미가 돋보임"
  },
  "진 벅": {
-  "tl": "알싸한 뿌리 향신료와 탄산이 보태니컬 풍미를 경쾌하고 시원하게 밀어줌",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/330/the-buck-gin-buck"
+  "tl": "알싸하고 달큰한 기포에 신맛이 살짝 걸리고 끝에 풀 향이 남음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/330/the-buck-gin-buck",
+  "gemini": "알싸한 뿌리 향신료와 탄산이 보태니컬 풍미를 경쾌하고 시원하게 밀어줌",
+  "gpt": "알싸하면서 달큰한 기포에 산미가 살짝 걸리고 끝은 풀 향이 남음"
  },
  "진 리키": {
-  "tl": "단맛 없이 쨍한 산미와 드라이한 보태니컬, 탄산만 남아 극도로 깔끔함",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1676/gin-rickey"
+  "tl": "단맛 없이 쨍한 신맛과 솔 향, 기포만 남아 아주 깔끔함",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1676/gin-rickey",
+  "gemini": "단맛 없이 쨍한 산미와 드라이한 보태니컬, 탄산만 남아 극도로 깔끔함",
+  "gpt": "입안을 바짝 당기는 산미와 보송한 솔 향이 가벼운 기포를 타고 퍼짐"
  },
  "진 피즈": {
-  "tl": "가벼운 거품과 톡 쏘는 산미가 어우러져 보송하고 상쾌하게 목을 넘김",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/840/gin-fizz"
+  "tl": "가벼운 거품과 상큼한 신맛이 어우러져 보송하고 상쾌하게 넘어감",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/840/gin-fizz",
+  "gemini": "가벼운 거품과 톡 쏘는 산미가 어우러져 보송하고 상쾌하게 목을 넘김",
+  "gpt": "단맛을 가늘게 남긴 채 시원한 탄산과 상큼한 산미가 입안을 씻음"
  },
  "플로라도라": {
-  "tl": "진한 베리류의 달콤함과 알싸한 탄산, 산미가 겹쳐져 화사하고 가벼움",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/3482/floradora"
+  "tl": "검은 베리의 단맛을 알싸한 탄산이 가볍게 풀어 화사함",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/3482/floradora",
+  "gemini": "진한 베리류의 달콤함과 알싸한 탄산, 산미가 겹쳐져 화사하고 가벼움",
+  "gpt": "검은 베리의 단향을 탄산이 가볍게 풀고 알싸한 향이 끝을 감쌈"
  },
  "오렌지 블로섬": {
-  "tl": "달콤하고 부드러운 감귤 과즙 뒤로 은은한 솔향과 허브가 깔끔하게 남음",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1440/orange-blossom"
+  "tl": "달콤한 오렌지 주스 맛 뒤로 은은한 솔 향이 깔끔하게 남음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1440/orange-blossom",
+  "gemini": "달콤하고 부드러운 감귤 과즙 뒤로 은은한 솔향과 허브가 깔끔하게 남음",
+  "gpt": "잘 익은 감귤의 즙 많은 단맛 뒤로 마른 풀 향이 올라옴"
  },
  "블루버드": {
-  "tl": "화사한 감귤 껍질 향과 톡 쏘는 기포가 어우러져 달콤상큼하고 가벼움",
-  "src": "추정"
+  "tl": "달큰한 오렌지 껍질 향과 톡 쏘는 기포로 달콤상큼하고 가벼움",
+  "src": "추정",
+  "gemini": "화사한 감귤 껍질 향과 톡 쏘는 기포가 어우러져 달콤상큼하고 가벼움",
+  "gpt": "기포 속에 달큰한 감귤 껍질 향과 산미가 묻어나고 솔 향이 비침"
  },
  "프렌치 김렛": {
-  "tl": "향긋한 꽃향과 달콤함이 날카로운 산미를 부드럽게 감싸며 산뜻하게 떨어짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/17176/french-gimlet"
+  "tl": "새콤한 첫맛에 꽃 같은 은은한 단향이 스며들어 산뜻함",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/17176/french-gimlet",
+  "gemini": "향긋한 꽃향과 달콤함이 날카로운 산미를 부드럽게 감싸며 산뜻하게 떨어짐",
+  "gpt": "새콤한 첫맛에 꽃을 닮은 은은한 단향이 스며들고 끝이 산뜻함"
  },
  "블루 마르가리타 (진 버전)": {
-  "tl": "달콤한 감귤 뉘앙스와 쨍한 신맛이 보태니컬 향과 맞물려 또렷하게 퍼짐",
-  "src": "추정"
+  "tl": "오렌지 껍질의 달큰함과 쨍한 신맛이 겹치고 솔 향이 뒤따름",
+  "src": "추정",
+  "gemini": "달콤한 감귤 뉘앙스와 쨍한 신맛이 보태니컬 향과 맞물려 또렷하게 퍼짐",
+  "gpt": "감귤 껍질의 달큰함과 새콤함이 겹치고 솔잎 같은 잔향이 따름"
  },
  "네그로니": {
-  "tl": "선명한 쌉싸름함이 입안을 채우고 달콤한 허브와 감귤 여운이 길게 남음",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1392/negroni-cocktail"
+  "tl": "선명한 쌉싸름함이 입안을 채우고 달큰한 허브와 오렌지 여운이 길게 남음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1392/negroni-cocktail",
+  "gemini": "선명한 쌉싸름함이 입안을 채우고 달콤한 허브와 감귤 여운이 길게 남음",
+  "gpt": "짙은 껍질 쓴맛을 달큰한 허브 향이 감싸고 떫은 여운이 길게 감"
  },
  "마티니 (드라이 마티니)": {
-  "tl": "차갑고 날카로운 보태니컬 향과 극도로 드라이한 질감이 깔끔하게 꽂힘",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/676/dry-martini-preferred-51-ratio"
+  "tl": "단맛이 거의 없고 차갑고 날 선 솔잎 향이 깔끔하게 꽂힘",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/676/dry-martini-preferred-51-ratio",
+  "gemini": "차갑고 날카로운 보태니컬 향과 극도로 드라이한 질감이 깔끔하게 꽂힘",
+  "gpt": "단맛이 거의 없고 솔잎 같은 날 선 향이 입안을 서늘하게 가름"
  },
  "톰 콜린스": {
-  "tl": "은은한 단맛을 품은 부드러운 보태니컬과 상큼한 기포가 둥글게 어우러짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1972/tom-collins"
+  "tl": "은은한 단맛과 레몬 같은 산뜻함이 기포를 따라 둥글게 번짐",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1972/tom-collins",
+  "gemini": "은은한 단맛을 품은 부드러운 보태니컬과 상큼한 기포가 둥글게 어우러짐",
+  "gpt": "감귤 껍질 같은 산뜻함과 부드러운 단맛이 기포를 따라 번짐"
  },
  "브롱스": {
-  "tl": "상큼한 감귤 과즙에 드라이함과 달콤한 허브가 겹쳐져 경쾌하고 복합적임",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/325/bronx"
+  "tl": "달콤한 오렌지 과즙 뒤에 드라이한 허브 향이 배어남",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/325/bronx",
+  "gemini": "상큼한 감귤 과즙에 드라이함과 달콤한 허브가 겹쳐져 경쾌하고 복합적임",
+  "gpt": "감귤의 둥근 과즙 단맛 뒤에 드라이한 허브와 솔 향이 배어남"
  },
  "프렌치 75": {
-  "tl": "섬세한 기포와 쨍한 산미, 은은한 단맛이 어우러져 화사하고 드라이하게 끝남",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/790/french-75"
+  "tl": "잘게 터지는 기포를 타고 날렵한 신맛과 가벼운 단맛이 화사하게 번짐",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/790/french-75",
+  "gemini": "섬세한 기포와 쨍한 산미, 은은한 단맛이 어우러져 화사하고 드라이하게 끝남",
+  "gpt": "잘게 터지는 기포를 타고 날렵한 산미와 가벼운 과일 단향이 번짐"
  },
  "파라다이스": {
-  "tl": "농익은 핵과류의 달콤함과 감귤 과즙이 보태니컬 향을 부드럽게 감쌈",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1466/paradise"
+  "tl": "살구 같은 달콤한 과일 맛을 밝은 오렌지 향이 감쌈",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1466/paradise",
+  "gemini": "농익은 핵과류의 달콤함과 감귤 과즙이 보태니컬 향을 부드럽게 감쌈",
+  "gpt": "핵과의 둥근 풍미를 밝은 감귤 향과 서늘한 풀 향이 받쳐 줌"
  },
  "애비 칵테일": {
-  "tl": "묵직한 허브 단맛과 상큼한 과즙이 만나 쌉쌀하면서도 부드럽게 마무리됨",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/3/abbey"
+  "tl": "달콤한 과즙 아래 허브의 쌉쌀함이 엷게 깔려 부드럽게 끝남",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/3/abbey",
+  "gemini": "묵직한 허브 단맛과 상큼한 과즙이 만나 쌉쌀하면서도 부드럽게 마무리됨",
+  "gpt": "달콤한 과즙 아래 허브의 쌉싸름함이 엷게 깔리고 솔 향이 남음"
  },
  "비쥬": {
-  "tl": "짙은 허브와 향신료, 농밀한 단맛이 묵직하게 엉기며 강렬한 여운을 남김",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/3269/bijou-cocktail-diffords-recipe"
+  "tl": "진득한 허브 단맛과 향신료가 묵직하게 엉겨 강렬하게 남음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/3269/bijou-cocktail-diffords-recipe",
+  "gemini": "짙은 허브와 향신료, 농밀한 단맛이 묵직하게 엉기며 강렬한 여운을 남김",
+  "gpt": "진득한 허브 단맛에 나무와 향신료가 겹치고 입안에 묵직하게 남음"
  },
  "카지노": {
-  "tl": "은은한 꽃향과 견과류 단맛 위로 상큼한 감귤 향이 가볍고 드라이하게 돎",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2332/casino"
+  "tl": "체리 같은 은은한 단향이 신맛을 누그러뜨리고 드라이하게 끝남",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2332/casino",
+  "gemini": "은은한 꽃향과 견과류 단맛 위로 상큼한 감귤 향이 가볍고 드라이하게 돎",
+  "gpt": "달큰한 핵과 향이 산미를 누그러뜨리고 감귤 껍질 같은 쓴맛이 남음"
  },
  "브램블": {
-  "tl": "맑은 산미 위로 짙은 검붉은 과실의 단맛이 서서히 스며듦",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/305/bramble"
+  "tl": "새콤한 첫맛 위로 짙은 블랙베리 단맛이 천천히 스며듦",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/305/bramble",
+  "gemini": "맑은 산미 위로 짙은 검붉은 과실의 단맛이 서서히 스며듦",
+  "gpt": "짙은 베리 단맛이 새콤한 첫맛에 스며들고 과실 향이 또렷이 남음"
  },
  "앤젤 페이스": {
-  "tl": "묵직한 과실의 농밀한 단맛 뒤로 드라이한 식물성 여운이 받쳐줌",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/521/angel-face"
+  "tl": "잘 익은 사과·살구 같은 진한 과일 단맛 뒤로 드라이하고 독한 여운이 남음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/521/angel-face",
+  "gemini": "묵직한 과실의 농밀한 단맛 뒤로 드라이한 식물성 여운이 받쳐줌",
+  "gpt": "잘 익은 핵과와 과수원 과실의 향이 겹치고 끝은 따뜻하고 드라이함"
  },
  "애비에이션": {
-  "tl": "쨍한 산미 속에 은은한 꽃내음과 쌉싸름한 핵과 향이 겹침",
-  "src": "https://www.diffordsguide.com/encyclopedia/455/cocktails/aviation-cocktail"
+  "tl": "산뜻한 신맛을 따라 은은한 꽃 향과 체리 향이 얇게 피어남",
+  "src": "https://www.diffordsguide.com/encyclopedia/455/cocktails/aviation-cocktail",
+  "gemini": "쨍한 산미 속에 은은한 꽃내음과 쌉싸름한 핵과 향이 겹침",
+  "gpt": "꽃 향과 달큰한 핵과 향이 산뜻한 산미를 따라 얇게 피어남"
  },
  "비즈 니즈": {
-  "tl": "부드러운 감칠 단맛이 먼저 감싸고 상큼한 감귤 산미로 마무리됨",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2144/bees-knees"
+  "tl": "꿀처럼 둥근 단맛을 상큼한 레몬 같은 신맛이 받쳐 줌",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2144/bees-knees",
+  "gemini": "부드러운 감칠 단맛이 먼저 감싸고 상큼한 감귤 산미로 마무리됨",
+  "gpt": "꿀처럼 둥근 단맛을 밝은 과즙 산미가 받치고 풀 향은 은근함"
  },
  "카디날레": {
-  "tl": "가볍고 드라이한 첫인상 끝에 깔끔한 쌉싸름함이 선명하게 남음",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/572/cardinale"
+  "tl": "가볍고 드라이한 첫맛 끝에 깔끔한 쌉싸름함이 선명하게 남음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/572/cardinale",
+  "gemini": "가볍고 드라이한 첫인상 끝에 깔끔한 쌉싸름함이 선명하게 남음",
+  "gpt": "날 선 솔 향과 마른 허브 향 사이로 껍질 같은 쓴맛이 비집고 나옴"
  },
  "클로버 클럽": {
-  "tl": "폭신한 거품 질감 사이로 새콤한 붉은 과실 풍미가 둥글게 퍼짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2344/clover-club"
+  "tl": "폭신한 거품 사이로 새콤한 라즈베리 맛이 둥글게 퍼짐",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2344/clover-club",
+  "gemini": "폭신한 거품 질감 사이로 새콤한 붉은 과실 풍미가 둥글게 퍼짐",
+  "gpt": "붉은 베리 풍미가 새콤하게 번지고 잔거품이 입안을 부드럽게 감쌈"
  },
  "콥스 리바이버 #2": {
-  "tl": "톡 쏘는 감귤류 산미 끝에 묘하게 화한 허브 향이 스쳐 지나감",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/593/corpse-reviver-no2-savoy-recipe"
+  "tl": "쨍한 시트러스 신맛이 지나가고 묘하게 화한 허브 향이 스침",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/593/corpse-reviver-no2-savoy-recipe",
+  "gemini": "톡 쏘는 감귤류 산미 끝에 묘하게 화한 허브 향이 스쳐 지나감",
+  "gpt": "쨍한 감귤 산미가 먼저 지나가고 달큰한 향신료 향이 살짝 남음"
  },
  "진 바질 스매시": {
-  "tl": "싱그러운 푸른 풀내음과 산뜻한 시트러스 산미가 입안을 가득 채움",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/3282/gin-basil-smash"
+  "tl": "막 뜯은 풀잎 같은 향긋함이 입안 가득 퍼지고 신맛이 또렷함",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/3282/gin-basil-smash",
+  "gemini": "싱그러운 푸른 풀내음과 산뜻한 시트러스 산미가 입안을 가득 채움",
+  "gpt": "막 뜯은 잎을 닮은 향긋함이 입안에 가득 퍼지고 산미가 또렷함"
  },
  "행키 팽키": {
-  "tl": "달큰하고 그윽한 향미 뒤로 강렬한 약초 계열의 쓴맛이 치고 올라옴",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/930/hanky-panky"
+  "tl": "말린 과일 같은 단맛 뒤로 짙은 약초 쓴맛이 길게 감김",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/930/hanky-panky",
+  "gemini": "달큰하고 그윽한 향미 뒤로 강렬한 약초 계열의 쓴맛이 치고 올라옴",
+  "gpt": "말린 과실 같은 단맛이 먼저 오고 짙은 허브 쓴맛이 길게 감김"
  },
  "라스트 워드": {
-  "tl": "복합적인 허브의 알싸함과 날카로운 산미, 은근한 단맛이 팽팽히 맞섬",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1133/last-word"
+  "tl": "강한 허브 향과 날카로운 신맛, 은근한 단맛이 팽팽히 맞섬",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1133/last-word",
+  "gemini": "복합적인 허브의 알싸함과 날카로운 산미, 은근한 단맛이 팽팽히 맞섬",
+  "gpt": "강한 풀 향과 새콤달콤함이 맞물리며 끝에 핵과의 잔향이 따라옴"
  },
  "마르티네즈": {
-  "tl": "묵직하고 드라이한 바디감에 깊은 향신료와 은은한 단맛이 어우러짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2490/martinez-with-london-dry-gin"
+  "tl": "말린 과일 같은 단맛에 솔 향이 녹고 끝이 살짝 씁쓸함",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2490/martinez-with-london-dry-gin",
+  "gemini": "묵직하고 드라이한 바디감에 깊은 향신료와 은은한 단맛이 어우러짐",
+  "gpt": "말린 과실 단향에 솔 향이 녹고 끝에 감귤 껍질 같은 씁쓸함이 감돎"
  },
  "몽키 글랜드": {
-  "tl": "달콤한 과즙감 사이로 특유의 아니스 계열 향이 톡 튀어 오름",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1349/monkey-gland"
+  "tl": "달콤한 오렌지 맛 사이로 감초 같은 향이 톡 튀어 오름",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1349/monkey-gland",
+  "gemini": "달콤한 과즙감 사이로 특유의 아니스 계열 향이 톡 튀어 오름",
+  "gpt": "잘 익은 감귤의 단향을 서늘하고 달큰한 향신료 향이 휘감음"
  },
  "라모스 피즈": {
-  "tl": "구름처럼 몽글한 질감에 화사한 꽃향기와 부드러운 산미가 녹아듦",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1628/ramos-gin-fizz"
+  "tl": "구름처럼 몽글한 거품 속에 꽃 향과 부드러운 신맛이 녹아듦",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1628/ramos-gin-fizz",
+  "gemini": "구름처럼 몽글한 질감에 화사한 꽃향기와 부드러운 산미가 녹아듦",
+  "gpt": "가벼운 꽃 향과 감귤 산미가 솜처럼 부드러운 거품 속에서 퍼짐"
  },
  "싱가포르 슬링": {
-  "tl": "풍성한 열대과일 단맛과 다채로운 향신료가 어우러지고 끝에 알코올감이 남음",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/4627/singapore-sling"
+  "tl": "잘 익은 열대 과일의 새콤달콤함에 체리 향과 향신료가 층을 이룸",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/4627/singapore-sling",
+  "gemini": "풍성한 열대과일 단맛과 다채로운 향신료가 어우러지고 끝에 알코올감이 남음",
+  "gpt": "잘 익은 열대 과일의 새콤달콤함에 어두운 핵과 향이 층을 이룸"
  },
  "사우스 사이드": {
-  "tl": "시원한 청량감과 산뜻한 신맛이 가볍고 경쾌하게 목을 넘김",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2200/southside"
+  "tl": "시원한 민트 향과 산뜻한 신맛이 가볍게 넘어감",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2200/southside",
+  "gemini": "시원한 청량감과 산뜻한 신맛이 가볍고 경쾌하게 목을 넘김",
+  "gpt": "선명한 산미가 입안을 깨우고 서늘한 잎 향과 가벼운 단맛이 스침"
  },
  "턱시도": {
-  "tl": "바싹 마른 드라이함 위로 미세한 감초 뉘앙스와 향긋한 쌉쌀함이 돎",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/4601/tuxedo-cocktail-no1-savoy-and-duffys-recipe"
+  "tl": "바짝 마른 드라이함 위로 은은한 감초 향과 쌉쌀함이 감돎",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/4601/tuxedo-cocktail-no1-savoy-and-duffys-recipe",
+  "gemini": "바싹 마른 드라이함 위로 미세한 감초 뉘앙스와 향긋한 쌉쌀함이 돎",
+  "gpt": "마른 풀 향에 달큰한 향신료와 희미한 핵과 향이 얇게 포개짐"
  },
  "베스퍼": {
-  "tl": "차갑고 날카로운 알코올감 끝에 은은한 식물성 씁쓸함이 길게 이어짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2597/vesper-dry-martini"
+  "tl": "차갑고 날카로운 술맛 끝에 은은한 쌉쌀함이 길게 이어짐",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2597/vesper-dry-martini",
+  "gemini": "차갑고 날카로운 알코올감 끝에 은은한 식물성 씁쓸함이 길게 이어짐",
+  "gpt": "산뜻한 향이 짧게 퍼진 뒤 선명한 술의 온기와 드라이함이 남음"
  },
  "깁슨": {
-  "tl": "극도로 드라이한 질감에 짭조름하고 아릿한 감칠맛이 여운을 남김",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/830/gibson-dry-martini"
+  "tl": "아주 드라이한 맛 끝에 짭조름한 절임 여운이 혀끝에 걸림",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/830/gibson-dry-martini",
+  "gemini": "극도로 드라이한 질감에 짭조름하고 아릿한 감칠맛이 여운을 남김",
+  "gpt": "바짝 마른 풀 향이 깔리고 짭조름한 절임의 여운이 혀끝에 걸림"
  },
  "아쿠아 벨바": {
-  "tl": "경쾌한 기포감과 달콤한 시트러스 향이 가볍고 화사하게 터짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/4086/aqua-velva-cocktail"
+  "tl": "청량한 기포가 캔디 같은 시트러스 단맛을 띄워 가볍고 화사함",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/4086/aqua-velva-cocktail",
+  "gemini": "경쾌한 기포감과 달콤한 시트러스 향이 가볍고 화사하게 터짐",
+  "gpt": "청량한 기포가 캔디 같은 감귤 단맛을 띄우고 희미한 풀 향이 남음"
  },
  "스크류드라이버": {
-  "tl": "신선한 감귤 과즙의 달콤함 뒤로 담백하고 깔끔한 알코올감이 받침",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1762/screwdriver-diffords-recipe"
+  "tl": "달콤한 오렌지 주스 맛이 앞서고 끝에 가벼운 술맛이 받침",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1762/screwdriver-diffords-recipe",
+  "gemini": "신선한 감귤 과즙의 달콤함 뒤로 담백하고 깔끔한 알코올감이 받침",
+  "gpt": "잘 익은 감귤의 둥근 과즙 단맛이 앞서고 끝에 약한 알싸함이 비침"
  },
  "보드카 콜린스": {
-  "tl": "톡 쏘는 탄산감과 군더더기 없는 새콤달콤함이 갈증을 깔끔히 씻어냄",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2050/vodka-collins"
+  "tl": "톡 쏘는 탄산과 깔끔한 새콤달콤함이 갈증을 씻어 냄",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2050/vodka-collins",
+  "gemini": "톡 쏘는 탄산감과 군더더기 없는 새콤달콤함이 갈증을 깔끔히 씻어냄",
+  "gpt": "탄산이 산뜻한 신맛을 풀어 주고 담백한 끝에 단맛이 얇게 스침"
  },
  "카미카제": {
-  "tl": "직선적인 산미와 알싸한 알코올감이 단숨에 입안을 조이며 깔끔히 떨어짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1087/kamikaze"
+  "tl": "짧고 강한 신맛 뒤에 오렌지 껍질 향이 또렷하게 따라옴",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1087/kamikaze",
+  "gemini": "직선적인 산미와 알싸한 알코올감이 단숨에 입안을 조이며 깔끔히 떨어짐",
+  "gpt": "짧고 강한 산미 뒤에 달큰한 감귤 껍질 향이 또렷하게 따라옴"
  },
  "갓마더": {
-  "tl": "고소하고 달콤한 견과류 풍미가 투명한 알코올감과 매끄럽게 섞임",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/9219/godmother"
+  "tl": "달콤한 아몬드 향이 곧장 퍼지고 깔끔한 술맛이 뒤따름",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/9219/godmother",
+  "gemini": "고소하고 달콤한 견과류 풍미가 투명한 알코올감과 매끄럽게 섞임",
+  "gpt": "달콤한 견과 향이 곧장 퍼지고 뒤따르는 술의 온기가 입안을 데움"
  },
  "블루 라군": {
-  "tl": "시원한 탄산감 속에 얇고 산뜻한 감귤 단맛이 가볍게 스쳐감",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/264/blue-lagoon"
+  "tl": "시원한 탄산 속에 캔디 같은 상큼한 단맛이 가볍게 스침",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/264/blue-lagoon",
+  "gemini": "시원한 탄산감 속에 얇고 산뜻한 감귤 단맛이 가볍게 스쳐감",
+  "gpt": "탄산은 가볍고 감귤 캔디 같은 단향 위로 새콤한 향이 퍼짐"
  },
  "레몬 드롭 마티니": {
-  "tl": "셔벗처럼 상큼하고 찌릿한 신맛과 맑은 단맛이 또렷하게 대비됨",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1144/lemon-drop-martini"
+  "tl": "레몬 사탕 같은 달큰함에 찌릿한 신맛이 붙어 끝이 산뜻함",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1144/lemon-drop-martini",
+  "gemini": "셔벗처럼 상큼하고 찌릿한 신맛과 맑은 단맛이 또렷하게 대비됨",
+  "gpt": "감귤 사탕을 닮은 달큰함에 날렵한 산미가 붙어 끝이 산뜻함"
  },
  "멜론 볼": {
-  "tl": "화사하고 진한 과실의 단맛이 감귤류 산미와 만나 달큰하게 퍼짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/3386/melon-ball"
+  "tl": "잘 익은 멜론의 달큰한 향이 오렌지의 둥근 신맛과 어우러짐",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/3386/melon-ball",
+  "gemini": "화사하고 진한 과실의 단맛이 감귤류 산미와 만나 달큰하게 퍼짐",
+  "gpt": "잘 익은 과일의 달큰한 향이 감귤의 둥근 산미와 넓게 어우러짐"
  },
  "우우": {
-  "tl": "붉은 과실의 떫은 산미에 부드럽고 향긋한 핵과 단맛이 포근히 겹침",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2110/woo-woo"
+  "tl": "말랑한 복숭아 단맛이 먼저 오고 크랜베리의 새콤함이 혀끝에 붙음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2110/woo-woo",
+  "gemini": "붉은 과실의 떫은 산미에 부드럽고 향긋한 핵과 단맛이 포근히 겹침",
+  "gpt": "말랑한 핵과 단맛이 먼저 오고 붉은 베리의 새콤함이 혀끝에 붙음"
  },
  "섹스 온 더 비치": {
-  "tl": "풍성하고 달콤한 복합 과즙감이 술 기운을 부드럽게 감싸며 넘어감",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/4266/sex-on-the-beach"
+  "tl": "복숭아·오렌지·베리 과즙이 겹쳐 달콤한 주스처럼 넘어감",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/4266/sex-on-the-beach",
+  "gemini": "풍성하고 달콤한 복합 과즙감이 술 기운을 부드럽게 감싸며 넘어감",
+  "gpt": "즙 많은 핵과의 단향에 감귤과 붉은 과실의 산미가 층을 이룸"
  },
  "보드카 선라이즈": {
-  "tl": "상쾌한 과즙감 바닥에 진하고 묵직한 붉은 단맛이 천천히 올라옴",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/19457/vodka-sunrise"
+  "tl": "상큼한 오렌지 맛 아래에서 진한 붉은 단맛이 천천히 올라옴",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/19457/vodka-sunrise",
+  "gemini": "상쾌한 과즙감 바닥에 진하고 묵직한 붉은 단맛이 천천히 올라옴",
+  "gpt": "둥근 감귤 단맛에 붉은 과일 캔디 같은 달큰함이 길게 이어짐"
  },
  "매드래스": {
-  "tl": "붉은 과실의 쌉쌀한 신맛을 달콤한 감귤 과즙이 한결 부드럽게 누그러뜨림",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1216/madras"
+  "tl": "크랜베리의 새콤 떫은맛을 달콤한 오렌지가 부드럽게 눌러 줌",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1216/madras",
+  "gemini": "붉은 과실의 쌉쌀한 신맛을 달콤한 감귤 과즙이 한결 부드럽게 누그러뜨림",
+  "gpt": "붉은 베리의 산미와 떫은맛이 중심을 잡고 감귤 단향이 끝에 번짐"
  },
  "보드카 하이볼": {
-  "tl": "무미에 가까운 담백한 미네랄감과 짱짱한 기포가 드라이하게 떨어짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/4280/vodka-soda"
+  "tl": "맛보다 맑고 짱짱한 기포가 앞서는 아주 담백한 잔",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/4280/vodka-soda",
+  "gemini": "무미에 가까운 담백한 미네랄감과 짱짱한 기포가 드라이하게 떨어짐",
+  "gpt": "맑은 탄산이 혀를 가볍게 치고 은근한 알싸함만 짧게 남음"
  },
  "치치": {
-  "tl": "달큰한 열대 풍미와 상큼한 감귤 과즙이 부드럽고 이국적으로 어우러짐",
-  "src": "추정"
+  "tl": "부드러운 코코넛 향에 상큼한 과즙이 섞여 순하고 이국적임",
+  "src": "추정",
+  "gemini": "달큰한 열대 풍미와 상큼한 감귤 과즙이 부드럽고 이국적으로 어우러짐",
+  "gpt": "부드러운 열대 단향에 감귤 과즙의 산미가 섞이고 뒤끝은 가벼움"
  },
  "엘더플라워 사워": {
-  "tl": "화사하고 우아한 꽃향기가 선명한 산미를 타고 깔끔하게 번짐",
-  "src": "추정"
+  "tl": "화사한 꽃 향이 또렷한 신맛을 타고 깔끔하게 번짐",
+  "src": "추정",
+  "gemini": "화사하고 우아한 꽃향기가 선명한 산미를 타고 깔끔하게 번짐",
+  "gpt": "가벼운 꽃 향이 밝은 산미 뒤로 번지고 은근한 단맛으로 끝남"
  },
  "초콜릿 러시안": {
-  "tl": "짙고 달콤한 구운 풍미가 맑은 알코올감과 만나 묵직한 여운을 남김",
-  "src": "추정"
+  "tl": "쌉달한 초콜릿 맛이 진하고 끝에 따뜻한 술기운이 감돎",
+  "src": "추정",
+  "gemini": "짙고 달콤한 구운 풍미가 맑은 알코올감과 만나 묵직한 여운을 남김",
+  "gpt": "쌉달한 초콜릿을 닮은 풍미가 짙고 끝에 따뜻한 알싸함이 감돎"
  },
  "페퍼민트 패티": {
-  "tl": "달콤하고 진한 로스팅 향 위로 화하고 싸한 청량감이 선명하게 감돔",
-  "src": "추정"
+  "tl": "진한 초콜릿 단맛 위로 화한 민트가 올라와 오래 남음",
+  "src": "추정",
+  "gemini": "달콤하고 진한 로스팅 향 위로 화하고 싸한 청량감이 선명하게 감돔",
+  "gpt": "진한 디저트 단향 위로 서늘한 향이 올라와 입안에 길게 남음"
  },
  "윈덱스 마티니": {
-  "tl": "진한 시트러스 단맛과 톡 쏘는 산미 뒤로 묵직한 도수감이 따라옴",
-  "src": "https://www.food.com/recipe/windex-martini-177981"
+  "tl": "진한 오렌지 단맛과 톡 쏘는 신맛 뒤로 묵직한 도수가 따라옴",
+  "src": "https://www.food.com/recipe/windex-martini-177981",
+  "gemini": "진한 시트러스 단맛과 톡 쏘는 산미 뒤로 묵직한 도수감이 따라옴",
+  "gpt": "감귤 껍질의 달큰한 향이 겹겹이 쌓이고 날 선 산미로 끊김"
  },
  "머디 슬라이드": {
-  "tl": "걸쭉하고 크리미한 질감에 짙은 로스팅 단맛이 디저트처럼 녹아듦",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1374/mudslide"
+  "tl": "걸쭉하고 크리미한 커피·초콜릿 맛이 디저트처럼 녹아듦",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1374/mudslide",
+  "gemini": "걸쭉하고 크리미한 질감에 짙은 로스팅 단맛이 디저트처럼 녹아듦",
+  "gpt": "짙은 로스팅 향에 부드러운 유제품 풍미가 감겨 진하고 달큰함"
  },
  "마인드 이레이저": {
-  "tl": "달콤쌉쌀한 로스팅 풍미가 가벼운 탄산감을 타고 빠르게 목을 넘김",
-  "src": "https://www.kahlua.com/en-us/drinks/mind-eraser/"
+  "tl": "달콤쌉쌀한 커피 맛이 가벼운 탄산을 타고 빠르게 넘어감",
+  "src": "https://www.kahlua.com/en-us/drinks/mind-eraser/",
+  "gemini": "달콤쌉쌀한 로스팅 풍미가 가벼운 탄산감을 타고 빠르게 목을 넘김",
+  "gpt": "짙은 볶은 향에서 시작해 가벼운 기포와 술의 온기로 이어짐"
  },
  "딥 블루 씨": {
-  "tl": "달콤상큼한 과실 향과 탄산감 끝에 은근한 스모키함이 묵직하게 맴돔",
-  "src": "추정"
+  "tl": "달콤상큼한 과일 향과 탄산 끝에 은근한 스모키함이 맴돎",
+  "src": "추정",
+  "gemini": "달콤상큼한 과실 향과 탄산감 끝에 은근한 스모키함이 묵직하게 맴돔",
+  "gpt": "달큰한 핵과 향과 감귤 산미에 기포가 섞이고 뒤에 나무 향이 비침"
  },
  "헤어리 네이블": {
-  "tl": "향긋한 핵과류 단맛이 상큼한 과즙감에 자연스럽게 녹아들어 가볍게 넘어감",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/4276/hairy-navel"
+  "tl": "복숭아와 오렌지 단맛 아래 술기운이 은근히 느껴짐",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/4276/hairy-navel",
+  "gemini": "향긋한 핵과류 단맛이 상큼한 과즙감에 자연스럽게 녹아들어 가볍게 넘어감",
+  "gpt": "즙 많은 핵과와 감귤의 단맛 아래 술의 알싸함이 은근히 느껴짐"
  },
  "코스모폴리탄": {
-  "tl": "날렵한 시트러스 산미와 은은한 붉은 과실 떫은맛이 드라이하게 조화를 이룸",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/3387/cosmopolitan-cocktail-toby-cecchinis-recipe"
+  "tl": "크랜베리의 새콤함을 시트러스 향이 감싸고 살짝 떫게 마무리됨",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/3387/cosmopolitan-cocktail-toby-cecchinis-recipe",
+  "gemini": "날렵한 시트러스 산미와 은은한 붉은 과실 떫은맛이 드라이하게 조화를 이룸",
+  "gpt": "붉은 과실의 새콤함을 감귤 단향이 감싸고 살짝 떫게 마무리됨"
  },
  "모스코 뮬": {
-  "tl": "알싸하고 따뜻한 매운 향미와 톡 쏘는 산미가 시원한 탄산과 어우러짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1366/moscow-mule"
+  "tl": "기포를 타고 생강 같은 매콤함이 밀려오고 새콤한 여운이 뒤따름",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1366/moscow-mule",
+  "gemini": "알싸하고 따뜻한 매운 향미와 톡 쏘는 산미가 시원한 탄산과 어우러짐",
+  "gpt": "기포를 타고 매콤한 자극이 밀려오고 새콤한 여운이 뒤따름"
  },
  "블랙 러시안": {
-  "tl": "묵직하고 달콤한 로스팅 풍미가 직선적인 알코올감과 깔끔하게 떨어짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/236/black-russian"
+  "tl": "진한 커피 단맛과 쌉쌀함이 묵직하고 끝에 술기운이 감돎",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/236/black-russian",
+  "gemini": "묵직하고 달콤한 로스팅 풍미가 직선적인 알코올감과 깔끔하게 떨어짐",
+  "gpt": "검게 볶은 듯한 단향과 쌉싸래함이 진하고 끝에 술의 온기가 감돎"
  },
  "씨 브리즈": {
-  "tl": "쌉쌀하고 쨍한 감귤 산미와 붉은 과실의 떫은맛이 시원하게 입안을 정리함",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/28371/sea-breeze"
+  "tl": "크랜베리의 새콤함이 앞서고 자몽 같은 쌉쌀함이 시원하게 정리함",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/28371/sea-breeze",
+  "gemini": "쌉쌀하고 쨍한 감귤 산미와 붉은 과실의 떫은맛이 시원하게 입안을 정리함",
+  "gpt": "붉은 베리의 산미가 앞서고 감귤 속껍질 같은 쓴맛이 잔잔함"
  },
  "에스프레소 마티니": {
-  "tl": "쫀쫀한 거품 아래 진한 로스팅의 쓴맛과 적당한 단맛이 선명하게 교차함",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/725/espresso-martini"
+  "tl": "쫀쫀한 거품 아래 진한 커피 쓴맛과 적당한 단맛이 교차함",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/725/espresso-martini",
+  "gemini": "쫀쫀한 거품 아래 진한 로스팅의 쓴맛과 적당한 단맛이 선명하게 교차함",
+  "gpt": "짙은 로스팅의 쓴맛에 매끈한 거품과 둥근 단맛이 더해짐"
  },
  "블러디 메리": {
-  "tl": "걸쭉하고 짭조름한 감칠맛 위로 매콤하고 알싸한 향신료가 묵직하게 퍼짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/251/bloody-mary"
+  "tl": "짭조름하고 진한 감칠맛 위로 매콤한 향신료가 퍼지고 끝에 신맛이 남음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/251/bloody-mary",
+  "gemini": "걸쭉하고 짭조름한 감칠맛 위로 매콤하고 알싸한 향신료가 묵직하게 퍼짐",
+  "gpt": "농후한 감칠맛 위로 짠맛과 매운 기운이 올라오고 끝에 산미가 남음"
  },
  "하비 월뱅어": {
-  "tl": "상큼한 감귤 과즙 위로 달큰하고 화한 허브 향이 부드럽게 감싸 안음",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/936/harvey-wallbanger"
+  "tl": "달콤한 오렌지 맛 끝에 바닐라와 허브 향이 부드럽게 감쌈",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/936/harvey-wallbanger",
+  "gemini": "상큼한 감귤 과즙 위로 달큰하고 화한 허브 향이 부드럽게 감싸 안음",
+  "gpt": "잘 익은 감귤의 단맛 끝에 달큰한 바닐라와 허브 풍미가 비침"
  },
  "러시안 스프링 펀치": {
-  "tl": "섬세한 기포감 속에 짙은 베리류 단맛과 산뜻한 신맛이 화사하게 얽힘",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1720/russian-spring-punch"
+  "tl": "섬세한 기포 속에 진한 베리 단맛과 산뜻한 신맛이 화사하게 얽힘",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1720/russian-spring-punch",
+  "gemini": "섬세한 기포감 속에 짙은 베리류 단맛과 산뜻한 신맛이 화사하게 얽힘",
+  "gpt": "검은 베리의 단향과 산미가 입안을 채우고 드라이한 기포로 가벼워짐"
  },
  "더티 마티니": {
-  "tl": "차갑고 날 선 드라이함에 짭짤하고 묵직한 절임 풍미가 깊게 스며듦",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/650/dirty-martini"
+  "tl": "짭조름한 올리브 같은 첫맛이 뚜렷하고 드라이하게 끝남",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/650/dirty-martini",
+  "gemini": "차갑고 날 선 드라이함에 짭짤하고 묵직한 절임 풍미가 깊게 스며듦",
+  "gpt": "짭조름한 첫맛이 뚜렷하고 드라이한 허브 향과 알싸한 끝맛이 이어짐"
  },
  "화이트 러시안": {
-  "tl": "부드럽고 묵직한 유질감이 짙은 로스팅 단맛을 포근하게 감싸며 마무리됨",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2093/white-russian"
+  "tl": "부드럽고 고소한 크림 아래 커피 단맛이 천천히 퍼짐",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2093/white-russian",
+  "gemini": "부드럽고 묵직한 유질감이 짙은 로스팅 단맛을 포근하게 감싸며 마무리됨",
+  "gpt": "부드럽고 고소한 질감 밑에서 볶은 듯한 단향이 느리게 퍼짐"
  },
  "에스프레소 마티니 (라이트)": {
-  "tl": "단맛을 덜어낸 산뜻한 바디감에 깔끔한 로스팅 씁쓸함이 가볍게 남음",
-  "src": "추정"
+  "tl": "단맛을 덜어 커피 향이 또렷하고 쌉쌀함이 가볍게 남음",
+  "src": "추정",
+  "gemini": "단맛을 덜어낸 산뜻한 바디감에 깔끔한 로스팅 씁쓸함이 가볍게 남음",
+  "gpt": "진하게 볶은 향은 또렷하고 단향과 쓴 여운이 가볍게 맞물림"
  },
  "동해": {
-  "tl": "은은한 과실 단맛과 가벼운 시트러스 산미가 순하고 부담 없이 넘어감",
-  "src": "추정"
+  "tl": "은은한 과일 단맛과 가벼운 새콤함이 순하고 부담 없이 넘어감",
+  "src": "추정",
+  "gemini": "은은한 과실 단맛과 가벼운 시트러스 산미가 순하고 부담 없이 넘어감",
+  "gpt": "달큰한 핵과와 과수원 과실 향이 겹치고 뒤늦게 감귤 산미가 비침"
  },
  "아쿠아 마린": {
-  "tl": "맑고 아삭한 과실의 단맛 끝에 미세한 감귤 향과 깔끔한 산미가 남음",
-  "src": "추정"
+  "tl": "아삭한 사과 같은 단맛 끝에 상큼한 시트러스 향이 남음",
+  "src": "추정",
+  "gemini": "맑고 아삭한 과실의 단맛 끝에 미세한 감귤 향과 깔끔한 산미가 남음",
+  "gpt": "맑은 과즙의 단맛 사이로 감귤 껍질 같은 산뜻한 향이 퍼짐"
  },
  "전기 레모네이드": {
-  "tl": "청량한 탄산감과 쨍한 시트러스 단맛이 가볍고 경쾌하게 입안을 적심",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/4637/electric-lemonade"
+  "tl": "탄산이 캔디 같은 레몬 단맛을 밀어 올려 가볍게 톡 쏨",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/4637/electric-lemonade",
+  "gemini": "청량한 탄산감과 쨍한 시트러스 단맛이 가볍고 경쾌하게 입안을 적심",
+  "gpt": "탄산이 감귤 캔디 같은 달큰함을 밀어 올리고 가볍게 톡 쏘는 맛임"
  },
  "쿠바 리브레": {
-  "tl": "달콤하고 스파이시한 탄산감에 상큼한 산미가 더해져 깔끔하게 떨어짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/495/cuba-libre"
+  "tl": "캐러멜 같은 콜라 단맛을 상큼한 신맛이 끊어 끝이 가벼움",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/495/cuba-libre",
+  "gemini": "달콤하고 스파이시한 탄산감에 상큼한 산미가 더해져 깔끔하게 떨어짐",
+  "gpt": "카라멜을 닮은 탄산 단맛을 선명한 산미가 끊어 끝이 가벼워짐"
  },
  "럼 콜린스": {
-  "tl": "청량한 기포 속에 상큼한 산미와 은은한 단맛이 가볍게 어우러짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/23036/rum-collins"
+  "tl": "은은한 단맛에 시원한 기포와 신맛이 겹치고 끝은 담백함",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/23036/rum-collins",
+  "gemini": "청량한 기포 속에 상큼한 산미와 은은한 단맛이 가볍게 어우러짐",
+  "gpt": "은근한 당밀 단향에 시원한 기포와 신맛이 겹치고 끝은 담백함"
  },
  "바카디 칵테일": {
-  "tl": "쨍한 산미 뒤로 붉은 과실의 달콤함이 깔끔하고 드라이하게 정리됨",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/143/bacardi-cocktail"
+  "tl": "쨍한 신맛 뒤로 붉은 과일 단맛이 짧게 머물고 깔끔하게 끝남",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/143/bacardi-cocktail",
+  "gemini": "쨍한 산미 뒤로 붉은 과실의 달콤함이 깔끔하고 드라이하게 정리됨",
+  "gpt": "푸른 감귤을 떠올리는 신맛에 붉은 과실 같은 단향이 짧게 머묾"
  },
  "네이비 그로그": {
-  "tl": "날카로운 시트러스 산미와 묵직한 알코올감이 청량하게 직선으로 퍼짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/4866/navy-grog"
+  "tl": "강한 술기운을 탄산이 풀어 주고 끝에 상큼한 시트러스가 걸림",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/4866/navy-grog",
+  "gemini": "날카로운 시트러스 산미와 묵직한 알코올감이 청량하게 직선으로 퍼짐",
+  "gpt": "강한 술의 온기를 탄산이 풀어 주고 끝에 푸릇한 감귤 향이 걸림"
  },
  "럼 선라이즈": {
-  "tl": "부드러운 과즙의 단맛이 먼저 감돌고 끝에 짙은 베리류 당도가 남음",
-  "src": "추정"
+  "tl": "달콤한 오렌지에 붉은 과일 단맛이 스며들고 달큰하게 끝남",
+  "src": "https:/​/​bartenderscabinet.​com/​rum-​sunrise-​recipe/​",
+  "gemini": "부드러운 과즙의 단맛이 먼저 감돌고 끝에 짙은 베리류 당도가 남음",
+  "gpt": "달콤한 감귤에 붉은 과실의 단향이 스며들고 당밀 같은 끝향이 남음"
  },
  "다이키리": {
-  "tl": "군더더기 없는 시트러스 산미와 절제된 단맛이 투명하고 날렵하게 균형을 이룸",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/611/daiquiri-diffords-recipe"
+  "tl": "군더더기 없는 신맛과 절제된 단맛이 깔끔하게 균형을 이룸",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/611/daiquiri-diffords-recipe",
+  "gemini": "군더더기 없는 시트러스 산미와 절제된 단맛이 투명하고 날렵하게 균형을 이룸",
+  "gpt": "단맛이 매끈하게 받친 또렷한 산미와 가벼운 당밀 향이 어우러짐"
  },
  "비트윈 더 시츠": {
-  "tl": "묵직한 오크 풍미와 화사한 시트러스 향이 높은 도수 속에서 팽팽하게 맞섬",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/209/between-the-sheets"
+  "tl": "짙은 오렌지 껍질 향과 묵직한 술기운, 신맛이 팽팽하게 맞섬",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/209/between-the-sheets",
+  "gemini": "묵직한 오크 풍미와 화사한 시트러스 향이 높은 도수 속에서 팽팽하게 맞섬",
+  "gpt": "감귤 껍질 풍미가 짙게 펼쳐지고 말린 과실의 온기와 산미로 끝남"
  },
  "엘 프레지덴테": {
-  "tl": "드라이한 허브 뉘앙스에 은은한 감귤 껍질 향과 섬세한 단맛이 우아하게 겹침",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/701/el-presidente"
+  "tl": "달큰한 오렌지 껍질 향에 드라이한 허브가 겹쳐 부드럽게 끝남",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/701/el-presidente",
+  "gemini": "드라이한 허브 뉘앙스에 은은한 감귤 껍질 향과 섬세한 단맛이 우아하게 겹침",
+  "gpt": "달큰한 껍질 향에 드라이한 허브 향이 맞물리고 끝에 베리 단향이 남음"
  },
  "메리 픽포드": {
-  "tl": "농밀한 열대과일 단맛에 은은한 핵과류 향이 스며들어 부드럽게 넘어감",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1268/mary-pickford-cocktail"
+  "tl": "잘 익은 파인애플 같은 단맛 속으로 체리 향이 은근히 퍼짐",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1268/mary-pickford-cocktail",
+  "gemini": "농밀한 열대과일 단맛에 은은한 핵과류 향이 스며들어 부드럽게 넘어감",
+  "gpt": "무르익은 열대 과실의 단맛 속으로 은근한 핵과 향이 퍼져 나옴"
  },
  "모히토": {
-  "tl": "화한 청량감과 톡 쏘는 산미가 입안을 시원하게 씻어내며 가볍게 마무리됨",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1341/mojito"
+  "tl": "화한 청량감과 톡 쏘는 신맛이 입안을 시원하게 씻어 냄",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1341/mojito",
+  "gemini": "화한 청량감과 톡 쏘는 산미가 입안을 시원하게 씻어내며 가볍게 마무리됨",
+  "gpt": "서늘한 풀 향이 기포를 타고 올라오고 생기 있는 새콤함이 이어짐"
  },
  "피나 콜라다": {
-  "tl": "진득하고 크리미한 질감 속에 달콤한 열대과일 풍미가 넉넉하게 감겨옴",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1526/pina-colada"
+  "tl": "부드럽고 걸쭉한 코코넛·파인애플 단맛이 넉넉하게 감겨 옴",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1526/pina-colada",
+  "gemini": "진득하고 크리미한 질감 속에 달콤한 열대과일 풍미가 넉넉하게 감겨옴",
+  "gpt": "부드럽고 걸쭉한 열대 단맛 사이로 익은 과실의 새콤함이 스침"
  },
  "마이 타이": {
-  "tl": "묵직한 숙성 향과 고소한 견과류 단맛, 시트러스 산미가 입체적으로 어우러짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/11236/mai-tai"
+  "tl": "고소한 아몬드 단맛과 진한 숙성 향을 상큼한 신맛이 받쳐 줌",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/11236/mai-tai",
+  "gemini": "묵직한 숙성 향과 고소한 견과류 단맛, 시트러스 산미가 입체적으로 어우러짐",
+  "gpt": "고소한 견과 단향과 짙은 당밀 풍미를 푸른 감귤 산미가 받침"
  },
  "좀비": {
-  "tl": "강렬한 도수 위로 열대과일과 스파이시한 향신료, 허브 여운이 복합적으로 밀려옴",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2131/zombie"
+  "tl": "열대 과일과 향신료가 겹쳐 달지만 강한 술기운이 오래 남음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2131/zombie",
+  "gemini": "강렬한 도수 위로 열대과일과 스파이시한 향신료, 허브 여운이 복합적으로 밀려옴",
+  "gpt": "달큰한 향신료가 산미와 겹치고 무거운 당밀 향과 술의 열감이 오래 남음"
  },
  "헤밍웨이 스페셜": {
-  "tl": "단맛을 덜어낸 쌉싸름한 시트러스 산미 끝에 은근한 핵과류 향이 드라이하게 남음",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/954/hemingway-special-daiquiri-papa-doble"
+  "tl": "단맛을 뺀 자몽 같은 쌉쌀한 신맛에 체리 향이 얇게 감쌈",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/954/hemingway-special-daiquiri-papa-doble",
+  "gemini": "단맛을 덜어낸 쌉싸름한 시트러스 산미 끝에 은근한 핵과류 향이 드라이하게 남음",
+  "gpt": "씁쓸한 흰 속껍질 느낌을 날카로운 산미와 얇은 핵과 단향이 감쌈"
  },
  "플랜터즈 펀치": {
-  "tl": "짙은 당밀의 풍미와 새콤한 산미가 묵직하면서도 부드러운 바디감으로 이어짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1566/planters-punch"
+  "tl": "진한 흑설탕 같은 단맛에 맑은 신맛이 스며들어 묵직하고 부드러움",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1566/planters-punch",
+  "gemini": "짙은 당밀의 풍미와 새콤한 산미가 묵직하면서도 부드러운 바디감으로 이어짐",
+  "gpt": "당밀과 잘 익은 과일의 탄탄한 단맛에 맑은 산미가 스며듦"
  },
  "카이피리냐": {
-  "tl": "풋풋한 풀 내음과 강렬한 시트러스 오일 향, 직관적인 단맛이 투박하게 부딪힘",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/354/caipirinha"
+  "tl": "라임 껍질 향과 강한 새콤함이 입안을 채우고 투박한 단맛이 남음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/354/caipirinha",
+  "gemini": "풋풋한 풀 내음과 강렬한 시트러스 오일 향, 직관적인 단맛이 투박하게 부딪힘",
+  "gpt": "푸른 껍질 향과 강한 새콤함이 입안을 채우고 풋풀 같은 여운이 남음"
  },
  "다크 앤 스토미": {
-  "tl": "짙은 캐러멜 풍미 뒤로 알싸하고 매콤한 스파이스가 청량한 기포와 함께 치고 올라옴",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/619/dark-n-stormy-diffords-recipe"
+  "tl": "진한 흑설탕 단향 위로 생강 같은 매운 기포가 빠르게 치고 올라옴",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/619/dark-n-stormy-diffords-recipe",
+  "gemini": "짙은 캐러멜 풍미 뒤로 알싸하고 매콤한 스파이스가 청량한 기포와 함께 치고 올라옴",
+  "gpt": "진한 당밀 단향 위로 따끔한 기포와 매운 향이 빠르게 치고 올라옴"
  },
  "정글 버드": {
-  "tl": "달콤한 열대과일 향과 쌉싸름한 쓴맛, 묵직한 숙성 풍미가 선명한 대비를 이룸",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1082/jungle-bird"
+  "tl": "열대 과즙 단맛이 먼저 닿고 묵직한 쓴맛이 끝까지 따라옴",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1082/jungle-bird",
+  "gemini": "달콤한 열대과일 향과 쌉싸름한 쓴맛, 묵직한 숙성 풍미가 선명한 대비를 이룸",
+  "gpt": "열대 과즙의 단맛이 혀에 먼저 닿고 두터운 쓴맛이 끝까지 따라옴"
  },
  "올드 쿠반": {
-  "tl": "섬세한 기포와 화한 허브 향, 숙성된 바닐라 뉘앙스가 드라이하고 우아하게 퍼짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2529/old-cuban"
+  "tl": "섬세한 기포 위로 화한 민트 향과 은은한 바닐라가 우아하게 퍼짐",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2529/old-cuban",
+  "gemini": "섬세한 기포와 화한 허브 향, 숙성된 바닐라 뉘앙스가 드라이하고 우아하게 퍼짐",
+  "gpt": "서늘한 잎 향이 여린 기포 위로 오르고 따뜻한 향신료 잔향이 남음"
  },
  "미셔너리스 다운폴": {
-  "tl": "시원한 허브 향이 지배적이며 달콤한 과실 풍미와 은은한 꽃향이 겹쳐짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1334/missionarys-downfall"
+  "tl": "잘 익은 과일 단맛을 시원한 민트 향과 또렷한 신맛이 끊어 줌",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1334/missionarys-downfall",
+  "gemini": "시원한 허브 향이 지배적이며 달콤한 과실 풍미와 은은한 꽃향이 겹쳐짐",
+  "gpt": "잘 익은 과실의 단맛을 풋잎의 서늘한 향과 또렷한 산미가 끊어 줌"
  },
  "돈스 스페셜 다이키리": {
-  "tl": "새콤달콤한 열대과일 산미에 부드러운 당도와 숙성된 깊은 향이 조화롭게 감돌음",
-  "src": "https://iba-world.com/iba-cocktail/dons-special-daiquiri/"
+  "tl": "향긋한 열대 과일 신맛에 꿀 같은 단맛이 감기고 여운이 김",
+  "src": "https://iba-world.com/iba-cocktail/dons-special-daiquiri/",
+  "gemini": "새콤달콤한 열대과일 산미에 부드러운 당도와 숙성된 깊은 향이 조화롭게 감돌음",
+  "gpt": "향긋한 열대 산미에 둥근 꽃꿀 같은 단향이 감기고 끝이 길게 이어짐"
  },
  "블루 하와이": {
-  "tl": "경쾌한 열대과일 과즙과 산뜻한 시트러스 향이 어우러져 달콤하고 가볍게 넘어감",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2309/blue-hawaii"
+  "tl": "열대 과일의 새콤달콤함에 상큼한 시트러스 향이 가볍게 얹힘",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2309/blue-hawaii",
+  "gemini": "경쾌한 열대과일 과즙과 산뜻한 시트러스 향이 어우러져 달콤하고 가볍게 넘어감",
+  "gpt": "열대 과실의 새콤달콤함에 밝은 감귤 껍질 향이 얇게 덧입혀짐"
  },
  "블루 하와이안": {
-  "tl": "부드럽고 진한 크리미 질감에 달콤한 열대과일과 은은한 감귤 향이 더해짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/260/blue-hawaiian"
+  "tl": "부드럽고 크리미한 열대 과일 단맛이 입안을 덮고 끝에 신맛이 살짝 비침",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/260/blue-hawaiian",
+  "gemini": "부드럽고 진한 크리미 질감에 달콤한 열대과일과 은은한 감귤 향이 더해짐",
+  "gpt": "매끈하고 달큰한 열대 풍미가 입안을 덮고 끝에 산미가 살짝 비침"
  },
  "테킬라 선라이즈": {
-  "tl": "상큼한 과즙의 단맛이 부드럽게 감싸고 끝에 쌉싸름한 식물성 여운이 살짝 스침",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1935/tequila-sunrise"
+  "tl": "달콤한 오렌지 과즙 뒤로 붉은 과일 향과 은은한 풀 향이 남음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1935/tequila-sunrise",
+  "gemini": "상큼한 과즙의 단맛이 부드럽게 감싸고 끝에 쌉싸름한 식물성 여운이 살짝 스침",
+  "gpt": "감귤 과즙의 둥근 단맛 뒤로 붉은 과실 향과 알싸한 풋내가 남음"
  },
  "블루 마르가리타": {
-  "tl": "톡 쏘는 산미와 쌉싸름한 식물성 풍미에 달콤한 감귤 향이 산뜻하게 얹어짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/265/blue-margarita"
+  "tl": "오렌지 껍질 같은 단향이 선명하고 톡 쏘는 신맛이 뒤따름",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/265/blue-margarita",
+  "gemini": "톡 쏘는 산미와 쌉싸름한 식물성 풍미에 달콤한 감귤 향이 산뜻하게 얹어짐",
+  "gpt": "감귤 껍질을 닮은 단향이 선명하고 푸른 산미와 풋풀이 뒤따름"
  },
  "엘 디아블로": {
-  "tl": "진한 검붉은 베리 단맛과 알싸한 스파이스, 시트러스 산미가 경쾌하게 교차함",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/700/el-diablo-cocktail"
+  "tl": "검은 베리 단맛이 톡 쏘는 기포에 실리고 알싸한 신맛이 또렷함",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/700/el-diablo-cocktail",
+  "gemini": "진한 검붉은 베리 단맛과 알싸한 스파이스, 시트러스 산미가 경쾌하게 교차함",
+  "gpt": "검은 베리 단향이 톡 쏘는 기포에 실리고 알싸한 산미가 또렷함"
  },
  "아마레토 마르가리타": {
-  "tl": "새콤한 시트러스와 식물성 풍미 뒤로 고소한 견과류의 달콤한 여운이 부드럽게 남음",
-  "src": "추정"
+  "tl": "새콤한 시트러스 뒤로 고소한 아몬드 단맛이 부드럽게 남음",
+  "src": "추정",
+  "gemini": "새콤한 시트러스와 식물성 풍미 뒤로 고소한 견과류의 달콤한 여운이 부드럽게 남음",
+  "gpt": "견과류의 포근한 단향에 강한 새콤함이 맞서고 끝에 풋향이 스침"
  },
  "마르가리타": {
-  "tl": "선명한 시트러스 산미와 쌉싸름한 식물성 향, 은은한 감귤 단맛이 팽팽하게 균형을 잡음",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1255/margarita"
+  "tl": "짭짤한 첫맛과 팽팽한 시트러스 신맛, 은은한 단맛이 균형을 잡음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1255/margarita",
+  "gemini": "선명한 시트러스 산미와 쌉싸름한 식물성 향, 은은한 감귤 단맛이 팽팽하게 균형을 잡음",
+  "gpt": "팽팽한 감귤 산미를 달큰한 껍질 향이 감싸고 풋풀 향이 뒤따름"
  },
  "그랜드 마르가리타": {
-  "tl": "상큼한 산미 위로 묵직한 오크와 농축된 감귤 껍질의 깊은 풍미가 풍성하게 퍼짐",
-  "src": "https://iba-world.com/iba-cocktail/grand-margarita/"
+  "tl": "진한 오렌지 껍질 단향에 묵직한 숙성 향과 밝은 신맛이 이어짐",
+  "src": "https://iba-world.com/iba-cocktail/grand-margarita/",
+  "gemini": "상큼한 산미 위로 묵직한 오크와 농축된 감귤 껍질의 깊은 풍미가 풍성하게 퍼짐",
+  "gpt": "농익은 감귤 껍질 단향에 둥근 나무 풍미와 밝은 산미가 이어짐"
  },
  "로시타": {
-  "tl": "쌉싸름한 쓴맛과 드라이한 허브 향이 식물성 풍미와 어우러져 묵직하고 씁쓸하게 마무리됨",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1696/rosita"
+  "tl": "쌉싸름한 쓴맛과 드라이한 허브 향이 묵직하게 남는 쌉쌀한 잔",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1696/rosita",
+  "gemini": "쌉싸름한 쓴맛과 드라이한 허브 향이 식물성 풍미와 어우러져 묵직하고 씁쓸하게 마무리됨",
+  "gpt": "마른 풀 향을 따라 껍질 같은 쓴맛이 올라오고 끝은 드라이함"
  },
  "팔로마": {
-  "tl": "쌉싸름하고 상큼한 시트러스 기포가 식물성 풍미와 만나 가볍고 시원하게 뻗어감",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1456/paloma"
+  "tl": "자몽 같은 쌉쌀함과 상큼한 기포가 시원하게 뻗어 감",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1456/paloma",
+  "gemini": "쌉싸름하고 상큼한 시트러스 기포가 식물성 풍미와 만나 가볍고 시원하게 뻗어감",
+  "gpt": "감귤 속껍질 같은 쌉쌀함이 밝은 기포와 가벼운 산미 사이로 남음"
  },
  "토미스 마르가리타": {
-  "tl": "맑은 식물성 풍미와 생생한 시트러스 산미에 자연스러운 단맛이 군더더기 없이 녹아듦",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1975/tommys-margarita"
+  "tl": "생생한 시트러스 신맛에 자연스러운 단맛이 군더더기 없이 녹아듦",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1975/tommys-margarita",
+  "gemini": "맑은 식물성 풍미와 생생한 시트러스 산미에 자연스러운 단맛이 군더더기 없이 녹아듦",
+  "gpt": "푸른 감귤 같은 신맛에 매끄러운 단맛이 붙고 풋풀이 어른거림"
  },
  "뱀파이로": {
-  "tl": "달콤새콤한 과즙과 시트러스 기포 끝에 매콤하고 알싸한 자극이 강렬하게 남음",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2024/vampiro"
+  "tl": "새콤달콤한 과즙 끝에 매콤하고 알싸한 열감이 강하게 남음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2024/vampiro",
+  "gemini": "달콤새콤한 과즙과 시트러스 기포 끝에 매콤하고 알싸한 자극이 강렬하게 남음",
+  "gpt": "붉은 과실 단맛에 감귤 산미가 섞이고 뒤끝에는 매운 열감이 남음"
  },
  "일리걸": {
-  "tl": "그윽한 스모키 향과 매콤달콤한 향신료, 시트러스 산미가 부드러운 거품과 어우러짐",
-  "src": "https://iba-world.com/iba-cocktail/illegal/"
+  "tl": "은은한 훈연 향과 달큰한 향신료에 짜릿한 신맛이 부드러운 거품과 어우러짐",
+  "src": "https://iba-world.com/iba-cocktail/illegal/",
+  "gemini": "그윽한 스모키 향과 매콤달콤한 향신료, 시트러스 산미가 부드러운 거품과 어우러짐",
+  "gpt": "옅은 훈연 향과 달큰한 향신료에 짜릿한 감귤 산미가 겹침"
  },
  "브랜디 사워": {
-  "tl": "묵직한 숙성 과실의 깊은 풍미와 쨍한 시트러스 산미가 부드럽게 중화되며 떨어짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/316/brandy-sour"
+  "tl": "새콤달콤한 첫맛이 지나가고 말린 과일과 묵은 나무 향이 남음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/316/brandy-sour",
+  "gemini": "묵직한 숙성 과실의 깊은 풍미와 쨍한 시트러스 산미가 부드럽게 중화되며 떨어짐",
+  "gpt": "새콤달콤한 첫맛이 지나가고 말린 과실과 묵은 나무 향이 남음"
  },
  "스팅어": {
-  "tl": "중후한 오크와 말린 과일 풍미 뒤로 강렬하고 화한 청량감이 입안을 깔끔하게 정리함",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1874/stinger"
+  "tl": "묵직한 과일 향의 온기를 화한 민트가 덮으며 단맛이 길게 이어짐",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1874/stinger",
+  "gemini": "중후한 오크와 말린 과일 풍미 뒤로 강렬하고 화한 청량감이 입안을 깔끔하게 정리함",
+  "gpt": "묵은 과실의 온기를 서늘한 향이 덮으며 단맛이 길게 끌림"
  },
  "사이드카": {
-  "tl": "우아한 숙성 향과 화사한 감귤 껍질 풍미, 날렵한 산미가 드라이하게 조화를 이룸",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/4791/sidecar"
+  "tl": "잘 익은 과일 향에 오렌지 껍질 향이 붙고 새콤하고 드라이하게 끝남",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/4791/sidecar",
+  "gemini": "우아한 숙성 향과 화사한 감귤 껍질 풍미, 날렵한 산미가 드라이하게 조화를 이룸",
+  "gpt": "잘 익은 과실의 온기에 감귤 껍질 향이 붙고 끝은 새콤하고 드라이함"
  },
  "브랜디 크러스타": {
-  "tl": "짙은 숙성 과실 향에 은은한 핵과류와 스파이스, 시트러스 산미가 복합적으로 어우러짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/310/brandy-crusta"
+  "tl": "시트러스 신맛과 고운 단맛 사이로 과일 향과 가벼운 쌉쌀함이 번짐",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/310/brandy-crusta",
+  "gemini": "짙은 숙성 과실 향에 은은한 핵과류와 스파이스, 시트러스 산미가 복합적으로 어우러짐",
+  "gpt": "감귤 산미와 고운 단맛 사이로 핵과 향과 가벼운 쌉쌀함이 번짐"
  },
  "프렌치 커넥션": {
-  "tl": "묵직한 숙성 풍미와 고소하고 달콤한 견과류 향이 진득하고 따뜻하게 목을 넘어감",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2415/french-connection"
+  "tl": "구운 아몬드 같은 달큰함과 진한 과일 향이 따뜻하게 넘어감",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2415/french-connection",
+  "gemini": "묵직한 숙성 풍미와 고소하고 달콤한 견과류 향이 진득하고 따뜻하게 목을 넘어감",
+  "gpt": "구운 견과 같은 달큰함과 농익은 과실 향이 뭉근한 여운을 만듦"
  },
  "사제락": {
-  "tl": "묵직하고 드라이한 바디감 속에 화한 허브 향과 쌉싸름한 스파이스 여운이 길게 남음",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/3390/sazerac-new-orleans-style"
+  "tl": "달큰한 향신료와 감초 같은 허브 향이 진하고 알싸한 여운이 길게 감",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/3390/sazerac-new-orleans-style",
+  "gemini": "묵직하고 드라이한 바디감 속에 화한 허브 향과 쌉싸름한 스파이스 여운이 길게 남음",
+  "gpt": "달큰한 향신료 향이 농익은 과실 위로 올라오고 알싸함이 길게 감"
  },
  "알렉산더": {
-  "tl": "벨벳처럼 부드러운 질감 속에 달콤한 로스팅 향과 깊은 숙성 풍미가 디저트처럼 감돌음",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/307/brandy-alexander"
+  "tl": "벨벳처럼 부드러운 초콜릿 크림 맛이 디저트처럼 감돎",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/307/brandy-alexander",
+  "gemini": "벨벳처럼 부드러운 질감 속에 달콤한 로스팅 향과 깊은 숙성 풍미가 디저트처럼 감돌음",
+  "gpt": "실크처럼 매끄러운 단맛에 쌉쌀한 디저트 향과 과실의 온기가 남음"
  },
  "포르토 플립": {
-  "tl": "진득하고 실키한 질감에 농축된 붉은 과실의 단맛과 묵직한 숙성 향이 짙게 남음",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/19965/porto-flip-from-iba-site"
+  "tl": "졸인 붉은 과일 같은 단맛이 진하고 질감이 매끈하고 묵직함",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/19965/porto-flip-from-iba-site",
+  "gemini": "진득하고 실키한 질감에 농축된 붉은 과실의 단맛과 묵직한 숙성 향이 짙게 남음",
+  "gpt": "졸인 붉은 과실의 단향이 입안을 감싸고 질감은 짙고 매끈함"
  },
  "피스코 사워": {
-  "tl": "풍성하고 부드러운 거품 아래 화사한 과실 향과 날카로운 산미, 은은한 스파이스가 어우러짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1563/pisco-sour"
+  "tl": "촘촘한 거품 아래 상큼한 신맛과 향긋한 과일 향이 부드럽게 퍼짐",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1563/pisco-sour",
+  "gemini": "풍성하고 부드러운 거품 아래 화사한 과실 향과 날카로운 산미, 은은한 스파이스가 어우러짐",
+  "gpt": "청량한 산미와 향긋한 과실 단향을 촘촘한 거품이 부드럽게 받침"
  },
  "베.엔.토": {
-  "tl": "은은한 꽃향기와 부드러운 당도, 상큼한 산미가 화사하고 깔끔한 여운으로 이어짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/16591/vento"
+  "tl": "은은한 꽃 향과 꿀 같은 단맛이 입안을 채우고 신맛이 뒤를 다듬음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/16591/vento",
+  "gemini": "은은한 꽃향기와 부드러운 당도, 상큼한 산미가 화사하고 깔끔한 여운으로 이어짐",
+  "gpt": "은은한 꽃 향과 꿀 같은 단맛이 입안을 채우고 산미가 뒤를 다듬음"
  },
  "아마레또 사워": {
-  "tl": "고소한 견과류 단맛이 상큼한 시트러스 산미와 만나 달콤새콤하고 부드럽게 넘어감",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/53/amaretto-sour"
+  "tl": "고소한 아몬드 단맛과 상큼한 신맛이 만나 새콤달콤하고 부드러움",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/53/amaretto-sour",
+  "gemini": "고소한 견과류 단맛이 상큼한 시트러스 산미와 만나 달콤새콤하고 부드럽게 넘어감",
+  "gpt": "새콤한 첫맛이 구운 견과를 닮은 둥근 단맛으로 천천히 넘어감"
  },
  "가리발디": {
-  "tl": "쌉싸름한 허브 쓴맛을 풍성하고 달콤한 과즙이 폭신하게 감싸며 산뜻하게 마무리됨",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/825/garibaldi"
+  "tl": "밝고 달콤한 오렌지 과즙을 따라 쌉쌀한 쓴맛이 은근히 남음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/825/garibaldi",
+  "gemini": "쌉싸름한 허브 쓴맛을 풍성하고 달콤한 과즙이 폭신하게 감싸며 산뜻하게 마무리됨",
+  "gpt": "밝고 달큰한 과즙을 따라 감귤 껍질 같은 씁쓸함이 짙게 남음"
  },
  "미도리 사워": {
-  "tl": "달콤한 과실 향이 먼저 퍼지고 뒤이어 쨍한 시트러스 산미가 단맛을 경쾌하게 잡아줌",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/9297/midori-sour"
+  "tl": "멜론 사탕 같은 단맛을 쨍한 신맛이 경쾌하게 잡아 줌",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/9297/midori-sour",
+  "gemini": "달콤한 과실 향이 먼저 퍼지고 뒤이어 쨍한 시트러스 산미가 단맛을 경쾌하게 잡아줌",
+  "gpt": "과일 사탕 같은 단맛과 또렷한 감귤 산미가 혀 양옆에 오래 남음"
  },
  "피치 크러시": {
-  "tl": "화사한 과실 단맛에 새콤하고 떫은 베리류 산미가 더해져 가볍고 산뜻하게 넘어감",
-  "src": "추정"
+  "tl": "달큰한 복숭아 맛에 크랜베리의 새콤함과 가벼운 떫은맛이 붙음",
+  "src": "https:/​/​www.​masileng.​com/​challenge/​286",
+  "gemini": "화사한 과실 단맛에 새콤하고 떫은 베리류 산미가 더해져 가볍고 산뜻하게 넘어감",
+  "gpt": "달큰한 핵과 풍미에 붉은 과일의 새콤함과 가벼운 떫은맛이 붙음"
  },
  "아마레토 스톤 사워": {
-  "tl": "고소한 견과류 풍미에 상큼한 시트러스 산미와 부드러운 과즙 단맛이 둥글게 어우러짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/30054/amaretto-stone-sour"
+  "tl": "고소한 아몬드 맛을 오렌지 과즙이 풀어 주고 새콤하게 끝남",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/30054/amaretto-stone-sour",
+  "gemini": "고소한 견과류 풍미에 상큼한 시트러스 산미와 부드러운 과즙 단맛이 둥글게 어우러짐",
+  "gpt": "감귤 과즙의 달큰함이 고소한 견과 풍미를 풀고 끝을 새콤하게 잡음"
  },
  "카시스 오렌지": {
-  "tl": "진하고 달콤한 검붉은 베리 향과 상큼한 과즙이 어우러져 주스처럼 가볍게 넘어감",
-  "src": "추정"
+  "tl": "진한 검은 베리 단맛에 오렌지 과즙이 섞여 주스처럼 가볍게 넘어감",
+  "src": "https:/​/​img.​asahibeer.​co.​jp/​enjoy/​liquorworld/​brand/​bols/​search/​recipe1.​html",
+  "gemini": "진하고 달콤한 검붉은 베리 향과 상큼한 과즙이 어우러져 주스처럼 가볍게 넘어감",
+  "gpt": "검은 베리의 진한 단향에 밝은 감귤 과즙이 섞이고 잔향이 달큰함"
  },
  "엔조니": {
-  "tl": "쌉싸름한 쓴맛과 상큼한 시트러스 산미, 드라이한 보태니컬 향이 선명하게 균형을 이룸",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/5591/enzoni"
+  "tl": "밝은 새콤함에 단맛이 얹히고 끝에 묵직한 쓴맛이 깔림",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/5591/enzoni",
+  "gemini": "쌉싸름한 쓴맛과 상큼한 시트러스 산미, 드라이한 보태니컬 향이 선명하게 균형을 이룸",
+  "gpt": "밝은 새콤함에 단맛이 얹히고 끝에는 허브의 묵직한 쓴맛이 깔림"
  },
  "비터 하이볼": {
-  "tl": "묵직한 오크 풍미와 쌉싸름한 쓴맛이 청량한 기포와 만나 드라이하고 깔끔하게 떨어짐",
-  "src": "추정"
+  "tl": "빠르게 퍼지는 탄산 뒤로 쌉쌀한 쓴맛이 드라이하게 따라옴",
+  "src": "추정",
+  "gemini": "묵직한 오크 풍미와 쌉싸름한 쓴맛이 청량한 기포와 만나 드라이하고 깔끔하게 떨어짐",
+  "gpt": "탄산이 빠르게 퍼지고 희미한 나무 단향 뒤로 껍질 쓴맛이 따름"
  },
  "재패니즈 슬리퍼": {
-  "tl": "짙은 과실 단맛과 화사한 감귤 향에 시트러스 산미가 더해져 새콤달콤하게 마무리됨",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1057/japanese-slipper"
+  "tl": "잘 익은 멜론의 달큰함이 오렌지 향에 감기고 새콤함이 또렷함",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1057/japanese-slipper",
+  "gemini": "짙은 과실 단맛과 화사한 감귤 향에 시트러스 산미가 더해져 새콤달콤하게 마무리됨",
+  "gpt": "잘 익은 과일의 달큰함이 감귤 껍질 향에 감기고 새콤함이 또렷함"
  },
  "B&B": {
-  "tl": "묵직한 숙성 풍미 위로 복합적인 허브와 향신료, 은근한 단맛이 따뜻하고 길게 남음",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/138/b-and-b"
+  "tl": "꿀 같은 허브 단맛과 말린 과일 향이 따뜻하고 길게 이어짐",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/138/b-and-b",
+  "gemini": "묵직한 숙성 풍미 위로 복합적인 허브와 향신료, 은근한 단맛이 따뜻하고 길게 남음",
+  "gpt": "허브의 농밀한 단맛과 잘 익은 말린 과실 향이 묵직하게 이어짐"
  },
  "생제르맹 하이볼": {
-  "tl": "우아한 흰 꽃향기와 은은한 단맛이 쌉싸름한 청량감과 어우러져 가볍게 퍼짐",
-  "src": "추정"
+  "tl": "꽃 향이 잔기포를 타고 오르고 달큰한 첫맛 뒤로 쌉쌀함이 살짝 남음",
+  "src": "추정",
+  "gemini": "우아한 흰 꽃향기와 은은한 단맛이 쌉싸름한 청량감과 어우러져 가볍게 퍼짐",
+  "gpt": "꽃 향이 잔기포를 타고 오르고 달큰한 첫맛 뒤로 쌉쌀함이 남음"
  },
  "퍼지 네이블": {
-  "tl": "달콤한 과실 향과 상큼한 과즙이 부드럽게 섞여 알코올감 없이 가볍게 넘어감",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/822/fuzzy-navel"
+  "tl": "달콤한 복숭아와 오렌지 맛이 섞여 술맛 없이 가볍게 넘어감",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/822/fuzzy-navel",
+  "gemini": "달콤한 과실 향과 상큼한 과즙이 부드럽게 섞여 알코올감 없이 가볍게 넘어감",
+  "gpt": "무르익은 핵과의 달콤함이 감귤 과즙과 만나 입안에 폭넓게 퍼짐"
  },
  "아마레토 콜린스": {
-  "tl": "고소한 견과류 단맛에 시트러스 산미와 청량한 탄산감이 어우러짐",
-  "src": "추정"
+  "tl": "가벼운 기포가 고소한 아몬드 단맛을 풀어 주고 밝은 새콤함이 남음",
+  "src": "https:/​/​www.​mixdrinkenjoy.​com/​recipe/​amaretto-​collins/​",
+  "gemini": "고소한 견과류 단맛에 시트러스 산미와 청량한 탄산감이 어우러짐",
+  "gpt": "가벼운 기포가 고소한 단향을 풀어 주고 끝에는 밝은 새콤함이 남음"
  },
  "밀라노 토닉": {
-  "tl": "강렬한 쌉싸름함이 먼저 치고 올라오며 톡 쏘는 드라이한 여운이 남음",
-  "src": "추정"
+  "tl": "탄산이 톡 치고 나면 씁쓸한 쓴맛이 입안에 오래 머묾",
+  "src": "추정",
+  "gemini": "강렬한 쌉싸름함이 먼저 치고 올라오며 톡 쏘는 드라이한 여운이 남음",
+  "gpt": "탄산이 한번 톡 치고 나면 씁쓸한 껍질 향이 입안에 오래 머묾"
  },
  "캄파리 오렌지": {
-  "tl": "묵직한 쓴맛을 달콤한 감귤 과즙이 부드럽게 감싸며 산뜻하게 마무리됨",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/825/garibaldi"
+  "tl": "달콤한 오렌지 과즙이 먼저 오고 쌉쌀한 쓴맛이 서서히 따라옴",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/825/garibaldi",
+  "gemini": "묵직한 쓴맛을 달콤한 감귤 과즙이 부드럽게 감싸며 산뜻하게 마무리됨",
+  "gpt": "감귤 과즙의 넉넉한 단맛이 먼저 오고 허브 쓴맛이 서서히 따라옴"
  },
  "드람부이 콜린스": {
-  "tl": "허브와 스파이스의 은은한 단맛 위로 상큼한 산미와 기포감이 퍼짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/5838/drambuie-collins"
+  "tl": "꿀처럼 부드러운 단맛과 허브 향 사이로 가벼운 신맛과 기포가 스침",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/5838/drambuie-collins",
+  "gemini": "허브와 스파이스의 은은한 단맛 위로 상큼한 산미와 기포감이 퍼짐",
+  "gpt": "꿀처럼 부드러운 단맛과 향신료 풍미 사이로 가벼운 산미와 기포가 스침"
  },
  "오르가즘": {
-  "tl": "진한 로스팅 향과 고소한 견과 풍미가 묵직하고 크리미하게 녹아듦",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/8225/orgasm"
+  "tl": "고소한 견과와 부드러운 크림 맛 아래 커피 향이 잔잔함",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/8225/orgasm",
+  "gemini": "진한 로스팅 향과 고소한 견과 풍미가 묵직하고 크리미하게 녹아듦",
+  "gpt": "고소한 견과 단향과 부드러운 유제품 풍미 아래 볶은 향이 잔잔함"
  },
  "스크리밍 오르가즘": {
-  "tl": "부드러운 디저트 같은 단맛 속에 알코올의 묵직한 타격감이 선명함",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2747/screaming-orgasm"
+  "tl": "부드러운 디저트 같은 단맛 속에 커피 향이 피고 끝에 술기운이 남음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2747/screaming-orgasm",
+  "gemini": "부드러운 디저트 같은 단맛 속에 알코올의 묵직한 타격감이 선명함",
+  "gpt": "부드럽고 달큰한 질감 속에서 볶은 향이 피어나고 끝에 열감이 남음"
  },
  "젤리피시": {
-  "tl": "달콤쌉싸름한 풍미와 고소한 견과 향이 부드러운 질감으로 짧게 감김",
-  "src": "추정"
+  "tl": "쌉달한 초콜릿 맛에 고소한 아몬드 향이 겹치고 짧게 끝나는 달콤한 샷",
+  "src": "https:/​/​bartender.​com/​cocktail-​recipes/​jellyfish/​",
+  "gemini": "달콤쌉싸름한 풍미와 고소한 견과 향이 부드러운 질감으로 짧게 감김",
+  "gpt": "쌉달한 초콜릿 풍미에 견과 단향이 겹치고 부드러운 여운이 짧게 감"
  },
  "B-52 (트리플섹 버전)": {
-  "tl": "짙은 배전향과 부드러운 단맛 끝에 화사한 시트러스 향이 깔끔하게 스침",
-  "src": "추정"
+  "tl": "밝은 오렌지 향 뒤로 진한 커피 단맛과 부드러운 크림 맛이 이어짐",
+  "src": "https:/​/​www.​kahlua.​com/​en/​drinks/​b-​52-​recipe/​",
+  "gemini": "짙은 배전향과 부드러운 단맛 끝에 화사한 시트러스 향이 깔끔하게 스침",
+  "gpt": "밝은 감귤 향 뒤로 볶은 단향과 부드러운 유제품 풍미가 이어짐"
  },
  "피치 밀크": {
-  "tl": "부드러운 유질감 사이로 은은하고 달콤한 과실 향이 순하게 퍼짐",
-  "src": "추정"
+  "tl": "복숭아 우유처럼 말랑한 단맛이 부드럽게 퍼짐",
+  "src": "추정",
+  "gemini": "부드러운 유질감 사이로 은은하고 달콤한 과실 향이 순하게 퍼짐",
+  "gpt": "말랑한 핵과의 단향이 담백하고 부드러운 질감 위로 은은히 퍼짐"
  },
  "B-52": {
-  "tl": "묵직한 로스팅 풍미와 크리미한 단맛 뒤로 깊은 감귤 껍질 여운이 남음",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/133/b-52-shot"
+  "tl": "진한 커피 단맛과 매끈한 크림 맛 위로 오렌지 껍질 향이 포개짐",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/133/b-52-shot",
+  "gemini": "묵직한 로스팅 풍미와 크리미한 단맛 뒤로 깊은 감귤 껍질 여운이 남음",
+  "gpt": "깊은 볶은 단향에 매끈한 질감과 농익은 감귤 껍질 향이 포개짐"
  },
  "아메리카노": {
-  "tl": "쌉싸름한 허브 향과 묵직한 단맛이 가벼운 탄산감에 실려 입맛을 돋움",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/61/americano"
+  "tl": "가벼운 기포가 짙은 허브 쓴맛을 풀어 주고 달큰한 향이 혀끝에 남음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/61/americano",
+  "gemini": "쌉싸름한 허브 향과 묵직한 단맛이 가벼운 탄산감에 실려 입맛을 돋움",
+  "gpt": "가벼운 기포가 짙은 허브 쓴맛을 풀어 주고 달큰한 향이 혀끝에 남음"
  },
  "미모사": {
-  "tl": "상큼한 감귤의 단맛과 드라이한 미세 기포가 경쾌하게 어우러짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1324/mimosa"
+  "tl": "상큼한 오렌지 과즙과 잔기포가 어우러져 가볍게 사라짐",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1324/mimosa",
+  "gemini": "상큼한 감귤의 단맛과 드라이한 미세 기포가 경쾌하게 어우러짐",
+  "gpt": "밝은 감귤의 과즙감과 잔기포가 어우러지고 산미가 가볍게 사라짐"
  },
  "벨리니": {
-  "tl": "부드럽고 달콤한 과육 질감 위로 화사한 스파클링의 산뜻함이 겹침",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/202/bellini-diffords-recipe"
+  "tl": "잘 익은 복숭아의 촉촉한 단맛과 섬세한 기포가 고루 퍼짐",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/202/bellini-diffords-recipe",
+  "gemini": "부드럽고 달콤한 과육 질감 위로 화사한 스파클링의 산뜻함이 겹침",
+  "gpt": "잘 익은 핵과의 촉촉한 단맛과 섬세한 기포가 입안에 고루 퍼짐"
  },
  "키르": {
-  "tl": "드라이하고 산뜻한 산미 끝에 진한 다크 베리류의 달콤함이 감돌음",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1108/kir-cocktail"
+  "tl": "드라이하고 산뜻한 신맛 끝에 진한 검은 베리 단맛이 가늘게 번짐",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1108/kir-cocktail",
+  "gemini": "드라이하고 산뜻한 산미 끝에 진한 다크 베리류의 달콤함이 감돌음",
+  "gpt": "드라이한 과실 산미 속으로 검은 베리의 진한 단향이 가늘게 번짐"
  },
  "아이리시 커피": {
-  "tl": "차갑고 부드러운 거품 아래로 뜨거운 배전향과 묵직한 온기가 번짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1021/irish-coffee"
+  "tl": "차갑고 부드러운 크림 아래로 뜨겁고 구수한 커피 향이 번짐",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1021/irish-coffee",
+  "gemini": "차갑고 부드러운 거품 아래로 뜨거운 배전향과 묵직한 온기가 번짐",
+  "gpt": "뜨겁고 구수한 볶은 향에 서늘하고 부드러운 질감이 대비를 이룸"
  },
  "그래스호퍼": {
-  "tl": "화한 청량감과 달콤쌉싸름한 디저트 풍미가 벨벳 같은 질감으로 남음",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2674/grasshopper"
+  "tl": "화한 민트와 초콜릿 단맛이 벨벳 같은 크림 질감에 실려 남음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2674/grasshopper",
+  "gemini": "화한 청량감과 달콤쌉싸름한 디저트 풍미가 벨벳 같은 질감으로 남음",
+  "gpt": "서늘한 향이 부드러운 질감에 실리고 끝에 초콜릿 같은 단향이 앉음"
  },
  "로즈": {
-  "tl": "드라이한 허브 향과 짙은 붉은 과실의 단맛이 우아하고 매끄럽게 이어짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1692/rose-french-style-no-1"
+  "tl": "붉은 체리 같은 달큰함에 마른 허브 향이 섞여 가볍게 쌉쌀하게 끝남",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1692/rose-french-style-no-1",
+  "gemini": "드라이한 허브 향과 짙은 붉은 과실의 단맛이 우아하고 매끄럽게 이어짐",
+  "gpt": "붉은 과실의 달큰함에 마른 허브 향이 섞이고 가벼운 쌉쌀함으로 끝남"
  },
  "스프리츠": {
-  "tl": "은은한 쌉싸름함과 달콤한 감귤 향이 가벼운 기포감과 함께 청량함",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2908/aperol-spritz-aperitivo-spritz"
+  "tl": "달큰한 오렌지 껍질 향이 기포를 타고 오르고 쌉쌀한 여운이 남음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2908/aperol-spritz-aperitivo-spritz",
+  "gemini": "은은한 쌉싸름함과 달콤한 감귤 향이 가벼운 기포감과 함께 청량함",
+  "gpt": "달큰한 감귤 껍질 향이 기포를 타고 올라오며 씁쓸한 여운이 남음"
  },
  "골든 드림": {
-  "tl": "향긋한 허브와 감귤의 달콤함이 부드러운 디저트 질감으로 포근하게 감김",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/875/golden-dream"
+  "tl": "오렌지의 달콤함과 바닐라 향이 부드러운 디저트처럼 이어짐",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/875/golden-dream",
+  "gemini": "향긋한 허브와 감귤의 달콤함이 부드러운 디저트 질감으로 포근하게 감김",
+  "gpt": "감귤의 달큰함과 바닐라 같은 향이 매끈하고 부드럽게 이어짐"
  },
  "프렌치 마르티니": {
-  "tl": "화사한 열대과일 풍미 뒤로 짙은 베리류의 새콤달콤한 여운이 길게 남음",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/798/french-martini"
+  "tl": "라즈베리 향과 파인애플 같은 신맛이 만나 과일 단맛이 진하게 남음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/798/french-martini",
+  "gemini": "화사한 열대과일 풍미 뒤로 짙은 베리류의 새콤달콤한 여운이 길게 남음",
+  "gpt": "검은 베리 향과 열대 과즙의 산미가 만나 과일 단향이 진하게 남음"
  },
  "스파이시 피프티": {
-  "tl": "향긋한 꽃내음과 상큼한 산미 뒤로 알싸한 매운맛이 톡 쏘며 올라옴",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/3611/spicy-fifty"
+  "tl": "향긋한 꽃 향과 또렷한 신맛이 지나간 뒤 매운맛이 톡 올라옴",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/3611/spicy-fifty",
+  "gemini": "향긋한 꽃내음과 상큼한 산미 뒤로 알싸한 매운맛이 톡 쏘며 올라옴",
+  "gpt": "달큰한 꽃 향과 또렷한 산미가 지나간 뒤 매운 열감이 올라옴"
  },
  "페르난디토": {
-  "tl": "강렬하고 화한 허브의 쓴맛을 달콤한 탄산감이 둥글게 중화하며 넘어감",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/17620/fernandito"
+  "tl": "콜라 같은 단맛 뒤로 강한 약초 쓴맛과 화한 느낌이 따라옴",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/17620/fernandito",
+  "gemini": "강렬하고 화한 허브의 쓴맛을 달콤한 탄산감이 둥글게 중화하며 넘어감",
+  "gpt": "카라멜 같은 탄산 단맛 뒤로 강한 약초 쓴맛과 서늘함이 따라옴"
  },
  "라보 데 갈로": {
-  "tl": "풀 내음 같은 상쾌함과 쌉싸름한 허브, 묵직한 단맛이 복합적으로 얽힘",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/3889/rabo-de-galo"
+  "tl": "말린 과일 단맛과 짙은 허브 쓴맛이 이어지는 쌉쌀한 식전주",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/3889/rabo-de-galo",
+  "gemini": "풀 내음 같은 상쾌함과 쌉싸름한 허브, 묵직한 단맛이 복합적으로 얽힘",
+  "gpt": "풋풀 향이 도드라지고 말린 과실 단향과 짙은 허브 쓴맛이 잇따름"
  },
  "칸찬차라": {
-  "tl": "진득한 단맛과 쨍한 시트러스 산미가 가벼운 목넘김 속에 선명하게 살아남",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/570/canchanchara"
+  "tl": "꿀 같은 단맛 속으로 깨끗한 신맛이 퍼지고 끝은 가볍고 산뜻함",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/570/canchanchara",
+  "gemini": "진득한 단맛과 쨍한 시트러스 산미가 가벼운 목넘김 속에 선명하게 살아남",
+  "gpt": "꿀 같은 단맛 속으로 깨끗한 산미가 퍼지고 끝은 가볍고 산뜻함"
  },
  "샤르트뢰즈 스위즐": {
-  "tl": "짙은 약초 향과 알싸한 스파이스가 새콤달콤한 열대과일 풍미와 균형을 이룸",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2336/chartreuse-swizzle"
+  "tl": "강한 약초 향을 열대 과일의 새콤달콤함이 시원하게 받쳐 줌",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2336/chartreuse-swizzle",
+  "gemini": "짙은 약초 향과 알싸한 스파이스가 새콤달콤한 열대과일 풍미와 균형을 이룸",
+  "gpt": "풋잎과 허브의 강한 향을 열대 과실의 새콤달콤함이 길게 받침"
  },
  "IBA 티키": {
-  "tl": "열대과일의 화려한 산미와 견과류 단맛 끝에 알싸한 스파이스가 톡 쏨",
-  "src": "https://iba-world.com/iba-cocktail/iba-tiki/"
+  "tl": "열대 과즙의 풍성한 신맛 뒤로 고소한 단맛과 알싸한 온기가 배어남",
+  "src": "https://iba-world.com/iba-cocktail/iba-tiki/",
+  "gemini": "열대과일의 화려한 산미와 견과류 단맛 끝에 알싸한 스파이스가 톡 쏨",
+  "gpt": "열대 과즙의 풍성한 산미 뒤로 고소한 단향과 알싸한 온기가 배어남"
  },
  "샴페인 칵테일": {
-  "tl": "섬세한 기포감 속에 은은한 단맛과 스파이시한 오크 풍미가 우아하게 퍼짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/393/champagne-cocktail"
+  "tl": "잔기포 속에 드라이한 과일 향이 피고 끝에 달큰한 향신료가 비침",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/393/champagne-cocktail",
+  "gemini": "섬세한 기포감 속에 은은한 단맛과 스파이시한 오크 풍미가 우아하게 퍼짐",
+  "gpt": "잔기포 속에 드라이한 과실 향이 피고 끝에 달큰한 향신료가 비침"
  },
  "미도리 일루젼": {
-  "tl": "화사한 열대과일과 달콤한 과실 향에 시트러스 산미가 경쾌함을 더함",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/16994/midori-illusion"
+  "tl": "멜론 사탕 같은 단향에 열대 과일 신맛이 더해져 여운이 김",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/16994/midori-illusion",
+  "gemini": "화사한 열대과일과 달콤한 과실 향에 시트러스 산미가 경쾌함을 더함",
+  "gpt": "달콤한 과일 사탕 같은 향에 열대 과즙 산미가 더해져 여운이 김"
  },
  "준벅": {
-  "tl": "이국적인 열대과일의 진한 단맛과 새콤한 산미가 풍성하고 달콤하게 감돌음",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1081/june-bug"
+  "tl": "풍성한 열대 과일 단맛이 진하고 새콤함으로 마무리됨",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1081/june-bug",
+  "gemini": "이국적인 열대과일의 진한 단맛과 새콤한 산미가 풍성하고 달콤하게 감돌음",
+  "gpt": "풍성한 열대 단향에 둥근 과일 향이 겹치고 감귤 산미로 갈무리됨"
  },
  "토스티드 아몬드": {
-  "tl": "구수한 배전향과 고소한 견과 풍미가 크리미하고 달콤하게 입안을 채움",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1963/toasted-almond"
+  "tl": "구운 아몬드 같은 고소함과 커피 향이 크리미하고 달콤하게 퍼짐",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1963/toasted-almond",
+  "gemini": "구수한 배전향과 고소한 견과 풍미가 크리미하고 달콤하게 입안을 채움",
+  "gpt": "볶은 견과의 단향과 쌉쌀한 로스팅 풍미가 묵직하고 부드럽게 퍼짐"
  },
  "캄파리 자몽 토닉": {
-  "tl": "쌉싸름한 허브와 톡 쏘는 감귤의 떫은맛이 드라이한 탄산감으로 깔끔함",
-  "src": "추정"
+  "tl": "자몽 같은 신맛과 탄산이 입안을 깨우고 여러 겹의 쓴맛이 길게 감",
+  "src": "추정",
+  "gemini": "쌉싸름한 허브와 톡 쏘는 감귤의 떫은맛이 드라이한 탄산감으로 깔끔함",
+  "gpt": "감귤의 산미와 탄산이 입안을 깨우고 여러 겹의 쓴맛이 길게 감"
  },
  "미도리 스플래시": {
-  "tl": "달콤한 열대과일 풍미에 새콤떫은 베리류 산미가 어우러져 상큼하게 떨어짐",
-  "src": "추정"
+  "tl": "달콤한 멜론 향이 가벼운 탄산에 풀려 산뜻하고 청량함",
+  "src": "추정",
+  "gemini": "달콤한 열대과일 풍미에 새콤떫은 베리류 산미가 어우러져 상큼하게 떨어짐",
+  "gpt": "익은 과일의 달큰함에 열대 풍미가 겹치고 붉은 과실의 떫은맛이 비침"
  },
  "도화": {
-  "tl": "화사하고 달콤한 과실 향과 은은한 산미가 부드럽고 산뜻하게 이어짐",
-  "src": "추정"
+  "tl": "복숭아·사과 같은 달콤한 과일 향에 밝은 새콤함이 뒤따름",
+  "src": "추정",
+  "gemini": "화사하고 달콤한 과실 향과 은은한 산미가 부드럽고 산뜻하게 이어짐",
+  "gpt": "핵과와 과수원 과실을 닮은 단향이 겹치고 밝은 산미가 뒤따름"
  },
  "옥보단": {
-  "tl": "이국적인 부드러운 단맛과 상큼한 과실 산미가 가볍고 매끄럽게 넘어감",
-  "src": "추정"
+  "tl": "부드러운 코코넛 향에 새콤한 과일 맛이 얇게 겹쳐 산뜻함",
+  "src": "추정",
+  "gemini": "이국적인 부드러운 단맛과 상큼한 과실 산미가 가볍고 매끄럽게 넘어감",
+  "gpt": "부드러운 열대 단향에 과수원 과실의 산미가 얇게 겹쳐 산뜻함"
  },
  "롱 아일랜드 아이스티": {
-  "tl": "강한 도수감은 숨기고 새콤달콤한 시트러스와 청량한 탄산감만 경쾌하게 남음",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1190/long-island-iced-tea"
+  "tl": "달고 새콤한 아이스티 같은 첫맛 뒤에 강한 술기운이 숨어 있음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1190/long-island-iced-tea",
+  "gemini": "강한 도수감은 숨기고 새콤달콤한 시트러스와 청량한 탄산감만 경쾌하게 남음",
+  "gpt": "달고 새콤한 탄산 첫맛에 옅은 카라멜 향과 따뜻한 술기운이 겹침"
  },
  "호스스 넥": {
-  "tl": "묵직한 과실 증류주의 온기에 알싸하고 달콤한 탄산감이 산뜻하게 어우러짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/979/horses-neck-with-a-kick"
+  "tl": "알싸한 기포가 입안을 채우고 말린 과일 같은 단향이 조용히 올라옴",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/979/horses-neck-with-a-kick",
+  "gemini": "묵직한 과실 증류주의 온기에 알싸하고 달콤한 탄산감이 산뜻하게 어우러짐",
+  "gpt": "알싸한 기포가 입안을 채우고 말린 과실의 단향이 조용히 올라옴"
  },
  "네이키드 앤 페이머스": {
-  "tl": "훈연 향과 쌉싸름한 감귤, 복합적인 허브와 산미가 팽팽하게 맞섬",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/3640/naked-and-famous"
+  "tl": "은은한 훈연 향과 쌉쌀한 시트러스, 허브와 신맛이 팽팽하게 맞섬",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/3640/naked-and-famous",
+  "gemini": "훈연 향과 쌉싸름한 감귤, 복합적인 허브와 산미가 팽팽하게 맞섬",
+  "gpt": "밝은 산미와 달큰한 쓴맛이 먼저 맞물리고 훈연과 풀 향이 오래 감"
  },
  "피스코 펀치": {
-  "tl": "화사한 꽃향기와 진한 열대과일 단맛이 드라이한 산미로 깔끔하게 정돈됨",
-  "src": "https://www.diffordsguide.com/g/1129/punch-and-punches/pisco-punch"
+  "tl": "화사한 과일 향과 열대 과일 단맛이 드라이한 신맛으로 깔끔하게 정리됨",
+  "src": "https://www.diffordsguide.com/g/1129/punch-and-punches/pisco-punch",
+  "gemini": "화사한 꽃향기와 진한 열대과일 단맛이 드라이한 산미로 깔끔하게 정돈됨",
+  "gpt": "잘 익은 열대 과실의 새콤함에 산뜻한 과실 풍미와 마른 끝맛이 붙음"
  },
  "포른 스타 마티니": {
-  "tl": "쨍한 열대과일 산미와 부드러운 달콤함이 벨벳 같은 거품 질감으로 어우러짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2883/porn-star-martini"
+  "tl": "톡 쏘는 패션프루트 같은 신맛과 향긋한 단맛이 입안을 둥글게 채움",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2883/porn-star-martini",
+  "gemini": "쨍한 열대과일 산미와 부드러운 달콤함이 벨벳 같은 거품 질감으로 어우러짐",
+  "gpt": "톡 쏘는 열대 산미와 향긋한 단맛이 입안을 둥글고 진하게 채움"
  },
  "셰리 코블러": {
-  "tl": "고소한 견과와 말린 과일 풍미가 은은한 단맛과 만나 시원하고 부드럽게 풀림",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2895/sherry-cobbler"
+  "tl": "고소한 견과와 말린 과일 향에 은은한 단맛이 시원하고 드라이하게 풀림",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2895/sherry-cobbler",
+  "gemini": "고소한 견과와 말린 과일 풍미가 은은한 단맛과 만나 시원하고 부드럽게 풀림",
+  "gpt": "고소한 견과 같은 향에 마른 과실의 단맛이 얇게 겹치고 끝이 드라이함"
  },
  "서퍼링 바스터드": {
-  "tl": "묵직한 오크와 허브 향 위로 매콤알싸한 탄산감과 시트러스 산미가 치고 나감",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/2588/suffering-bastard"
+  "tl": "따끔한 기포와 새콤함 뒤로 생강 같은 매운맛과 따뜻한 향신료가 남음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/2588/suffering-bastard",
+  "gemini": "묵직한 오크와 허브 향 위로 매콤알싸한 탄산감과 시트러스 산미가 치고 나감",
+  "gpt": "따끔한 기포와 새콤함 뒤로 마른 풀과 따뜻한 향신료 기운이 남음"
  },
  "스리 도츠 앤 어 대시": {
-  "tl": "풀 내음 도는 풍미와 진득한 단맛 뒤로 스파이시한 향신료 여운이 강렬함",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/4792/three-dots-and-a-dash"
+  "tl": "짙은 열대 과일 단맛을 알싸한 향신료가 받치고 신맛이 뒤따름",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/4792/three-dots-and-a-dash",
+  "gemini": "풀 내음 도는 풍미와 진득한 단맛 뒤로 스파이시한 향신료 여운이 강렬함",
+  "gpt": "짙은 열대 단향을 풋풀과 향신료의 알싸함이 받치고 산미가 뒤따름"
  },
  "티퍼레리": {
-  "tl": "부드러운 몰트 풍미와 묵직한 단맛 끝에 짙은 약초 향이 묵직하게 깔림",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/1958/tipperary-no1"
+  "tl": "부드러운 몰트 단맛에 붉은 과일 향과 짙은 약초 향이 층층이 감김",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/1958/tipperary-no1",
+  "gemini": "부드러운 몰트 풍미와 묵직한 단맛 끝에 짙은 약초 향이 묵직하게 깔림",
+  "gpt": "풀 향의 알싸함에 달큰한 붉은 과실과 숙성 풍미가 층층이 감김"
  },
  "버번 콕": {
-  "tl": "묵직한 오크와 캐러멜 풍미가 달콤한 탄산감에 녹아들어 부드럽게 넘어감",
-  "src": "https://fatbabybourbon.com/recipe/whiskey-and-coke/"
+  "tl": "캐러멜 같은 단맛을 따라 바닐라 향이 넓게 번지고 탄산이 톡 튐",
+  "src": "https://fatbabybourbon.com/recipe/whiskey-and-coke/",
+  "gemini": "묵직한 오크와 캐러멜 풍미가 달콤한 탄산감에 녹아들어 부드럽게 넘어감",
+  "gpt": "카라멜 풍미를 따라 구운 나무 단향이 넓게 번지고 탄산이 톡 튐"
  },
  "잭콕": {
-  "tl": "은은한 숯불 스모키 향과 달콤한 캐러멜 탄산감이 익숙하고 묵직하게 어우러짐",
-  "src": "추정"
+  "tl": "달큰한 기포 사이로 은은한 스모키함과 부드러운 바닐라 여운이 남음",
+  "src": "https:/​/​www.​reservebar.​com/​blogs/​all-​cocktail-​recipes/​bourbon-​whiskey/​jack-​daniels-​jack-​coke",
+  "gemini": "은은한 숯불 스모키 향과 달콤한 캐러멜 탄산감이 익숙하고 묵직하게 어우러짐",
+  "gpt": "달큰한 기포 사이로 희미한 나무 향과 부드러운 바닐라 여운이 남음"
  },
  "진 토닉": {
-  "tl": "화사한 보태니컬 허브 향과 쌉싸름한 청량감이 깔끔하게 떨어짐",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/835/gin-and-tonic"
+  "tl": "솔잎 같은 향이 기포와 함께 퍼지고 쌉쌀함이 깔끔하게 남음",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/835/gin-and-tonic",
+  "gemini": "화사한 보태니컬 허브 향과 쌉싸름한 청량감이 깔끔하게 떨어짐",
+  "gpt": "솔잎을 닮은 향이 기포와 함께 퍼지고 마른 쓴맛이 깔끔하게 감"
  },
  "진 소다": {
-  "tl": "단맛 없이 드라이한 탄산감 위로 솔잎과 허브 계열의 보태니컬 향만 선명함",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/13803/gin-and-soda"
+  "tl": "단맛 없이 솔 향만 맑은 기포 위로 올라오는 가장 드라이한 잔",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/13803/gin-and-soda",
+  "gemini": "단맛 없이 드라이한 탄산감 위로 솔잎과 허브 계열의 보태니컬 향만 선명함",
+  "gpt": "드라이한 솔 향이 맑은 기포 위로 올라오고 끝이 가볍게 마름"
  },
  "보드카 토닉": {
-  "tl": "잡미 없이 투명한 목넘김 끝에 쌉싸름하고 톡 쏘는 청량감만 깔끔하게 남음",
-  "src": "https://www.diffordsguide.com/cocktails/recipe/10383/vodka-and-tonic-vat"
+  "tl": "담백한 첫맛을 쌉싸래한 기포가 밀어 올리고 끝이 깔끔함",
+  "src": "https://www.diffordsguide.com/cocktails/recipe/10383/vodka-and-tonic-vat",
+  "gemini": "잡미 없이 투명한 목넘김 끝에 쌉싸름하고 톡 쏘는 청량감만 깔끔하게 남음",
+  "gpt": "담백한 첫맛을 쌉싸래한 기포가 밀어 올리고 은근한 단맛이 비침"
  },
  "럼 콕": {
-  "tl": "가볍고 달콤한 당밀 뉘앙스와 톡 쏘는 캐러멜 탄산감이 경쾌하게 어울림",
-  "src": "추정"
+  "tl": "달콤한 콜라 맛 속에 흑설탕 같은 은은한 단향이 배어남",
+  "src": "https:/​/​www.​liquor.​com/​rum-​coke-​cocktail-​recipe-​5199586",
+  "gemini": "가볍고 달콤한 당밀 뉘앙스와 톡 쏘는 캐러멜 탄산감이 경쾌하게 어울림",
+  "gpt": "달콤한 탄산 풍미 속에 당밀 같은 은은한 단향이 배어남"
  },
  "말리부 오렌지": {
-  "tl": "부드러운 열대 견과 풍미와 상큼한 감귤 과즙이 달콤하고 순하게 어우러짐",
-  "src": "추정"
+  "tl": "달큰한 코코넛 향과 오렌지 과즙이 부드럽게 포개짐",
+  "src": "https:/​/​www.​malibudrinks.​com/​en-​us/​drinks/​malibu-​and-​orange-​juice/​",
+  "gemini": "부드러운 열대 견과 풍미와 상큼한 감귤 과즙이 달콤하고 순하게 어우러짐",
+  "gpt": "달큰한 열대 향과 감귤의 밝은 과즙감이 부드럽게 포개짐"
  },
  "테킬라 오렌지": {
-  "tl": "흙내음 도는 식물성 풍미가 달콤한 감귤 산미에 감싸여 톡 쏘듯 넘어감",
-  "src": "추정"
+  "tl": "달콤한 오렌지 맛이 앞서고 은은한 풀 향과 따뜻한 여운이 남음",
+  "src": "https:/​/​mybarbible.​com/​drinks/​tequila-​and-​orange/​",
+  "gemini": "흙내음 도는 식물성 풍미가 달콤한 감귤 산미에 감싸여 톡 쏘듯 넘어감",
+  "gpt": "잘 익은 감귤의 둥근 단맛이 풋풀 향과 따끈한 여운으로 넘어감"
  },
  "미도리 소다": {
-  "tl": "화사하고 달콤한 과실 향이 가벼운 탄산감에 묽어져 산뜻하고 청량하게 퍼짐",
-  "src": "추정"
+  "tl": "시원한 기포를 타고 잘 익은 멜론 같은 달큰한 향이 터짐",
+  "src": "추정",
+  "gemini": "화사하고 달콤한 과실 향이 가벼운 탄산감에 묽어져 산뜻하고 청량하게 퍼짐",
+  "gpt": "시원한 기포를 타고 잘 익은 과일을 닮은 달큰한 향이 터짐"
  },
  "카시스 소다": {
-  "tl": "짙은 다크 베리의 새콤달콤함이 톡 쏘는 기포감과 만나 가볍게 입안을 씻어냄",
-  "src": "추정"
+  "tl": "검붉은 베리의 진한 단맛이 기포에 풀리고 가벼운 떫은맛이 걸림",
+  "src": "https:/​/​www.​kokubu.​co.​jp/​liquors/​brands/​lheritier/​lg_​cocktail_​re_​cs.​html",
+  "gemini": "짙은 다크 베리의 새콤달콤함이 톡 쏘는 기포감과 만나 가볍게 입안을 씻어냄",
+  "gpt": "검붉은 과실의 진한 단맛이 기포에 풀리고 가벼운 떫은맛이 걸림"
  },
  "엘더플라워 소다": {
-  "tl": "은은하고 향긋한 흰 꽃내음이 투명한 탄산감에 실려 산뜻하게 맴돌음",
-  "src": "추정"
+  "tl": "은은한 꽃 향이 맑은 기포에 실려 산뜻하게 맴돎",
+  "src": "추정",
+  "gemini": "은은하고 향긋한 흰 꽃내음이 투명한 탄산감에 실려 산뜻하게 맴돌음",
+  "gpt": "옅은 꽃 향이 맑고 가벼운 기포와 겹치고 단맛이 살짝 비침"
  },
  "아마레토 콕": {
-  "tl": "고소한 견과류 단맛이 캐러멜 탄산감과 만나 묵직하고 달콤한 디저트처럼 남음",
-  "src": "추정"
+  "tl": "구운 아몬드 같은 단향이 콜라 맛에 녹아 체리콕처럼 달콤함",
+  "src": "https:/​/​www.​greedygourmet.​com/​amaretto-​and-​coke/​",
+  "gemini": "고소한 견과류 단맛이 캐러멜 탄산감과 만나 묵직하고 달콤한 디저트처럼 남음",
+  "gpt": "구운 견과 단향이 카라멜 풍미에 녹아들고 부드러운 끝향이 이어짐"
  }
 }
