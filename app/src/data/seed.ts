@@ -27,6 +27,8 @@
  *  - scripts/rewordRecipeText.mjs : 문구 교정. 재료 칸을 되풀이한 메모 삭제, 변형 설명(v) 42종을 해요체로, 출처가 아닌 '클래식 레시피' 삭제,
  *    겹쳐 있던 '블루 마르가리타 (진)' 삭제(210 → 209종), 간단 조합 메모에서 원래 주인의 재고 메모 삭제.
  *  - scripts/addMixerRecipes.mjs : 믹서 조합표에만 있던 12개를 레시피로 옮김(209 → 221종). '간단 조합' 칸을 없애면서.
+ *  - scripts/addEnglishNames.mjs : 레시피 전부에 영문명(en). IBA 공식 표기 우선, 국내 창작 레시피는 로마자.
+ *  - scripts/mergeGodfather.mjs : 비율만 다르던 '갓파더 (아마레토)'를 갓파더에 합침(221 → 220종), 3:1 비율은 갓파더 메모로.
  */
 export interface RawIngredient { n: string; c: string; q: number; own: 0 | 1; }
 export type RawRecipeIngredient = [name: string, raw: string, optional: 0 | 1, substitute: 0 | 1];
