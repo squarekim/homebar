@@ -5,7 +5,6 @@
  * 개별 제품(병)과 표준 재료는 서로 다른 집계라 한 줄에 섞지 않고 나눠 적는다.
  * 제품 소개는 위스키 화면이 맡고, 여기서는 보유 수량·용량·잔량·재료 연결만 다룬다.
  */
-import { GuideHint } from '../components/GuidePopup';
 import { useMemo, useState } from 'react';
 import { useUI, type CellarSub } from '../UIContext';
 import { useBottles, useHeldIds, useSubMap, useInventory, inventoryRepo } from '../../hooks/useData';
@@ -37,7 +36,6 @@ export function CellarPage() {
   return (
     <>
       <h2 className="pagetitle" data-k="My Bar Cabinet">술장</h2>
-      <GuideHint tab="cellar" />
       <StarterNotice />
 
       <div className="statline">

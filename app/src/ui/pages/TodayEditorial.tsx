@@ -35,7 +35,7 @@ export function enName(url: string | undefined): string {
  * 취향을 이미 정했으면 '다시 찾기'로, 술을 넣은 적이 있으면 '술 넣기' 줄은 뺀다.
  */
 export function StartLinks() {
-  const { goTab, openAdd, openGuide } = useUI();
+  const { goTab, openAdd } = useUI();
   const ctx = useRecommendContext();
   const bottles = useBottles();
   return (
@@ -43,7 +43,7 @@ export function StartLinks() {
       <div className="ed-head"><span className="k">Start</span><small>시작하기</small></div>
       <ul>
         <li><button onClick={() => goTab('starter')}>{ctx.hasTaste ? '취향 다시 찾기' : '취향 찾기'}<span aria-hidden="true">→</span></button></li>
-        <li><button onClick={() => openGuide('menu')}>입문 안내서<span aria-hidden="true">→</span></button></li>
+        <li><button onClick={() => goTab('qna')}>Q&amp;A<span aria-hidden="true">→</span></button></li>
         {bottles.length === 0 && <li><button onClick={() => { goTab('cellar'); openAdd(); }}>집에 있는 술 넣기<span aria-hidden="true">→</span></button></li>}
       </ul>
     </div>

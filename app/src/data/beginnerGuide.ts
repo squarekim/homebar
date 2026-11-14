@@ -274,13 +274,6 @@ export const GUIDE_CHAPTERS: readonly GuideChapter[] = [
 
 export const guideById = (id: GuideId): GuideChapter => GUIDE_CHAPTERS.find((c) => c.id === id)!;
 
-/** 탭에 처음 들어갔을 때 한 번 띄울 안내 */
-export const GUIDE_FOR_TAB: Partial<Record<string, GuideId>> = {
-  whisky: 'drink',
-  cocktails: 'firstbottle',
-  cellar: 'storage',
-};
-
 /** 레시피 상세에 붙이는 방법별 기본 순서 — 안내서 '만드는 법' 카드의 번호 줄을 동작만 남겨 줄였다 */
 const METHOD_SHORT: Record<string, string[]> = {
   build: ['잔에 얼음 가득', '재료 붓기', '가볍게 젓기'],

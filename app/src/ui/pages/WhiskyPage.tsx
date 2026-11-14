@@ -3,7 +3,6 @@
  * 목록은 병 · 이름 · 도수 · 핵심 맛까지만 보여주고, 상세에서 맛 설명과 제조사 공식 노트를 먼저 읽힌다.
  * 지역·캐스크·분류·향미 수치는 그 뒤로 미룬다. 보유 수량·잔량 관리는 내 술장이 맡는다.
  */
-import { GuideHint } from '../components/GuidePopup';
 import { cocktailWords, whiskyWords } from '../../services/tasteWords';
 import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useUI } from '../UIContext';
@@ -266,7 +265,6 @@ export function WhiskyPage() {
   return (
     <>
       <h2 className="pagetitle" data-k="Cask Notes">위스키<span className="sub">{browsing ? `둘러보기 ${CATALOG.length}종` : `가진 위스키 ${whiskies.length}종`}</span></h2>
-      <GuideHint tab="whisky" />
       {tabs}
       <SearchBox value={q} onChange={setQ} placeholder="이름·분류(셰리/피트/싱글몰트…) 검색"
         after={<FilterButton open={openCls} count={cls === 'all' ? 0 : 1} onToggle={() => setOpenCls((v) => !v)} />} />

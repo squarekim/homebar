@@ -16,6 +16,7 @@ import { WhiskyPage } from './pages/WhiskyPage';
 import { CellarPage } from './pages/CellarPage';
 import { TastePage } from './pages/TastePage';
 import { SettingsPage } from './pages/SettingsPage';
+import { QnaPage } from './pages/QnaPage';
 import { StarterPage } from './pages/StarterPage';
 import { IconHome, IconMartini, IconWhisky, IconBottle, IconProfile, IconGear, IconLogo } from './components/icons';
 import { IS_BETA } from '../config';
@@ -60,6 +61,10 @@ function Shell() {
             ))}
           </nav>
           <div className="headact">
+            <button className="iconbtn" aria-current={tab === 'qna' ? 'page' : undefined}
+              onClick={() => goTab('qna')} aria-label="Q&A" title="Q&A">
+              <span className="lbl">Q&amp;A</span>
+            </button>
             <button className="iconbtn" aria-current={tab === 'settings' ? 'page' : undefined}
               onClick={() => goTab('settings')} aria-label="설정" title="설정">
               {/* 톱니 아이콘만 두면 테마 전환 버튼처럼 보여서 글자를 함께 둔다 */}
@@ -70,13 +75,14 @@ function Shell() {
       </header>
 
       {/* 글이 위주인 화면은 PC에서 한 줄이 너무 길어지지 않게 폭을 줄인다 */}
-      <main className={`wrap${tab === 'taste' || tab === 'settings' || tab === 'starter' ? ' narrow' : ''}`}>
+      <main className={`wrap${tab === 'taste' || tab === 'settings' || tab === 'starter' || tab === 'qna' ? ' narrow' : ''}`}>
         {tab === 'today' && <TodayPage />}
         {tab === 'cocktails' && <CocktailsPage key={tabTick} />}
         {tab === 'whisky' && <WhiskyPage key={tabTick} />}
         {tab === 'cellar' && <CellarPage />}
         {tab === 'taste' && <TastePage />}
         {tab === 'settings' && <SettingsPage />}
+        {tab === 'qna' && <QnaPage />}
         {tab === 'starter' && <StarterPage />}
         {/* 건전한 음주 안내 — 화면을 막지 않게 맨 아래 각주 한 줄로만 둔다 */}
         <p className="sitefoot">홈바는 건전한 음주 문화를 지향합니다.</p>

@@ -6,7 +6,6 @@
  * 상단에는 자주 쓰는 것만 둔다 — 검색, '지금 만들 수 있는 것', 필터.
  * 기주·IBA·상태는 필터 안으로 모았고 기능은 그대로다.
  */
-import { GuideHint } from '../components/GuidePopup';
 import { cocktailWords } from '../../services/tasteWords';
 import { useEffect, useMemo, useState } from 'react';
 import { useUI } from '../UIContext';
@@ -99,7 +98,6 @@ export function CocktailsPage() {
   return (
     <>
       <h2 className="pagetitle" data-k="Recipe Index">칵테일<span className="sub">레시피 {referenceRepo.cocktails().length}종</span></h2>
-      <GuideHint tab="cocktails" />
 
       <SearchBox value={q} onChange={setQ} placeholder="칵테일 또는 재료 검색" />
       <div className="controls tight">
