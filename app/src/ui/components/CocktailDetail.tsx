@@ -106,7 +106,7 @@ export function CocktailDetail({ id }: { id: string }) {
       {/* ② 맛 설명과 제조 가능 상태 */}
       <p className="taste">{words.join(' · ')}</p>
       <div className={`state s-${ev.status}`}>
-        {STATUS_LEAD_KO[ev.status]}{ev.lack.length > 0 && ` · 없는 재료: ${ev.lack.join(', ')}`}
+        {ev.status === 'READY' && garnishState(ck, heldIds) === 'missing' ? '가니시 제외 제조 가능' : STATUS_LEAD_KO[ev.status]}{ev.lack.length > 0 && ` · 없는 재료: ${ev.lack.join(', ')}`}
       </div>
 
       {/* ③ 재료와 맛 프로필 — 넓으면 나란히, 좁으면 위아래 */}

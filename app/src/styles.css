@@ -234,7 +234,7 @@ input::placeholder{color:var(--dim)}
 
 /* ── 상세 공통 ── */
 .detail h2{font-size:26px;font-weight:600}
-.detail h2+.en{margin:2px 0 0;font-size:14px;letter-spacing:.02em}
+.detail h2+.en{margin:2px 0 0;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px}
 @media (min-width:900px){.detail h2{font-size:30px}}
 .detail .art{display:flex;align-items:center;justify-content:center;background:var(--panel);
   border-radius:var(--r);height:220px;color:var(--ink);margin-top:var(--s3)}
@@ -828,7 +828,7 @@ input[type=search]{border-width:0 0 1px;border-color:var(--ink);background:trans
 .spec-meta{font-family:var(--body);font-size:13px;letter-spacing:0;color:var(--mute);margin-bottom:var(--s3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .spec-ing tr.ex td{color:var(--mute);font-size:13px}
 .spec-ing tr.ex td + td{white-space:normal;word-break:keep-all}
-.spec-en{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:400;font-size:72px;line-height:1;letter-spacing:-.02em;color:var(--mute)}
+.spec-en{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:400;font-size:20px;line-height:1.2;color:var(--mute);margin-top:2px}
 .spec-ko{font-family:var(--display);font-weight:500;font-size:34px;line-height:1.2;margin-top:var(--s2);word-break:keep-all}
 .spec-taste{font-size:14px;color:var(--mute);margin-top:var(--s1)}
 .spec-frame{display:flex;justify-content:center;align-items:center;border:1px solid var(--line);padding:var(--s5) 0;margin:40px 0}
@@ -959,5 +959,5 @@ p,li,td,dd,label,.hint,.recipe .ing,.it span,.rowitem .nm,.taste{word-break:keep
 .qa-tag{flex:none;font-size:11px;font-weight:600;color:var(--sub);border:1px solid currentColor;padding:0 6px;white-space:nowrap}
 .qa-tag.fact{display:inline-block;color:var(--ok);margin-bottom:var(--s1)}
 .qa-src{font-size:12px!important;color:var(--mute)}
-.rowitem .nm .en{margin-left:6px;font-family:var(--body);font-size:12px;font-weight:400;color:var(--mute);letter-spacing:.01em}
+.rowitem .nm .en{display:block;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;font-weight:400;color:var(--mute);line-height:1.2}
 .rowitem>.base{flex:none;align-self:center;font-size:12px;color:var(--mute);white-space:nowrap}

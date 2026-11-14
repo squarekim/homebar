@@ -25,11 +25,6 @@ import { type Cocktail, type RecommendationResult } from '../../models/types';
 const eul = (w: string) => { const c = w.charCodeAt(w.length - 1) - 0xac00; return c >= 0 && c % 28 ? '을' : '를'; };
 
 /** 영문명 — IBA 페이지 주소의 마지막 조각(`/iba-cocktail/old-fashioned/` → Old Fashioned). IBA 주소가 없으면 비운다 */
-export function enName(url: string | undefined): string {
-  const m = url?.match(/iba-world\.com\/iba-cocktail\/([^/?#]+)/);
-  return m ? m[1]!.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : '';
-}
-
 /**
  * 시작하기 — 처음 온 사람이 할 일 세 줄. 메인 넓은 화면은 인덱스 위, 모바일은 카드 뽑기 아래에 둔다.
  * 취향을 이미 정했으면 '다시 찾기'로, 술을 넣은 적이 있으면 '술 넣기' 줄은 뺀다.
@@ -53,13 +48,13 @@ export function StartLinks() {
 /** 왼쪽 스펙 시트 — 이름 · 잔 · 재료 비율 · 맛 프로필 */
 function SpecSheet({ ck }: { ck: Cocktail }) {
   const { openCocktail, openLog } = useUI();
-  const en = enName(ck.url);
+  const en = ck.nameEn;
   const glass = glassOf(ck);
   return (
     <article className="spec">
       <p className="spec-meta">{cocktailSpecLine(ck)}</p>
-      {en && <p className="spec-en">{en}</p>}
       <h2 className="spec-ko">{ck.name}</h2>
+      {en && <p className="spec-en">{en}</p>}
       <div className="spec-frame"><GlassArt cocktail={ck} size={220} /></div>
       <div className="spec-cols">
         <div>
@@ -161,7 +156,7 @@ export function TodayEditorial({ list, filters, emptyText }: {
               <div className="ed-head"><span className="k">Menu Index</span><small>{list.length}</small></div>
               <ol className="ed-index">
                 {list.slice(0, 24).map((r) => {
-                  const en = r.kind === 'cocktail' ? enName(referenceRepo.cocktailById(r.id)?.url) : '';
+                  const en = r.kind === 'cocktail' ? referenceRepo.cocktailById(r.id)?.nameEn ?? '' : '';
                   return (
                     <li key={r.id}>
                       <button aria-current={sel?.id === r.id} onClick={() => setSelId(r.id)}>

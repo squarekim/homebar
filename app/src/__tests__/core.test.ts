@@ -493,7 +493,7 @@ describe('홈 첫 화면 추천 — 대표 한 잔과 다른 성격', () => {
     expect(STATUS_SENTENCE_KO.SUBSTITUTE).toBe('대체 재료로 가능');
     expect(STATUS_SENTENCE_KO.MISSING).toBe('재료 부족');
     // 대표 한 잔은 비교 대상이 없어 자기 조건을 말한다
-    expect(STATUS_LEAD_KO.READY).toBe('재료가 모두 있어요');
+    expect(STATUS_LEAD_KO.READY).toBe('제조 가능');
     // 짧은 표기(필터 칩·통계)는 그대로 남는다
     expect(STATUS_LABEL_KO.READY).toBe('정규');
   });
