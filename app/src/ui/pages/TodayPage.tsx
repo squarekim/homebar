@@ -218,10 +218,10 @@ export function TodayPage() {
                 <div className="pickbtns">
                   {/* 칵테일은 고른 다음 할 일이 '만들기'라 레시피가 먼저다. 위스키는 따르기만 하면 되니 기록이 먼저다 */}
                   {picked.kind === 'cocktail' && <button className="btn primary big" onClick={() => open(picked)}>이 잔 보기</button>}
-                  <button className={picked.kind === 'cocktail' ? 'btn ghost big' : 'btn primary big'} onClick={() => made(picked)}>
+                  <button className={picked.kind === 'cocktail' ? 'btn sm ghost' : 'btn primary big'} onClick={() => made(picked)}>
                     {picked.kind === 'cocktail' ? '만든 잔 남기기' : '마신 잔 남기기'}
                   </button>
-                  <button className="btn ghost big" onClick={again}>랜덤 추천</button>
+                  <button className="btn sm ghost" onClick={again}>랜덤 추천</button>
                 </div>
               </div>
             )}

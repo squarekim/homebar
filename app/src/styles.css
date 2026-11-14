@@ -411,9 +411,6 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 .vnote{flex-basis:100%;margin:2px 0 0;font-size:14px;color:var(--mute);line-height:1.55}
 
 /* ── 추천 근거(점수)·구매 랭킹 ── */
-.subscores{display:flex;gap:var(--s1);margin-top:var(--s1);flex-wrap:wrap}
-.ss{font-size:12px;color:var(--mute);background:var(--panel);padding:3px 10px;border-radius:999px}
-.ss b{color:var(--ink);font-weight:600}
 .rank{display:flex;gap:var(--s2);padding:var(--s2) 0;border-bottom:1px solid var(--line)}
 .rank>b{font-size:19px;font-weight:500;color:var(--ink);min-width:52px}
 .pill{font-size:12px;color:var(--mute);background:var(--panel);border-radius:999px;padding:2px 8px;margin-left:6px}
@@ -941,3 +938,7 @@ p,li,td,dd,label,.hint,.recipe .ing,.it span,.rowitem .nm,.taste{word-break:keep
 .dfoot{margin-top:var(--s5);padding-top:var(--s2);border-top:1px solid var(--line);font-size:12px;color:var(--mute);display:flex;flex-direction:column;gap:var(--s1)}
 .dfoot p,.dfoot .hint{font-size:12px;line-height:1.6;color:var(--mute);margin:0}
 .dfoot .clstags .cltag{font-size:11px}
+/* 뽑은 뒤 버튼 — 주 버튼 하나만 크게, 나머지는 한 줄에 작게 */
+.pickbtns{flex-direction:row;flex-wrap:wrap;align-items:center}
+.pickbtns .btn.big{flex:1 1 100%}
+.pickbtns .btn.sm{flex:1 1 0}

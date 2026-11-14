@@ -43,21 +43,9 @@ export function cocktailSpecLine(ck: Cocktail): string {
   ].filter(Boolean).join(' · ');
 }
 
-/** 이 잔을 왜 골랐는지 — 추천에서 들어왔을 때만 보여준다(점수는 여기서만) */
+/** 이 잔을 왜 골랐는지 — 추천에서 들어왔을 때만, 이유 한 줄(점수 칸은 두지 않는다) */
 function WhyPicked({ rec }: { rec: RecommendationResult }) {
-  return (
-    <>
-      <div className="sechead in">추천 이유</div>
-      <p className="hint" style={{ margin: 0 }}>{rec.reason}</p>
-      <div className="subscores">
-        <span className="ss">총점 <b>{rec.score}</b></span>
-        <span className="ss">취향 <b>{rec.tasteScore}</b></span>
-        <span className="ss">만들기 <b>{rec.availabilityScore}</b></span>
-        <span className="ss">재고 <b>{rec.inventoryScore}</b></span>
-        <span className="ss">새로움 <b>{rec.noveltyScore}</b></span>
-      </div>
-    </>
-  );
+  return <p>추천 이유 · {rec.reason}</p>;
 }
 
 /** 원형·변형 이동 */
