@@ -95,6 +95,7 @@ export function CocktailDetail({ id }: { id: string }) {
     <article className="detail">
       {/* ① 이름 · 제조 요소 한 줄 · 이미지 */}
       <h2>{ck.name}</h2>
+      {ck.nameEn && <p className="sub en">{ck.nameEn}</p>}
       <p className="specline">
         {cocktailSpecLine(ck)}
         {/* 가니시까지 갖췄을 때만 알린다(가니시는 없어도 만들 수 있다) */}

@@ -234,6 +234,7 @@ input::placeholder{color:var(--dim)}
 
 /* ── 상세 공통 ── */
 .detail h2{font-size:26px;font-weight:600}
+.detail h2+.en{margin:2px 0 0;font-size:14px;letter-spacing:.02em}
 @media (min-width:900px){.detail h2{font-size:30px}}
 .detail .art{display:flex;align-items:center;justify-content:center;background:var(--panel);
   border-radius:var(--r);height:220px;color:var(--ink);margin-top:var(--s3)}
