@@ -109,7 +109,7 @@ export const noteTag = (n: MakerNote | undefined): string => (isOfficialNote(n) 
 
 export function MakerNoteView({ note, empty }: { note?: MakerNote | undefined; empty?: string | undefined }) {
   if (!note) {
-    return <div className="hint" style={{ margin: '6px 0 0' }}>{empty ?? '공식 노트가 없어요.'}</div>;
+    return <div className="hint" style={{ margin: '6px 0 0' }}>{empty ?? '공식 노트 없음'}</div>;
   }
   return (
     <div className="makernote">
@@ -140,7 +140,7 @@ export function StateLine({ status, lack }: { status: AvailabilityStatus; lack?:
 
 /** 재료도 가니시도 다 있는 잔 — 만들 수 있는지 판정과는 따로 붙는 표시 */
 export function GarnishBadge() {
-  return <span className="gnbadge">가니시까지 있어요</span>;
+  return <span className="gnbadge">가니시 있음</span>;
 }
 
 /** 필터 칩·통계처럼 자리가 좁은 곳에서 쓰는 짧은 판정명 */

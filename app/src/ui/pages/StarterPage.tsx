@@ -18,7 +18,7 @@ type Step = 'habit' | 'cards' | 'strength' | 'budget' | 'result';
 type Mark = 'like' | 'dislike';
 
 const STEPS: Step[] = ['habit', 'cards', 'strength', 'budget', 'result'];
-const DIFFICULTY_KO = { 1: '바로 마셔요', 2: '도구 하나', 3: '손이 더 가요' } as const;
+const DIFFICULTY_KO = { 1: '바로 가능', 2: '도구 하나', 3: '손이 더 감' } as const;
 
 function CardRow({ card, mark, onMark }: { card: TasteCard; mark: Mark | undefined; onMark: (m: Mark) => void }) {
   const ex = examplesFor(card, 3);

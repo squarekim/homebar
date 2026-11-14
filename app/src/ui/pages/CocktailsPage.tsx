@@ -79,8 +79,8 @@ export function CocktailsPage() {
   const groups = useMemo(() => {
     const can = rows.filter((x) => x.e.status === 'READY' || x.e.status === 'SUBSTITUTE');
     return [
-      { title: '지금 만들 수 있어요', rows: can },
-      { title: '재료가 부족해요', rows: rows.filter((x) => !can.includes(x)) },
+      { title: '지금 가능', rows: can },
+      { title: '재료 부족', rows: rows.filter((x) => !can.includes(x)) },
     ];
   }, [rows]);
 
@@ -126,7 +126,7 @@ export function CocktailsPage() {
       <div className="split">
         <div className="listpane">
           <div className="hint">{rows.length}종 · <button className="lnk" onClick={() => setView('ingredient')}>재료 목록</button></div>
-          {rows.length === 0 && <div className="empty">조건에 맞는 레시피가 없어요.</div>}
+          {rows.length === 0 && <div className="empty">조건에 맞는 레시피 없음</div>}
           {groups.map((g) => g.rows.length > 0 && (
             <div key={g.title}>
               <div className="sechead sm">{g.title} <small className="sub">{g.rows.length}</small></div>
@@ -138,7 +138,7 @@ export function CocktailsPage() {
                 <div className="body">
                   <span className="nm">{c.name}</span>
                   <div className="taste">{cocktailWords(c).join(' · ')} · {c.base}</div>
-                  {/* 묶음 제목이 이미 '지금 만들 수 있어요'라서, 그대로 만들 수 있는 잔에는 상태를 다시 적지 않는다 */}
+                  {/* 묶음 제목이 이미 '지금 가능'이라서, 그대로 만들 수 있는 잔에는 상태를 다시 적지 않는다 */}
                   {(e.status !== 'READY' || garnishState(c, heldIds) === 'all') && (
                     <div className="foot">
                       {e.status !== 'READY' && <StateLine status={e.status} lack={e.lack} />}

@@ -129,7 +129,7 @@ function PersonalNote({ bottleId, initial, onSaved }: { bottleId: string; initia
   const dirty = text !== initial;
   return (
     <>
-      <textarea rows={3} value={text} placeholder="마셔 본 느낌을 적어 두세요" onChange={(e) => setText(e.target.value)} />
+      <textarea rows={3} value={text} placeholder="향, 맛, 여운" onChange={(e) => setText(e.target.value)} />
       <div className="btnrow">
         <button className="btn sm" disabled={!dirty} onClick={async () => { await bottleNoteRepo.set(bottleId, text); onSaved(); }}>내 메모 저장</button>
       </div>
@@ -161,11 +161,11 @@ function WhiskyDetail({ bottle: w, owned }: { bottle: Bottle; owned?: Bottle | u
       <BottleBadges badges={w.badges} />
 
       <div className="sechead in">{noteHeading(w.makerNote)}</div>
-      <MakerNoteView note={w.makerNote} empty="이 술은 확인된 제조사 공식 노트가 없어요." />
+      <MakerNoteView note={w.makerNote} empty="공식 노트 없음" />
 
       {pairs.length > 0 && (
         <>
-          <div className="sechead in">이 위스키로 만들면 좋아요</div>
+          <div className="sechead in">이 위스키로 만드는 칵테일</div>
           <div className="rowlist">
             {pairs.map(({ cocktail: c, status }) => (
               <button className="rowitem" key={c.id} onClick={() => openCocktail(c.id)}>
@@ -187,13 +187,13 @@ function WhiskyDetail({ bottle: w, owned }: { bottle: Bottle; owned?: Bottle | u
         {w.isWhisky && <HowToDrink w={w} canLog={false} />}
         <div className="btnrow">
           {owned
-            ? <button className="btn" onClick={() => openBottle(owned.id)}>가지고 있어요 · 내 병 보기</button>
+            ? <button className="btn" onClick={() => openBottle(owned.id)}>보유 중 · 내 병 보기</button>
             : <button className="btn primary" onClick={() => openAdd(w.name)}>내 술장에 넣기</button>}
         </div>
         </>
       ) : (
         <>
-          <div className="sechead in">내 메모 <small className="sub">공식 노트와 따로 저장돼요</small></div>
+          <div className="sechead in">내 메모 <small className="sub">공식 노트와 별도로 저장</small></div>
           <PersonalNote bottleId={w.id} initial={notes.get(w.id) ?? ''} onSaved={() => toast('메모를 저장했어요')} />
 
           {w.isWhisky ? <HowToDrink w={w} /> : (
@@ -235,7 +235,7 @@ export function WhiskyPage() {
   // 넣은 위스키가 없으면 둘러보기부터 연다
   const [view, setView] = useState<View>(() => (whiskies.length ? 'list' : 'browse'));
   const browsing = view === 'browse';
-  /** 제품 아이디 → 내가 가진 병 (둘러보기에서 '가지고 있어요' 표시) */
+  /** 제품 아이디 → 내가 가진 병 (둘러보기에서 '보유 중' 표시) */
   const ownedByProduct = useMemo(() => new Map(whiskies.filter((w) => w.productId).map((w) => [w.productId!, w])), [whiskies]);
 
   const rows = useMemo(() => {
@@ -294,7 +294,7 @@ export function WhiskyPage() {
       <div className="split">
         <div className="listpane">
           <div className="hint">{rows.length}종</div>
-          {rows.length === 0 && (browsing || whiskies.length > 0) && <div className="empty">조건에 맞는 위스키가 없어요.</div>}
+          {rows.length === 0 && (browsing || whiskies.length > 0) && <div className="empty">조건에 맞는 위스키 없음</div>}
           {!browsing && whiskies.length === 0 && (
             <div className="empty">
               아직 넣은 위스키가 없어요.
@@ -318,7 +318,7 @@ export function WhiskyPage() {
                     {w.abv && <span className="mi">{w.abv}</span>}
                     <RegionTag w={w} />
                     {w.makerNote && <span className="mi note">{noteTag(w.makerNote)}</span>}
-                    {browsing && w.productId && ownedByProduct.has(w.productId) && <span className="mi own">가지고 있어요</span>}
+                    {browsing && w.productId && ownedByProduct.has(w.productId) && <span className="mi own">보유 중</span>}
                   </div>
                 </div>
               </button>
@@ -396,7 +396,7 @@ function GapView({ tabs }: { tabs: ReactNode }) {
               <span className="nm">{c.name}</span>
               <div className="taste">{c.note}</div>
               <div className="foot">
-                <span className={sim.gain > 0 ? 'state s-READY' : 'mi'}>{sim.gain > 0 ? `새 칸 ${sim.gain}개` : '이미 가진 칸이에요'}</span>
+                <span className={sim.gain > 0 ? 'state s-READY' : 'mi'}>{sim.gain > 0 ? `새 칸 ${sim.gain}개` : '이미 있는 칸'}</span>
                 {sim.newlyFilled.slice(0, 3).map((h, i) => <span className="mi" key={i}>{h.value}</span>)}
               </div>
             </div>

@@ -95,7 +95,7 @@ function BottleList({ bottles }: { bottles: Bottle[] }) {
           </div>
           <SearchBox value={q} onChange={setQ} placeholder="내 술 이름 검색" />
           <ChipRow value={grp} options={groups} onChange={setGrp} wrap />
-                    {rows.length === 0 && <div className="empty">찾는 술이 없어요.</div>}
+                    {rows.length === 0 && <div className="empty">검색 결과 없음</div>}
         </>
       )}
       {rows.length > 0 && <div className="rowlist">
@@ -191,8 +191,8 @@ function StockManager() {
 
       {confirmReset ? (
         <div className="confirm">
-          <p>재료 체크를 <b>전부 꺼요</b>. 지금 켜져 있는 {ownedCount}종이 모두 꺼져요.</p>
-          <p className="sub">마신 기록, 취향, 추가한 술은 지워지지 않아요.</p>
+          <p>재료 체크를 <b>모두 끄기</b>. 지금 켜져 있는 {ownedCount}종이 모두 꺼져요.</p>
+          <p className="sub">마신 기록, 취향, 추가한 술은 그대로 둡니다.</p>
           <div className="btnrow">
             <button className="btn danger" onClick={async () => {
               await inventoryRepo.setAll(false, allIngredients.map((i) => ({ id: i.id, name: i.name })));
