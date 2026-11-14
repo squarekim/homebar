@@ -52,7 +52,7 @@ if (CLASS_GROUPS.flatMap((g) => g.terms).length !== CLASS_FILTERS.length) throw 
 type View = 'list' | 'browse' | 'map' | 'table';
 const VIEWS: ChipOption<View>[] = [
   { v: 'list', label: '내 위스키' }, { v: 'browse', label: '둘러보기' },
-  { v: 'map', label: '증류소 지도' }, { v: 'table', label: '위스키 분류 표' },
+  { v: 'map', label: '증류소 지도' }, { v: 'table', label: '분류 표' },
 ];
 
 /** 핵심 맛 — 향미 상위 두 축과 분류 캐릭터(피티드 등) */
