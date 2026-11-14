@@ -84,13 +84,15 @@ const KIND_LABELS: Record<string, string> = {
 
 /** 카드 우측에 적는 술 종류 (럼·데킬라·브랜디 묶음 대신 '데킬라'처럼 실제 종류로) */
 /** 중국 백주는 우리말로 흔히 부르는 '고량주'로 적는다(병 모양·색 규칙은 bottleKind 그대로) */
-function isBaijiu(b: { node: string; name?: string; productId?: string | undefined }): boolean {
+type KindInput = { node: string; group: string; name?: string; productId?: string | undefined; userCategory?: string | undefined };
+function isBaijiu(b: KindInput): boolean {
   return b.node === 'cn.baijiu'
     || !!(b.productId && liquorMasterById.get(b.productId)?.subcategory.includes('백주'))
-    || /고량주|백주|baijiu/i.test(b.name ?? '');
+    // 이름으로 짐작하는 건 직접 넣은 병의 종류가 아직 '기타 증류주'일 때만 — 사용자가 고른 종류가 먼저다
+    || (b.userCategory === 'spirit' && /고량주|백주|baijiu/i.test(b.name ?? ''));
 }
 
-export function bottleKindLabel(b: { node: string; group: string; name?: string; productId?: string | undefined }): string {
+export function bottleKindLabel(b: KindInput): string {
   if (isBaijiu(b)) return '고량주';
   return groupLabel(KIND_LABELS[bottleKind(b)] ?? b.group);
 }
