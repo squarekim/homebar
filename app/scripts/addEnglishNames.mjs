@@ -56,7 +56,7 @@ export const EN = {
   '스팅어': 'Stinger', '사이드카': 'Sidecar', '브랜디 크러스타': 'Brandy Crusta', '프렌치 커넥션': 'French Connection',
   '사제락': 'Sazerac', '알렉산더': 'Alexander', '포르토 플립': 'Porto Flip', '피스코 사워': 'Pisco Sour',
   '베.엔.토': 'VE.N.TO', '아마레또 사워': 'Amaretto Sour', '가리발디': 'Garibaldi', '미도리 사워': 'Midori Sour',
-  '피치 크러시': 'Peach Crush', '갓파더 (아마레토)': 'Godfather (Amaretto)', '아마레토 스톤 사워': 'Amaretto Stone Sour',
+  '피치 크러시': 'Peach Crush', '아마레토 스톤 사워': 'Amaretto Stone Sour',
   '카시스 오렌지': 'Cassis Orange', '엔조니': 'Enzoni', '비터 하이볼': 'Bitter Highball',
   '재패니즈 슬리퍼': 'Japanese Slipper', 'B&B': 'B&B', '생제르맹 하이볼': 'St-Germain Highball',
   '퍼지 네이블': 'Fuzzy Navel', '아마레토 콜린스': 'Amaretto Collins', '밀라노 토닉': 'Milano Tonic',

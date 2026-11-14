@@ -20,7 +20,7 @@ function seedHeld(): Set<string> {
 describe('seed adapters', () => {
   it('원본 건수 유지', () => {
     expect(ingredients.length).toBe(130); // 원본 128 + 오렌지 큐라소(마이 타이 IBA 교정) + 셰리(셰리 코블러)
-    expect(cocktails.length).toBe(221); // 원본 202 + 현행 IBA 8종(addIbaRecipes) − 겹친 1종(rewordRecipeText) + 믹서 조합 12종(addMixerRecipes)
+    expect(cocktails.length).toBe(220); // 원본 202 + 현행 IBA 8종(addIbaRecipes) − 겹친 1종(rewordRecipeText) + 믹서 조합 12종(addMixerRecipes) − 갓파더 변형 1종(mergeGodfather)
     expect(bottles.length).toBe(82); // 원본 81 + 클라이넬리쉬 14년 추가
     expect(whiskies.length).toBeGreaterThan(0);
     expect(bottles.some((b) => b.id === 'clynelish14')).toBe(true);
@@ -124,7 +124,7 @@ describe('availability', () => {
     const t = tallyStatus(all);
     // 원본 재고 기준 정규 121 (레시피의 [대체] 표시를 걷어낸 뒤)
     expect(t.READY).toBeGreaterThan(50);
-    expect(t.READY + t.SUBSTITUTE + t.MISSING + t.UNAVAILABLE).toBe(221);
+    expect(t.READY + t.SUBSTITUTE + t.MISSING + t.UNAVAILABLE).toBe(220);
   });
   it('빈 재고면 대부분 불가', () => {
     const empty = new Set<string>();
