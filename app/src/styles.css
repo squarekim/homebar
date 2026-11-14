@@ -960,3 +960,4 @@ p,li,td,dd,label,.hint,.recipe .ing,.it span,.rowitem .nm,.taste{word-break:keep
 .qa-tag.fact{display:inline-block;color:var(--ok);margin-bottom:var(--s1)}
 .qa-src{font-size:12px!important;color:var(--mute)}
 .rowitem .nm .en{margin-left:6px;font-family:var(--body);font-size:12px;font-weight:400;color:var(--mute);letter-spacing:.01em}
+.rowitem>.base{flex:none;align-self:center;font-size:12px;color:var(--mute);white-space:nowrap}
