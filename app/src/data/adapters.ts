@@ -104,6 +104,8 @@ export const cocktails: Cocktail[] = SEED.recipes.map((r) => {
   return {
     id: slugId('ck', r.n),
     name: r.n,
+    nameEn: r.en,
+    tasteLine: r.tl,
     base: r.b,
     iba: r.iba,
     method: r.m,

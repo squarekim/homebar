@@ -7,6 +7,7 @@
 import Dexie, { type Table } from 'dexie';
 import { type InventoryItem, type DrinkLog, type TasteProfile, type IngredientSubstitution, type UserBottle } from '../models/types';
 import { categoryFromGroup } from '../data/liquorCategory';
+import { slugId } from '../data/ids';
 
 interface MetaRow { key: string; value: unknown; }
 /** 사용자가 직접 적는 병별 개인 노트 (공식 makerNote 와 별개) */
@@ -45,6 +46,14 @@ export class HomeBarDB extends Dexie {
       await tx.table('userBottles').toCollection().modify((b: UserBottle) => {
         if (!b.source) b.source = 'user';              // v3 이전에 직접 입력한 병
         if (!b.category) b.category = categoryFromGroup(b.group);
+      });
+    });
+    // v5: '갓파더 (아마레토)'를 '갓파더'에 합쳤다(scripts/mergeGodfather.mjs) — 마신 기록을 갓파더로 옮긴다
+    this.version(5).stores({}).upgrade(async (tx) => {
+      const from = slugId('ck', '갓파더 (아마레토)'), to = slugId('ck', '갓파더');
+      await tx.table('drinkLogs').where('drinkId').equals(from).modify((l: DrinkLog) => {
+        l.drinkId = to;
+        l.drinkName = '갓파더';
       });
     });
   }

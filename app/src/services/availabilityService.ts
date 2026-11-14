@@ -76,10 +76,10 @@ export const STATUS_SENTENCE_KO: Record<AvailabilityStatus, string> = {
  * (목록의 '그대로 만들 수 있어요'와 같은 판정, 다른 문장)
  */
 export const STATUS_LEAD_KO: Record<AvailabilityStatus, string> = {
-  READY: '재료가 모두 있어요',
-  SUBSTITUTE: '대체 재료로 만들 수 있어요',
-  MISSING: '재료가 부족해요',
-  UNAVAILABLE: '재료가 부족해요',
+  READY: '제조 가능',
+  SUBSTITUTE: '대체 재료로 제조 가능',
+  MISSING: '제조 불가능',
+  UNAVAILABLE: '제조 불가능',
 };
 
 /** 전체 레시피 판정. 통계/정렬용 */
