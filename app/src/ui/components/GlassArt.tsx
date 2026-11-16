@@ -30,55 +30,102 @@ function spriteOf(g: GarnishItem): GarnishSprite | null {
   }
 }
 
-/** 좁은 잔(플루트·샷)에서는 가니시를 줄인다 */
-const garnishScale = (s: GlassSprite) => Math.min(1, Math.max(.62, s.rim.rx / 12));
-
 interface Placed {
   name: GarnishSprite; x: number; y: number; w: number; h: number; layer: 'under' | 'over' | 'inside';
-  /** 꼬치 — 열매 가운데(cx, cy), 기우는 쪽(1 오른쪽 위, -1 왼쪽 위), 꼬치 끝이 닿을 높이 */
-  pick?: { cx: number; cy: number; lean: 1 | -1; tipY: number };
+  /** 꼬치 — 열매 가운데(cx, cy), 세로에서 기운 각도(°, +는 위쪽이 오른쪽), 꼬치 끝이 닿을 높이 */
+  pick?: { cx: number; cy: number; angle: number; tipY: number };
 }
 
 /** 꼬치 그림 안의 자리(그림 폭·높이에 대한 비율) — 열매 가운데와 꼬치 아래 끝 */
 const PICK_MID = { x: .5, y: .5 };
 const PICK_END = { x: .04, y: .95 };
-/** 그림의 꼬치는 45°로 누워 있다. 잔에 꽂힌 것처럼 세로에서 이만큼만 기울인다 */
-const PICK_TILT = 22;
+/** 꼬치 그림에서 열매 한 알의 지름이 그림 폭에서 차지하는 몫 */
+const PICK_FRUIT: Partial<Record<GarnishSprite, number>> = { 'pick-cherry': .4 };
+const PICK_FRUIT_DEFAULT = .3;
+
+/**
+ * 가니시 크기 — 잔 입구 폭(rim.rx × 2)에 대한 몫. IBA 레시피 사진에서 잰 값을 잔을 덜 가리게 조금 줄였다.
+ * (올드 패션드: 오렌지 조각 0.62 · 체리 0.32, 드라이 마티니: 올리브 0.28 · 레몬 껍질 0.87, 위스키 사워: 껍질 0.66)
+ */
+const SIZE = { wheel: .6, wedge: .45, peel: .7, cherry: .3, fruit: .27 };
+/** 꼬치만 있을 때 테두리에 걸쳐 눕는 각도, 과일과 함께 꿸 때의 최대 각도(세로 기준) */
+const PICK_REST = 38;
 
 /** 가니시마다 자리를 잡는다 — 같은 입력이면 항상 같은 자리 */
-/** 작은 그림(목록 44px)에서는 가니시가 점처럼 보인다 — 크기에 따라 키운다 */
+/** 작은 그림(목록 44px)에서는 가니시가 점처럼 보인다 — 크기에 따라 키운다(잔 폭에 맞춘 조각은 제외) */
 const smallBoost = (size: number) => size <= 48 ? 1.4 : size <= 64 ? 1.2 : 1;
+/** 좁은 잔(플루트·샷)에서는 민트·셀러리를 줄인다 */
+const garnishScale = (s: GlassSprite) => Math.min(1, Math.max(.62, s.rim.rx / 12));
+
+/** 잔 폭에 맞춘 크기 — 가로세로 비율은 그림 그대로 */
+function fitToRim(name: GarnishSprite, form: GarnishItem['form'], rimW: number): { w: number; h: number } {
+  const sp = GARNISH_SPRITES[name];
+  if (name.startsWith('pick-')) {
+    const want = (name === 'pick-cherry' ? SIZE.cherry : SIZE.fruit) * rimW;
+    const w = want / (PICK_FRUIT[name] ?? PICK_FRUIT_DEFAULT);
+    return { w, h: sp.h * w / sp.w };
+  }
+  if (form === 'peel') { const h = SIZE.peel * rimW; return { w: sp.w * h / sp.h, h }; }
+  const w = (form === 'wheel' ? SIZE.wheel : SIZE.wedge) * rimW;
+  return { w, h: sp.h * w / sp.w };
+}
 
 function place(items: GarnishItem[], s: GlassSprite, size: number): Placed[] {
   const k = garnishScale(s) * smallBoost(size);
   const { rim, surface } = s;
-  let edges = 0;
+  const rimW = rim.rx * 2;
   const out: Placed[] = [];
+  // 가장자리 과일을 먼저 놓는다 — 꼬치가 그 과일을 함께 꿰기 때문
+  let edges = 0;
+  let flag: { x: number; y: number } | null = null;
   for (const g of items) {
+    if (g.place !== 'edge') continue;
     const name = spriteOf(g);
     if (!name) continue;
+    const { w, h } = fitToRim(name, g.form, rimW);
+    // 첫 조각은 오른쪽, 둘째는 왼쪽 가장자리. 칼집이 테두리에 걸리게 중심을 테두리 높이에 둔다.
+    // 둥근 조각은 칼집이 테두리에 끼워져 안쪽으로 조금 들어와 앉는다 — 잔 밖에 떠 보이지 않게
+    const side = edges++ % 2 === 0 ? 1 : -1;
+    const lift = g.form === 'peel' ? .3 : g.form === 'wheel' ? .05 : .2;
+    const inset = g.form === 'wheel' ? .3 : g.form === 'wedge' ? .15 : 0;
+    const cx = rim.cx + side * (rim.rx - w * inset);
+    const cy = rim.cy - h * lift;
+    if (!flag && g.form !== 'peel') flag = { x: cx, y: cy };
+    out.push({ name, w, h, x: cx - w / 2, y: cy - h / 2, layer: 'over' });
+  }
+  const tipY = Math.min(s.bottom - 4, surface.cy + Math.max(4, (s.bottom - surface.cy) * .35));
+  for (const g of items) {
+    const name = spriteOf(g);
+    if (!name || g.place === 'edge') continue;
     const sp = GARNISH_SPRITES[name];
     let w = sp.w * k;
     let h = sp.h * k;
     switch (g.place) {
-      case 'edge': {
-        // 첫 조각은 오른쪽, 둘째는 왼쪽 가장자리. 칼집이 테두리에 걸리게 중심을 테두리 높이에 둔다.
-        const side = edges++ % 2 === 0 ? 1 : -1;
-        const lift = g.form === 'peel' ? .3 : g.form === 'wheel' ? .05 : .2;
-        // 둥근 조각은 칼집이 테두리에 끼워져 안쪽으로 조금 들어와 앉는다 — 잔 밖에 떠 보이지 않게
-        const inset = g.form === 'wheel' ? .3 : 0;
-        out.push({ name, w, h, x: rim.cx + side * (rim.rx - w * inset) - w / 2, y: rim.cy - h / 2 - h * lift, layer: 'over' });
-        break;
-      }
       case 'pick': {
-        // 열매는 테두리 바로 위, 꼬치는 잔 속 술까지 내려간다.
-        // 첫 가장자리 과일은 오른쪽에 걸리므로, 함께 있으면 열매를 왼쪽에 두고 꼬치를 왼쪽 위로 기울인다.
-        const withEdge = items.some((o) => o.place === 'edge' && spriteOf(o));
-        const lean = withEdge ? -1 : 1;
-        const cx = rim.cx + lean * rim.rx * .32;
-        const cy = rim.cy - h * .28;
-        const tipY = Math.min(s.bottom - 4, surface.cy + Math.max(5, (s.bottom - surface.cy) * .4));
-        out.push({ name, w, h, x: cx - w / 2, y: cy - h / 2, layer: 'under', pick: { cx, cy, lean, tipY } });
+        ({ w, h } = fitToRim(name, g.form, rimW));
+        const fruit = w * (PICK_FRUIT[name] ?? PICK_FRUIT_DEFAULT);
+        let cx: number; let cy: number; let angle: number;
+        if (flag) {
+          // 깃발 — 과일 조각과 열매를 한 꼬치에 꿴다. 열매는 잔 입구 안쪽, 꼬치는 과일 조각 가운데를 지나 위로 나온다.
+          cx = rim.cx + rim.rx * .05;
+          cy = rim.cy + fruit * .2;
+          angle = Math.atan2(flag.x - cx, cy - flag.y) * 180 / Math.PI;
+          angle = Math.max(-PICK_REST, Math.min(PICK_REST, angle));
+        } else {
+          // 꼬치만 — 테두리에 비스듬히 걸쳐 열매는 잔 안쪽에, 손잡이 쪽은 왼쪽 위로 나온다
+          cx = rim.cx - rim.rx * .22;
+          cy = rim.cy + fruit * .35;
+          angle = -PICK_REST;
+        }
+        // 꼬치 끝은 잔 안에 머문다 — 기운 만큼 옆으로 가므로, 그 높이의 잔 폭을 넘기 전에 멈춘다
+        const slope = Math.tan(Math.abs(angle) * Math.PI / 180) * (angle < 0 ? 1 : -1);
+        let end = cy;
+        for (let y = cy; y <= tipY; y += .5) {
+          const wa = widthAt(s, y);
+          if (Math.abs(cx + slope * (y - cy) - wa.cx) > wa.rx * .85) break;
+          end = y;
+        }
+        out.push({ name, w, h, x: cx - w / 2, y: cy - h / 2, layer: 'under', pick: { cx, cy, angle, tipY: end } });
         break;
       }
       case 'top':
@@ -155,24 +202,27 @@ function Drink({ kind, fill, alpha, layers, effects, garnish, size }: {
   };
   // 꼬치 — 그림을 세워 열매를 테두리 위에 두고, 그림의 꼬치 끝에서 술 속까지 같은 방향으로 이어 그린다.
   // 유리 그림 아래에 깔리므로 잔 속 부분은 유리를 통해 비쳐 보인다.
-  const pickArt = (p: Placed) => {
+  const pickArt = (p: Placed, part: 'stick' | 'fruit') => {
     const sp = GARNISH_SPRITES[p.name];
     const pk = p.pick!;
-    const rot = -(45 - PICK_TILT) * pk.lean;
+    // 그림의 꼬치는 위쪽이 오른쪽으로 45° 누워 있다 — 왼쪽으로 기울일 때는 뒤집고, 남는 각도만큼 돌린다
+    const mirror = pk.angle < 0 ? -1 : 1;
+    const rot = (Math.abs(pk.angle) - 45) * mirror;
     // 그림 좌표에서 열매 가운데 → 꼬치 끝 방향
     const ex = (PICK_END.x - PICK_MID.x) * p.w;
     const ey = (PICK_END.y - PICK_MID.y) * p.h;
     const len = Math.hypot(ex, ey);
-    // 세운 뒤 꼬치는 세로에서 PICK_TILT 만큼 기운다 — 끝이 tipY 에 닿는 길이
-    const need = (pk.tipY - pk.cy) / Math.cos(PICK_TILT * Math.PI / 180);
+    // 꼬치 끝이 tipY 에 닿는 길이(세로에서 angle 만큼 기운다)
+    const need = (pk.tipY - pk.cy) / Math.cos(Math.abs(pk.angle) * Math.PI / 180);
     const t = Math.max(1, need / len);
     const sw = Math.max(.7, p.w * .055);
     return (
-      <g key={p.name} transform={`translate(${pk.cx.toFixed(2)} ${pk.cy.toFixed(2)}) rotate(${rot}) scale(${pk.lean} 1)`}>
-        <line x1={(ex * .9).toFixed(2)} y1={(ey * .9).toFixed(2)} x2={(ex * t).toFixed(2)} y2={(ey * t).toFixed(2)}
-          stroke="#D9A566" strokeWidth={sw.toFixed(2)} strokeLinecap="round"/>
-        <image href={sp.src} x={(-p.w * PICK_MID.x).toFixed(2)} y={(-p.h * PICK_MID.y).toFixed(2)}
-          width={p.w.toFixed(2)} height={p.h.toFixed(2)} preserveAspectRatio="none"/>
+      <g key={p.name + part} transform={`translate(${pk.cx.toFixed(2)} ${pk.cy.toFixed(2)}) rotate(${rot}) scale(${mirror} 1)`}>
+        {part === 'stick'
+          ? <line x1={(ex * .9).toFixed(2)} y1={(ey * .9).toFixed(2)} x2={(ex * t).toFixed(2)} y2={(ey * t).toFixed(2)}
+            stroke="#D9A566" strokeWidth={sw.toFixed(2)} strokeLinecap="round"/>
+          : <image href={sp.src} x={(-p.w * PICK_MID.x).toFixed(2)} y={(-p.h * PICK_MID.y).toFixed(2)}
+            width={p.w.toFixed(2)} height={p.h.toFixed(2)} preserveAspectRatio="none"/>}
       </g>
     );
   };
@@ -222,8 +272,10 @@ function Drink({ kind, fill, alpha, layers, effects, garnish, size }: {
     {dust && <g fill="#8A542D" stroke="#FFF1D8" strokeOpacity=".5" strokeWidth=".3">
       {Array.from({ length: 11 }, (_, i) => <circle key={i} cx={surface.cx + ((i * 7) % 17 - 8) * surface.rx / 11} cy={surface.cy + (i % 3 - 1) * surface.ry * .45} r={i % 2 ? .65 : .45}/>)}
     </g>}
-    {placed.filter((p) => p.layer === 'under').map((p) => p.pick ? pickArt(p) : img(p))}
+    {placed.filter((p) => p.layer === 'under').map((p) => p.pick ? pickArt(p, 'stick') : img(p))}
     <image href={s.glass} x={box.x} y={box.y} width={box.w} height={box.h} preserveAspectRatio="none"/>
+    {/* 꼬치 열매는 유리 위에 — 얼음·유리에 가려 사라지지 않게. 술 속 꼬치 대만 유리 아래에 깐다 */}
+    {placed.filter((p) => p.pick).map((p) => pickArt(p, 'fruit'))}
     {placed.filter((p) => p.layer === 'over').map(img)}
     {/* 소금·설탕 림: 좁은 잔에서 굵은 대시는 빗살처럼 보인다 — 굵기를 잔 너비에 맞춘다. */}
     {rimCrust && (() => {
