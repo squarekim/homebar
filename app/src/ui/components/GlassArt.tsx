@@ -33,7 +33,17 @@ function spriteOf(g: GarnishItem): GarnishSprite | null {
 /** 좁은 잔(플루트·샷)에서는 가니시를 줄인다 */
 const garnishScale = (s: GlassSprite) => Math.min(1, Math.max(.62, s.rim.rx / 12));
 
-interface Placed { name: GarnishSprite; x: number; y: number; w: number; h: number; layer: 'under' | 'over' | 'inside' }
+interface Placed {
+  name: GarnishSprite; x: number; y: number; w: number; h: number; layer: 'under' | 'over' | 'inside';
+  /** 꼬치 — 열매 가운데(cx, cy), 기우는 쪽(1 오른쪽 위, -1 왼쪽 위), 꼬치 끝이 닿을 높이 */
+  pick?: { cx: number; cy: number; lean: 1 | -1; tipY: number };
+}
+
+/** 꼬치 그림 안의 자리(그림 폭·높이에 대한 비율) — 열매 가운데와 꼬치 아래 끝 */
+const PICK_MID = { x: .5, y: .5 };
+const PICK_END = { x: .04, y: .95 };
+/** 그림의 꼬치는 45°로 누워 있다. 잔에 꽂힌 것처럼 세로에서 이만큼만 기울인다 */
+const PICK_TILT = 22;
 
 /** 가니시마다 자리를 잡는다 — 같은 입력이면 항상 같은 자리 */
 /** 작은 그림(목록 44px)에서는 가니시가 점처럼 보인다 — 크기에 따라 키운다 */
@@ -55,15 +65,20 @@ function place(items: GarnishItem[], s: GlassSprite, size: number): Placed[] {
         // 첫 조각은 오른쪽, 둘째는 왼쪽 가장자리. 칼집이 테두리에 걸리게 중심을 테두리 높이에 둔다.
         const side = edges++ % 2 === 0 ? 1 : -1;
         const lift = g.form === 'peel' ? .3 : g.form === 'wheel' ? .05 : .2;
-        out.push({ name, w, h, x: rim.cx + side * rim.rx - w / 2, y: rim.cy - h / 2 - h * lift, layer: 'over' });
+        // 둥근 조각은 칼집이 테두리에 끼워져 안쪽으로 조금 들어와 앉는다 — 잔 밖에 떠 보이지 않게
+        const inset = g.form === 'wheel' ? .3 : 0;
+        out.push({ name, w, h, x: rim.cx + side * (rim.rx - w * inset) - w / 2, y: rim.cy - h / 2 - h * lift, layer: 'over' });
         break;
       }
       case 'pick': {
-        // 픽은 왼쪽 아래에서 오른쪽 위로 기운다 — 열매가 테두리 위로 나오게.
-        // 첫 가장자리 과일은 오른쪽에 걸리므로, 함께 있으면 픽을 왼쪽으로 옮겨 열매가 과일에 겹치지 않게 한다.
+        // 열매는 테두리 바로 위, 꼬치는 잔 속 술까지 내려간다.
+        // 첫 가장자리 과일은 오른쪽에 걸리므로, 함께 있으면 열매를 왼쪽에 두고 꼬치를 왼쪽 위로 기울인다.
         const withEdge = items.some((o) => o.place === 'edge' && spriteOf(o));
-        const dx = withEdge ? -rim.rx * .45 : rim.rx * .2;
-        out.push({ name, w, h, x: rim.cx + dx - w * .35, y: rim.cy - h * .62, layer: 'under' });
+        const lean = withEdge ? -1 : 1;
+        const cx = rim.cx + lean * rim.rx * .32;
+        const cy = rim.cy - h * .28;
+        const tipY = Math.min(s.bottom - 4, surface.cy + Math.max(5, (s.bottom - surface.cy) * .4));
+        out.push({ name, w, h, x: cx - w / 2, y: cy - h / 2, layer: 'under', pick: { cx, cy, lean, tipY } });
         break;
       }
       case 'top':
@@ -123,7 +138,7 @@ function Drink({ kind, fill, alpha, layers, effects, garnish, size }: {
   const s = GLASS_SPRITES[kind];
   const { box, surface, rim } = s;
   // 키운 가니시가 그림 밖으로 잘리지 않게 80×80 안에 붙잡는다
-  const placed = place(garnish, s, size).map((p) => ({ ...p, x: Math.min(80 - p.w, Math.max(0, p.x)), y: Math.max(0, p.y) }));
+  const placed = place(garnish, s, size).map((p) => p.pick ? p : ({ ...p, x: Math.min(80 - p.w, Math.max(0, p.x)), y: Math.max(0, p.y) }));
   const rimCrust = garnish.some((g) => g.place === 'rim');
   const dust = garnish.some((g) => g.place === 'dust');
   const depth = Math.max(4, s.bottom - surface.cy);
@@ -137,6 +152,29 @@ function Drink({ kind, fill, alpha, layers, effects, garnish, size }: {
   const img = (p: Placed) => {
     const sp = GARNISH_SPRITES[p.name];
     return <image key={p.name} href={sp.src} x={p.x.toFixed(2)} y={p.y.toFixed(2)} width={p.w.toFixed(2)} height={p.h.toFixed(2)} preserveAspectRatio="none"/>;
+  };
+  // 꼬치 — 그림을 세워 열매를 테두리 위에 두고, 그림의 꼬치 끝에서 술 속까지 같은 방향으로 이어 그린다.
+  // 유리 그림 아래에 깔리므로 잔 속 부분은 유리를 통해 비쳐 보인다.
+  const pickArt = (p: Placed) => {
+    const sp = GARNISH_SPRITES[p.name];
+    const pk = p.pick!;
+    const rot = -(45 - PICK_TILT) * pk.lean;
+    // 그림 좌표에서 열매 가운데 → 꼬치 끝 방향
+    const ex = (PICK_END.x - PICK_MID.x) * p.w;
+    const ey = (PICK_END.y - PICK_MID.y) * p.h;
+    const len = Math.hypot(ex, ey);
+    // 세운 뒤 꼬치는 세로에서 PICK_TILT 만큼 기운다 — 끝이 tipY 에 닿는 길이
+    const need = (pk.tipY - pk.cy) / Math.cos(PICK_TILT * Math.PI / 180);
+    const t = Math.max(1, need / len);
+    const sw = Math.max(.7, p.w * .055);
+    return (
+      <g key={p.name} transform={`translate(${pk.cx.toFixed(2)} ${pk.cy.toFixed(2)}) rotate(${rot}) scale(${pk.lean} 1)`}>
+        <line x1={(ex * .9).toFixed(2)} y1={(ey * .9).toFixed(2)} x2={(ex * t).toFixed(2)} y2={(ey * t).toFixed(2)}
+          stroke="#D9A566" strokeWidth={sw.toFixed(2)} strokeLinecap="round"/>
+        <image href={sp.src} x={(-p.w * PICK_MID.x).toFixed(2)} y={(-p.h * PICK_MID.y).toFixed(2)}
+          width={p.w.toFixed(2)} height={p.h.toFixed(2)} preserveAspectRatio="none"/>
+      </g>
+    );
   };
   // 어두운 바탕에서 옅은 술이 비어 보이지 않게 충분히 칠한다(밀도 차이는 위쪽에 남는다)
   const top = Math.min(1, .62 + alpha * .35);
@@ -184,7 +222,7 @@ function Drink({ kind, fill, alpha, layers, effects, garnish, size }: {
     {dust && <g fill="#8A542D" stroke="#FFF1D8" strokeOpacity=".5" strokeWidth=".3">
       {Array.from({ length: 11 }, (_, i) => <circle key={i} cx={surface.cx + ((i * 7) % 17 - 8) * surface.rx / 11} cy={surface.cy + (i % 3 - 1) * surface.ry * .45} r={i % 2 ? .65 : .45}/>)}
     </g>}
-    {placed.filter((p) => p.layer === 'under').map(img)}
+    {placed.filter((p) => p.layer === 'under').map((p) => p.pick ? pickArt(p) : img(p))}
     <image href={s.glass} x={box.x} y={box.y} width={box.w} height={box.h} preserveAspectRatio="none"/>
     {placed.filter((p) => p.layer === 'over').map(img)}
     {/* 소금·설탕 림: 좁은 잔에서 굵은 대시는 빗살처럼 보인다 — 굵기를 잔 너비에 맞춘다. */}
