@@ -4,20 +4,21 @@
  * 상단에 늘 붙어 있던 통계 카드는 내 술장으로 옮겼다 — 모든 화면에서 본문과 경쟁하던 숫자다.
  * 전역 '+' 버튼도 없앴다. 술 추가는 내 술장에서, 기록은 상세와 기록 화면에서 한다.
  */
-import { type ReactNode, useEffect } from 'react';
+import { type ReactNode, lazy, Suspense, useEffect } from 'react';
 import { UIProvider, useUI, type Tab } from './UIContext';
 import { LogDialog } from './components/LogDialog';
-import { AddBottleDialog } from './components/AddBottleDialog';
 import { Modal } from './components/common';
 import { GuidePopup } from './components/GuidePopup';
 import { TodayPage } from './pages/TodayPage';
-import { CocktailsPage } from './pages/CocktailsPage';
-import { WhiskyPage } from './pages/WhiskyPage';
-import { CellarPage } from './pages/CellarPage';
-import { TastePage } from './pages/TastePage';
-import { SettingsPage } from './pages/SettingsPage';
-import { QnaPage } from './pages/QnaPage';
-import { StarterPage } from './pages/StarterPage';
+const AddBottleDialog = lazy(() => import('./components/AddBottleDialog').then((m) => ({ default: m.AddBottleDialog })));
+// 첫 화면(메인) 밖의 탭은 처음 열 때 받는다 — 첫 로딩에 받을 코드를 줄인다
+const CocktailsPage = lazy(() => import('./pages/CocktailsPage').then((m) => ({ default: m.CocktailsPage })));
+const WhiskyPage = lazy(() => import('./pages/WhiskyPage').then((m) => ({ default: m.WhiskyPage })));
+const CellarPage = lazy(() => import('./pages/CellarPage').then((m) => ({ default: m.CellarPage })));
+const TastePage = lazy(() => import('./pages/TastePage').then((m) => ({ default: m.TastePage })));
+const SettingsPage = lazy(() => import('./pages/SettingsPage').then((m) => ({ default: m.SettingsPage })));
+const QnaPage = lazy(() => import('./pages/QnaPage').then((m) => ({ default: m.QnaPage })));
+const StarterPage = lazy(() => import('./pages/StarterPage').then((m) => ({ default: m.StarterPage })));
 import { IconHome, IconMartini, IconWhisky, IconBottle, IconProfile, IconGear, IconLogo } from './components/icons';
 import { IS_BETA } from '../config';
 
@@ -76,6 +77,7 @@ function Shell() {
 
       {/* 글이 위주인 화면은 PC에서 한 줄이 너무 길어지지 않게 폭을 줄인다 */}
       <main className={`wrap${tab === 'taste' || tab === 'settings' || tab === 'starter' || tab === 'qna' ? ' narrow' : ''}`}>
+        <Suspense fallback={<div className="pageload" aria-busy="true" />}>
         {tab === 'today' && <TodayPage />}
         {tab === 'cocktails' && <CocktailsPage key={tabTick} />}
         {tab === 'whisky' && <WhiskyPage key={tabTick} />}
@@ -84,6 +86,7 @@ function Shell() {
         {tab === 'settings' && <SettingsPage />}
         {tab === 'qna' && <QnaPage />}
         {tab === 'starter' && <StarterPage />}
+        </Suspense>
         {/* 건전한 음주 안내 — 화면을 막지 않게 맨 아래 각주 한 줄로만 둔다 */}
         <p className="sitefoot">홈바는 건전한 음주 문화를 지향합니다.</p>
         <div className="tailspace" />
@@ -100,7 +103,8 @@ function Shell() {
       </nav>
 
       <LogDialog />
-      <AddBottleDialog open={addOpen} initialQuery={addQuery} onClose={closeAdd} />
+      {/* 술 추가 창은 처음 열 때 받는다(주류 목록 검색·증류소 정보가 함께 딸려 온다) */}
+      {addOpen && <Suspense fallback={null}><AddBottleDialog open initialQuery={addQuery} onClose={closeAdd} /></Suspense>}
       <Modal open={!!termInfo} onClose={closeTerm} shell="terminfo">
         <b>{termInfo?.title}</b>
         <p>{termInfo?.body}</p>
