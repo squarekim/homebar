@@ -58,10 +58,14 @@ function place(items: GarnishItem[], s: GlassSprite, size: number): Placed[] {
         out.push({ name, w, h, x: rim.cx + side * rim.rx - w / 2, y: rim.cy - h / 2 - h * lift, layer: 'over' });
         break;
       }
-      case 'pick':
-        // 픽은 왼쪽 아래에서 오른쪽 위로 기운다 — 열매가 테두리 위로 나오게
-        out.push({ name, w, h, x: rim.cx + rim.rx * .2 - w * .35, y: rim.cy - h * .62, layer: 'under' });
+      case 'pick': {
+        // 픽은 왼쪽 아래에서 오른쪽 위로 기운다 — 열매가 테두리 위로 나오게.
+        // 첫 가장자리 과일은 오른쪽에 걸리므로, 함께 있으면 픽을 왼쪽으로 옮겨 열매가 과일에 겹치지 않게 한다.
+        const withEdge = items.some((o) => o.place === 'edge' && spriteOf(o));
+        const dx = withEdge ? -rim.rx * .45 : rim.rx * .2;
+        out.push({ name, w, h, x: rim.cx + dx - w * .35, y: rim.cy - h * .62, layer: 'under' });
         break;
+      }
       case 'top':
         // 줄기 아래쪽이 술에 잠기고 잎은 잔 위로 솟는다
         out.push({ name, w, h, x: rim.cx - rim.rx * .35 - w / 2, y: surface.cy + h * .3 - h, layer: 'under' });
