@@ -10,9 +10,10 @@
 import { useId } from 'react';
 import { type Cocktail } from '../../models/types';
 import {
-  drinkColor, glassOf, garnishItems, liquidLayers, visualEffectOf,
+  comboKey, drinkColor, glassOf, garnishItems, liquidLayers, visualEffectOf,
   type GlassKind, type GarnishItem, type LiquidStop, type VisualEffect,
 } from '../../data/drinkVisual';
+import { COMBO_SPRITES, type ComboSprite } from './comboAssets';
 import { GLASS_SPRITES, GARNISH_SPRITES, type GarnishSprite, type GlassSprite } from './glassAssets';
 
 /** 가니시 한 조각의 그림 */
@@ -128,15 +129,21 @@ function widthAt(s: GlassSprite, y: number): { cx: number; rx: number } {
 }
 
 /** 잔 한 잔 — 칵테일이든 위스키든 색·효과만 받아 같은 그림을 그린다. */
-function Drink({ kind, fill, alpha, layers, effects, garnish, size }: {
+function Drink({ kind, fill, alpha, layers, effects, garnish, size, combo }: {
   kind: GlassKind; fill: string; alpha: number; layers?: LiquidStop[] | null;
   effects: VisualEffect; garnish: GarnishItem[]; size: number;
+  /** 잔+테두리 과일·꼬치 통그림 — 있으면 잔·액체 그림을 이것으로 바꾸고, 그 조각들은 따로 그리지 않는다 */
+  combo?: ComboSprite | undefined;
 }) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, ''); // useId 의 콜론은 url(#…) 참조에서 안전하지 않다
   const id = (name: string) => `glass-${uid}-${name}`;
   const url = (name: string) => `url(#${id(name)})`;
   const s = GLASS_SPRITES[kind];
   const { box, surface, rim } = s;
+  // 통그림의 잔은 기본 잔과 같은 자리·배율이다(가니시만큼 그림 상자가 넓을 뿐) — 기준점은 기본 잔 것을 그대로 쓴다
+  const art = combo ?? s;
+  const abox = combo?.box ?? box;
+  if (combo) garnish = garnish.filter((g) => g.place !== 'edge' && g.place !== 'pick');
   // 키운 가니시가 그림 밖으로 잘리지 않게 80×80 안에 붙잡는다
   const placed = place(garnish, s, size).map((p) => p.pick ? p : ({ ...p, x: Math.min(80 - p.w, Math.max(0, p.x)), y: Math.max(0, p.y) }));
   const rimCrust = garnish.some((g) => g.place === 'rim');
@@ -186,14 +193,14 @@ function Drink({ kind, fill, alpha, layers, effects, garnish, size }: {
     const y = yAt(from);
     const { cx, rx } = widthAt(s, y);
     const ry = rx * flat;
-    const l = box.x - 2, r = box.x + box.w + 2, b = box.y + box.h + 2;
+    const l = abox.x - 2, r = abox.x + abox.w + 2, b = abox.y + abox.h + 2;
     return `M${l} ${y.toFixed(2)} H${(cx - rx).toFixed(2)} A${rx.toFixed(2)} ${ry.toFixed(2)} 0 0 0 ${(cx + rx).toFixed(2)} ${y.toFixed(2)} H${r} V${b} H${l}Z`;
   };
 
   return <svg className="glassart" viewBox="0 0 80 80" width={size} height={size} aria-hidden="true">
     <defs>
       <mask id={id('liquid')} maskUnits="userSpaceOnUse" x="0" y="0" width="80" height="80">
-        <image href={s.liquid} x={box.x} y={box.y} width={box.w} height={box.h} preserveAspectRatio="none"/>
+        <image href={art.liquid} x={abox.x} y={abox.y} width={abox.w} height={abox.h} preserveAspectRatio="none"/>
       </mask>
       {/* 층마다 그라데이션 하나 — 불투명도는 위가 옅고 아래로 짙어지는 규칙을 그대로 따른다 */}
       {bands.map((band, k) => <linearGradient key={k} id={id(`liquid-${k}`)} x1="0" y1={surface.cy} x2="0" y2={s.bottom} gradientUnits="userSpaceOnUse">
@@ -205,7 +212,7 @@ function Drink({ kind, fill, alpha, layers, effects, garnish, size }: {
     <ellipse cx="40" cy={box.y + box.h + 1} rx={Math.min(24, box.w * .42)} ry="2.2" fill="#0E1416" opacity=".3" filter={url('shadow')}/>
     <g mask={url('liquid')}>
       {bands.map((band, k) => k === 0
-        ? <rect key={k} x={box.x} y={box.y} width={box.w} height={box.h} fill={url(`liquid-${k}`)}/>
+        ? <rect key={k} x={abox.x} y={abox.y} width={abox.w} height={abox.h} fill={url(`liquid-${k}`)}/>
         : <path key={k} d={bandPath(band.from)} fill={url(`liquid-${k}`)}/>)}
       {placed.filter((p) => p.layer === 'inside').map((p) => <g key={p.name} opacity=".88">{img(p)}</g>)}
       {effects.bubbles && <g fill="none">
@@ -223,7 +230,7 @@ function Drink({ kind, fill, alpha, layers, effects, garnish, size }: {
       {Array.from({ length: 11 }, (_, i) => <circle key={i} cx={surface.cx + ((i * 7) % 17 - 8) * surface.rx / 11} cy={surface.cy + (i % 3 - 1) * surface.ry * .45} r={i % 2 ? .65 : .45}/>)}
     </g>}
     {placed.filter((p) => p.layer === 'under').map((p) => p.pick ? pickArt(p) : img(p))}
-    <image href={s.glass} x={box.x} y={box.y} width={box.w} height={box.h} preserveAspectRatio="none"/>
+    <image href={art.glass} x={abox.x} y={abox.y} width={abox.w} height={abox.h} preserveAspectRatio="none"/>
     {placed.filter((p) => p.layer === 'over').map(img)}
     {/* 소금·설탕 림: 좁은 잔에서 굵은 대시는 빗살처럼 보인다 — 굵기를 잔 너비에 맞춘다. */}
     {rimCrust && (() => {
@@ -237,7 +244,8 @@ function Drink({ kind, fill, alpha, layers, effects, garnish, size }: {
 export function GlassArt({ cocktail, size = 56 }: { cocktail: Cocktail; size?: number }) {
   const { fill, alpha } = drinkColor(cocktail);
   return <Drink kind={glassOf(cocktail)} fill={fill} alpha={alpha} layers={liquidLayers(cocktail)}
-    effects={visualEffectOf(cocktail)} garnish={garnishItems(cocktail)} size={size}/>;
+    effects={visualEffectOf(cocktail)} garnish={garnishItems(cocktail)} size={size}
+    combo={COMBO_SPRITES[comboKey(cocktail) ?? '']}/>;
 }
 
 /**

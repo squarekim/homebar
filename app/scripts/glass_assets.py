@@ -62,12 +62,15 @@ def save(arr, path, lossless=False):
     Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8), 'RGBA').save(path, 'WEBP', quality=88, lossless=lossless, method=6)
 
 
-def split_glass(path, kind):
-    src = np.asarray(Image.open(path).convert('RGBA')).astype(np.float64)
+def split_layers(src, balanced=False):
+    """원본(마젠타 액체) → (유리·얼음 층, 액체 마스크, 액체 자리). 통그림(combo_assets.py)도 이 함수를 쓴다."""
     r, g, b, a = (src[..., i] for i in range(4))
     al = a / 255
     hi = np.maximum(np.maximum(r, b), 1)
     w = np.clip((np.minimum(r, b) - g) / hi, 0, 1) * (al > .05)   # 마젠타다움(밝기와 무관)
+    if balanced:
+        # 통그림: 빨강 체리·라즈베리를 액체로 잘못 읽지 않게 빨강과 파랑이 비슷한 픽셀만 액체로 본다
+        w = w * np.clip(1 - (np.abs(r - b) / hi - .25) * 3, 0, 1)
     region = fill_holes(w > .35)                                   # 액체 자리(얼음 포함)
     f = smooth(.1, .7, w)                                          # 그 픽셀에서 액체가 비치는 정도
     # 액체 명암: 마젠타의 밝기를 기준값과 비교해 어둡게/밝게
@@ -94,6 +97,23 @@ def split_glass(path, kind):
     liq = np.zeros_like(src)
     liq[..., :3] = 255
     liq[..., 3] = cov * 255
+    return over, liq, region
+
+
+def frame(a, kind):
+    """잔 원본의 알파로 viewBox 배치(원본 px → 단위)를 정한다."""
+    ys, xs = np.nonzero(a > 8)
+    y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
+    H, W = FIT[kind]
+    s = min(H / (y1 - y0), W / (x1 - x0))
+    bw, bh = (x1 - x0) * s, (y1 - y0) * s
+    return y0, y1, x0, x1, s, 40 - bw / 2, BASE - bh
+
+
+def split_glass(path, kind):
+    src = np.asarray(Image.open(path).convert('RGBA')).astype(np.float64)
+    a = src[..., 3]
+    over, liq, region = split_layers(src)
 
     ys, xs = np.nonzero(a > 8)
     y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1

@@ -325,6 +325,18 @@ export function garnishItems(ck: Cocktail): GarnishItem[] {
   return out.slice(0, GARNISH_MAX);
 }
 
+/**
+ * 통그림 키 — 잔과 가니시를 한 장으로 그린 그림(comboAssets.ts)을 고를 때 쓴다.
+ * 잔 종류 + 테두리 과일·꼬치 조각(이름순). 키가 목록에 없으면 조각 그림 배치로 그린다.
+ */
+export function comboKey(ck: Cocktail): string | null {
+  const parts = garnishItems(ck)
+    .filter((g) => g.place === 'edge' || g.place === 'pick')
+    .map((g) => g.place === 'pick' ? `pick-${g.kind}` : `${g.kind}-${g.form ?? 'wedge'}`)
+    .sort();
+  return parts.length ? `${glassOf(ck)}_${parts.join('+')}` : null;
+}
+
 function hex2rgb(h: string): [number, number, number] {
   return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
 }
