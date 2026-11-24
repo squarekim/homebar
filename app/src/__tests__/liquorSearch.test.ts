@@ -29,6 +29,14 @@ describe('liquor master', () => {
       expect(names.has(i.ingredientName), `${i.nameKo} → ${i.ingredientName}`).toBe(true);
     }
   });
+  it('레시피에 쓰는 술은 고를 수 있는 제품이 하나 이상 있다', () => {
+    // 집에서 만드는 재료·통칭이라 제품이 따로 없는 것
+    const pantry = new Set(['물', '무향 탄산', '우유', '에스프레소', '뜨거운 커피', '홍차(냉침)', '스카치', '포도 브랜디', '피치 브랜디', '카모마일 코디얼', '자몽 소다(스쿼트/프레스카)']);
+    const spirits = new Set(['위스키', '리큐르', '진', '보드카', '럼', '데킬라·아가베', '브랜디', '비터·아페리티프', '베르무트·와인', '탄산·음료']);
+    const covered = new Set(LIQUOR_MASTER.map((i) => i.ingredientName));
+    const gaps = ingredients.filter((g) => spirits.has(g.category) && g.usageCount > 0 && !pantry.has(g.name) && !covered.has(g.name)).map((g) => g.name);
+    expect(gaps).toEqual([]);
+  });
   it('위스키는 분류(whiskyClass)를 자동으로 들고 있다', () => {
     const w = LIQUOR_MASTER.filter((i) => i.category === 'whisky');
     const withClass = w.filter((i) => i.whiskyClass);
