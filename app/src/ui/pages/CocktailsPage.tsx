@@ -7,7 +7,7 @@
  * 기주·IBA·상태는 필터 안으로 모았고 기능은 그대로다.
  */
 import { cocktailWords } from '../../services/tasteWords';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useUI } from '../UIContext';
 import { useHeldIds, useSubMap } from '../../hooks/useData';
 import { garnishState } from '../../services/garnishStock';
@@ -15,7 +15,7 @@ import { referenceRepo } from '../../repositories/referenceRepo';
 import { evaluateCocktail } from '../../services/availabilityService';
 import { CocktailDetail } from '../components/CocktailDetail';
 import { IngredientBrowser } from '../components/browsers';
-import { ChipRow, ChipToggle, SearchBox, StateLine, type ChipOption, FilterButton, GarnishBadge } from '../components/common';
+import { ChipRow, ChipToggle, SearchBox, StateLine, type ChipOption, FilterButton, GarnishBadge, useFilterDismiss } from '../components/common';
 import { CocktailMark } from '../components/Mark';
 import { normalize, hitsKey, cocktailKey, byReadyThenName, useGroupChips } from '../listUtils';
 import { type AvailabilityStatus } from '../../models/types';
@@ -43,6 +43,7 @@ export function CocktailsPage() {
   const [q, setQ] = useState('');
   const [ready, setReady] = useState(false);
   const [openFilter, setOpenFilter] = useState(false);
+  useFilterDismiss(openFilter, useCallback(() => setOpenFilter(false), []));
   const [base, setBase] = useState('all');
   const [iba, setIba] = useState('all');
   const [status, setStatus] = useState<StatusFilter>('all');
@@ -99,9 +100,10 @@ export function CocktailsPage() {
     <>
       <h2 className="pagetitle" data-k="Recipe Index">칵테일<span className="sub">레시피 {referenceRepo.cocktails().length}종</span></h2>
 
-      <SearchBox value={q} onChange={setQ} placeholder="칵테일 또는 재료 검색" />
+      {/* 위스키 탭과 같은 자리 — 필터 버튼은 검색창 옆 */}
+      <SearchBox value={q} onChange={setQ} placeholder="칵테일 또는 재료 검색"
+        after={<FilterButton open={openFilter} count={filterCount} onToggle={() => setOpenFilter((v) => !v)} />} />
       <div className="controls tight">
-        <FilterButton open={openFilter} count={filterCount} onToggle={() => setOpenFilter((v) => !v)} />
         <ChipToggle label="지금 만들 수 있는 것" cls="ok" on={ready} onToggle={() => setReady((v) => !v)} />
       </div>
 

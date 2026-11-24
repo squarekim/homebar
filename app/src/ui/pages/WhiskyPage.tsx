@@ -4,7 +4,7 @@
  * 지역·캐스크·분류·향미 수치는 그 뒤로 미룬다. 보유 수량·잔량 관리는 내 술장이 맡는다.
  */
 import { cocktailWords, whiskyWords } from '../../services/tasteWords';
-import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode, useCallback } from 'react';
 import { useUI } from '../UIContext';
 import { useWhiskies, useBottles, useBottleNotes, useHeldIds, useSubMap } from '../../hooks/useData';
 import { cocktailsForBottle } from '../../services/pairingService';
@@ -21,9 +21,9 @@ import { DistilleryCard } from '../components/DistilleryCard';
 /** 세계 지도는 데이터·윤곽이 커서(약 320KB) 열 때 불러온다 */
 const DistilleryMapView = lazy(() => import('../components/DistilleryMap').then((m) => ({ default: m.DistilleryMapView })));
 import { bottleKindLabel } from '../../data/bottleIngredients';
-import { FlavorBars, MakerNoteView, noteHeading, noteTag, BottleBadges, Term, ChipRow, SearchBox, FilterButton, type ChipOption } from '../components/common';
+import { FlavorBars, MakerNoteView, noteHeading, noteTag, BottleBadges, Term, ChipRow, SearchBox, FilterButton, type ChipOption, useFilterDismiss } from '../components/common';
 import { BottleMark } from '../components/Mark';
-import { liquorMasterById, LIQUOR_MASTER } from '../../data/liquorMaster';
+import { liquorMasterById, LIQUOR_MASTER, nameEnOf } from '../../data/liquorMaster';
 import { previewBottle, isPreviewId } from '../../data/userBottles';
 
 /** 둘러보기 목록 — 기준 DB의 위스키 전부(술장에 넣지 않은 것도) */
@@ -149,6 +149,7 @@ function WhiskyDetail({ bottle: w, owned }: { bottle: Bottle; owned?: Bottle | u
   return (
     <article className="detail">
       <h2>{w.name}</h2>
+      {nameEnOf(w.productId) && <p className="sub en">{nameEnOf(w.productId)}</p>}
       <div className="art"><BottleMark kind={bottleKindLabel(w)} bottleId={w.id} size="lg" /></div>
       <p className="taste">{character(w)}</p>
       <div className="meta">
@@ -231,6 +232,7 @@ export function WhiskyPage() {
   const [q, setQ] = useState('');
   const [cls, setCls] = useState('all');
   const [openCls, setOpenCls] = useState(false);
+  useFilterDismiss(openCls, useCallback(() => setOpenCls(false), []));
   // 넣은 위스키가 없으면 둘러보기부터 연다
   const [view, setView] = useState<View>(() => (whiskies.length ? 'list' : 'browse'));
   const browsing = view === 'browse';
@@ -310,7 +312,7 @@ export function WhiskyPage() {
               <button className="rowitem" key={w.id} aria-current={bottleId === w.id} onClick={() => openBottle(w.id)}>
                 <BottleMark kind={bottleKindLabel(w)} bottleId={w.id} size="sm" />
                 <div className="body">
-                  <span className="nm">{w.name}</span>
+                  <span className="nm">{w.name}{nameEnOf(w.productId) && <small className="en">{nameEnOf(w.productId)}</small>}</span>
                   <div className="taste">{character(w)}</div>
                   <div className="foot">
                     {w.abv && <span className="mi">{w.abv}</span>}

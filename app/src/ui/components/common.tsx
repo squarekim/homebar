@@ -372,11 +372,26 @@ export function StartButtons() {
   );
 }
 
+/**
+ * 필터 창 바깥을 누르거나 Esc를 누르면 닫는다. 필터 버튼(data-filterbtn)과 창(.filterpanel) 안은 제외 —
+ * 버튼은 제 onToggle로 닫고, 창 안의 칩은 눌러도 창이 그대로 있어야 한다.
+ */
+export function useFilterDismiss(open: boolean, close: () => void) {
+  useEffect(() => {
+    if (!open) return;
+    const down = (e: PointerEvent) => { if (!(e.target as Element).closest?.('.filterpanel, [data-filterbtn]')) close(); };
+    const key = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
+    document.addEventListener('pointerdown', down);
+    document.addEventListener('keydown', key);
+    return () => { document.removeEventListener('pointerdown', down); document.removeEventListener('keydown', key); };
+  }, [open, close]);
+}
+
 /** 필터 버튼 — 글자 대신 깔때기 아이콘. 켜진 조건 수를 작은 숫자로 붙인다 */
 export function FilterButton({ open, count, onToggle, disabled }: { open: boolean; count: number; onToggle: () => void; disabled?: boolean }) {
   const label = count ? `필터, ${count}개 켜짐` : '필터';
   return (
-    <button className="chip iconchip" aria-pressed={open} aria-label={label} title={label} onClick={onToggle} disabled={disabled}>
+    <button data-filterbtn className="chip iconchip" aria-pressed={open} aria-label={label} title={label} onClick={onToggle} disabled={disabled}>
       <IconFilter />
       {count > 0 && <span className="badge">{count}</span>}
     </button>

@@ -3,10 +3,11 @@
  * 술을 얼마나 마시나 → 평소 마시는 것 고르기 → 도수 → 예산 → 위스키·칵테일 추천 순서다.
  * 카드마다 '좋아요'와 '별로' 버튼을 따로 두고, 누른 버튼을 다시 누르면 고르기 전으로 돌아간다.
  * 음료와 술은 나눠 보여 주고, 맨 위에 몇 번째 질문인지 적는다.
- * 결과는 아직 취향 프로필에 저장하지 않는다.
+ * 결과 화면에서 '이 취향 저장'을 누르면 카드로 만든 맛 벡터를 내 취향('me')에 덮어쓴다. 누르기 전엔 저장하지 않는다.
  */
 import { useMemo, useState } from 'react';
 import { useUI } from '../UIContext';
+import { tasteProfileRepo } from '../../repositories/tasteProfileRepo';
 import { ChipRow } from '../components/common';
 import {
   HABITS, STRENGTHS, BUDGETS,
@@ -55,7 +56,7 @@ function ResultRow({ r, onOpen }: { r: StarterResult; onOpen?: () => void }) {
 }
 
 export function StarterPage() {
-  const { openCocktail, goTab } = useUI();
+  const { openCocktail, goTab, toast } = useUI();
   const [step, setStep] = useState<Step>('habit');
   const [habit, setHabit] = useState<DrinkHabit>('sometimes');
   const [marks, setMarks] = useState<Record<string, Mark>>({});
@@ -153,6 +154,14 @@ export function StarterPage() {
       <div className="btnrow">
         {at > 0 && <button className="btn" onClick={back}>이전</button>}
         {step !== 'result' && <button className="btn primary" onClick={next}>{step === 'budget' ? '추천 보기' : '다음'}</button>}
+        {step === 'result' && result?.taste && (
+          <button className="btn primary" onClick={async () => {
+            const me = await tasteProfileRepo.me();
+            await tasteProfileRepo.save({ ...me, vector: result.taste!, source: 'manual' });
+            toast('취향 저장됨');
+            goTab('today');
+          }}>이 취향 저장하고 홈으로</button>
+        )}
         {step === 'result' && <button className="btn" onClick={() => { setMarks({}); setStep('habit'); }}>처음부터</button>}
         <button className="btn" onClick={() => goTab('today')}>닫기</button>
       </div>

@@ -816,14 +816,19 @@ input[type=search]{border-width:0 0 1px;border-color:var(--ink);background:trans
 
 /* ── 넓은 PC 메인: 매거진 스프레드 (TodayEditorial) ── 왼쪽 7칸 스펙 시트, 오른쪽 5칸 인덱스·술장·추가 추천 */
 .ed{margin-top:var(--s5)}
-.ed-empty{display:flex;justify-content:center;padding:120px 0}
-.ed-tools{display:flex;align-items:center;justify-content:flex-end;gap:var(--s2);padding-bottom:var(--s3);border-bottom:1px solid var(--ink)}
-.ed-tools .pickfilters{position:relative}
-.ed-tools .pickfilters .filterpanel{position:absolute;right:0;top:calc(100% + 6px);z-index:5;width:360px;background:var(--bg);text-align:left}
+.ed-empty{display:flex;flex-direction:column;align-items:center;gap:var(--s2);padding:80px 0}
+.ed-hero{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--s4);padding-bottom:var(--s4);border-bottom:1px solid var(--ink)}
+.ed-hero .ask{font-family:var(--display);font-weight:700;font-size:40px;line-height:1.2}
+.ed-hero .asksub{font-size:15px;color:var(--mute);margin-top:var(--s1);max-width:560px;word-break:keep-all}
+.ed-actions{display:flex;align-items:center;gap:var(--s2);flex-shrink:0}
+.ed-actions .pickfilters > .controls{flex-wrap:nowrap}
+.ed-more{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:48px;padding:56px 0 80px;border-top:1px solid var(--ink)}
+.ed-actions .pickfilters{position:relative}
+.ed-actions .pickfilters .filterpanel{position:absolute;right:0;top:calc(100% + 6px);z-index:5;width:360px;background:var(--bg);text-align:left}
 .ed-grid{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);align-items:start}
 .ed-main{padding:80px 56px 96px 0;border-right:1px solid var(--line);min-width:0}
 .ed-main .empty{text-align:center}
-.ed-side{padding:64px 0 80px 48px;display:flex;flex-direction:column;gap:56px;min-width:0}
+.ed-side{padding:80px 0 96px 48px;min-width:0}
 /* 스펙 시트 */
 .spec-meta{font-family:var(--body);font-size:13px;letter-spacing:0;color:var(--mute);margin-bottom:var(--s3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .spec-ing tr.ex td{color:var(--mute);font-size:13px}
@@ -841,7 +846,7 @@ input[type=search]{border-width:0 0 1px;border-color:var(--ink);background:trans
 .spec .btnrow{margin-top:48px}
 /* 오른쪽 인덱스 */
 .ed-head{display:flex;align-items:baseline;justify-content:space-between;padding-bottom:var(--s1);border-bottom:1px solid var(--ink)}
-.ed-head .k{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute);white-space:nowrap}
+.ed-head .k{font-size:15px;font-weight:600;white-space:nowrap}
 .ed-head small{font-family:var(--mono);font-size:11px;color:var(--mute);white-space:nowrap}
 .ed-index{list-style:none}
 .ed-index li{border-bottom:1px solid var(--line)}
@@ -856,7 +861,7 @@ input[type=search]{border-width:0 0 1px;border-color:var(--ink);background:trans
 .ed-block > .lnk{margin-top:var(--s2)}
 .ed-cab{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;padding:var(--s2) 0 var(--s1)}
 .ed-cab span{white-space:nowrap}
-.ed-cab .more{color:var(--mute)}
+.ed-cab .rest{color:var(--mute)}
 .ed-next{list-style:none}
 .ed-next li{display:flex;align-items:center;justify-content:space-between;gap:var(--s2);padding:12px 0;border-bottom:1px solid var(--line)}
 .ed-next b{font-weight:500;word-break:keep-all}
@@ -963,3 +968,10 @@ p,li,td,dd,label,.hint,.recipe .ing,.it span,.rowitem .nm,.taste{word-break:keep
 .rowitem>.base{flex:none;align-self:center;font-size:12px;color:var(--mute);white-space:nowrap}
 .recipe .ing.gn .amt{font-size:12px;letter-spacing:.04em}
 .detail .tline{margin-top:4px;font-size:14px;color:var(--sub);line-height:1.5;word-break:keep-all}
+
+/* 홈 맨 위 — 처음 온 사람 안내, 다시 온 사람의 이어서 추천 */
+.welcome .btn{margin-top:var(--s3);width:auto;display:inline-flex}
+.likednext{display:inline-block;margin-top:var(--s2);padding:8px 12px;border:1px solid var(--line);font-size:14px;color:var(--ink);text-align:left;word-break:keep-all}
+.likednext:hover{background:var(--panel)}
+.likednext b{font-weight:600}
+.spec-frame.pair{gap:var(--s4)}

@@ -253,4 +253,22 @@ export function diversePool(all: RecommendationResult[], size = 12, perBase = 3)
   return picked;
 }
 
+/**
+ * 베이스 술끼리 번갈아 세운다 — 점수 순서는 베이스 안에서만 지킨다.
+ * 가진 술이 한쪽(예: 위스키)에 몰려 있으면 점수순 목록 위쪽이 한 베이스로 채워지기 때문이다.
+ * 첫 줄은 1순위 베이스를 빼고 2순위 베이스부터 시작해, 몰린 베이스가 맨 앞에 서지 않게 한다.
+ */
+export function interleaveByBase(all: RecommendationResult[]): RecommendationResult[] {
+  const groups = new Map<string, RecommendationResult[]>();
+  for (const r of all) {
+    const key = r.kind === 'whisky' ? '위스키 한 잔' : (r.base ?? '');
+    (groups.get(key) ?? groups.set(key, []).get(key)!).push(r);
+  }
+  const lists = [...groups.values()];
+  if (lists.length > 1) lists.push(lists.shift()!);
+  const out: RecommendationResult[] = [];
+  for (let i = 0; out.length < all.length; i++) for (const g of lists) if (g[i]) out.push(g[i]!);
+  return out;
+}
+
 export { cosineSimilarity };

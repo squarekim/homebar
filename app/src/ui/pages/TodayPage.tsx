@@ -11,15 +11,15 @@ import { useUI } from '../UIContext';
 import { useRecommendContext } from '../../hooks/useRecommendContext';
 import { useLogs, useHeldIds } from '../../hooks/useData';
 import { garnishState } from '../../services/garnishStock';
-import { whatToDrink, type RecommendMode, diversePool } from '../../services/recommendationService';
+import { whatToDrink, type RecommendMode, diversePool, interleaveByBase } from '../../services/recommendationService';
 import { STATUS_LEAD_KO } from '../../services/availabilityService';
-import { ChipRow, FilterButton, LogCard, StarterNotice, StartButtons, allChips, GarnishBadge } from '../components/common';
+import { ChipRow, FilterButton, LogCard, StarterNotice, StartButtons, allChips, GarnishBadge, useFilterDismiss } from '../components/common';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { TodayReel } from '../components/TodayReel';
 import { MODES, GroupRec, PurchaseRec, ClearStockRec } from './RecommendPage';
 import { type RecommendationResult } from '../../models/types';
 import { IS_BETA } from '../../config';
-import { TodayEditorial, StartLinks } from './TodayEditorial';
+import { TodayEditorial, StartLinks, Welcome, LikedNext, useIsNew } from './TodayEditorial';
 import { useEffect } from 'react';
 
 /** 넓은 PC(1100px 이상)인지 — 메인 지면 배치를 바꾸는 데만 쓴다 */
@@ -111,12 +111,14 @@ function OtherWays() {
 
 export function TodayPage() {
   const ctx = useRecommendContext();
+  const isNew = useIsNew();
   const { openCocktail, openLog, goTab, goLogs } = useUI();
   const logs = useLogs();
   const [mode, setMode] = useState<RecommendMode>('available');
   const [kind, setKind] = useState<Kind>('all');
   const [base, setBase] = useState('all');
   const [openFilter, setOpenFilter] = useState(false);
+  useFilterDismiss(openFilter, useCallback(() => setOpenFilter(false), []));
   const picks = useMemo(() => {
     if (kind === 'whisky') return reelPool(whatToDrink(ctx, 'whisky', 80), 'whisky');
     let all = whatToDrink(ctx, mode, 120);
@@ -130,7 +132,7 @@ export function TodayPage() {
     if (kind === 'whisky') return whatToDrink(ctx, 'whisky', 200);
     const cks = whatToDrink(ctx, mode, 400).filter((r) => r.kind === 'cocktail' && ok(r)).filter((r) => base === 'all' || r.base === base);
     const wks = kind === 'all' && base === 'all' ? whatToDrink(ctx, 'whisky', 200) : [];
-    return [...cks, ...wks].sort((x, y) => y.score - x.score);
+    return interleaveByBase([...cks, ...wks].sort((x, y) => y.score - x.score));
   }, [ctx, mode, kind, base]);
   const wide = useWide();
   // 종류 칩만 바깥에 두고, 맛과 베이스 술은 칵테일 목록처럼 "필터" 안에 모은다
@@ -197,6 +199,14 @@ export function TodayPage() {
         </>
       ) : (
       <section className={picks.length ? 'today' : 'today none'}>
+        {/* 첫 화면의 할 일을 한 문장으로 — 상태(재고 없음 → 고르기 → 고른 뒤)에 따라 바뀐다 */}
+        {isNew && picks.length > 0 ? <Welcome /> : <>
+        <h2 className="ask">{!picks.length ? '먼저 집에 있는 술부터' : picked ? '오늘의 잔' : '오늘 뭐 마실까'}</h2>
+        <p className="asksub">{!picks.length
+          ? '술장에 넣은 술로 만들 수 있는 잔만 추천'
+          : picked ? '레시피 보고 만든 뒤 기록으로 남기기' : '지금 만들 수 있는 잔만 모음 · 카드 한 장을 고르거나 랜덤 추천으로'}</p>
+        {!picked && <LikedNext pool={picks} />}
+        </>}
 
         {picks.length > 0 ? (
           <TodayReel picks={picks} onPicked={onPicked}
@@ -221,7 +231,7 @@ export function TodayPage() {
                   <button className={picked.kind === 'cocktail' ? 'btn sm ghost' : 'btn primary big'} onClick={() => made(picked)}>
                     {picked.kind === 'cocktail' ? '만든 잔 남기기' : '마신 잔 남기기'}
                   </button>
-                  <button className="btn sm ghost" onClick={again}>랜덤 추천</button>
+                  <button className="btn sm ghost" onClick={again}>다시 고르기</button>
                 </div>
               </div>
             )}

@@ -538,6 +538,8 @@ function build([id, ko, en, brand, sub, abv, ml, country, ing, alias, wc]: Row, 
 export const LIQUOR_MASTER: LiquorMasterItem[] = GROUPS.flatMap(([cat, rows]) => rows.map((r) => build(r, cat)));
 
 export const liquorMasterById = new Map<string, LiquorMasterItem>(LIQUOR_MASTER.map((i) => [i.id, i]));
+/** 병의 영문명 — 기준 DB 제품과 이어진 병만. 없으면 undefined(칵테일처럼 줄을 뺀다) */
+export const nameEnOf = (productId?: string): string | undefined => (productId ? liquorMasterById.get(productId)?.nameEn || undefined : undefined);
 
 export function masterCountByCategory(): Record<string, number> {
   return LIQUOR_MASTER.reduce<Record<string, number>>((acc, i) => { acc[i.category] = (acc[i.category] ?? 0) + 1; return acc; }, {});
