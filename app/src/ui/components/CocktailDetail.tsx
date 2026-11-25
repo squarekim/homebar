@@ -12,7 +12,9 @@ import { garnishState, idsForPart } from '../../services/garnishStock';
 import { cocktailAbvLabel } from '../../services/cocktailStrength';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { evaluateCocktail, STATUS_LEAD_KO } from '../../services/availabilityService';
-import { FlavorBars, Term } from './common';
+import { FlavorBars, Term, ChipRow } from './common';
+import { useEffect, useState } from 'react';
+import { scaledAmount, type AmountUnit } from '../../services/scaleAmount';
 import { GlassArt } from './GlassArt';
 import { glassOf, garnishParts, GLASS_LABEL_KO } from '../../data/drinkVisual';
 import { methodSteps } from '../../data/beginnerGuide';
@@ -85,6 +87,16 @@ export function CocktailDetail({ id }: { id: string }) {
   const heldIds = useHeldIds();
   const subMap = useSubMap();
   const ck = referenceRepo.cocktailById(id);
+  const [servings, setServings] = useState<'1' | '2' | '4'>('1');
+  const [unit, setUnit] = useState<AmountUnit>('ml');
+  const [awake, setAwake] = useState(false);
+  // 만드는 동안 화면이 꺼지지 않게 — 지원하지 않는 브라우저는 버튼을 숨긴다
+  useEffect(() => {
+    if (!awake) return;
+    let lock: { release: () => Promise<void> } | undefined;
+    (navigator as any).wakeLock?.request('screen').then((l: typeof lock) => { lock = l; }).catch(() => setAwake(false));
+    return () => { lock?.release().catch(() => {}); };
+  }, [awake]);
   if (!ck) return <div className="empty">레시피를 찾을 수 없어요.</div>;
 
   const ev = evaluateCocktail(ck, heldIds, subMap);
@@ -114,6 +126,11 @@ export function CocktailDetail({ id }: { id: string }) {
       <div className="dgrid">
         <div>
           <div className="sechead in">재료</div>
+          <div className="makebar">
+            <ChipRow value={servings} options={[{ v: '1', label: '1잔' }, { v: '2', label: '2잔' }, { v: '4', label: '4잔' }]} onChange={setServings} tight />
+            <ChipRow value={unit} options={[{ v: 'ml', label: 'ml' }, { v: 'oz', label: 'oz' }]} onChange={setUnit} tight />
+            {'wakeLock' in navigator && <button className="chip" aria-pressed={awake} onClick={() => setAwake((v) => !v)}>화면 켜 두기</button>}
+          </div>
           <div className="recipe">
             {ck.ingredients.map((ing, i) => {
               const has = heldIds.has(ing.ingredientId);
@@ -130,7 +147,7 @@ export function CocktailDetail({ id }: { id: string }) {
                     {off && <span className="lackmark">없음</span>}
                     {ing.optional && <span className="opt">선택</span>}
                   </span>
-                  <span className="amt">{amountOf(ing.raw, ing.ingredientName) || '적당량'}</span>
+                  <span className="amt">{scaledAmount(ing.amountMl, +servings, unit) ?? (amountOf(ing.raw, ing.ingredientName) || '적당량')}</span>
                 </div>
               );
             })}

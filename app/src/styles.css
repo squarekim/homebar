@@ -972,6 +972,8 @@ p,li,td,dd,label,.hint,.recipe .ing,.it span,.rowitem .nm,.taste{word-break:keep
 /* 홈 맨 위 — 처음 온 사람 안내, 다시 온 사람의 이어서 추천 */
 .welcome .btn{margin-top:var(--s3);width:auto;display:inline-flex}
 .ed-next .taste-hit{color:var(--mute);font-size:13px}
+.makebar{display:flex;flex-wrap:wrap;gap:var(--s2);margin:var(--s1) 0 var(--s2)}
+.makebar .chipbar,.makebar>div{margin:0}
 .likednext{display:inline-block;margin-top:var(--s2);padding:8px 12px;border:1px solid var(--line);font-size:14px;color:var(--ink);text-align:left;word-break:keep-all}
 .likednext:hover{background:var(--panel)}
 .likednext b{font-weight:600}
