@@ -73,6 +73,14 @@ const KINDS: { v: Kind; label: string; icon?: () => ReactElement }[] = [
   { v: 'cocktail', label: '칵테일', icon: IconMartini },
   { v: 'whisky', label: '위스키 한 잔', icon: IconWhisky },
 ];
+/** 상황 칩 — 필터 창을 열지 않아도 바로 보이는 조건 */
+type Quick = 'easy' | 'new';
+const QUICKS: { v: Quick; label: string }[] = [
+  { v: 'easy', label: '간단하게' },
+  { v: 'new', label: '안 마셔 본 잔' },
+];
+/** 재료(선택 재료 제외) 3개 이하 */
+const isEasy = (id: string) => (referenceRepo.cocktailById(id)?.ingredients.filter((i) => !i.optional).length ?? 99) <= 3;
 /** 베이스 술 필터 — 레시피에 있는 베이스 순서 그대로 */
 const BASES = allChips([...new Set(referenceRepo.cocktails().map((c) => c.base))], '전체');
 /** 맛 필터 — 칵테일에만 적용된다. 위스키는 종류 필터로 옮겼다 */
@@ -117,6 +125,9 @@ export function TodayPage() {
   const [mode, setMode] = useState<RecommendMode>('available');
   const [kind, setKind] = useState<Kind>('all');
   const [base, setBase] = useState('all');
+  const [quick, setQuick] = useState<Quick | null>(null);
+  const tried = useMemo(() => new Set(logs.map((l) => l.drinkId)), [logs]);
+  const byQuick = useCallback((r: RecommendationResult) => !quick || (quick === 'easy' ? r.kind === 'cocktail' && isEasy(r.id) : !tried.has(r.id)), [quick, tried]);
   const [openFilter, setOpenFilter] = useState(false);
   useFilterDismiss(openFilter, useCallback(() => setOpenFilter(false), []));
   const picks = useMemo(() => {
@@ -124,16 +135,16 @@ export function TodayPage() {
     let all = whatToDrink(ctx, mode, 120);
     if (kind === 'cocktail' || base !== 'all') all = all.filter((r) => r.kind === 'cocktail');
     if (base !== 'all') all = all.filter((r) => r.base === base);
-    return reelPool(all, mode);
-  }, [ctx, mode, kind, base]);
+    return reelPool(all.filter(byQuick), mode);
+  }, [ctx, mode, kind, base, byQuick]);
   // 넓은 PC의 메뉴 인덱스 — 위 숫자와 같은 범위 전체(만들 수 있는 칵테일 + 가진 위스키), 추천 순서
   const full = useMemo(() => {
     const ok = (r: RecommendationResult) => r.kind === 'whisky' || r.status === 'READY' || r.status === 'SUBSTITUTE';
     if (kind === 'whisky') return whatToDrink(ctx, 'whisky', 200);
     const cks = whatToDrink(ctx, mode, 400).filter((r) => r.kind === 'cocktail' && ok(r)).filter((r) => base === 'all' || r.base === base);
     const wks = kind === 'all' && base === 'all' ? whatToDrink(ctx, 'whisky', 200) : [];
-    return interleaveByBase([...cks, ...wks].sort((x, y) => y.score - x.score));
-  }, [ctx, mode, kind, base]);
+    return interleaveByBase([...cks, ...wks].filter(byQuick).sort((x, y) => y.score - x.score));
+  }, [ctx, mode, kind, base, byQuick]);
   const wide = useWide();
   // 종류 칩만 바깥에 두고, 맛과 베이스 술은 칵테일 목록처럼 "필터" 안에 모은다
   const tasteOn = mode !== 'available';
@@ -156,6 +167,9 @@ export function TodayPage() {
         {KINDS.map((k) => (
           <button key={k.v} className={k.icon ? 'chip iconchip' : 'chip'} aria-pressed={kind === k.v} aria-label={k.label} title={k.label}
             onClick={() => setKind(k.v)}>{k.icon ? <k.icon /> : k.label}</button>
+        ))}
+        {QUICKS.map((q) => (
+          <button key={q.v} className="chip" aria-pressed={quick === q.v} onClick={() => setQuick((v) => (v === q.v ? null : q.v))}>{q.label}</button>
         ))}
       </div>
       {openFilter && kind !== 'whisky' && (
