@@ -75,7 +75,7 @@ export function PurchaseRec() {
           <b>+{b.addedRecipes}</b>
           <div style={{ flex: 1 }}>
             <div style={{ fontWeight: 700 }}>{b.name} <span className="pill">{b.category}</span></div>
-            <div style={{ fontSize: 12, color: 'var(--mute)' }}>만들 수 있는 잔 {b.beforeCount}종 → {b.afterCount}종</div>
+            <div style={{ fontSize: 12, color: 'var(--mute)' }}>만들 수 있는 잔 {b.beforeCount}종 → {b.afterCount}종{ctx.hasTaste && b.tasteHits > 0 ? ` · 취향에 맞는 잔 ${b.tasteHits}` : ''}</div>
             <div style={{ fontSize: 12, color: 'var(--dim)', marginTop: 2 }}>{b.reason}</div>
             <div className="bar"><i style={{ width: `${(b.addedRecipes / max) * 100}%` }} /></div>
           </div>

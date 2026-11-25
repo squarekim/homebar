@@ -280,7 +280,7 @@ export function TodayEditorial({ list, filters, emptyText }: {
               {buys.map((b) => (
                 <li key={b.ingredientId}>
                   <div>
-                    <b>{b.name}</b> <span className="plus">+{b.addedRecipes}잔</span>
+                    <b>{b.name}</b> <span className="plus">+{b.addedRecipes}잔</span>{ctx.hasTaste && b.tasteHits > 0 && <span className="taste-hit"> · 취향 {b.tasteHits}</span>}
                     <div className="sub">{b.unlockedRecipeNames.slice(0, 3).join(', ')}{b.unlockedRecipeNames.length > 3 ? ` 외 ${b.unlockedRecipeNames.length - 3}` : ''}</div>
                   </div>
                   <button className="btn sm" onClick={async () => { await inventoryRepo.setOwned(b.ingredientId, b.name, true); toast(`${b.name}${eul(b.name)} 체크했어요`); }}>체크</button>

@@ -373,6 +373,7 @@ export interface PurchaseSuggestion {
   blockedCount: number;      // 이 재료가 막고 있는 레시피 수
   unlockedRecipeNames: string[];
   tasteScore: number;
+  tasteHits: number;         // 새로 열리는 잔 중 취향 일치 70 이상
   totalScore: number;
   reason: string;
 }

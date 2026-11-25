@@ -69,7 +69,7 @@ export function calculatePurchases(ctx: PurchaseContext, limit = 30): PurchaseSu
     let added = 0;
     let blocked = 0;
     const unlocked: string[] = [];
-    let tasteAcc = 0, tasteN = 0;
+    let tasteAcc = 0, tasteN = 0, tasteHits = 0;
 
     for (const ck of affectedCks) {
       const was = baseMakeable.get(ck.id)!;
@@ -77,7 +77,8 @@ export function calculatePurchases(ctx: PurchaseContext, limit = 30): PurchaseSu
       if (!was && now) {
         added++;
         unlocked.push(ck.name);
-        tasteAcc += tasteMatch(ctx.taste, ck.flavor); tasteN++;
+        const m = tasteMatch(ctx.taste, ck.flavor);
+        tasteAcc += m; tasteN++; if (m >= 70) tasteHits++;
       }
       if (ck.ingredients.some((i) => i.ingredientId === ing.id && !i.optional)) blocked++;
     }
@@ -103,6 +104,7 @@ export function calculatePurchases(ctx: PurchaseContext, limit = 30): PurchaseSu
       blockedCount: blocked,
       unlockedRecipeNames: unlocked,
       tasteScore,
+      tasteHits,
       totalScore: Math.round(total),
       reason: buildReason(added, blocked, tasteScore, utilization, unlocked),
     });
