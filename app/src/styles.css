@@ -514,6 +514,7 @@ th{color:var(--mute);font-size:12px;font-weight:500}
 @media (min-width:900px){
   .today{text-align:center}
   .today .controls{justify-content:center}
+  .today .controls.strip{justify-content:flex-start}
   .reelact,.picked{margin-left:auto;margin-right:auto}
 }
 @media (prefers-reduced-motion:reduce){.stage .card{transition:none!important}}

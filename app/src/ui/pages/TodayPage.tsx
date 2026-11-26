@@ -161,7 +161,7 @@ export function TodayPage() {
   const filterCount = (kind !== 'whisky' && tasteOn ? 1 : 0) + (kind !== 'whisky' && baseOn ? 1 : 0);
   const filters = (
     <div className="pickfilters">
-      <div className="controls tight">
+      <div className="controls tight strip">
         {/* 위스키 한 잔일 때도 자리를 지켜 칩이 옆으로 밀리지 않게 한다. 맛·베이스는 칵테일 조건이라 그때는 끈다 */}
         <FilterButton open={openFilter && kind !== 'whisky'} count={filterCount} disabled={kind === 'whisky'} onToggle={() => setOpenFilter((v) => !v)} />
         {KINDS.map((k) => (
