@@ -21,4 +21,4 @@
 - [ ] 내 비율 저장 (예: 진 +10ml)
 
 ## 알려진 문제
-- [ ] `distilleryMap.test.ts` — Windows 줄바꿈(CRLF) 때문에 실패
+- [x] `distilleryMap.test.ts` — Windows 줄바꿈(CRLF) 때문에 실패

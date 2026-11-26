@@ -56,7 +56,7 @@ describe('세계 증류소 지도 (2026-10-28 조사)', () => {
 
   it('생성 파일이 조사 JSON 과 같다', () => {
     const json = JSON.parse(readFileSync(resolve(__dirname, '../../scripts/data/worldDistilleries.json'), 'utf8'));
-    const ts = readFileSync(resolve(__dirname, '../data/worldDistilleries.ts'), 'utf8');
+    const ts = readFileSync(resolve(__dirname, '../data/worldDistilleries.ts'), 'utf8').replace(/\r\n/g, '\n');
     expect(buildWorldDistilleries(json)).toBe(ts);
     expect(WORLD_DISTILLERIES).toHaveLength(737);
   });
