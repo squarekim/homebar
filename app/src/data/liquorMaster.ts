@@ -401,6 +401,9 @@ const WINE: Row[] = [
   ['m_santahelena_alpas', '산타 헬레나 알파스 까베르네 소비뇽', 'Santa Helena Alpas Cabernet Sauvignon', '산타헬레나', '레드 와인', 0, 750, '칠레', '레드 와인(드라이)', '산타헬레나 알파스'],
   ['m_mateus_rose', '마테우스 로제', 'Mateus Rosé', '마테우스', '로제 와인', 11, 750, '포르투갈', '', '마테우스 로제 mateus'],
   ['m_lustau_amontillado', '루스타우 아몬티야도 로스 아르코스', 'Lustau Amontillado Los Arcos', '루스타우', '아몬티야도 셰리', 18.5, 750, '스페인', '셰리(아몬티야도)', '아몬티야도 셰리 amontillado'],
+  ['m_casillero_cab', '카시예로 델 디아블로 까베르네 소비뇽', 'Casillero del Diablo Cabernet Sauvignon', '콘차이토로', '레드 와인', 0, 750, '칠레', '레드 와인(드라이)', '카시예로 디아블로 casillero'],
+  ['m_oysterbay_sb', '오이스터 베이 소비뇽 블랑', 'Oyster Bay Sauvignon Blanc', '오이스터베이', '화이트 와인', 0, 750, '뉴질랜드', '드라이 화이트 와인', '오이스터베이 소비뇽블랑 oysterbay'],
+  ['m_martini_asti', '마티니 아스티', 'Martini Asti', '마티니', '스파클링 와인(스위트)', 7.5, 750, '이탈리아', '', '아스티 마티니아스티 asti'],
 ];
 
 /* ── 맥주 ── */
@@ -477,6 +480,11 @@ const TRAD: Row[] = [
   ['m_soju_andong', '안동소주', 'Andong Soju', '민속주안동소주', '증류식 소주 · 민속주', 45, 400, '한국', '', '안동소주'],
   ['m_ilpum_jinro', '일품진로', 'Ilpum Jinro', '하이트진로', '증류식 소주', 25, 375, '한국', '', '일품진로 일품 ilpum'],
   ['m_neurin_maeul', '느린마을 막걸리', 'Neurin Maeul Makgeolli', '배상면주가', '막걸리', 6, 750, '한국', '', '느린마을 막걸리'],
+  ['m_boksoondoga', '복순도가 손막걸리', 'Boksoondoga Son Makgeolli', '복순도가', '생막걸리', 6.5, 935, '한국', '', '복순도가 샴페인막걸리'],
+  ['m_haechang9', '해창막걸리 9도', 'Haechang Makgeolli 9', '해창주조장', '생막걸리', 9, 900, '한국', '', '해창 해창막걸리'],
+  ['m_hansan_sogokju', '한산소곡주', 'Hansan Sogokju', '한산소곡주', '약주', 18, 700, '한국', '', '소곡주 앉은뱅이술'],
+  ['m_ryeo25', '려 증류소주 25', 'Ryeo 25', '국순당', '증류식 소주', 25, 375, '한국', '', '려 국순당려 고구마소주'],
+  ['m_seoul_night', '서울의 밤', 'Seoul Night', '더한주류', '리큐르(매실 증류주)', 25, 375, '한국', '', '서울의밤 매실'],
 ];
 
 /* ── 소주 (희석식·과일 소주) — 15.7%는 2026년 제조사 발표 기준(참이슬·처음처럼·진로·새로·좋은데이) ── */
@@ -497,6 +505,8 @@ const SOJU: Row[] = [
 const SAKE: Row[] = [
   ['m_dassai45', '닷사이 45 준마이다이긴조', 'Dassai 45 Junmai Daiginjo', '아사히슈조', '준마이다이긴조', 15, 720, '일본', '', '닷사이 다사이 dassai'],
   ['m_kubota_senju', '쿠보타 센주', 'Kubota Senju', '아사히슈조(니가타)', '긴조', 15, 720, '일본', '', '쿠보타 kubota'],
+  ['m_kubota_manju', '쿠보타 만주', 'Kubota Manju', '아사히슈조(니가타)', '준마이다이긴조', 15, 720, '일본', '', '쿠보타만주 만쥬 kubota'],
+  ['m_dassai23', '닷사이 23 준마이다이긴조', 'Dassai 23 Junmai Daiginjo', '아사히슈조', '준마이다이긴조', 16, 720, '일본', '', '닷사이23 다사이23 dassai'],
   // 월계관은 국내에 두 가지가 같이 팔린다(2026-11-11 확인). 750은 키햐 15.6%·데일리샷 14~16%, 생산국은 판매처마다
   // '일본(교토)'과 '미국'으로 엇갈려 브랜드 본사 기준 일본으로 둔다. 다이긴죠 720ml는 키햐 16.5%·일본.
   ['m_wolgyegwan_junmai', '월계관 준마이 750', 'Gekkeikan Junmai 750', '월계관', '준마이', 15.6, 750, '일본', '', '월계관 겟케이칸 gekkeikan 준마이750'],
