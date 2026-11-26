@@ -86,6 +86,13 @@ export function deriveTasteFromLogs(logs: DrinkLog[]): FlavorVector | null {
   return out;
 }
 
+/** 테스트 결과와 기록이 2점 이상 다른 축, 차이 큰 순. */
+export function tasteGaps(test: FlavorVector, actual: FlavorVector): { axis: FlavorAxis; test: number; actual: number }[] {
+  return FLAVOR_AXES.map((axis) => ({ axis, test: test[axis], actual: actual[axis] }))
+    .filter((g) => Math.abs(g.actual - g.test) >= 2)
+    .sort((x, y) => Math.abs(y.actual - y.test) - Math.abs(x.actual - x.test));
+}
+
 /** 두 벡터를 가중 혼합(취향 점진 업데이트) */
 export function blendVectors(current: FlavorVector, incoming: FlavorVector, alpha: number): FlavorVector {
   const out = zeroVector();

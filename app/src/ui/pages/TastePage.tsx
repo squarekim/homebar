@@ -5,10 +5,11 @@
  * 직접 고르는 취향과 함께 마시는 사람은 그 아래에, 설정은 맨 아래 버튼으로 둔다.
  */
 import { useMemo } from 'react';
+import { FLAVOR_LABELS_KO } from '../../models/types';
 import { useUI } from '../UIContext';
 import { useLogs, useMe } from '../../hooks/useData';
 import { tasteService } from '../../services/tasteService';
-import { flavorWords, isNeutralTaste, summarizeLogs, TASTE_MIN_LOGS } from '../../services/flavorService';
+import { deriveTasteFromLogs, tasteGaps, flavorWords, isNeutralTaste, summarizeLogs, TASTE_MIN_LOGS } from '../../services/flavorService';
 import { FlavorBars } from '../components/common';
 import { TasteSetup, PeopleManager } from './SettingsPage';
 
@@ -19,6 +20,8 @@ export function TastePage() {
   const sum = useMemo(() => summarizeLogs(logs), [logs]);
   const set = !!me && !isNeutralTaste(me.vector);
   const words = set ? flavorWords(me.vector, 3) : [];
+  const actual = useMemo(() => (sum.enough ? deriveTasteFromLogs(logs) : null), [logs, sum.enough]);
+  const gaps = me?.testVector && actual ? tasteGaps(me.testVector, actual) : null;
 
   return (
     <>
@@ -47,6 +50,24 @@ export function TastePage() {
         <>
           <div className="sechead">맛 축별 취향</div>
           <FlavorBars vector={me.vector} compact />
+        </>
+      )}
+
+      {gaps && (
+        <>
+          <div className="sechead">테스트와 실제 취향</div>
+          {gaps.length === 0
+            ? <div className="empty">마신 기록이 테스트 결과와 비슷해요.</div>
+            : (
+              <div className="rowlist">
+                {gaps.map((g) => (
+                  <div className="kvrow" key={g.axis}>
+                    <div><span className="nm">{FLAVOR_LABELS_KO[g.axis]}</span> <small>{g.actual > g.test ? '생각보다 더 좋아해요' : '생각보다 덜 좋아해요'}</small></div>
+                    <div className="num">테스트 {Math.round(g.test)} → 기록 {Math.round(g.actual)}</div>
+                  </div>
+                ))}
+              </div>
+            )}
         </>
       )}
 

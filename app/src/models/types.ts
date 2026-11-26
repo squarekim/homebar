@@ -312,6 +312,8 @@ export interface TasteProfile {
   vector: FlavorVector;
   updatedAt: number;
   source: 'manual' | 'derived' | 'mixed';
+  /** 취향 찾기 테스트 결과. 기록이 쌓여 vector 가 바뀌어도 비교용으로 남긴다. */
+  testVector?: FlavorVector;
 }
 
 /** 대체재 매핑 (X 대신 Y 사용 가능) */

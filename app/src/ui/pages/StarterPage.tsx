@@ -157,7 +157,7 @@ export function StarterPage() {
         {step === 'result' && result?.taste && (
           <button className="btn primary" onClick={async () => {
             const me = await tasteProfileRepo.me();
-            await tasteProfileRepo.save({ ...me, vector: result.taste!, source: 'manual' });
+            await tasteProfileRepo.save({ ...me, vector: result.taste!, testVector: result.taste!, source: 'manual' });
             toast('취향 저장됨');
             goTab('today');
           }}>이 취향 저장하고 홈으로</button>
