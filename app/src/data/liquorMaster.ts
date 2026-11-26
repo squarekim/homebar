@@ -371,7 +371,7 @@ const LIQUEUR: Row[] = [
   ['m_bols_apricot', '볼스 애프리콧 브랜디', 'Bols Apricot Brandy', '볼스', '애프리콧 리큐르', 24, 700, '네덜란드', '애프리콧 브랜디', '애프리콧 살구브랜디 apricot'],
   ['m_ferrand_curacao', '피에르 페랑 드라이 큐라소', 'Pierre Ferrand Dry Curaçao', '페랑', '오렌지 큐라소', 40, 700, '프랑스', '오렌지 큐라소', '드라이큐라소 오렌지큐라소 curacao'],
   ['m_lejay_mure', '르쥬 크렘 드 뮈르', 'Lejay Crème de Mûre', '르쥬', '블랙베리 리큐르', 20, 700, '프랑스', '크렘 드 뮈르', '크렘드뮈르 블랙베리 mure 브램블'],
-  ['m_rw_violette', '로스만 앤 윈터 크렘 드 비올렛', 'Rothman & Winter Crème de Violette', '로스만 앤 윈터', '바이올렛 리큐르', 0, 750, '오스트리아', '크렘 드 비올렛', '비올렛 바이올렛 violette 에비에이션'],
+  ['m_rw_violette', '로스만 앤 윈터 크렘 드 비올렛', 'Rothman & Winter Crème de Violette', '로스만 앤 윈터', '바이올렛 리큐르', 20, 750, '오스트리아', '크렘 드 비올렛', '비올렛 바이올렛 violette 에비에이션'],
   ['m_amaro_nonino', '아마로 노니노 퀸테센시아', 'Amaro Nonino Quintessentia', '노니노', '아마로', 35, 700, '이탈리아', '아마로(노니노)', '노니노 아마로노니노 nonino 페이퍼플레인'],
   ['m_yellow_chartreuse', '옐로 샤르트뢰즈', 'Yellow Chartreuse', '샤르트뢰즈', '허브 리큐르', 40, 700, '프랑스', '기타 리큐르', '옐로샤르트뢰즈 yellowchartreuse'],
 ];
@@ -489,8 +489,8 @@ const SOJU: Row[] = [
   ['m_joeunday', '좋은데이', 'Good Day', '무학', '희석식 소주', 15.7, 360, '한국', '', '좋은데이 goodday'],
   ['m_jamong_aisul', '자몽에이슬', 'Jamong-e-isul', '하이트진로', '과일 소주(리큐르)', 13, 360, '한국', '', '자몽에이슬 과일소주'],
   ['m_sunhari', '순하리 처음처럼', 'Sunhari Chum Churum', '롯데칠성', '과일 소주(일반증류주)', 12, 360, '한국', '', '순하리 sunhari'],
-  ['m_chamisul_original', '참이슬 오리지널', 'Chamisul Original', '하이트진로', '희석식 소주', 0, 360, '한국', '', '참이슬빨간 빨간뚜껑 참이슬오리지널'],
-  ['m_daesun', '대선', 'C1 Daesun', '대선주조', '희석식 소주', 0, 360, '한국', '', '대선 대선소주'],
+  ['m_chamisul_original', '참이슬 오리지널', 'Chamisul Original', '하이트진로', '희석식 소주', 20.1, 360, '한국', '', '참이슬빨간 빨간뚜껑 참이슬오리지널'],
+  ['m_daesun', '대선', 'C1 Daesun', '대선주조', '희석식 소주', 16.5, 360, '한국', '', '대선 대선소주'],
 ];
 
 /* ── 사케·일본 소주 ── */
