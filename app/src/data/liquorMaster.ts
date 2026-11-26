@@ -370,10 +370,10 @@ const LIQUEUR: Row[] = [
   ['m_luxardo_sangue', '룩사르도 상궤 모를라코', 'Luxardo Sangue Morlacco', '룩사르도', '체리 리큐르', 30, 700, '이탈리아', '체리 브랜디 (상궤 모를라코)', '상궤모를라코 체리브랜디 luxardocherry'],
   ['m_bols_apricot', '볼스 애프리콧 브랜디', 'Bols Apricot Brandy', '볼스', '애프리콧 리큐르', 24, 700, '네덜란드', '애프리콧 브랜디', '애프리콧 살구브랜디 apricot'],
   ['m_ferrand_curacao', '피에르 페랑 드라이 큐라소', 'Pierre Ferrand Dry Curaçao', '페랑', '오렌지 큐라소', 40, 700, '프랑스', '오렌지 큐라소', '드라이큐라소 오렌지큐라소 curacao'],
-  ['m_lejay_mure', '르쥬 크렘 드 뮈르', 'Lejay Crème de Mûre', '르쥬', '블랙베리 리큐르', 20, 700, '프랑스', '크렘 드 뮈르', '크렘드뮈르 블랙베리 mure 브램블'],
+  ['m_lejay_mure', '르쥬 크렘 드 뮈르', 'Lejay Crème de Mûre', '르쥬', '블랙베리 리큐르', 15, 700, '프랑스', '크렘 드 뮈르', '크렘드뮈르 블랙베리 mure 브램블'],
   ['m_rw_violette', '로스만 앤 윈터 크렘 드 비올렛', 'Rothman & Winter Crème de Violette', '로스만 앤 윈터', '바이올렛 리큐르', 20, 750, '오스트리아', '크렘 드 비올렛', '비올렛 바이올렛 violette 에비에이션'],
   ['m_amaro_nonino', '아마로 노니노 퀸테센시아', 'Amaro Nonino Quintessentia', '노니노', '아마로', 35, 700, '이탈리아', '아마로(노니노)', '노니노 아마로노니노 nonino 페이퍼플레인'],
-  ['m_yellow_chartreuse', '옐로 샤르트뢰즈', 'Yellow Chartreuse', '샤르트뢰즈', '허브 리큐르', 40, 700, '프랑스', '기타 리큐르', '옐로샤르트뢰즈 yellowchartreuse'],
+  ['m_yellow_chartreuse', '옐로 샤르트뢰즈', 'Yellow Chartreuse', '샤르트뢰즈', '허브 리큐르', 43, 700, '프랑스', '기타 리큐르', '옐로샤르트뢰즈 yellowchartreuse'],
 ];
 
 /* ── 베르무트 ── */
