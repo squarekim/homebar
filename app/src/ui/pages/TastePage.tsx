@@ -8,6 +8,7 @@ import { useMemo } from 'react';
 import { FLAVOR_LABELS_KO } from '../../models/types';
 import { useUI } from '../UIContext';
 import { useLogs, useMe } from '../../hooks/useData';
+import { lastBackupAt } from '../../services/backupService';
 import { tasteService } from '../../services/tasteService';
 import { deriveTasteFromLogs, tasteGaps, flavorWords, isNeutralTaste, summarizeLogs, TASTE_MIN_LOGS } from '../../services/flavorService';
 import { FlavorBars } from '../components/common';
@@ -21,11 +22,21 @@ export function TastePage() {
   const set = !!me && !isNeutralTaste(me.vector);
   const words = set ? flavorWords(me.vector, 3) : [];
   const actual = useMemo(() => (sum.enough ? deriveTasteFromLogs(logs) : null), [logs, sum.enough]);
+  // 마지막 백업 뒤에 새로 적은 기록 수. 3잔 넘게 쌓이면 백업을 권한다.
+  const unsaved = useMemo(() => { const t = lastBackupAt(); return logs.filter((l) => Date.parse(l.date) > t).length; }, [logs]);
   const gaps = me?.testVector && actual ? tasteGaps(me.testVector, actual) : null;
 
   return (
     <>
       <h2 className="pagetitle" data-k="Tasting Profile">취향{sum.count > 0 && <span className="sub">기록 {sum.count}잔</span>}</h2>
+
+      {unsaved >= 3 && (
+        <div className="tastecard">
+          <div className="sechead">백업</div>
+          <p className="hint">백업하지 않은 기록이 {unsaved}잔 있어요. 기록은 이 브라우저에만 있어서, iPhone Safari 는 한동안 열지 않으면 지울 수 있어요.</p>
+          <div className="btnrow"><button className="btn" onClick={() => goTab('settings')}>백업하러 가기</button></div>
+        </div>
+      )}
 
       <div className="tastecard">
         <div className="sechead">내 취향</div>

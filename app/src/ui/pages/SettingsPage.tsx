@@ -9,7 +9,7 @@ import { BUILD_STAMP } from '../../config';
 import { useMe, useTasteProfiles } from '../../hooks/useData';
 import { tasteService } from '../../services/tasteService';
 import { tasteProfileRepo } from '../../repositories/tasteProfileRepo';
-import { backupService } from '../../services/backupService';
+import { backupService, markBackedUp } from '../../services/backupService';
 import { isNeutralTaste } from '../../services/flavorService';
 import { FlavorBars } from '../components/common';
 import { applyTheme, savedTheme, type Theme } from '../theme';
@@ -139,6 +139,7 @@ function BackupRestore() {
     a.href = url; a.download = `homebar-backup-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
+    markBackedUp();
     toast('백업 파일을 만들었어요');
   };
   const doImport = async (file: File) => {
@@ -153,7 +154,7 @@ function BackupRestore() {
   return (
     <>
       <div className="sechead">백업 · 복원</div>
-      <p className="hint">이 브라우저에만 저장됩니다.</p>
+      <p className="hint">이 브라우저에만 저장됩니다. iPhone Safari 는 한동안 열지 않으면 기록을 지울 수 있으니 가끔 백업해 두세요.</p>
       <div className="btnrow">
         <button className="btn primary" onClick={doExport}>백업 파일 만들기</button>
         <button className="btn" onClick={() => fileRef.current?.click()}>백업 파일로 복원하기</button>

@@ -8,6 +8,16 @@ import { type BackupSnapshot } from '../models/types';
 const SCHEMA = 'homebar-platform';
 const VERSION = 1;
 
+const LAST_KEY = 'homebar.lastBackup';
+
+/** 마지막 백업 시각(ms). 브라우저 저장소가 막혀 있으면 0. */
+export function lastBackupAt(): number {
+  try { return Number(localStorage.getItem(LAST_KEY)) || 0; } catch { return 0; }
+}
+export function markBackedUp(): void {
+  try { localStorage.setItem(LAST_KEY, String(Date.now())); } catch { /* 저장 못 해도 백업 파일은 만들어졌다 */ }
+}
+
 export const backupService = {
   async exportSnapshot(): Promise<BackupSnapshot> {
     const [inventory, drinkLogs, tasteProfiles, substitutions, bottleNotes, userBottles] = await Promise.all([
