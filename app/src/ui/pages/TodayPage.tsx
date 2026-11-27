@@ -74,11 +74,15 @@ const KINDS: { v: Kind; label: string; icon?: () => ReactElement }[] = [
   { v: 'whisky', label: '위스키 한 잔', icon: IconWhisky },
 ];
 /** 상황 칩 — 필터 창을 열지 않아도 바로 보이는 조건 */
-type Quick = 'easy' | 'new';
+type Quick = 'easy' | 'new' | 'fresh';
 const QUICKS: { v: Quick; label: string }[] = [
   { v: 'easy', label: '간단하게' },
   { v: 'new', label: '안 마셔 본 잔' },
+  { v: 'fresh', label: '상하기 전에' },
 ];
+/** 며칠 안에 상하는 재료. 날짜를 적지 않으니 '가지고 있으면 먼저 쓰자'는 뜻으로만 쓴다. */
+const PERISHABLE = new Set(['라임즙', '레몬즙', '라임', '레몬', '민트 잎', '계란흰자', '계란 노른자', '우유', '크림', '오렌지 주스', '파인애플 주스', '자몽 주스']);
+const usesPerishable = (id: string) => !!referenceRepo.cocktailById(id)?.ingredients.some((i) => !i.optional && PERISHABLE.has(i.ingredientName.trim()));
 /** 재료(선택 재료 제외) 3개 이하 */
 const isEasy = (id: string) => (referenceRepo.cocktailById(id)?.ingredients.filter((i) => !i.optional).length ?? 99) <= 3;
 /** 베이스 술 필터 — 레시피에 있는 베이스 순서 그대로 */
@@ -127,7 +131,7 @@ export function TodayPage() {
   const [base, setBase] = useState('all');
   const [quick, setQuick] = useState<Quick | null>(null);
   const tried = useMemo(() => new Set(logs.map((l) => l.drinkId)), [logs]);
-  const byQuick = useCallback((r: RecommendationResult) => !quick || (quick === 'easy' ? r.kind === 'cocktail' && isEasy(r.id) : !tried.has(r.id)), [quick, tried]);
+  const byQuick = useCallback((r: RecommendationResult) => !quick || (quick === 'easy' ? r.kind === 'cocktail' && isEasy(r.id) : quick === 'fresh' ? r.kind === 'cocktail' && usesPerishable(r.id) : !tried.has(r.id)), [quick, tried]);
   const [openFilter, setOpenFilter] = useState(false);
   useFilterDismiss(openFilter, useCallback(() => setOpenFilter(false), []));
   const picks = useMemo(() => {
