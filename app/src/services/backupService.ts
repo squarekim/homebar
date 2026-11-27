@@ -4,6 +4,7 @@
  */
 import { db } from '../db/schema';
 import { type BackupSnapshot } from '../models/types';
+import { readAll as readRatios, writeAll as writeRatios } from './scaleAmount';
 
 const SCHEMA = 'homebar-platform';
 const VERSION = 1;
@@ -28,7 +29,7 @@ export const backupService = {
       db.bottleNotes.toArray(),
       db.userBottles.toArray(),
     ]);
-    return { schema: SCHEMA, version: VERSION, exportedAt: new Date().toISOString(), inventory, drinkLogs, tasteProfiles, substitutions, bottleNotes, userBottles };
+    return { schema: SCHEMA, version: VERSION, exportedAt: new Date().toISOString(), inventory, drinkLogs, tasteProfiles, substitutions, bottleNotes, userBottles, myRatios: readRatios() };
   },
 
   async exportJson(): Promise<string> {
@@ -55,6 +56,7 @@ export const backupService = {
       if (snapshot.bottleNotes?.length) await db.bottleNotes.bulkPut(snapshot.bottleNotes);
       if (snapshot.userBottles?.length) await db.userBottles.bulkPut(snapshot.userBottles);
     });
+    if (snapshot.myRatios) writeRatios(mode === 'replace' ? snapshot.myRatios : { ...readRatios(), ...snapshot.myRatios });
   },
 
   async importJson(json: string, mode: 'replace' | 'merge' = 'replace'): Promise<void> {

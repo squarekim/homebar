@@ -391,6 +391,8 @@ export interface BackupSnapshot {
   substitutions: IngredientSubstitution[];
   bottleNotes?: { bottleId: string; text: string; updatedAt: number }[];
   userBottles?: UserBottle[] | undefined;
+  /** 칵테일 id → 재료 순번 → ml 가감 ('내 비율') */
+  myRatios?: Record<string, Record<string, number>> | undefined;
 }
 
 /** 사용자가 직접 추가한 보유 술 (시드 bottles 와 병합되어 컬렉션·분류·결손 계산에 반영) */
