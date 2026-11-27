@@ -14,7 +14,7 @@
 
 | | 주소 |
 |---|---|
-| 홈바 플랫폼 (베타) | https://squarekim.github.io/homebar/ |
+| 홈바 플랫폼 (베타) | https://homebar.squareone.workers.dev/ |
 
 > [!NOTE]
 > 아직 정식 공개 전이다. 지금 올라간 `beta` 빌드에는 **오너의 홈바(보유 주류 82종·재고 69건)** 가 들어 있다.
@@ -58,7 +58,7 @@
 
 ### 그냥 써보기
 
-https://squarekim.github.io/homebar/ 를 열면 끝이다. 설치도 가입도 없다.
+https://homebar.squareone.workers.dev/ 를 열면 끝이다. 설치도 가입도 없다.
 모바일 브라우저의 **홈 화면에 추가**를 누르면 앱처럼 쓸 수 있다(PWA).
 
 > [!IMPORTANT]

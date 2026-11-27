@@ -22,7 +22,7 @@ Cloudflare가 Pages 대신 Workers로 프로젝트를 만들었다면 **Settings
 
 | 항목 | 값 |
 |---|---|
-| Project name | `homebar` (주소가 `homebar.pages.dev`가 돼요. 이미 쓰이면 다른 이름) |
+| Project name | `homebar` (지금 주소: `homebar.squareone.workers.dev`) |
 | Production branch | `main` |
 | Framework preset | None |
 | Root directory | `app` |
