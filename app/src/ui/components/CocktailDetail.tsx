@@ -14,7 +14,7 @@ import { referenceRepo } from '../../repositories/referenceRepo';
 import { evaluateCocktail, STATUS_LEAD_KO } from '../../services/availabilityService';
 import { FlavorBars, Term, ChipRow } from './common';
 import { useEffect, useState } from 'react';
-import { scaledAmount, type AmountUnit } from '../../services/scaleAmount';
+import { scaledAmount, myRatio, saveMyRatio, type AmountUnit } from '../../services/scaleAmount';
 import { GlassArt } from './GlassArt';
 import { glassOf, garnishParts, GLASS_LABEL_KO } from '../../data/drinkVisual';
 import { methodSteps } from '../../data/beginnerGuide';
@@ -90,6 +90,13 @@ export function CocktailDetail({ id }: { id: string }) {
   const [servings, setServings] = useState<'1' | '2' | '4'>('1');
   const [unit, setUnit] = useState<AmountUnit>('ml');
   const [awake, setAwake] = useState(false);
+  const [ratio, setRatio] = useState(() => myRatio(id));
+  const [tuning, setTuning] = useState(false);
+  useEffect(() => { setRatio(myRatio(id)); }, [id]);
+  const nudge = (i: number, d: number, base: number) => {
+    const next = { ...ratio, [i]: Math.max(-base, (ratio[i] ?? 0) + d) };
+    setRatio(next); saveMyRatio(id, next);
+  };
   // 만드는 동안 화면이 꺼지지 않게 — 지원하지 않는 브라우저는 버튼을 숨긴다
   useEffect(() => {
     if (!awake) return;
@@ -129,6 +136,8 @@ export function CocktailDetail({ id }: { id: string }) {
           <div className="makebar">
             <ChipRow value={servings} options={[{ v: '1', label: '1잔' }, { v: '2', label: '2잔' }, { v: '4', label: '4잔' }]} onChange={setServings} tight />
             <ChipRow value={unit} options={[{ v: 'ml', label: 'ml' }, { v: 'oz', label: 'oz' }]} onChange={setUnit} tight />
+            <button className="chip" aria-pressed={tuning} onClick={() => setTuning((v) => !v)}>내 비율</button>
+            {tuning && Object.values(ratio).some((v) => v) && <button className="chip" onClick={() => { setRatio({}); saveMyRatio(id, {}); }}>원래대로</button>}
             {'wakeLock' in navigator && <button className="chip" aria-pressed={awake} onClick={() => setAwake((v) => !v)}>화면 켜 두기</button>}
           </div>
           <div className="recipe">
@@ -147,7 +156,12 @@ export function CocktailDetail({ id }: { id: string }) {
                     {off && <span className="lackmark">없음</span>}
                     {ing.optional && <span className="opt">선택</span>}
                   </span>
-                  <span className="amt">{scaledAmount(ing.amountMl, +servings, unit) ?? (amountOf(ing.raw, ing.ingredientName) || '적당량')}</span>
+                  <span className="amt">
+                    {tuning && ing.amountMl != null && <button className="chip" aria-label={`${ing.ingredientName} 5ml 줄이기`} onClick={() => nudge(i, -5, ing.amountMl!)}>−</button>}
+                    {scaledAmount(ing.amountMl == null ? null : ing.amountMl + (ratio[i] ?? 0), +servings, unit) ?? (amountOf(ing.raw, ing.ingredientName) || '적당량')}
+                    {!!ratio[i] && ing.amountMl != null && <small> ({ratio[i]! > 0 ? '+' : ''}{ratio[i]}ml)</small>}
+                    {tuning && ing.amountMl != null && <button className="chip" aria-label={`${ing.ingredientName} 5ml 늘리기`} onClick={() => nudge(i, 5, ing.amountMl!)}>+</button>}
+                  </span>
                 </div>
               );
             })}
