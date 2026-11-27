@@ -1,70 +1,22 @@
 /**
  * TodayPage — '메인'. 오늘의 잔과 입문을 한 화면에 둔다.
- * 샘플 안내 → 오늘의 잔 뽑기 → 고른 잔 → 다르게 골라 보기 → 최근 기록 순서다.
+ * 샘플 안내 → 오늘의 잔(TodayEditorial) → 다르게 골라 보기 → 최근 기록 순서다.
  * 첫 화면이 답해야 할 것은 넷뿐이다: 무엇을 마실까 · 무슨 맛인가 · 지금 만들 수 있나 · 뭘 누르면 되나.
  * 뽑기 후보는 지금 만들 수 있는 잔뿐이다(칩으로 좁혀도 같다). 점수는 여기서 말하지 않는다.
- * 넓은 PC(1100px 이상)는 카드 뽑기 대신 지면 배치(TodayEditorial)를 쓰고, 아래 기록 칸은 같이 쓴다.
+ * 폰과 PC가 같은 지면을 쓴다. 좁은 화면에서는 위아래로 쌓인다.
  */
 import { IconMartini, IconWhisky } from '../components/icons';
 import { useCallback, useMemo, useState, type ReactElement } from 'react';
 import { useUI } from '../UIContext';
 import { useRecommendContext } from '../../hooks/useRecommendContext';
-import { useLogs, useHeldIds } from '../../hooks/useData';
-import { garnishState } from '../../services/garnishStock';
-import { whatToDrink, type RecommendMode, diversePool, interleaveByBase } from '../../services/recommendationService';
-import { STATUS_LEAD_KO } from '../../services/availabilityService';
-import { ChipRow, FilterButton, LogCard, StarterNotice, StartButtons, allChips, GarnishBadge, useFilterDismiss } from '../components/common';
+import { useLogs } from '../../hooks/useData';
+import { whatToDrink, type RecommendMode, interleaveByBase } from '../../services/recommendationService';
+import { ChipRow, FilterButton, LogCard, allChips, useFilterDismiss } from '../components/common';
 import { referenceRepo } from '../../repositories/referenceRepo';
-import { TodayReel } from '../components/TodayReel';
 import { MODES, GroupRec, PurchaseRec, ClearStockRec } from './RecommendPage';
 import { type RecommendationResult } from '../../models/types';
 import { IS_BETA } from '../../config';
-import { TodayEditorial, StartLinks, Welcome, LikedNext, useIsNew } from './TodayEditorial';
-import { useEffect } from 'react';
-
-/** 넓은 PC(1100px 이상)인지 — 메인 지면 배치를 바꾸는 데만 쓴다 */
-function useWide(): boolean {
-  const q = '(min-width: 1100px)';
-  const [wide, setWide] = useState(() => typeof matchMedia === 'function' && matchMedia(q).matches);
-  useEffect(() => {
-    if (typeof matchMedia !== 'function') return;
-    const m = matchMedia(q);
-    const on = () => setWide(m.matches);
-    m.addEventListener('change', on);
-    return () => m.removeEventListener('change', on);
-  }, []);
-  return wide;
-}
-
-/**
- * 평소와 다를 때만 상태를 적는다.
- * 기본 모드('있는 재료만')는 만들 수 있는 것만 골라 오므로 '재료가 모두 있어요'는 모든 줄에 붙는 말이 된다.
- * 다른 모드(달달한·상큼한…)는 부족한 잔도 올라오기 때문에, 그때만 무엇이 문제인지 적는다.
- * 위스키는 이미 병에 있으니 아무것도 적지 않는다.
- */
-function state(rec: RecommendationResult): { text: string; cls: string } | null {
-  if (rec.kind === 'whisky' || !rec.status || rec.status === 'READY') return null;
-  return { text: STATUS_LEAD_KO[rec.status], cls: rec.status };
-}
-
-/** 받침 따라 '와/과' */
-const wa = (w: string) => { const c = w.charCodeAt(w.length - 1) - 0xac00; return c >= 0 && c % 28 ? '과' : '와'; };
-const asTaste = (w: string) => (w.endsWith('맛') ? w : `${w} 맛`);
-
-/** '허브와 과일 맛' */
-function taste(rec: RecommendationResult): string {
-  const [a, b] = rec.flavorWords;
-  if (!a) return rec.base ? `${rec.base} 베이스` : '';
-  return b ? `${a}${wa(a)} ${asTaste(b)}` : asTaste(a);
-}
-
-/** 뽑기 후보 — 만들 수 있는 칵테일(대체 포함)과 가진 위스키, 추천 순서 상위 12개 */
-const POOL = 12;
-function reelPool(all: RecommendationResult[], mode: RecommendMode): RecommendationResult[] {
-  const ok = all.filter((r) => r.kind === 'whisky' || r.status === 'READY' || r.status === 'SUBSTITUTE');
-  // '위스키' 칩을 골랐을 때는 일부러 한 종류만 보는 것이라 섞지 않는다
-  return mode === 'whisky' ? ok.slice(0, POOL) : diversePool(ok, POOL);
-}
+import { TodayEditorial } from './TodayEditorial';
 
 /** 한 잔 고르기의 종류 필터 */
 type Kind = 'all' | 'cocktail' | 'whisky';
@@ -123,8 +75,7 @@ function OtherWays() {
 
 export function TodayPage() {
   const ctx = useRecommendContext();
-  const isNew = useIsNew();
-  const { openCocktail, openLog, goTab, goLogs } = useUI();
+  const { goTab, goLogs } = useUI();
   const logs = useLogs();
   const [mode, setMode] = useState<RecommendMode>('available');
   const [kind, setKind] = useState<Kind>('all');
@@ -134,13 +85,6 @@ export function TodayPage() {
   const byQuick = useCallback((r: RecommendationResult) => !quick || (quick === 'easy' ? r.kind === 'cocktail' && isEasy(r.id) : quick === 'fresh' ? r.kind === 'cocktail' && usesPerishable(r.id) : !tried.has(r.id)), [quick, tried]);
   const [openFilter, setOpenFilter] = useState(false);
   useFilterDismiss(openFilter, useCallback(() => setOpenFilter(false), []));
-  const picks = useMemo(() => {
-    if (kind === 'whisky') return reelPool(whatToDrink(ctx, 'whisky', 80), 'whisky');
-    let all = whatToDrink(ctx, mode, 120);
-    if (kind === 'cocktail' || base !== 'all') all = all.filter((r) => r.kind === 'cocktail');
-    if (base !== 'all') all = all.filter((r) => r.base === base);
-    return reelPool(all.filter(byQuick), mode);
-  }, [ctx, mode, kind, base, byQuick]);
   // 넓은 PC의 메뉴 인덱스 — 위 숫자와 같은 범위 전체(만들 수 있는 칵테일 + 가진 위스키), 추천 순서
   const full = useMemo(() => {
     const ok = (r: RecommendationResult) => r.kind === 'whisky' || r.status === 'READY' || r.status === 'SUBSTITUTE';
@@ -149,7 +93,6 @@ export function TodayPage() {
     const wks = kind === 'all' && base === 'all' ? whatToDrink(ctx, 'whisky', 200) : [];
     return interleaveByBase([...cks, ...wks].filter(byQuick).sort((x, y) => y.score - x.score));
   }, [ctx, mode, kind, base, byQuick]);
-  const wide = useWide();
   // 종류 칩만 바깥에 두고, 맛과 베이스 술은 칵테일 목록처럼 "필터" 안에 모은다
   const tasteOn = mode !== 'available';
   const baseOn = base !== 'all';
@@ -189,18 +132,7 @@ export function TodayPage() {
       )}
     </div>
   );
-  const [picked, setPicked] = useState<RecommendationResult | null>(null);
-  const heldIds = useHeldIds();
-  const onPicked = useCallback((r: RecommendationResult | null) => setPicked(r), []);
   const recent = logs.slice(0, 3);
-
-  const open = (r: RecommendationResult) => {
-    if (r.kind === 'cocktail') openCocktail(r.id, r);
-    else openLog({ drinkId: r.id, drinkType: 'whisky', drinkName: r.name, servingStyle: 'neat' });
-  };
-  const made = (r: RecommendationResult) => openLog(r.kind === 'cocktail'
-    ? { drinkId: r.id, drinkType: 'cocktail', drinkName: r.name, servingStyle: 'cocktail' }
-    : { drinkId: r.id, drinkType: 'whisky', drinkName: r.name, servingStyle: 'neat' });
 
   return (
     <>
@@ -211,62 +143,8 @@ export function TodayPage() {
         </div>
       )}
 
-      {wide ? (
-        <>
-          <TodayEditorial list={full} filters={filters} emptyText={emptyMsg} />
-        </>
-      ) : (
-      <section className={picks.length ? 'today' : 'today none'}>
-        {/* 첫 화면의 할 일을 한 문장으로 — 상태(재고 없음 → 고르기 → 고른 뒤)에 따라 바뀐다 */}
-        {isNew && picks.length > 0 ? <Welcome /> : <>
-        <h2 className="ask">{!picks.length ? '먼저 집에 있는 술부터' : picked ? '오늘의 잔' : '오늘 뭐 마실까'}</h2>
-        <p className="asksub">{!picks.length
-          ? '술장에 넣은 술로 만들 수 있는 잔만 추천'
-          : picked ? '레시피 보고 만든 뒤 기록으로 남기기' : '지금 만들 수 있는 잔만 모음 · 카드 한 장을 고르거나 랜덤 추천으로'}</p>
-        {!picked && <LikedNext pool={picks} />}
-        </>}
-
-        {picks.length > 0 ? (
-          <TodayReel picks={picks} onPicked={onPicked}
-            between={filters}>
-            {(again) => picked && (
-              <div className="picked">
-                <h3>{picked.name}</h3>
-                <p className="taste">{taste(picked)}</p>
-                <p className="why">
-                  {ctx.hasTaste && picked.flavorWords[0]
-                    ? `좋아하는 ${asTaste(picked.flavorWords[0])}에 가까워요`
-                    : picked.kind === 'whisky' ? '보유 중' : '지금 만들 수 있음'}
-                </p>
-                {state(picked) && <div className={`state s-${state(picked)!.cls}`}>{state(picked)!.text}</div>}
-                {picked.kind === 'cocktail' && (() => {
-                  const ck = referenceRepo.cocktailById(picked.id);
-                  return ck && garnishState(ck, heldIds) === 'all' ? <GarnishBadge /> : null;
-                })()}
-                <div className="pickbtns">
-                  {/* 칵테일은 고른 다음 할 일이 '만들기'라 레시피가 먼저다. 위스키는 따르기만 하면 되니 기록이 먼저다 */}
-                  {picked.kind === 'cocktail' && <button className="btn primary big" onClick={() => open(picked)}>이 잔 보기</button>}
-                  <button className={picked.kind === 'cocktail' ? 'btn sm ghost' : 'btn primary big'} onClick={() => made(picked)}>
-                    {picked.kind === 'cocktail' ? '만든 잔 남기기' : '마신 잔 남기기'}
-                  </button>
-                  <button className="btn sm ghost" onClick={again}>다시 고르기</button>
-                </div>
-              </div>
-            )}
-          </TodayReel>
-        ) : (
-          <>
-          {filters}
-          <div className="empty">
-            {emptyMsg}
-            {(kind === 'whisky' || (mode === 'available' && !baseOn)) && <StartButtons />}
-          </div>
-          </>
-        )}
-        <StarterNotice />
-        <StartLinks />
-      </section>
-      )}
+      {/* 폰과 PC 모두 같은 지면 — 좁으면 위아래로 쌓인다(styles.css .ed) */}
+      <TodayEditorial list={full} filters={filters} emptyText={emptyMsg} />
 
       <OtherWays />
 

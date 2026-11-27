@@ -181,6 +181,13 @@ export function TodayEditorial({ list, filters, emptyText }: {
   const heldIds = useHeldIds();
   const [selId, setSelId] = useState<string | null>(null);
   const last = useRef<number | null>(null);
+  const mainRef = useRef<HTMLDivElement>(null);
+  // 좁은 화면에서는 스펙 시트가 목록 위에 있어 고른 잔이 안 보일 수 있다 — 그때만 올려 보여 준다
+  const choose = (id: string) => {
+    setSelId(id);
+    const el = mainRef.current;
+    if (el && el.getBoundingClientRect().top < 0) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   // 목록이 바뀌어 고른 잔이 빠지면 맨 앞(추천 1순위)으로
   const sel = list.find((r) => r.id === selId) ?? list[0] ?? null;
@@ -190,7 +197,7 @@ export function TodayEditorial({ list, filters, emptyText }: {
     const i = weightedPick(list.length, last.current);
     if (i < 0) return;
     last.current = i;
-    setSelId(list[i]!.id);
+    choose(list[i]!.id);
   };
 
   const held = useMemo(() => referenceRepo.ingredients().filter((i) => heldIds.has(i.id)), [heldIds]);
@@ -238,7 +245,7 @@ export function TodayEditorial({ list, filters, emptyText }: {
 
       {/* 2단 — 고른 잔(왼쪽)과 고를 수 있는 잔(오른쪽) */}
       <div className="ed-grid">
-        <div className="ed-main">
+        <div className="ed-main" ref={mainRef}>
           {!sel && <div className="empty">{emptyText}</div>}
           {selCk && <SpecSheet key={selCk.id} ck={selCk} />}
           {selB && <WhiskySheet key={selB.id} b={selB} />}
@@ -252,7 +259,7 @@ export function TodayEditorial({ list, filters, emptyText }: {
                 const en = r.kind === 'cocktail' ? referenceRepo.cocktailById(r.id)?.nameEn ?? '' : nameEnOf(referenceRepo.bottleById(r.id)?.productId) ?? '';
                 return (
                   <li key={r.id}>
-                    <button aria-current={sel?.id === r.id} onClick={() => setSelId(r.id)}>
+                    <button aria-current={sel?.id === r.id} onClick={() => choose(r.id)}>
                       <span className="no">{r.kind === 'whisky' ? '위스키' : r.base ?? ''}</span>
                       <span className="nm">{r.name}{en && <em>{en}</em>}</span>
                       <span className={`st ${r.status === 'SUBSTITUTE' ? 'alt' : ''}`}>{r.status === 'SUBSTITUTE' ? '대체' : '가능'}</span>

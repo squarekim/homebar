@@ -979,3 +979,23 @@ p,li,td,dd,label,.hint,.recipe .ing,.it span,.rowitem .nm,.taste{word-break:keep
 .likednext:hover{background:var(--panel)}
 .likednext b{font-weight:600}
 .spec-frame.pair{gap:var(--s4)}
+
+/* 좁은 화면의 메인 지면 — PC와 같은 순서로 위아래로 쌓는다 */
+@media (max-width:1099px){
+  .ed{margin-top:var(--s3)}
+  .ed-hero{flex-direction:column;align-items:stretch;gap:var(--s2);padding-bottom:var(--s3)}
+  .ed-hero .ask{font-size:28px}
+  .ed-actions{flex-wrap:wrap;flex-shrink:1;min-width:0}
+  .ed-actions .pickfilters{flex:1 1 100%;min-width:0}
+  .ed-actions .pickfilters > .controls{overflow-x:auto}
+  .ed-actions .pickfilters .filterpanel{position:static;width:auto}
+  .ed-actions > .btn{flex:1 1 100%}
+  .ed-grid{grid-template-columns:minmax(0,1fr)}
+  .ed-main{padding:var(--s4) 0;border-right:0;scroll-margin-top:72px}
+  .ed-side{padding:0 0 var(--s4)}
+  .spec-ko{font-size:28px}
+  .spec-frame{margin:var(--s3) 0;padding:var(--s3) 0}
+  .spec-cols{grid-template-columns:minmax(0,1fr);gap:var(--s4)}
+  .spec .btnrow{margin-top:var(--s4)}
+  .ed-more{grid-template-columns:minmax(0,1fr);gap:var(--s4);padding:var(--s4) 0}
+}

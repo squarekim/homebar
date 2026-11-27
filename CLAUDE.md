@@ -17,7 +17,7 @@
 - Use an 80×80 viewBox. Every glass kind must provide its glass and liquid images plus a box, surface ellipse, rim ellipse, liquid bottom and liquid width profile (the anchors for foam, bubbles, garnish and layer edges). Ice is part of the glass image. Keep the liquid, glass, ground shadow and ice readable at 44px on both the dark and light themes.
 - Namespace every SVG clipPath, gradient, and filter ID with React useId() so multiple instances can coexist.
 - Do not change ingredient ownership or cocktail availability logic as part of visual work.
-- Today's pick card shuffle (`app/src/ui/components/TodayReel.tsx` + `app/src/services/pickService.ts`) draws a random winner among the cocktails you can make right now. That randomness chooses which drink is offered; it is outside the visual rules, and the glasses themselves are still drawn deterministically from recipe data.
+- Today's 랜덤 추천 (`app/src/ui/pages/TodayEditorial.tsx` + `app/src/services/pickService.ts`) draws a random winner among the cocktails you can make right now. That randomness chooses which drink is offered; it is outside the visual rules, and the glasses themselves are still drawn deterministically from recipe data.
 - After changes, run `npm test` and `npm run build` from `app`.
 
 # Bottle visuals
