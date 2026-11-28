@@ -184,7 +184,8 @@ function WhiskyDetail({ bottle: w, owned }: { bottle: Bottle; owned?: Bottle | u
       {preview ? (
         // 둘러보기: 아직 술장에 없는 병이라 메모·기록 대신 넣기를 보여 준다. 마시는 법은 고를 수 있다
         <>
-        {w.isWhisky && <HowToDrink w={w} canLog={false} />}
+        {/* 이미 가진 병이면 둘러보기에서도 바로 기록한다 — 기록은 내 병 id 로 */}
+        {w.isWhisky && <HowToDrink w={owned ?? w} canLog={!!owned} />}
         <div className="btnrow">
           {owned
             ? <button className="btn" onClick={() => openBottle(owned.id)}>보유 중 · 내 병 보기</button>
@@ -206,7 +207,7 @@ function WhiskyDetail({ bottle: w, owned }: { bottle: Bottle; owned?: Bottle | u
         </>
       )}
 
-      <div className="sechead in">맛 프로필</div>
+      <div className="sechead in">맛 프로필 <small className="sub">홈바가 비교용으로 매긴 점수 · 제조사 노트 아님</small></div>
       <FlavorBars vector={w.flavor} compact />
 
       <div className="more">
