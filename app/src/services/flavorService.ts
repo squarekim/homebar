@@ -71,7 +71,9 @@ export function deriveTasteFromLogs(logs: DrinkLog[]): FlavorVector | null {
     const fr = log.flavorRatings;
     const hasAny = Object.keys(fr).length > 0;
     if (!hasAny) continue;
-    const w = (0.4 + log.rating / 5) * (log.retryIntent ? 1.3 : 1);
+    // 좋아한 잔(3점 이상)만 취향 쪽으로 끌어당긴다. 0~2점은 '이런 맛이 좋다'는 근거가 아니다
+    const w = (Math.max(0, log.rating - 2) / 3) * (log.retryIntent ? 1.3 : 1);
+    if (w === 0) continue;
     for (const axis of FLAVOR_AXES) {
       const val = fr[axis];
       if (val == null) continue;
@@ -140,7 +142,8 @@ export function summarizeLogs(logs: DrinkLog[], n = 3): LogSummary {
   const names = [...byName].map(([name, e]) => ({ name, ...e }));
   const ko = (a: { name: string }, b: { name: string }) => a.name.localeCompare(b.name, 'ko');
   return {
-    count, enough: count >= TASTE_MIN_LOGS,
+    // 취향 분석은 맛을 평가한 기록으로만 하므로 그 수로 센다
+    count, enough: logs.filter((l) => Object.keys(l.flavorRatings ?? {}).length > 0).length >= TASTE_MIN_LOGS,
     avg: count ? logs.reduce((s, l) => s + l.rating, 0) / count : 0,
     retry: logs.filter((l) => l.retryIntent).length,
     kinds,

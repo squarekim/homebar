@@ -23,7 +23,7 @@ function match(axisValue: string, picked: string, exact = false): boolean {
 export const AXIS_FAMILIES: AxisFamily[] = [
   { key: 'origin', label: '원산지', universe: ['스카치', '버번', '테네시', '아이리시', '재패니즈', '코리안'], pick: (c) => [c.origin] },
   { key: 'type', label: '타입', universe: ['싱글몰트', '블렌디드', '블렌디드 몰트', '스트레이트 버번', '휘티드 버번', '테네시 위스키'], pick: (c) => [c.type] },
-  { key: 'region', label: '지역(스카치)', universe: ['스페이사이드', '하이랜드', '아일라', '아일랜드', '캠벨타운', '로우랜드'], pick: (c) => [c.region ?? ''] },
+  { key: 'region', label: '지역(스카치)', universe: ['스페이사이드', '하이랜드', '아일라', '아일랜드', '캠벨타운', '로우랜드'], pick: (c) => (c.origin === '스카치' ? [c.region ?? ''] : []) }, // 아이리시의 '아일랜드'(나라)가 스카치 섬 지역과 겹치지 않게
   { key: 'cask', label: '캐스크', universe: ['셰리', '버번', '와인', '프렌치오크', '버진오크', '뉴 차드 오크'], pick: (c) => c.cask },
   { key: 'character', label: '캐릭터', universe: ['피티드', '논피트', '스모키', '왁시', '캐스크 스트렝스', '휘티드'], pick: (c) => c.character },
 ];
@@ -54,8 +54,9 @@ export type MatrixTier = (typeof MATRIX_TIERS)[number];
 
 /** 병 이름에서 숙성 연수 추출 (예: "맥캘란 더블 캐스크 12년" → 12, NAS → null) */
 export function parseAge(name: string): number | null {
-  const m = name.match(/(\d{1,2})\s*(?:년|yo|year)/i);
-  if (m) { const a = Number(m[1]); if (a >= 2 && a <= 40) return a; }
+  // 앞에 숫자나 소수점이 붙은 수(100년의 00, 12.5년의 5)는 연수로 읽지 않는다
+  const m = name.match(/(?<![\d.])(\d{1,2})\s*(?:년|yo|year)/i);
+  if (m) { const a = Number(m[1]); if (a >= 2) return a; }
   return null;
 }
 function tierOf(age: number | null): MatrixTier | null {

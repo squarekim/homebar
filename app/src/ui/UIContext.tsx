@@ -104,7 +104,7 @@ export function UIProvider({ children }: { children: ReactNode }) {
   }, []);
   const openBottle = useCallback((id: string) => {
     setBottleId(id);
-    setTab((t) => (t === 'whisky' || t === 'cellar' ? t : 'whisky'));
+    setTab('whisky'); // 병 상세는 위스키 화면에만 있다 — 술장에서 열어도 거기로 간다
   }, []);
   const toast = useCallback((msg: string) => {
     setToastMsg(msg);

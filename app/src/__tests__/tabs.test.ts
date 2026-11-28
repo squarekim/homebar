@@ -1,12 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { ingredients, whiskies } from '../data/adapters';
-import { summarizeLogs, TASTE_MIN_LOGS } from '../services/flavorService';
+import { deriveTasteFromLogs, summarizeLogs, TASTE_MIN_LOGS } from '../services/flavorService';
 import { cocktailsForBottle } from '../services/pairingService';
 import { type DrinkLog } from '../models/types';
 
 const log = (name: string, rating: number, type: DrinkLog['drinkType'] = 'cocktail', retry = false): DrinkLog => ({
   id: `${name}-${rating}-${Math.round(rating * 7)}`, drinkId: name, drinkType: type, drinkName: name,
-  date: '2026-11-01', servingStyle: type === 'cocktail' ? 'cocktail' : 'neat', rating, retryIntent: retry, flavorRatings: {},
+  date: '2026-11-01', servingStyle: type === 'cocktail' ? 'cocktail' : 'neat', rating, retryIntent: retry, flavorRatings: { sweet: 5 },
 });
 
 describe('취향 화면의 기록 요약', () => {
@@ -159,5 +159,25 @@ describe('예시 홈바 세트', () => {
     for (const s of allSubs) subMap.set(s.ingredientId, [...(subMap.get(s.ingredientId) ?? []), s.substituteId]);
     const ready = allCocktails.filter((c) => evaluateCocktail(c, held, subMap).status === 'READY').length;
     expect(ready).toBeGreaterThanOrEqual(10);
+  });
+});
+
+describe('취향 계산 근거', () => {
+  it('맛 평가 없는 기록은 분석 잔 수에 넣지 않는다', () => {
+    const bare = (n: string) => ({ ...log(n, 4), flavorRatings: {} });
+    expect(summarizeLogs([bare('a'), bare('b'), bare('c')]).enough).toBe(false);
+  });
+  it('2점 이하 기록은 취향을 끌어당기지 않는다', () => {
+    expect(deriveTasteFromLogs([{ ...log('탈리스커', 0, 'whisky'), flavorRatings: { smoke: 10 } }])).toBeNull();
+  });
+});
+
+describe('숙성 연수 읽기', () => {
+  it('41년은 41, 100년·12.5년은 읽지 않는다', async () => {
+    const { parseAge } = await import('../services/whiskyDiversityService');
+    expect(parseAge('글렌피딕 41년')).toBe(41);
+    expect(parseAge('100년 기념')).toBeNull();
+    expect(parseAge('12.5년')).toBeNull();
+    expect(parseAge('맥캘란 12년')).toBe(12);
   });
 });

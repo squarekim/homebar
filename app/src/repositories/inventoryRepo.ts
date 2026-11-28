@@ -29,7 +29,7 @@ export const inventoryRepo = {
     await db.inventory.put({
       ...existing,
       remaining: Math.max(0, Math.min(100, remaining)),
-      owned: remaining > 0 ? true : existing.owned,
+      owned: remaining > 0, // 다 마신 병(0%)은 없는 것으로 친다
       updatedAt: Date.now(),
     });
   },

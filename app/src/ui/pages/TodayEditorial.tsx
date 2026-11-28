@@ -207,7 +207,7 @@ export function TodayEditorial({ list, filters, emptyText }: {
   const selB = sel?.kind === 'whisky' ? referenceRepo.bottleById(sel.id) : undefined;
 
   // 재고가 비었으면 할 일 하나만 크게 보여 준다
-  if (heldIds.size === 0) {
+  if (heldIds.size === 0 && list.length === 0) {
     return (
       <section className="ed">
         <div className="ed-hero">

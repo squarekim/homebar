@@ -66,13 +66,14 @@ export function StarterPage() {
   const cards = useMemo(() => cardsFor(habit), [habit]);
   const result = useMemo(() => {
     if (step !== 'result') return null;
-    const ids = Object.keys(marks);
+    // 음주 빈도를 바꾸면 카드가 바뀐다 — 지금 보이는 카드에 남긴 표시만 쓴다
+    const ids = cards.map((c) => c.id).filter((id) => marks[id]);
     return starterRecommend({
       habit, strength, budget,
       likes: ids.filter((id) => marks[id] === 'like'),
       dislikes: ids.filter((id) => marks[id] === 'dislike'),
     });
-  }, [step, habit, marks, strength, budget]);
+  }, [step, habit, marks, strength, budget, cards]);
 
   /** 같은 버튼을 다시 누르면 고르기 전으로 */
   const mark = (id: string, v: Mark) => setMarks((m) => {
