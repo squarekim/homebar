@@ -139,12 +139,16 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
   const save = async () => {
     const n = name.trim();
     if (!n) { toast('이름을 넣어 주세요'); return; }
+    const abvN = abv.trim() ? Number(abv.trim().replace(/%$/, '')) : null;
+    if (abvN != null && !(abvN > 0 && abvN <= 100)) { toast('도수는 0보다 크고 100 이하로 넣어 주세요'); return; }
+    const volN = volume.trim() ? Number(volume.trim()) : null;
+    if (volN != null && !(Number.isInteger(volN) && volN > 0 && volN <= 10000)) { toast('용량은 ml 단위 양의 정수로 넣어 주세요'); return; }
     setSaving(true);
     const over: Partial<UserBottle> = {
       qty, use,
       note: note.trim() || undefined,
-      abv: abv.trim() ? `${abv.trim().replace(/%$/, '')}%` : undefined,
-      volumeMl: volume.trim() ? Number(volume.trim()) || undefined : undefined,
+      abv: abvN != null ? `${abvN}%` : undefined,
+      volumeMl: volN ?? undefined,
       ingredientName: ingName || undefined,
     };
     let draft: Omit<UserBottle, 'id' | 'createdAt'>;
@@ -156,7 +160,13 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
         : undefined;
       draft = draftManual(n, category, { ...over, whiskyClass });
     }
-    await bottleService.add(draft, { linkIngredient: link });
+    try {
+      await bottleService.add(draft, { linkIngredient: link });
+    } catch (e) {
+      setSaving(false);
+      toast('저장하지 못했어요: ' + (e as Error).message);
+      return;
+    }
     const ing = link ? resolveIngredient(ingName) : undefined;
     toast(ing ? `${n} 추가했어요 · 재료 '${ing.name}'도 켰어요` : `${n} 추가했어요`);
     onClose();
@@ -250,7 +260,7 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
           <IngredientLink value={ingName} onChange={(v) => { setIngName(v); setLink(!!v); }} />
 
           <div className="sechead in">수량</div>
-          <input type="number" min={1} value={qty} onChange={(e) => setQty(Math.max(1, +e.target.value || 1))} style={{ maxWidth: 110 }} />
+          <input type="number" min={1} value={qty} onChange={(e) => setQty(Math.max(1, Math.floor(+e.target.value) || 1))} style={{ maxWidth: 110 }} />
 
           <div className="btnrow" style={{ marginTop: 6 }}>
             <button className="btn ghost" onClick={() => setDetail((v) => !v)}>{detail ? '세부 항목 접기' : '도수·용량·메모 수정'}</button>

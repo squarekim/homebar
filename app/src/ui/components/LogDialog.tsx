@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useUI } from '../UIContext';
 import { drinkLogRepo } from '../../repositories/drinkLogRepo';
 import { tasteService } from '../../services/tasteService';
@@ -16,6 +16,7 @@ export function LogDialog() {
   const on = !!logPrefill;
 
   const [style, setStyle] = useState<ServingStyle>('cocktail');
+  const savingRef = useRef(false);
   const [rating, setRating] = useState(4);
   const [retry, setRetry] = useState(true);
   const [memo, setMemo] = useState('');
@@ -32,6 +33,9 @@ export function LogDialog() {
   if (!on || !logPrefill) return null;
 
   const save = async () => {
+    if (savingRef.current) return; // 두 번 눌러도 한 번만 저장
+    savingRef.current = true;
+    try {
     await drinkLogRepo.add({
       drinkId: logPrefill.drinkId,
       drinkType: logPrefill.drinkType,
@@ -46,6 +50,7 @@ export function LogDialog() {
     await tasteService.recomputeMe();
     toast('기록을 저장했어요');
     closeLog();
+    } finally { savingRef.current = false; }
   };
 
   return (

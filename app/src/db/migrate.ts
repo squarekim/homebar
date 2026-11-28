@@ -26,7 +26,7 @@ function exampleOwned(ing: { name: string; seedOwned: boolean }): boolean {
 /** 예시 세트를 켜 둔 상태인지 — 화면이 "예시로 보는 중"이라고 알려 주는 데 쓴다 */
 const EXAMPLE_KEY = 'homebar.exampleInventory';
 export function isExampleOn(): boolean { try { return localStorage.getItem(EXAMPLE_KEY) === '1'; } catch { return false; } }
-function setExample(on: boolean): void { try { if (on) localStorage.setItem(EXAMPLE_KEY, '1'); else localStorage.removeItem(EXAMPLE_KEY); } catch { /* 저장이 막혀도 계속 */ } }
+export function setExample(on: boolean): void { try { if (on) localStorage.setItem(EXAMPLE_KEY, '1'); else localStorage.removeItem(EXAMPLE_KEY); } catch { /* 저장이 막혀도 계속 */ } }
 
 const SEED_VERSION = 6;
 /**
@@ -131,6 +131,9 @@ export async function ensureSeeded(): Promise<void> {
 /** 예시 재고 켜기 — 공개 배포는 기본 홈바 세트, 개인 빌드는 원본 컬렉션 */
 export async function resetInventoryToSeed(): Promise<void> {
   const now = Date.now();
+  // 예시를 켜기 전 재고를 남겨 둔다 — 끌 때 되돌린다(이미 예시 중이면 처음 것을 지킨다)
+  const prev = (await db.meta.get('preExample'))?.value as { rows: InventoryItem[] } | undefined;
+  await db.meta.put({ key: 'preExample', value: { at: now, rows: prev?.rows ?? await db.inventory.toArray() } });
   const rows: InventoryItem[] = ingredients.map((ing) => {
     const owned = exampleOwned(ing);
     return { ingredientId: ing.id, ingredientName: ing.name, owned, remaining: owned ? 100 : 0, updatedAt: now };
@@ -142,13 +145,23 @@ export async function resetInventoryToSeed(): Promise<void> {
 /** 예시 재고 끄기 — 예시 세트에 든 재료만 끈다. 그 사이 사용자가 따로 켠 재료는 남긴다 */
 export async function turnOffExample(): Promise<void> {
   const now = Date.now();
-  // 예전 41가지 세트를 켜 둔 기기도 함께 끈다
-  const rows = (await db.inventory.toArray()).filter((r) => r.owned && (STARTER.has(r.ingredientName) || LEGACY_STARTER.has(r.ingredientName)));
-  await db.inventory.bulkPut(rows.map((r) => ({ ...r, owned: false, remaining: 0, updatedAt: now })));
+  const saved = (await db.meta.get('preExample'))?.value as { at: number; rows: InventoryItem[] } | undefined;
+  const cur = await db.inventory.toArray();
+  if (saved) {
+    // 예시를 켠 뒤 손대지 않은 재료만 켜기 전 상태로 되돌린다. 그 사이 직접 바꾼 재료는 그대로 둔다
+    const before = new Map(saved.rows.map((r) => [r.ingredientId, r]));
+    const back = cur.filter((r) => r.updatedAt <= saved.at).map((r) => before.get(r.ingredientId) ?? { ...r, owned: false, remaining: 0 });
+    await db.inventory.bulkPut(back.map((r) => ({ ...r, updatedAt: now })));
+    await db.meta.delete('preExample');
+  } else {
+    // 켜기 전 재고가 없는 예전 기기 — 예시 세트에 든 재료 중 예시 뒤로 손대지 않은 것만 끈다
+    const rows = cur.filter((r) => r.owned && (STARTER.has(r.ingredientName) || LEGACY_STARTER.has(r.ingredientName)));
+    await db.inventory.bulkPut(rows.map((r) => ({ ...r, owned: false, remaining: 0, updatedAt: now })));
+  }
   setExample(false);
 }
 /** 예시 표시만 내린다 — 재고는 그대로 두고 사용자가 직접 고쳐 쓰기로 했을 때 */
-export function keepExampleAsMine(): void { setExample(false); }
+export function keepExampleAsMine(): void { setExample(false); void db.meta.delete('preExample'); }
 
 /** ingredientId 매핑 재노출(마이그레이션 유틸) */
 export { ingredientIdOf };

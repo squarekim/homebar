@@ -1,3 +1,4 @@
+import { db } from '../db/schema';
 /**
  * bottleService — 보유 술 등록/삭제 오케스트레이션.
  * "제품 → 표준 재료 → 칵테일 레시피" 연결을 여기서 맺는다.
@@ -26,9 +27,12 @@ export const bottleService = {
   /** 병 저장 + (옵션) 표준 재료 재고 ON. 저장된 id 반환 */
   async add(draft: Omit<UserBottle, 'id' | 'createdAt'>, opts: AddBottleOptions = {}): Promise<string> {
     const ing = resolveIngredient(draft.ingredientName);
-    const id = await userBottleRepo.add({ ...draft, ingredientId: ing?.id, ingredientName: ing?.name });
-    if (opts.linkIngredient && ing) await inventoryRepo.setOwned(ing.id, ing.name, true);
-    return id;
+    // 병과 재료 체크를 한 번에 — 하나만 저장되고 끝나는 일이 없게
+    return db.transaction('rw', [db.userBottles, db.inventory], async () => {
+      const id = await userBottleRepo.add({ ...draft, ingredientId: ing?.id, ingredientName: ing?.name });
+      if (opts.linkIngredient && ing) await inventoryRepo.setOwned(ing.id, ing.name, true);
+      return id;
+    });
   },
 
   /**
