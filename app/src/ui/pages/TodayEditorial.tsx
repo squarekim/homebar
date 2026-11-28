@@ -9,7 +9,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useUI } from '../UIContext';
 import { useRecommendContext } from '../../hooks/useRecommendContext';
-import { useHeldIds, useBottles } from '../../hooks/useData';
+import { useHeldIds, useInventory, useBottles } from '../../hooks/useData';
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { inventoryRepo } from '../../repositories/inventoryRepo';
 import { calculatePurchases } from '../../services/purchaseService';
@@ -179,6 +179,7 @@ export function TodayEditorial({ list, filters, emptyText }: {
   const ctx = useRecommendContext();
   const isNew = useIsNew();
   const heldIds = useHeldIds();
+  const loaded = useInventory() !== undefined;
   const [selId, setSelId] = useState<string | null>(null);
   const last = useRef<number | null>(null);
   const mainRef = useRef<HTMLDivElement>(null);
@@ -207,6 +208,8 @@ export function TodayEditorial({ list, filters, emptyText }: {
   const selB = sel?.kind === 'whisky' ? referenceRepo.bottleById(sel.id) : undefined;
 
   // 재고가 비었으면 할 일 하나만 크게 보여 준다
+  // 재고를 읽기 전에는 아무것도 그리지 않는다 — 재고가 있어도 빈 안내가 잠깐 보이던 문제
+  if (!loaded) return <section className="ed" aria-busy="true" />;
   if (heldIds.size === 0 && list.length === 0) {
     return (
       <section className="ed">
