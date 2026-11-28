@@ -158,7 +158,7 @@ export function CocktailDetail({ id }: { id: string }) {
                   </span>
                   <span className="amt">
                     {tuning && ing.amountMl != null && <button className="chip" aria-label={`${ing.ingredientName} 5ml 줄이기`} onClick={() => nudge(i, -5, ing.amountMl!)}>−</button>}
-                    {scaledAmount(ing.amountMl == null ? null : ing.amountMl + (ratio[i] ?? 0), +servings, unit) ?? (amountOf(ing.raw, ing.ingredientName) || '적당량')}
+                    {scaledAmount(ing.amountMl == null ? null : ing.amountMl + (ratio[i] ?? 0), +servings, unit) ?? (ing.amount != null && ing.unit ? `${+(ing.amount * +servings).toFixed(2)}${ing.unit}` : null) ?? (amountOf(ing.raw, ing.ingredientName) || '적당량')}
                     {!!ratio[i] && ing.amountMl != null && <small> ({ratio[i]! > 0 ? '+' : ''}{ratio[i]}ml)</small>}
                     {tuning && ing.amountMl != null && <button className="chip" aria-label={`${ing.ingredientName} 5ml 늘리기`} onClick={() => nudge(i, 5, ing.amountMl!)}>+</button>}
                   </span>
