@@ -39,7 +39,7 @@ function IngredientLink({ value, onChange }: { value: string; onChange: (v: stri
   const all = referenceRepo.ingredients();
   return (
     <select value={value} onChange={(e) => onChange(e.target.value)} style={{ width: '100%' }}>
-      <option value="">연결 안 함</option>
+      <option value="">칵테일 재료 아님 (술장에만 보관)</option>
       {cats.map((c) => (
         <optgroup key={c} label={c}>
           {all.filter((i) => i.category === c).map((i) => <option key={i.id} value={i.name}>{i.name}</option>)}
@@ -136,7 +136,8 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
     setLink(!!ing);
   };
 
-  const save = async () => {
+  /** more: 넣고 나서 검색 화면으로 돌아가 다음 병을 이어 넣는다(검색어는 그대로 — 같은 증류소 15·18년을 바로 고르게) */
+  const save = async (more = false) => {
     const n = name.trim();
     if (!n) { toast('이름을 넣어 주세요'); return; }
     const abvN = abv.trim() ? Number(abv.trim().replace(/%$/, '')) : null;
@@ -169,6 +170,7 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
     }
     const ing = link ? resolveIngredient(ingName) : undefined;
     toast(ing ? `${n} 추가했어요 · 재료 '${ing.name}'도 켰어요` : `${n} 추가했어요`);
+    if (more) { setSaving(false); setPicked(null); setStep('search'); return; }
     onClose();
   };
 
@@ -238,7 +240,8 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
 
           {step === 'confirm' && (
             <div className="btnrow">
-              <button className="btn primary" onClick={save} disabled={saving}>내 홈바에 추가</button>
+              <button className="btn primary" onClick={() => save()} disabled={saving}>내 홈바에 추가</button>
+              <button className="btn" onClick={() => save(true)} disabled={saving}>추가하고 하나 더</button>
               <button className="btn" onClick={() => setStep('search')}>다시 검색</button>
             </div>
           )}
@@ -258,6 +261,7 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
             <span>칵테일 재료로도 사용</span>
           </label>
           <IngredientLink value={ingName} onChange={(v) => { setIngName(v); setLink(!!v); }} />
+          {!ingName && <p className="hint">이 술을 쓰는 칵테일 레시피가 없어서 추천에는 안 쓰여요. 술장과 마신 기록에는 그대로 남아요.</p>}
 
           <div className="sechead in">수량</div>
           <input type="number" min={1} value={qty} onChange={(e) => setQty(Math.max(1, Math.floor(+e.target.value) || 1))} style={{ maxWidth: 110 }} />
@@ -296,7 +300,8 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
 
           {step === 'manual' && (
             <div className="btnrow">
-              <button className="btn primary" onClick={save} disabled={saving}>내 홈바에 추가</button>
+              <button className="btn primary" onClick={() => save()} disabled={saving}>내 홈바에 추가</button>
+              <button className="btn" onClick={() => save(true)} disabled={saving}>추가하고 하나 더</button>
               <button className="btn" onClick={() => setStep('search')}>다시 검색</button>
             </div>
           )}
