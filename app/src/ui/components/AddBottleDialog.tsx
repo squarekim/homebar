@@ -129,6 +129,15 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
     setStep('manual');
   };
 
+  /** 선물 받은 병처럼 이름을 모를 때 — 블렌디드 스카치로 두고 이름만 임시로 */
+  const unknownWhisky = () => {
+    setPicked(null); setName('이름 모르는 위스키'); setCategory('whisky');
+    setOrigin('스카치'); setType('블렌디드'); setRegion(''); setCasks([]); setChars([]);
+    const ing = guessIngredientName('whisky', '블렌디드 스카치');
+    setIngName(ing ?? ''); setLink(!!ing);
+    setStep('manual');
+  };
+
   const pickCategory = (c: LiquorCategory) => {
     const ing = guessIngredientName(c, name);
     setCategory(c);
@@ -201,8 +210,10 @@ export function AddBottleDialog({ open, onClose, initialQuery = '' }: { open: bo
           )}
           <div className="btnrow">
             <button className="btn" onClick={goManual}>직접 추가</button>
+            <button className="btn" onClick={unknownWhisky}>이름 모르는 위스키</button>
             <button className="btn ghost" onClick={onClose}>취소</button>
           </div>
+          <p className="hint">병 앞면에 가장 크게 적힌 글자로 찾아보세요. 그래도 모르겠으면 '이름 모르는 위스키'로 넣고 나중에 고쳐도 돼요.</p>
         </>
       )}
 

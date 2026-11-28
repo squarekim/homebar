@@ -247,6 +247,12 @@ for (const [f, t, note] of SUBSTITUTION_PAIRS) {
   if (!EITHER_OF.has(k)) EITHER_OF.set(k, new Set());
   EITHER_OF.get(k)!.add(ingredientIdOf(t));
 }
+// 통과일을 가졌으면 즙은 짜서 쓰면 된다 — 가니시 재고(gn_*)의 레몬·라임을 즙 재료로도 친다
+for (const [juice, fruit] of [['레몬즙', 'gn_lemon'], ['라임즙', 'gn_lime']] as const) {
+  const k = ingredientIdOf(juice);
+  if (!EITHER_OF.has(k)) EITHER_OF.set(k, new Set());
+  EITHER_OF.get(k)!.add(fruit);
+}
 export const substitutions: IngredientSubstitution[] = SUBSTITUTION_PAIRS
   .filter(([f, t]) => ingIdByName.has(f) || ingIdByName.has(t))
   .map(([f, t, note]) => ({

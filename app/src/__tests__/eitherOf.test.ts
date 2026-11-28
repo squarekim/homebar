@@ -10,3 +10,12 @@ describe('둘 중 하나로 적힌 재료', () => {
     expect(evaluateCocktail(ck, held).status).toBe('READY');
   });
 });
+
+describe('통레몬', () => {
+  it('레몬만 있어도 레몬즙 재료를 가진 것으로 친다', () => {
+    const ck = referenceRepo.cocktails().find((c) => c.ingredients.some((i) => i.ingredientName === '레몬즙') && c.ingredients.filter((i) => !i.optional).length === 1);
+    const lemonJuice = referenceRepo.ingredients().find((i) => i.name === '레몬즙')!.id;
+    const anyCk = ck ?? { ...referenceRepo.cocktails()[0]!, ingredients: [{ ingredientId: lemonJuice, ingredientName: '레몬즙', raw: '', amount: null, unit: null, amountMl: null, optional: false, substitute: false }] };
+    expect(evaluateCocktail(anyCk as any, new Set(['gn_lemon'])).status).toBe('READY');
+  });
+});
