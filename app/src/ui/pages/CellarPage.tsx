@@ -11,7 +11,7 @@ import { useBottles, useHeldIds, useSubMap, useInventory, inventoryRepo } from '
 import { referenceRepo } from '../../repositories/referenceRepo';
 import { evaluateAll, tallyStatus } from '../../services/availabilityService';
 import { bottleService } from '../../services/bottleService';
-import { resetInventoryToSeed } from '../../db/migrate';
+import { isExampleOn, resetInventoryToSeed } from '../../db/migrate';
 import { isUserBottle } from '../../data/userBottles';
 import { userBottleRepo } from '../../repositories/userBottleRepo';
 import { CATEGORY_GROUP, CATEGORY_LABELS, CATEGORY_ORDER, CATEGORY_DEFAULT_INGREDIENT } from '../../data/liquorCategory';
@@ -39,7 +39,7 @@ export function CellarPage() {
       <StarterNotice />
 
       <div className="statline">
-        <div className="cell"><b>{bottles.length}</b><small>보유</small></div>
+        <div className="cell"><b>{bottles.length}</b><small>넣은 병</small></div>
         <div className="cell ok"><b>{tally.READY + tally.SUBSTITUTE}</b><small>가능</small></div>
       </div>
 
@@ -84,6 +84,7 @@ function BottleList({ bottles }: { bottles: Bottle[] }) {
       {bottles.length === 0 ? (
         <div className="empty">
           아직 넣은 술이 없어요.
+          {isExampleOn() && <p className="hint">예시 재고는 '재료 재고'만 체크해요. 가진 병은 여기 따로 넣어요.</p>}
           <div className="btnrow center"><button className="btn primary" onClick={() => openAdd()}>술 추가</button></div>
         </div>
       ) : (
@@ -200,6 +201,9 @@ function StockManager() {
           </div>
         </div>
       ) : (
+        // 자주 쓰지 않는 일괄 버튼은 접어 둔다 — 재료 목록이 첫 화면에 보이게
+        <details className="notefold">
+        <summary>한꺼번에 바꾸기</summary>
         <div className="btnrow">
           <button className="btn sm" onClick={() => setConfirmReset(true)}>재료 체크 모두 끄기</button>
           <button className="btn sm" onClick={async () => { await resetInventoryToSeed(); notifyExample(); toast(IS_PUBLIC ? '예시 재고를 켰어요' : '기본 컬렉션으로 되돌렸어요'); }}>
@@ -207,6 +211,7 @@ function StockManager() {
           </button>
           <button className="btn sm" onClick={async () => { await inventoryRepo.setAll(true, allIngredients.map((i) => ({ id: i.id, name: i.name }))); toast('모두 켰어요'); }}>모두 켜기</button>
         </div>
+        </details>
       )}
 
       {cats.map((c) => {
