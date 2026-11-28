@@ -255,7 +255,7 @@ describe('가니시 분리 · 개정 이력 제거 · 조주법', () => {
 
   it('조주법이 아이콘용 키로 파싱된다', () => {
     const by = (n: string) => cocktails.find((c) => c.name === n)!;
-    expect(by('올드 패션드').methodKeys[0]).toBe('build');
+    expect(by('올드 패션드').methodKeys[0]).toBe('muddle'); // IBA: 설탕을 먼저 녹인다
     expect(by('위스키 사워').methodKeys[0]).toBe('shake');
     expect(by('마티니 (드라이 마티니)').methodKeys[0]).toBe('stir');
     expect(by('프렌치 75').methodKeys).toEqual(['shake', 'build']); // "Shake + Build"

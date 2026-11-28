@@ -9,7 +9,7 @@ import { IconMartini, IconWhisky } from '../components/icons';
 import { useCallback, useMemo, useState, type ReactElement } from 'react';
 import { useUI } from '../UIContext';
 import { useRecommendContext } from '../../hooks/useRecommendContext';
-import { useLogs } from '../../hooks/useData';
+import { useLogs, useHeldIds } from '../../hooks/useData';
 import { whatToDrink, type RecommendMode, interleaveByBase } from '../../services/recommendationService';
 import { ChipRow, FilterButton, LogCard, allChips, useFilterDismiss } from '../components/common';
 import { referenceRepo } from '../../repositories/referenceRepo';
@@ -77,6 +77,7 @@ export function TodayPage() {
   const ctx = useRecommendContext();
   const { goTab, goLogs } = useUI();
   const logs = useLogs();
+  const heldCount = useHeldIds().size;
   const [mode, setMode] = useState<RecommendMode>('available');
   const [kind, setKind] = useState<Kind>('all');
   const [base, setBase] = useState('all');
@@ -102,7 +103,10 @@ export function TodayPage() {
               : baseOn
                 ? <>이 베이스 술로 만들 수 있는 잔 없음</>
               : mode === 'available'
-                ? <>술장에 술을 넣으면 만들 수 있는 잔이 여기 나옵니다.</>
+                ? heldCount > 0
+                  // 넣은 게 있는데 0잔이면 '아직 안 넣었다'로 들리지 않게 — 받았다고 먼저 말한다
+                  ? <>넣은 술·재료 {heldCount}가지는 술장에 잘 들어갔어요. 지금 재료로 만들 수 있는 칵테일은 아직 없어요. 아래 '하나만 더 있으면'을 보세요.</>
+                  : <>술장에 술을 넣으면 만들 수 있는 잔이 여기 나옵니다.</>
                 : <>이 맛으로 만들 수 있는 잔 없음</>}</>
   );
   const filterCount = (kind !== 'whisky' && tasteOn ? 1 : 0) + (kind !== 'whisky' && baseOn ? 1 : 0);

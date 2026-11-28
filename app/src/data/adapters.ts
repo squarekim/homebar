@@ -239,6 +239,14 @@ const SUBSTITUTION_PAIRS: Array<[from: string, to: string, note?: string]> = [
   ['버번 또는 라이', '버번', '레시피가 둘 중 하나를 쓰라고 적음'],
   ['버번 또는 라이', '라이 위스키', '레시피가 둘 중 하나를 쓰라고 적음'],
 ];
+/** 레시피가 '둘 중 하나'로 적은 재료 → 그중 하나를 가졌으면 대체가 아니라 정석이다 (재료 id → 정석으로 치는 id들) */
+export const EITHER_OF: Map<string, Set<string>> = new Map();
+for (const [f, t, note] of SUBSTITUTION_PAIRS) {
+  if (!note?.startsWith('레시피가 둘 중 하나')) continue;
+  const k = ingredientIdOf(f);
+  if (!EITHER_OF.has(k)) EITHER_OF.set(k, new Set());
+  EITHER_OF.get(k)!.add(ingredientIdOf(t));
+}
 export const substitutions: IngredientSubstitution[] = SUBSTITUTION_PAIRS
   .filter(([f, t]) => ingIdByName.has(f) || ingIdByName.has(t))
   .map(([f, t, note]) => ({

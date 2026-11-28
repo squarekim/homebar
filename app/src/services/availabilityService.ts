@@ -7,6 +7,7 @@
  *   UNAVAILABLE 핵심(기주 등) 부족
  * 대체재 판단은 substitution DB(map)를 재사용한다.
  */
+import { EITHER_OF } from '../data/adapters';
 import { type Cocktail, type AvailabilityResult, type AvailabilityStatus } from '../models/types';
 import { referenceRepo } from '../repositories/referenceRepo';
 
@@ -23,7 +24,7 @@ export function evaluateCocktail(
 
   for (const ing of ck.ingredients) {
     if (ing.optional) continue;
-    const have = heldIds.has(ing.ingredientId);
+    const have = heldIds.has(ing.ingredientId) || [...(EITHER_OF.get(ing.ingredientId) ?? [])].some((id) => heldIds.has(id));
     if (have) {
       if (ing.substitute) sub.push(ing.ingredientName);
       continue;

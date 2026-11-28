@@ -256,7 +256,12 @@ export function TodayEditorial({ list, filters, emptyText }: {
 
         {list.length > 0 && (
           <aside className="ed-side ed-block">
-            <div className="ed-head"><span className="k">지금 만들 수 있는 잔</span><small>{list.length}잔</small></div>
+            <div className="ed-head"><span className="k">지금 마실 수 있는 잔</span><small>{(() => {
+              // 위스키 병과 칵테일을 한 숫자로 세면 '5잔'이 칵테일 다섯 가지로 읽힌다
+              const w = list.filter((r) => r.kind === 'whisky').length;
+              const c = list.length - w;
+              return [c && `칵테일 ${c}잔`, w && `위스키 ${w}병`].filter(Boolean).join(' · ');
+            })()}</small></div>
             <ol className="ed-index">
               {list.slice(0, 12).map((r) => {
                 const en = r.kind === 'cocktail' ? referenceRepo.cocktailById(r.id)?.nameEn ?? '' : nameEnOf(referenceRepo.bottleById(r.id)?.productId) ?? '';
